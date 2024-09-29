@@ -75,21 +75,11 @@ Carga las dependecias desde el `requirements.txt`.
 2. Usa este comando para instalar las dependencias:
    bash
    pip install -r requirements.txt
-   
-   si tienes mas de una version de python especifica la version, preferible la mas reciente, 
-   ejecutas el comando especificando la version
-   bash
-   python -3.12 -m pip install -r requirements.txt
 
 3. Para actualizar o instalar una nueva dependecia desde el `requirements.txt`, 
    debes ejecutar el siguiente comando:+
    bash
    pip install --upgrade -r requirements.txt
-   
-   si tienes mas de una version de python especifica la version, preferible la mas reciente, 
-   ejecutas el comando especificando la version
-   bash
-   python -3.12 -m pip install --upgrade -r requirements.txt
    
 ## 6. ejecucion de pruebas
    Para ejecutar pruebas para revisar el funcionamiento de los modulos puedes seguir los siguientes pasos
