@@ -1,0 +1,36 @@
+Acceso-Biometrico/           #Estructura para organizar el proyecto
+│
+├── src/                     # Código fuente de la aplicación
+│   ├── __init__.py          # Hace que src sea un paquete
+│   ├── main.py              # Punto de entrada de la aplicación
+│   │
+│   ├── database/            # Carpeta para la conexión a la base de datos
+│   │   ├── __init__.py      # Hace que database sea un paquete
+│   │   └── db.py            # Archivo para manejar la conexión y operaciones con la DB
+│   │   
+│   │
+│   ├── ui/                  # Carpeta para las interfaces gráficas
+│   │   ├── __init__.py      # Hace que ui sea un paquete
+│   │   ├── main_window.py   # Ventana principal de la aplicación
+│   │   └── widgets.py       # Widgets personalizados (si los necesitas)
+│   │
+│   ├───models/              # Carpeta para los las clases
+│   │   ├── __init__.py      # Hace que las clases sean un paquete
+│   │   └── usuario.py       # clases entidades que se haran uso para los datos
+│   │
+│   ├── controllers/         # Carpeta para los controladores
+│   │   ├── __init__.py      # Hace que controllers sea un paquete
+│   │   └── app_controller.py  # Controlador principal que gestiona la lógica de la app
+│   │
+│   └── utils.py             # Funciones utilitarias generales
+│
+├── tests/                   # Carpeta para las pruebas unitarias
+│   ├── __init__.py          # Hace que tests sea un paquete
+│   ├── test_db.py           # Pruebas para la conexión a la base de datos
+│   ├── test_ui.py           # Pruebas para la interfaz gráfica
+│   └── test_controllers.py  # Pruebas para los controladores
+│
+├── requirements.txt          # Dependencias del proyecto
+├── README.md                 # Documentación del proyecto
+└── .gitignore                # Archivos y carpetas que Git debe ignorar
+
