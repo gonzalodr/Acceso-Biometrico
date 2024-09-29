@@ -84,8 +84,12 @@ Carga las dependecias desde el `requirements.txt`.
    ejecutas el comando especificando la version
    bash
    python -3.12 -m pip install --upgrade -r requirements.txt
+   
 ## 5. ejecucion de pruebas
    Para ejecutar pruebas para revisar el funcionamiento de los modulos puedes seguir los siguientes pasos
+1. En la carpeta tests crearas un archivo .py y colocaras al inicio el prefijo (`test_`),
+   Ejemplo:
+   test_serviceUsuario.py
 
 1. Para ejecutar tus pruebas, abre una terminal y navega hasta la carpeta principal de tu proyecto. 
    Luego escribe:
