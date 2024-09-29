@@ -6,8 +6,7 @@ Acceso-Biometrico/           #Estructura para organizar el proyecto
 │   │
 │   ├── database/            # Carpeta para la conexión a la base de datos
 │   │   ├── __init__.py      # Hace que database sea un paquete
-│   │   └── db.py            # Archivo para manejar la conexión y operaciones con la DB
-│   │   
+│   │   └── db.py            # Archivo para manejar la conexión y operaciones con la DB 
 │   │
 │   ├── ui/                  # Carpeta para las interfaces gráficas
 │   │   ├── __init__.py      # Hace que ui sea un paquete
@@ -21,6 +20,11 @@ Acceso-Biometrico/           #Estructura para organizar el proyecto
 │   ├── controllers/         # Carpeta para los controladores
 │   │   ├── __init__.py      # Hace que controllers sea un paquete
 │   │   └── app_controller.py  # Controlador principal que gestiona la lógica de la app
+│   │
+│   ├──settings/             #Carpeta para las configuraciones
+│   │   ├── __init__.py      #Hace que settings sea un modulo 
+│   │   └── config.py        #archivo con la configuracion del proyecto, variables globales
+│   │
 │   │
 │   └── utils.py             # Funciones utilitarias generales
 │
