@@ -84,6 +84,17 @@ Carga las dependecias desde el `requirements.txt`.
    ejecutas el comando especificando la version
    bash
    python -3.12 -m pip install --upgrade -r requirements.txt
+## 5. ejecucion de pruebas
+   Para ejecutar pruebas para revisar el funcionamiento de los modulos puedes seguir los siguientes pasos
+
+1. Para ejecutar tus pruebas, abre una terminal y navega hasta la carpeta principal de tu proyecto. 
+   Luego escribe:
+   bash
+   python -m unittest discover -s tests
+
+   Esto buscará automáticamente todos los archivos que comienzan con 
+   test_ dentro de la carpeta tests/ y ejecutará las pruebas definidas.
+
 
 ## Conclusión
 ¡Ahora sabes cómo crear, activar y desactivar un entorno virtual en Python, así como cargar dependencias desde un archivo `requirements.txt`! Usar entornos virtuales es esencial para mantener tus proyectos organizados.
