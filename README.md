@@ -64,6 +64,10 @@ deactivate
 Si tienes un archivo `requirements.txt`, sigue estos pasos:
 Carga las dependecias desde el `requirements.txt`.
 
+## Nota:
+   Se deben instalar todas las dependencias mientras el entorno virtual esta encendido,
+   esto para evitar conflictos con dependencias del sistema.
+
 1. Asegúrate de que tu entorno esté activado, osea debes ver el `(venv)` al principio de la linea de comandos.
 
 2. Usa este comando para instalar las dependencias:
@@ -91,14 +95,13 @@ Carga las dependecias desde el `requirements.txt`.
    Ejemplo:
    test_serviceUsuario.py
 
-1. Para ejecutar tus pruebas, abre una terminal y navega hasta la carpeta principal de tu proyecto. 
+2. Para ejecutar tus pruebas, abre una terminal y navega hasta la carpeta principal de tu proyecto. 
    Luego escribe:
    bash
    python -m unittest discover -s tests
 
    Esto buscará automáticamente todos los archivos que comienzan con 
    test_ dentro de la carpeta tests/ y ejecutará las pruebas definidas.
-
 
 ## Conclusión
 ¡Ahora sabes cómo crear, activar y desactivar un entorno virtual en Python, así como cargar dependencias desde un archivo `requirements.txt`! Usar entornos virtuales es esencial para mantener tus proyectos organizados.
