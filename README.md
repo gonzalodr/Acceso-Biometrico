@@ -35,6 +35,8 @@ Para crear un entorno virtual llamado `venv`, sigue estos pasos:
    python -3.12 -m virtualvenv venv
    
    Esto creará una carpeta llamada `venv` en tu directorio actual.
+   Ejemplo:
+   `(venv)C:\ruta\a\tu\proyecto>`
 
 ## 3. Activar el Entorno Virtual
 Una vez creado, necesitas activar el entorno virtual:
@@ -89,7 +91,7 @@ Carga las dependecias desde el `requirements.txt`.
    bash
    python -3.12 -m pip install --upgrade -r requirements.txt
    
-## 5. ejecucion de pruebas
+## 6. ejecucion de pruebas
    Para ejecutar pruebas para revisar el funcionamiento de los modulos puedes seguir los siguientes pasos
 1. En la carpeta tests crearas un archivo .py y colocaras al inicio el prefijo (`test_`),
    Ejemplo:
