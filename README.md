@@ -66,7 +66,7 @@ deactivate
 Si tienes un archivo `requirements.txt`, sigue estos pasos:
 Carga las dependecias desde el `requirements.txt`.
 
-## Nota:
+# Nota:
    Se deben instalar todas las dependencias mientras el entorno virtual esta encendido,
    esto para evitar conflictos con dependencias del sistema.
 
