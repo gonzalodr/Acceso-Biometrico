@@ -1,6 +1,6 @@
 from models.usuario import Usuario
 from services import usuarioService
 
-usuario = Usuario("Gonzalo","1234")
+usuario = Usuario("Gonzalo","gonzalo")
 
 print(usuarioService.insertarUsuario(usuario))

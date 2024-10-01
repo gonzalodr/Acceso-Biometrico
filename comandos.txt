@@ -1,25 +1,29 @@
 
-//instalar el virtualenv
-py -3.12 -m pip install virtualenv  //si tienes mas de 1 version de python 
+## instalar el virtualenv
+py -3.12 -m pip install virtualenv  //si tienes mas de 1 version de python especificas la version.
 pip install virtualenv              //si tienes solo una version
 
 
-//crear el entorno
+## crear el entorno
 py -3.12 -m virtualenv venv
 
-//activar el virtualenv
+## activar el virtualenv
 venv\Scripts\activate.bat
 
-//desactiva el entorno
+## desactiva el entorno
 deactivate
 
+## generar el txt de dependencias
+pip freeze > requirements.txt
 
-//instalar las dependencias desde requirements.txt
+
+## instalar las dependencias desde requirements.txt
 pip install -r requirements.txt
 
-//instalar PySide
-py -3.12 -m pip install PySide6
+## instalar PySide
+pip install PySide6
 
-//instalar mysql
-py -3.12 -m pip install mysql-connector-python
+## instalar mysql
+pip install mysql-connector-python
  
+

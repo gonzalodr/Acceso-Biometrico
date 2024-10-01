@@ -4,15 +4,23 @@ from models.usuario import Usuario #llamando modulo `models` y a un archivo `usu
 #funcion privada: se inicia con un guion bajo
 def _contrasenaHash(contrasena):
     contrasena = str(contrasena)
-    if len(contrasena) > 8 and not contrasena.strip():
-        return False, "!La contraseña debe ser minimo de 8 caracteres¡" #retorna dos variables
+    if len(contrasena) < 8 :
+        return False, f"¡La contraseña debe ser minimo de 8 caracteres!" #retorna dos variables
+    elif not contrasena.strip() or contrasena.find(' ') != -1:
+        return False, "¡La contraseña no debe llevar espacios!"
     else:
         contrasena = contrasena.encode("utf-8")
         contrasena_hash = bcrypt.hashpw(contrasena,bcrypt.gensalt())
         return True, contrasena_hash #retorna dos variables
-
+    
+## Verificacion de contraseña
 def _verificarContrasenaHash(contrasena, contrasena_hash):
-    pass
+    contrasena = str(contrasena)
+    contrasena = contrasena.encode("utf-8")
+    if bcrypt.checkpw(contrasena, contrasena_hash):
+        return True,"¡Inicio de sesión exitoso!"
+    else:
+        return False, "¡El usuario o contraseña es incorrecta!"    
 
 def insertarUsuario(usuario: Usuario):
     exito, resultado = _contrasenaHash(usuario.contrasena) #recupera las dos variables
@@ -21,3 +29,6 @@ def insertarUsuario(usuario: Usuario):
     else:
         usuario.contrasena = resultado.decode("utf-8")
         return exito, f"¡Usuario [{usuario.usuario}], Contraseña [{usuario.contrasena}]!"
+    
+def inicioSesion():
+    pass
