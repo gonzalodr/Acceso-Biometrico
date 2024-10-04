@@ -22,7 +22,6 @@ class MainWindow(QMainWindow):
             for j in range(3):
                 item = QTableWidgetItem(f"Fila {i+1}, Columna {j+1}")
                 self.table_widget.setItem(i, j, item)
-                self.table_widget.cellWidget(i,j).setDisabled()
 
         # Aplicar estilo CSS a la tabla
         # self.table_widget.setStyleSheet("""
