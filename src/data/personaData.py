@@ -56,6 +56,7 @@ class PersonaData:
     # ##
     def update_persona(self, persona:Persona):
         conexion, resultado = conection()
+        cursor = None
         if not resultado["success"]:
             return resultado
         try:
@@ -70,7 +71,7 @@ class PersonaData:
             {TBPERSONA_ESTADO_CIVIL} = %s,
             {TBPERSONA_CORREO} = %s,
             {TBPERSONA_DIRECCION} = %s
-             WHERE {TBPERSONA_ID} = %s """
+             WHERE {TBPERSONA_ID} = %s"""
             
             cursor.execute(query, (
                 persona.foto,
@@ -91,6 +92,8 @@ class PersonaData:
             resultado["success"] = False
             resultado["message"] = f"Error al actualizar persona: {e}"
         finally:
+            if cursor:
+                cursor.close()
             if conexion:
                 conexion.close()
         return resultado
@@ -100,11 +103,12 @@ class PersonaData:
     # ##
     def delete_persona(self, persona_id):
         conexion, resultado = conection()
+        cursor = None
         if not resultado["success"]:
             return resultado
         try:
             cursor = conexion.cursor()
-            query = "DELETE FROM "+TBPERSONA+" WHERE "+TBPERSONA_ID+" = %s"
+            query = f"DELETE FROM {TBPERSONA} WHERE {TBPERSONA_ID} = %s "
             
             cursor.execute(query, (persona_id,))
             conexion.commit()
@@ -115,6 +119,8 @@ class PersonaData:
             resultado["success"] = False
             resultado["message"] = f"Error al eliminar persona: {e}"
         finally:
+            if cursor:
+                cursor.close()
             if conexion:
                 conexion.close()
 
@@ -122,27 +128,28 @@ class PersonaData:
     
     ##
     # Se lista las personas
+    # tipo de orden ASC o DESC
     # ##
     def list_personas(self, pagina=1, tam_pagina=10, ordenar_por = TBPERSONA_ID, tipo_orden="ASC"):
         conexion, resultado = conection()
+        cursor = None
         if not resultado["success"]:
             return resultado
         
         listaPersonas = []
-        
         try:
             cursor = conexion.cursor(dictionary=True)  
             #validacion de por que columna ordenar
-            campos_validos = {"cedula":TBPERSONA_CEDULA, 
+            columna_orden = { "cedula":TBPERSONA_CEDULA, 
                               "fechaNacimiento":TBPERSONA_NACIMIENTO, 
                               "apellido":TBPERSONA_APELLIDO1, 
                               "nombre":TBPERSONA_NOMBRE
                               }
             
-            if ordenar_por not in campos_validos:
-                ordenar_por = TBPERSONA_ID  # Valor por defecto el id
-            else:
-                ordenar_por = campos_validos[ordenar_por]
+            ordenar_por = columna_orden[ordenar_por] if ordenar_por in columna_orden else TBPERSONA_ID
+                
+            if tipo_orden != "ASC":
+                tipo_orden = "DESC"
                 
             # Construir la consulta paginada con ordenamiento
             offset = (pagina - 1) * tam_pagina
@@ -155,9 +162,6 @@ class PersonaData:
            
             
             registros = cursor.fetchall()
-            print()
-            print(registros)
-            print()
             for registro in registros:
                 persona = Persona(
                     registro[TBPERSONA_NOMBRE],
@@ -198,25 +202,3 @@ class PersonaData:
 
         return resultado
    
-    # def read_persona(self, persona_id):
-    #     conexion, resultado = conectionn()
-    #     if not resultado["success"]:
-    #         return resultado
-
-    #     try:
-    #         cursor = conexion.cursor()
-    #         query = "SELECT * FROM personas WHERE id = %s"
-    #         cursor.execute(query, (persona_id,))
-    #         persona = cursor.fetchone()
-    #         if persona:
-    #             resultado["data"] = persona
-    #             resultado["message"] = "Persona encontrada."
-    #         else:
-    #             resultado["message"] = "Persona no encontrada."
-    #     except Exception as e:
-    #         resultado["message"] = f"Error al leer persona: {e}"
-    #     finally:
-    #         if conexion:
-    #             conexion.close()
-
-    #     return resultado         
