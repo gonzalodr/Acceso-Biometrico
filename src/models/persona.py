@@ -1,11 +1,16 @@
 
 class Persona:
-    def __init__(self,nombre, apellido1,apellido2, cedula, estadoCivil):
+    def __init__(self, nombre, apellido1,apellido2, fecha_nacimiento, cedula,estado_civil,correo, direccion, id = 0,foto = None):
+        self.id = id
+        self.foto = foto
         self.nombre = nombre
         self.apellido1 = apellido1
         self.apellido2 = apellido2
+        self.fecha_nacimiento = fecha_nacimiento
         self.cedula = cedula
-        self.estadoCivil = estadoCivil
+        self.estado_civil = estado_civil
+        self.correo = correo
+        self.direccion = direccion
     
     def mostrar(self):
         return f"{self.nombre} {self.apellido1} {self.apellido2}, N.Ced: {self.cedula}, {self.estadoCivil} "

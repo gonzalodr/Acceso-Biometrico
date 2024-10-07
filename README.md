@@ -27,16 +27,14 @@ Para crear un entorno virtual llamado `venv`, sigue estos pasos:
 3. **Crear el Entorno Virtual**:
    Ejecuta el siguiente comando:
    bash
-   python -m venv venv
+   python -m virtualenv venv
    
    si tienes mas de una version de python indicar la version deseada, preferible la mas reciente, 
-   ejecutas el comando especificando la version
+   ejecutas el comando especificando la version, ejemplo:
    bash
    python -3.12 -m virtualvenv venv
    
    Esto creará una carpeta llamada `venv` en tu directorio actual.
-   Ejemplo:
-   `(venv)C:\ruta\a\tu\proyecto>`
 
 ## 3. Activar el Entorno Virtual
 Una vez creado, necesitas activar el entorno virtual:
@@ -45,7 +43,7 @@ Una vez creado, necesitas activar el entorno virtual:
   bash
   .\venv\Scripts\activate
   
-  si esto no funciona prueba con el siguiete comando
+  si esto no funciona prueba con el siguiete comando en la terminal CMD
   bash
   .\venv\Scripts\activate.bat
 
@@ -55,6 +53,8 @@ Una vez creado, necesitas activar el entorno virtual:
   
 
 Cuando esté activado, verás `(venv)` al principio de la línea de comandos.
+ejemplo:
+`(venv)ruta/a/tu/proyecto>`
 
 ## 4. Desactivar el Entorno Virtual
 Para salir del entorno virtual, ejecuta:
@@ -77,11 +77,11 @@ Carga las dependecias desde el `requirements.txt`.
    pip install -r requirements.txt
 
 3. Para actualizar o instalar una nueva dependecia desde el `requirements.txt`, 
-   debes ejecutar el siguiente comando:+
+   debes ejecutar el siguiente comando:
    bash
    pip install --upgrade -r requirements.txt
    
-## 6. ejecucion de pruebas
+## 6. ejecucion de pruebas(opcional de hacer)
    Para ejecutar pruebas para revisar el funcionamiento de los modulos puedes seguir los siguientes pasos
 1. En la carpeta tests crearas un archivo .py y colocaras al inicio el prefijo (`test_`),
    Ejemplo:
@@ -94,6 +94,9 @@ Carga las dependecias desde el `requirements.txt`.
 
    Esto buscará automáticamente todos los archivos que comienzan con 
    test_ dentro de la carpeta tests/ y ejecutará las pruebas definidas.
+## 7. Exportacion de la base de datos
+   -Asegurese de que estas exportando la ultima version de la base de datos
+   -Crear una base de datos en MySql con el nombre `accesobiometrico`
 
 ## Conclusión
-¡Ahora sabes cómo crear, activar y desactivar un entorno virtual en Python, así como cargar dependencias desde un archivo `requirements.txt`! Usar entornos virtuales es esencial para mantener tus proyectos organizados.
+¡Ahora sabes cómo crear, activar y desactivar un entorno virtual en Python, así como cargar dependencias desde un archivo `requirements.txt`! Tambien los pasos para importar la base de datos de manera local.

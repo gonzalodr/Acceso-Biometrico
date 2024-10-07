@@ -1,14 +1,34 @@
 DATABASE_CONFIG = {
     "host": "localhost",
-    "usuario": "root",
-    "contrasena": "",
-    "database":"prueba"
+    "user": "root",
+    "password": "",
+    "database":"accesobiometrico"
 }
 
-DATABASE_TABLE_NAME = {
-    "Usuario": {
-        "ID":"ID",
-        "USUARIO":"USUARIO",
-        "CONTRASEÑA": "CONTRASENA"
-    }
-}
+##
+# declaracion de los nombres de las tablas
+##
+#Tabla persona y sus campos
+TBPERSONA = "persona"
+TBPERSONA_ID = "Id"
+TBPERSONA_FOTO = "Foto"
+TBPERSONA_NOMBRE = "Nombre"
+TBPERSONA_APELLIDO1 = "Apellido1"
+TBPERSONA_APELLIDO2 = "Apellido2"
+TBPERSONA_NACIMIENTO = "Fecha_Nacimiento"
+TBPERSONA_CEDULA = "Cedula"
+TBPERSONA_ESTADO_CIVIL = "Estado_Civil"
+TBPERSONA_CORREO = "Correo"
+TBPERSONA_DIRECCION = "Direccion"
+
+# Tabla departamento  y sus campos
+TBDEPARTAMENTO = "departamento"
+TBDEPARTAMENTO_ID = "Id"
+TBDEPARTAMENTO_NOMBRE ="Nombre"
+TBDEPARTAMENTO_DESCRIPCION = "Descripcion"
+
+# Tabla rol y sus campos
+TBROL = "rol"
+TBROL_ID = "Id"
+TBROL_NOMBRE = "Nombre"
+TBROL_DESCRIPCION = "Descripcion"
