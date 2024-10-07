@@ -199,6 +199,11 @@ class PersonaData:
                 cursor.close()
             if conexion:
                 conexion.close()
-
         return resultado
    
+# sql
+# SELECT * 
+# FROM persona 
+# WHERE columna1 LIKE '%tu_texto_a_buscar%' 
+#    OR columna2 LIKE '%tu_texto_a_buscar%' 
+#    OR columna3 LIKE '%tu_texto_a_buscar%';
