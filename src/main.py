@@ -10,7 +10,7 @@ personServices = PersonaServices()
 #print(personServices.eliminarPersona(1))
 
 
-#print(personServices.insertarPersona(persona))
+# print(personServices.insertarPersona(persona))
 
 result = personServices.obtenerListaPersonas(1,5)
 lista = []
