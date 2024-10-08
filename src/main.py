@@ -3,7 +3,7 @@ from models.persona import Persona
 
 from services.personaService import PersonaServices
 
-persona = Persona("Gonzalo","Dormos","Rodriguez","2002-07-01","605310603","Soltero","gonzalo.dormos.rodriguez@est.una.ac.cr","Puerto Viejo, Sarapiqui, Heredia")
+persona = Persona("Javier","Diaz","Urbina","2002-07-01","11111111111111","Soltero","javier@est.una.ac.cr","Puerto Viejo, Sarapiqui, Heredia")
 
 personServices = PersonaServices()
 
@@ -20,12 +20,11 @@ if result["success"]:
 
 if len(lista) != 0:
     persona = lista[0]
-    
-print (f" NOMBRE [{persona.nombre}] Id [{persona.id}]")
 
-if persona != None:
-    persona.nombre = "Alberto"
-    # print(personServices.modificarPersona(persona))
+print("Mostrando Lista")
+for persona in lista:
+    print (f" Nombre [{persona.nombre}] Id [{persona.id}]")
+
 
 
 

@@ -15,7 +15,6 @@ class PersonaData:
         
         try:
             cursor = conexion.cursor()
-            
             query = f"""INSERT INTO {TBPERSONA} (
                 {TBPERSONA_FOTO} , 
                 {TBPERSONA_NOMBRE} ,  
@@ -130,7 +129,7 @@ class PersonaData:
     # Se lista las personas
     # tipo de orden ASC o DESC
     # ##
-    def list_personas(self, pagina=1, tam_pagina=10, ordenar_por = TBPERSONA_ID, tipo_orden="ASC"):
+    def list_personas(self, pagina=1, tam_pagina=10, ordenar_por = TBPERSONA_ID, tipo_orden="ASC", busqueda = None):
         conexion, resultado = conection()
         cursor = None
         if not resultado["success"]:
@@ -140,27 +139,42 @@ class PersonaData:
         try:
             cursor = conexion.cursor(dictionary=True)  
             #validacion de por que columna ordenar
-            columna_orden = { "cedula":TBPERSONA_CEDULA, 
-                              "fechaNacimiento":TBPERSONA_NACIMIENTO, 
-                              "apellido":TBPERSONA_APELLIDO1, 
-                              "nombre":TBPERSONA_NOMBRE
-                              }
-            
+            columna_orden = { 
+                "cedula":TBPERSONA_CEDULA, 
+                "fechaNacimiento":TBPERSONA_NACIMIENTO, 
+                "apellido":TBPERSONA_APELLIDO1, 
+                "nombre":TBPERSONA_NOMBRE
+            }
+            ## asigna sobre que tabla realizar el orden
             ordenar_por = columna_orden[ordenar_por] if ordenar_por in columna_orden else TBPERSONA_ID
                 
+            ## asigna el tipo de orden ascendente o descendente
             if tipo_orden != "ASC":
                 tipo_orden = "DESC"
                 
-            # Construir la consulta paginada con ordenamiento
-            offset = (pagina - 1) * tam_pagina
-            query = f"""
-                SELECT * FROM {TBPERSONA}
-                ORDER BY {ordenar_por} {tipo_orden}
-                LIMIT %s OFFSET %s
-            """
-            cursor.execute(query, (tam_pagina, offset))
-           
+            # Construcción de la consulta base
+            query = f"SELECT * FROM {TBPERSONA} "
             
+            # Añadir cláusula de búsqueda si se proporciona
+            valores = []
+            if busqueda:
+                query += f"""
+                    WHERE {TBPERSONA_NOMBRE} LIKE %s 
+                    OR {TBPERSONA_APELLIDO1} LIKE %s
+                    OR {TBPERSONA_APELLIDO2} LIKE %s 
+                    OR {TBPERSONA_CEDULA} LIKE %s 
+                    OR {TBPERSONA_CORREO} LIKE %s
+                """
+                valores = [f"%{busqueda}%"] * 5  # Para usar el valor de búsqueda con LIKE en todas las columnas
+            
+            # Añadir la cláusula ORDER BY y LIMIT/OFFSET
+            query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
+            valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
+
+            # Ejecutar la consulta con los parámetros de forma segura
+            cursor.execute(query, valores)
+            
+            #Leyendo los registros de 
             registros = cursor.fetchall()
             for registro in registros:
                 persona = Persona(

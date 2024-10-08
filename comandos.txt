@@ -3,7 +3,6 @@
 py -3.12 -m pip install virtualenv  //si tienes mas de 1 version de python especificas la version.
 pip install virtualenv              //si tienes solo una version
 
-
 ## crear el entorno
 py -3.12 -m virtualenv venv
 
@@ -16,12 +15,17 @@ deactivate
 ## generar el txt de dependencias
 pip freeze > requirements.txt
 
-
 ## instalar las dependencias desde requirements.txt
 pip install -r requirements.txt
 
 ## instalar PySide
 pip install PySide6
+
+## Abrir el diseñador de interfaz.
+pyside6-designer
+
+## convertir  de .ui a archivo .py
+pyside6-uic nombre_del_archivo.ui -o nombre_del_archivo.py
 
 ## instalar mysql
 pip install mysql-connector-python
