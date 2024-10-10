@@ -725,9 +725,9 @@ QHeaderView::section {
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>20</y>
          <width>1201</width>
-         <height>71</height>
+         <height>41</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0,4,6,0,2,2,2,2">
@@ -786,6 +786,12 @@ QPushButton:hover {
         </item>
         <item>
          <widget class="QLineEdit" name="inputbuscar">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="font">
            <font>
             <pointsize>10</pointsize>
