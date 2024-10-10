@@ -6,7 +6,7 @@ markdown
 # Acceso Biometrico de Empleados.
 
 ## 1. Instalar Python
-Asegúrate de tener Python instalado en tu sistema. Puedes descargarlo desde [python.org](https://www.python.org/downloads/). 
+Asegúrate de tener Python 3.12 instalado en tu sistema. Puedes descargarlo desde [python.org](https://www.python.org/downloads/). 
 Durante la instalación, asegúrate de marcar la opción "Add Python to PATH".
 
 ## 2. Crear un Entorno Virtual
