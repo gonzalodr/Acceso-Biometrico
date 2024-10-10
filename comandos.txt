@@ -9,9 +9,6 @@ py -3.12 -m virtualenv venv
 ## activar el virtualenv
 venv\Scripts\activate.bat
 
-## desactiva el entorno
-deactivate
-
 ## instar las dependencias desde requirements.txt
 ## generar el txt de dependencias
 pip freeze > requirements.txt
@@ -31,9 +28,7 @@ pyside6-uic nombre_del_archivo.ui -o nombre_del_archivo.py
 ## instalar mysql
 pip install mysql-connector-python
 
-bcrypt>=4.2.0
-mysql-connector-python>=9.0.0
-PySide6>=6.7.3
-SQLAlchemy
- 
+## desactiva el entorno
+deactivate
+
 
