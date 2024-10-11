@@ -6,7 +6,6 @@ def conection():
     conexion = None
     resultado = { "success" : False, "message" : "" }
     try:
-       
         conexion = mysql.connector.connect(
             host = DATABASE_CONFIG["host"],
             user = DATABASE_CONFIG["user"],
