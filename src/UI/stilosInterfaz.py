@@ -71,6 +71,7 @@ form_styleSheet = """
                 font-size: 12px;
             }
             QLabel{
+                font: 700 10pt \"Segoe UI\";
                 background-color:transparent;
                 color:black;
             }

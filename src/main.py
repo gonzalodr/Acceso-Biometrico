@@ -8,7 +8,6 @@ class MainWindow(QMainWindow, Ui_personaInterfaz):
         # self.StackVentanas = QStackedWidget()#Lista de vistas
         self.setupUi(self)
         
-        
     # ## busca una vista por nombre    
     # def SeleccionarVistaPorNombre(self,nombreVista):
     #     for i in range(self.StackVentanas.count()):

@@ -36,6 +36,7 @@ from PySide6.QtWidgets import (
 class Ui_personaInterfaz(object):
     paginaActual = 1
     ultimaPagina = 1
+    busqueda = None
     Pservices = PersonaServices()
     
     def setupUi(self, personaInterfaz):
@@ -311,7 +312,7 @@ class Ui_personaInterfaz(object):
 
     def llenarTabla(self):
         Pservices = PersonaServices()
-        resultado = Pservices.obtenerListaPersonas(self.paginaActual,10,"Id","DESC")
+        resultado = Pservices.obtenerListaPersonas(self.paginaActual,10,tipo_orden="DESC",busqueda = self.busqueda)
         if resultado["success"]:
             listaPersona = resultado["data"]["listaPersonas"]
             paginaActual = resultado["data"]["pagina_actual"]
@@ -442,21 +443,14 @@ class Ui_personaInterfaz(object):
     def buscarPersona(self):
         input_busqueda = self.InputBusqueda.text();
         if input_busqueda:
-            print("Texto :"+input_busqueda)
-
+            self.busqueda = input_busqueda
+            self.InputBusqueda.clear()
+            self.llenarTabla()
+            self.busqueda = None
         else:
-            MessageBox = QMessageBox()
-            MessageBox.setWindowTitle("Adevertencia de busqueda")
-            MessageBox.setText("Debes ingresar algun texto\npara poder realizar la busqueda.")
-            btn_ok = MessageBox.addButton(QMessageBox.Ok)
-            MessageBox.setIcon(QMessageBox.Icon.Warning)
-            MessageBox.setStyleSheet(mesboxStyleSheet)
-            btn_ok.setStyleSheet(btnStyleSheet)
-            # Mostrar el QMessageBox y obtener la respuesta del usuario
-            response = MessageBox.exec()
-            if response == QMessageBox.Ok:
-                print("El usuario presionó OK")
-
+            self.paginaActual = 1
+            self.llenarTabla()      
+            
     def eliminarRegistro(self,id):
         MessageBox = QMessageBox()
         MessageBox.setWindowTitle("Confirmar eliminacion")
@@ -474,9 +468,6 @@ class Ui_personaInterfaz(object):
         if response == QMessageBox.Ok:
             Pservices = PersonaServices()
             result = Pservices.eliminarPersona(id)
-            print()
-            print(result)
-            print()
             if result["success"]:
                 MessageBox = QMessageBox()
                 MessageBox.setWindowTitle("Confirmacion de eliminación")
@@ -490,11 +481,11 @@ class Ui_personaInterfaz(object):
                     self.paginaActual = 1
                     self.llenarTabla()
 
-    def crear_formulario_dialogo(self, lista = None):
+    def crear_formulario_dialogo(self, lista = None,Titulo_ventana ="Registrar persona", label_titulo = "Registrar"):
         # Crear el diálogo
         dialogo = QDialog(self)
-        dialogo.setWindowTitle("Registrar de Persona")
-        dialogo.setFixedSize(450, 500)  # Tamaño fijo del modal
+        dialogo.setWindowTitle(Titulo_ventana)
+        dialogo.setFixedSize(500, 500)  # Tamaño fijo del modal
         dialogo.setStyleSheet(form_styleSheet)
     
         # Frame que contiene el formulario
@@ -514,7 +505,7 @@ class Ui_personaInterfaz(object):
         inputNacimiento.setDisplayFormat("yyyy-MM-dd")
         inputNacimiento.setMaximumDate(QDate.currentDate())  # Limita la fecha al día actual
         inputCorreo = QLineEdit()
-        inputCorreo.setPlaceholderText("Ingrese su correo electrónico")
+        inputCorreo.setPlaceholderText("Ingrese su correo electrónico. Ejem: persona@example.com")
         inputEstCivil = QComboBox()
         inputEstCivil.addItems(["Soltero/a", "Casado/a", "Divorciado/a", "Viudo/a"])
         inputDireccion = QTextEdit()
@@ -626,7 +617,7 @@ class Ui_personaInterfaz(object):
             
     def editar_Persona(self, fila, id):
         lista = self.obtenerDatosDeTabla(fila)
-        dialogo, inputNombre, inputApellido1, inputApellido2, inputCedula, inputNacimiento, inputCorreo, inputEstCivil, inputDireccion = self.crear_formulario_dialogo(lista)
+        dialogo, inputNombre, inputApellido1, inputApellido2, inputCedula, inputNacimiento, inputCorreo, inputEstCivil, inputDireccion = self.crear_formulario_dialogo(lista,"Editar registro")
         if dialogo.exec_() == QDialog.Accepted:
             nombre = inputNombre.text()
             apellido1 = inputApellido1.text()
@@ -661,7 +652,6 @@ class Ui_personaInterfaz(object):
                 # Mostrar el QMessageBox y obtener la respuesta del usuario
                 response = MessageBox.exec()
         
-
     def obtenerDatosDeTabla(self,fila):
         lista = {}
         lista["nombre"] = self.tbPersona.item(fila, 0).text()
