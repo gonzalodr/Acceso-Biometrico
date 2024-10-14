@@ -20,14 +20,14 @@ class PersonaServices:
         except ValueError:
             return {"success":False,"message":"¡Fecha de nacimiento no validad!"}
 
-    def _verificacionCorreo(self,correo):
+    def verificacionCorreo(self,correo):
         correo = str(correo)
         patron = r'^[a-z0-9_.+-]+@[a-z0-9-]+(\.[a-z0-9-]+)+$'# especifica el formato que se debe seguir
         result = re.match(patron, correo)#verifica si el correo cumple con dichas condiciones para ser correo
         if result:
             return {"success":True, "message":"¡Correo Valido!"}
         else:
-            return {"success":False,"message":"Asegurese que el correo sea valido \n que no tenga mayusculas y que el dominio este correcto, \n Ejemplo: empleado@example.com"}
+            return {"success":False,"message":"Asegúrese que el correo sea válido,\nque no tenga mayusculas y que el dominio este correcto.\nEjemplo:\n\templeado@example.com"}
 
     ##
     # FUNCIONE PUBLICAS 
@@ -39,7 +39,7 @@ class PersonaServices:
     # recive como parametro un objeto persona
     # ##
     def insertarPersona(self, persona: Persona):
-        result = self._verificacionCorreo(persona.correo)
+        result = self.verificacionCorreo(persona.correo)
         if not result["success"]:
             return result
         
@@ -52,7 +52,7 @@ class PersonaServices:
         return self.personaData.create_persona(persona)
         
     def modificarPersona(self,persona: Persona):
-        result = self._verificacionCorreo(persona.correo)
+        result = self.verificacionCorreo(persona.correo)
         if not result["success"]:
             return result
         
@@ -68,8 +68,8 @@ class PersonaServices:
     def eliminarPersona(self,id):
         return self.personaData.delete_persona(id)
 
-    def obtenerListaPersonas(self,pagina=1,tam_pagina=10, ordenar_por = "Id", tipo_orden = "ASC"):
-        return self.personaData.list_personas(pagina,tam_pagina,ordenar_por,tipo_orden)
+    def obtenerListaPersonas(self,pagina=1,tam_pagina=10, ordenar_por = "Id", tipo_orden = "ASC",busqueda = None):
+        return self.personaData.list_personas(pagina,tam_pagina,ordenar_por,tipo_orden, busqueda)
 
     def obtenerPersonaPorId(self, id):
         pass

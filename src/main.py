@@ -1,29 +1,34 @@
-from models.usuario import Usuario
-from models.persona import Persona
+from UI.ui_personaInterfaz import Ui_personaInterfaz
+from PySide6.QtWidgets import QMainWindow, QApplication,QStackedWidget
+import sys
 
-from services.personaService import PersonaServices
+class MainWindow(QMainWindow, Ui_personaInterfaz):
+    def __init__(self):
+        super().__init__()
+        # self.StackVentanas = QStackedWidget()#Lista de vistas
+        self.setupUi(self)
+        
+        
+    # ## busca una vista por nombre    
+    # def SeleccionarVistaPorNombre(self,nombreVista):
+    #     for i in range(self.StackVentanas.count()):
+    #         widget = self.stacked_widget.widget(i)
+    #         if widget.objectName() == nombreVista:
+    #             self.StackVentanas.setCurrentIndex(i)
+    #             return ##salidad del bucle
+    
+    # def SeleccionarVistaPorIndex(self, index = 0):
+    #     self.StackVentanas.setCurrentIndex(0) 
 
-persona = Persona("Javier","Diaz","Urbina","2002-07-01","11111111111111","Soltero","javier@est.una.ac.cr","Puerto Viejo, Sarapiqui, Heredia")
+def main():
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
 
-personServices = PersonaServices()
+if __name__ == "__main__":
+    main()
 
-#print(personServices.eliminarPersona(1))
-
-
-# print(personServices.insertarPersona(persona))
-
-result = personServices.obtenerListaPersonas(1,5)
-lista = []
-persona = None
-if result["success"]:
-    lista = result["data"]["listaPersonas"]
-
-if len(lista) != 0:
-    persona = lista[0]
-
-print("Mostrando Lista")
-for persona in lista:
-    print (f" Nombre [{persona.nombre}] Id [{persona.id}]")
 
 
 
