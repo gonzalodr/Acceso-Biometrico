@@ -31,6 +31,37 @@ class DepartamentoData:
                 conexion.close()
                 return resultado
             
+    def update_departamento(self, departamento: Departamento):
+        conexion, resultado = conection()
+        cursor = None
+        if not resultado["success"]:
+            return resultado
+        try:
+            cursor = conexion.cursor()
+            query = f"""UPDATE {TBDEPARTAMENTO} SET 
+            {TBDEPARTAMENTO_NOMBRE} = %s,
+            {TBDEPARTAMENTO_DESCRIPCION} = %s
+            WHERE {TBDEPARTAMENTO_ID} = %s"""
+        
+            cursor.execute(query, (
+                departamento.nombre,
+                departamento.descripcion,
+                departamento.id
+            ))
+            conexion.commit()
+            resultado["success"] = True
+            resultado["message"] = "Departamento actualizado exitosamente."
+        except Exception as e:
+            resultado["success"] = False
+            resultado["message"] = f"Error al actualizar departamento: {e}"
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
+        return resultado
+
+            
     def delete_departamento(self, departamento_id):
         conexion, resultado = conection()
         if not resultado["success"]:
@@ -40,14 +71,14 @@ class DepartamentoData:
             cursor = conexion.cursor()
             query = f"DELETE FROM {TBDEPARTAMENTO} WHERE {TBDEPARTAMENTO_ID} = %s "
             
-            cursor.execute(query, (departamento_id))
+            cursor.execute(query, (departamento_id,))
             conexion.commit()
             
             resultado["success"] = True
-            resultado["success"] = "Departamento eliminado exitosamente"
+            resultado["message"] = "Departamento eliminado exitosamente"
         except Exception as e:
             resultado["success"] = False
-            resultado["success"] = f"Error al eliminar departamento: {e}"
+            resultado["message"] = f"Error al eliminar departamento: {e}"
         finally:
             if conexion:
                 conexion.close()

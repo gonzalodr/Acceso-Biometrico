@@ -32,13 +32,27 @@ tableStyleSheet = u"""
                                 padding: 10px;	
                                 font: 700 10pt \"Segoe UI\";
                         }"""
+##mesboxStyleSheet = u"""
+  ##          QMessageBox {
+    ##            background-color: White;
+      ##          color: Black;
+        ##        font: 14px Arial;
+          ##  }
+            ##"""  
 mesboxStyleSheet = u"""
             QMessageBox {
-                background-color: White;
+                background-color: #F0F0F0;  /* Cambia a un gris claro o cualquier color que prefieras */
                 color: Black;
                 font: 14px Arial;
             }
-            """  
+            QLabel {
+                color: Black;  /* Color del texto dentro del mensaje */
+            }
+            QPushButton {
+                color: Black;  /* Color del texto del botón */
+            }
+            """
+
 btnEliminarStyleSheet = u"""QPushButton {      
                                 background-color:#E02500;
                                 color: white;
