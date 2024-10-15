@@ -1,8 +1,9 @@
 from UI.ui_personaInterfaz import Ui_personaInterfaz
-from PySide6.QtWidgets import QMainWindow, QApplication,QStackedWidget
+from UI.ui_departamentoInterfaz import Ui_departamentoInterfaz
+from PySide6.QtWidgets import QMainWindow, QApplication,QStackedWidget, QWidget
 import sys
 
-class MainWindow(QMainWindow, Ui_personaInterfaz):
+class MainWindow(QMainWindow,Ui_personaInterfaz):
     def __init__(self):
         super().__init__()
         # self.StackVentanas = QStackedWidget()#Lista de vistas

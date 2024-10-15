@@ -365,7 +365,7 @@ class Ui_departamentoInterfaz(object):
         self.paginaActual = paginaActual
         self.ultimaPagina = totalPaginas
     # Configuración de botones de paginación
-        if totalPaginas == 1:
+        if totalPaginas <= 1:
             self.btnAnterior.setEnabled(False)
             self.btnAnterior.setStyleSheet(btnDisableStyleSheet)
 

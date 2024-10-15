@@ -371,7 +371,7 @@ class Ui_personaInterfaz(object):
         self.paginaActual = paginaActual
         self.ultimaPagina = totalPaginas
         ## Valores necesarios para las paginacion:
-        if totalPaginas == 1:
+        if totalPaginas <= 1:
             self.btnAnterior.setEnabled(False)
             self.btnAnterior.setStyleSheet(btnDisableStyleSheet)
             
