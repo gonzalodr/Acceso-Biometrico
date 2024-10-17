@@ -1,6 +1,9 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from UI.stilosInterfaz import *
+from services.usuarioService import UsuarioServices
+from models.usuario import Usuario
+from UI.VentanaEmergente import VentanaEmergente
 
 class InicioSesion(QWidget):
     def __init__(self, parent=None):
@@ -208,5 +211,23 @@ class InicioSesion(QWidget):
             self.inputContrasena.setEchoMode(QLineEdit.Password)
      
     def accion_inicio_sesion(self):
-        self.labelError.setText("Usuario o contraseña no valida. Asegurese de que esta ingresando\nlas credeciales correctamente.")
+        usuario = self.inputUsuario.text()
+        contrasena = self.inputContrasena.text()
+        
+        if not usuario.strip() and not contrasena.strip():
+            advertencia = VentanaEmergente("Advertencia","Ingrese su usuario y contraseña","Warning",True,False)
+            advertencia.exec()
+        else:
+            usuario = Usuario(usuario,contrasena)
+            servicesUser = UsuarioServices()
+            result = servicesUser.inicioSesion(usuario) 
+            print()
+            print(result)
+            print()
+            if result["success"]:
+                self.labelError.setText("Inicio de sesion correctamente.")
+            else:
+                self.labelError.setText("Usuario o contraseña incorrecta.")
+        
+        
         
