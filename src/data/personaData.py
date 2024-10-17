@@ -171,7 +171,6 @@ class PersonaData:
             query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
             valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
 
-            # Ejecutar la consulta con los parámetros de forma segura
             cursor.execute(query, valores)
             
             #Leyendo los registros de 
