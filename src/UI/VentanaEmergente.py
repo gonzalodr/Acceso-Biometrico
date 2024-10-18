@@ -7,7 +7,7 @@ import os
 class VentanaEmergente(QDialog):
     def __init__(self, title="Advertencia", message="¡Advertencia!", Icono="Warning", show_accept_button=True, show_cancel_button=False):
         super().__init__()
-             # Eliminar el borde de la ventana
+        # Eliminar el borde de la ventana
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setWindowTitle(title)
         self.setStyleSheet("""
@@ -31,13 +31,14 @@ class VentanaEmergente(QDialog):
         self.frame.setLayout(self.frameLayout)
 
         # Diccionario de iconos con sus rutas
-        self.path_icono = {"Warning": "iconos/Warning.png", "Check": "iconos/Check.png", "Error": "iconos/Error.png"}
+        self.path_icono = {"Warning": "iconos/Warning.png", "Check": "iconos/Check.png", "Error": "iconos/Error.png","Save":"iconos/Save.png"}
 
-        # Agregar un QLabel para el icono si se proporciona uno
+        # Agregar un QLabel para el icono
         if Icono:
             self.icon_label = QLabel()
+            #direccion del icono
             path_url = os.path.join(os.path.dirname(__file__), self.path_icono.get(Icono, "iconos/Warning.png"))
-            # Cargar el icono PNG de 256x256
+            # Cargar el icono PNG
             icon_pixmap = QPixmap(path_url).scaled(128, 128, Qt.KeepAspectRatio)
             self.icon_label.setPixmap(icon_pixmap)
             self.icon_label.setAlignment(Qt.AlignCenter)
@@ -51,7 +52,7 @@ class VentanaEmergente(QDialog):
         # Agregar un QLabel para el mensaje
         self.message_label = QLabel(message)
         self.message_label.setAlignment(Qt.AlignCenter)
-        self.message_label.setStyleSheet("font: 700 12pt \"Segoe UI\";")
+        self.message_label.setStyleSheet("font: 700 10pt \"Segoe UI\";")
         self.message_label.setWordWrap(True)
         self.frameLayout.addWidget(self.message_label)
 
