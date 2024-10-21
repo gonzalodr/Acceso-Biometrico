@@ -29,9 +29,9 @@ class UsuarioServices:
             contrasena = str(usuario.contrasena).encode("utf-8")
             contrasena_hash = result["passwordbcryt"]
             if bcrypt.checkpw(contrasena, contrasena_hash):
-                return {"success":True, "message":"Se inicio sesion correctamente"}
+                return {"success":True,"login":True,"message":"Se inicio sesion correctamente"}
             else:
-                return {"success":True, "message":"Usuario o contraseña incorrectos"}
+                return {"success":True,"login":True,"message":"Usuario o contraseña incorrectos"}
             
             
             

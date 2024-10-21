@@ -3,7 +3,7 @@ from PySide6.QtCore import *
 from UI.stilosInterfaz import *
 from services.usuarioService import UsuarioServices
 from models.usuario import Usuario
-from UI.VentanaEmergente import VentanaEmergente
+from UI.DialogoEmergente import DialogoEmergente
 
 class InicioSesion(QWidget):
     def __init__(self, parent=None):
@@ -99,6 +99,7 @@ class InicioSesion(QWidget):
         self.gridEncabezado.addItem(self.espaciobottom_Enc,2,2)
         self.frameEncabezado.setLayout(self.gridEncabezado) ## se añade el layout al frame encabezado
 
+    ##se acomoda lo que son tablas o demas widgets
     def configurar_cuerpo(self):
         self.gridCuerpo = QGridLayout() ## Crea un grid (Matriz) donde se acomodaran los widgets
         self.gridCuerpo.setSpacing(0)   ## sin espacios entre widgets
@@ -214,7 +215,7 @@ class InicioSesion(QWidget):
         contrasena = self.inputContrasena.text()
         
         if not usuario.strip() and not contrasena.strip():
-            advertencia = VentanaEmergente("¡Advertencia!","¡Ingrese su usuario y contraseña!","Question",True,False)
+            advertencia = DialogoEmergente("¡Advertencia!","¡Ingrese su usuario y contraseña!","Question")
             advertencia.exec()
         else:
             usuario = Usuario(usuario,contrasena)
@@ -224,9 +225,10 @@ class InicioSesion(QWidget):
             print(result)
             print()
             if result["success"]:
-                self.labelError.setText("Inicio de sesion correctamente.")
+                if not result["login"]:
+                    self.labelError.setText(result["message"])
             else:
-                self.labelError.setText("Usuario o contraseña incorrecta.")
+                self.labelError.setText("Error de conexion.")
         
         
         

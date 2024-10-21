@@ -14,7 +14,7 @@ class UsuarioData:
             sesion = cursor.fetchone()
             if sesion:
                 resultado["success"] = True
-                resultado["passwordbcryt"] = sesion[0]
+                resultado["passwordbcryt"] = sesion[TBUSUARIOCONTRASENA]
                 resultado["message"] = "Inicio de sesión correctamente."
             else:  
                 resultado["success"] = True

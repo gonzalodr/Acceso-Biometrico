@@ -4,7 +4,7 @@ from PySide6.QtCore import *
 from UI.stilosInterfaz import *
 import os
 
-class VentanaEmergente(QDialog):
+class DialogoEmergente(QDialog):
     def __init__(self, title="Advertencia", message="¡Advertencia!", Icono="Warning", show_accept_button=True, show_cancel_button=False):
         super().__init__()
         # Eliminar el borde de la ventana
@@ -63,7 +63,7 @@ class VentanaEmergente(QDialog):
         # Crear un layout horizontal para los botones
         self.button_layout = QHBoxLayout()
         # Agregar botones personalizados según los parámetros proporcionados
-        if show_accept_button:
+        if show_accept_button or not show_cancel_button and not show_accept_button:
             ok_button = QPushButton("Aceptar")
             ok_button.setStyleSheet(btnStyleSheet)
             ok_button.clicked.connect(self.accept)
