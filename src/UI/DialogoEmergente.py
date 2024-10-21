@@ -37,6 +37,7 @@ class DialogoEmergente(QDialog):
             self.icon_label = QLabel()
             #direccion del icono
             path_url = os.path.join(os.path.dirname(__file__), self.path_icono.get(Icono, "iconos/Warning.png"))
+            
             # Cargar el icono PNG
             icon_pixmap = QPixmap(path_url).scaled(128, 128, Qt.KeepAspectRatio)
             self.icon_label.setPixmap(icon_pixmap)
@@ -78,7 +79,7 @@ class DialogoEmergente(QDialog):
         # Agregar el layout de botones solo si hay botones visibles
         if show_accept_button or show_cancel_button:
             self.frameLayout.addLayout(self.button_layout)
-
+            
         # Establecer el layout principal en el diálogo
         self.setLayout(self.layout)
 

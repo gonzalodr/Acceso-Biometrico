@@ -98,7 +98,7 @@ class InicioSesion(QWidget):
         self.gridEncabezado.addItem(self.espacioright_Enc,1,2)
         self.gridEncabezado.addItem(self.espaciobottom_Enc,2,2)
         self.frameEncabezado.setLayout(self.gridEncabezado) ## se añade el layout al frame encabezado
-
+ 
     ##se acomoda lo que son tablas o demas widgets
     def configurar_cuerpo(self):
         self.gridCuerpo = QGridLayout() ## Crea un grid (Matriz) donde se acomodaran los widgets
@@ -112,14 +112,6 @@ class InicioSesion(QWidget):
         ##Spaciador arriba y abajo QSpacerItem(tamañoX, tamañoY,QSizeExpanding, QSizeExpanding)
         self.espaciotop_Cuer = QSpacerItem(0,100, QSizePolicy.Expanding, QSizePolicy.Minimum)
         self.espaciobottom_Cuer = QSpacerItem(0,100, QSizePolicy.Expanding, QSizePolicy.Minimum)
-        
-        
-        # # Crear un efecto de sombra
-        # shadow_effect = QGraphicsDropShadowEffect()
-        # shadow_effect.setBlurRadius(0)  # Radio de desenfoque de la sombra
-        # shadow_effect.setXOffset(10)  # Desplazamiento en el eje X
-        # shadow_effect.setYOffset(10)  # Desplazamiento en el eje Y
-        # shadow_effect.setColor(Qt.black)  # Color de la sombra
         
         self.frameLogin = QFrame()  ## donde iran los inputs del login 
         self.frameLogin.setStyleSheet("background-color:#DDE2FE;border-radius: 30px;")
@@ -142,7 +134,8 @@ class InicioSesion(QWidget):
         self.gridCuerpo.addItem(self.espaciobottom_Cuer, 2, 1)     # Espaciador abajo
 
         self.framCuerpo.setLayout(self.gridCuerpo) ## se añade al frame cuerpo
-        
+    
+    #configura el frame de login
     def configurar_login(self):
         ## layout de que acomodara los inputs
         self.layoutInputLogin = QVBoxLayout()
@@ -203,7 +196,8 @@ class InicioSesion(QWidget):
         self.layoutInputLogin.addItem(self.espaciobottom_Log)
         
         self.frameLogin.setLayout(self.layoutInputLogin)
-      
+    
+    #configura el check para mostrar contraseña
     def accion_checkbox(self):
         if self.checkVerContrasena.isChecked():
             self.inputContrasena.setEchoMode(QLineEdit.Normal)
@@ -215,7 +209,7 @@ class InicioSesion(QWidget):
         contrasena = self.inputContrasena.text()
         
         if not usuario.strip() and not contrasena.strip():
-            advertencia = DialogoEmergente("¡Advertencia!","¡Ingrese su usuario y contraseña!","Question")
+            advertencia = DialogoEmergente("¡Advertencia!","¡Ingrese su usuario y contraseña!","Check")
             advertencia.exec()
         else:
             usuario = Usuario(usuario,contrasena)
@@ -227,6 +221,8 @@ class InicioSesion(QWidget):
             if result["success"]:
                 if not result["login"]:
                     self.labelError.setText(result["message"])
+                else:
+                    pass
             else:
                 self.labelError.setText("Error de conexion.")
         

@@ -12,12 +12,16 @@ class Ventana(QMainWindow):
         ## Tamaño para poder redimencionar
         # self.size= QSize(500, 500)
         self.setMinimumSize(700, 600)
+        
         ## Creacion de una lista de vistas
         self.listasVistas = QStackedWidget()
      
         
         ## Creacion de un objeto vista
         vista1 = InicioSesion(parent=self)
+        
+        
+        
         vista2 = MenuPrincipal(parent=self)
         self.listasVistas.addWidget(vista1) ## se ingresa a la vista
         self.listasVistas.addWidget(vista2)

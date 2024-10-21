@@ -32,9 +32,7 @@ class UsuarioServices:
                 return {"success":True,"login":True,"message":"Se inicio sesion correctamente"}
             else:
                 return {"success":True,"login":True,"message":"Usuario o contraseña incorrectos"}
-            
-            
-            
+               
     def insertarUsuario(self,usuario: Usuario):
         exito, resultado = self._contrasenaHash(usuario.contrasena) #recupera las dos variables
         if not exito:
