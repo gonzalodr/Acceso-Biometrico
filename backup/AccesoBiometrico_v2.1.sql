@@ -86,15 +86,16 @@ CREATE TABLE `Mantenimiento`
  PRIMARY KEY (`Id`)
 );
 
-CREATE TABLE `Permiso_usuario`
+CREATE TABLE `Permiso_Rol`
 (
  `Id`           int NOT NULL AUTO_INCREMENT,
- `Id_usuario`   int NOT NULL,
- `nombre_tabla` varchar(45) NOT NULL,
- `Ver`          boolean NOT NULL,
- `Insertar`     boolean NOT NULL,
- `Editar`       boolean NOT NULL,
- `Eliminar`     boolean NOT NULL,
+ `Id_rol`       int NOT NULL ,
+ `nombre_tabla` varchar(45) NOT NULL ,
+ `Ver`          boolean NOT NULL ,
+ `Insertar`     boolean NOT NULL ,
+ `Editar`       boolean NOT NULL ,
+ `Eliminar`     boolean NOT NULL ,
+
  PRIMARY KEY (`Id`)
 );
 
@@ -170,21 +171,56 @@ CREATE TABLE `Usuario_Rol`
 );
 
 -- Crear las restricciones FOREIGN KEY después de crear todas las tablas
-ALTER TABLE `Asistencia` ADD CONSTRAINT `FK_Asistencia_Empleado` FOREIGN KEY (`Id_Empleado`) REFERENCES `Empleado` (`Id`);
-ALTER TABLE `Detalle_Asistencia` ADD CONSTRAINT `FK_Detalle_Asistencia_Asistencia` FOREIGN KEY (`Id_Asistencia`) REFERENCES `Asistencia` (`Id`);
-ALTER TABLE `Empleado` ADD CONSTRAINT `FK_Empleado_Departamento` FOREIGN KEY (`Id_Departamento`) REFERENCES `Departamento` (`Id`);
-ALTER TABLE `Empleado` ADD CONSTRAINT `FK_Empleado_Horario` FOREIGN KEY (`Id_Horario`) REFERENCES `Horario` (`Id`);
-ALTER TABLE `Empleado` ADD CONSTRAINT `FK_Empleado_Persona` FOREIGN KEY (`Id_Persona`) REFERENCES `Persona` (`Id`);
-ALTER TABLE `Empleado_Rol` ADD CONSTRAINT `FK_Empleado_Rol_Empleado` FOREIGN KEY (`Id_Empleado`) REFERENCES `Empleado` (`Id`);
-ALTER TABLE `Empleado_Rol` ADD CONSTRAINT `FK_Empleado_Rol_Rol` FOREIGN KEY (`Id_Rol`) REFERENCES `Rol` (`Id`);
-ALTER TABLE `Huella` ADD CONSTRAINT `FK_Huella_Empleado` FOREIGN KEY (`Id_Empleado`) REFERENCES `Empleado` (`Id`);
-ALTER TABLE `Justificacion` ADD CONSTRAINT `FK_Justificacion_Empleado` FOREIGN KEY (`Id_Empleado`) REFERENCES `Empleado` (`Id`);
-ALTER TABLE `Justificacion` ADD CONSTRAINT `FK_Justificacion_Asistencia` FOREIGN KEY (`Id_Asistencia`) REFERENCES `Asistencia` (`Id`);
-ALTER TABLE `Mantenimiento` ADD CONSTRAINT `FK_Mantenimiento_Usuario` FOREIGN KEY (`Id_usuario`) REFERENCES `Usuario` (`Id`);
-ALTER TABLE `Permiso_usuario` ADD CONSTRAINT `FK_Permiso_usuario_Usuario` FOREIGN KEY (`Id_usuario`) REFERENCES `Usuario` (`Id`);
-ALTER TABLE `Reporte` ADD CONSTRAINT `FK_Reporte_Empleado` FOREIGN KEY (`Id_Empleado`) REFERENCES `Empleado` (`Id`);
-ALTER TABLE `Solicitud_Permiso` ADD CONSTRAINT `FK_Solicitud_Permiso_Empleado` FOREIGN KEY (`Id_Empleado`) REFERENCES `Empleado` (`Id`);
-ALTER TABLE `Telefono` ADD CONSTRAINT `FK_Telefono_Persona` FOREIGN KEY (`Id_Persona`) REFERENCES `Persona` (`Id`);
-ALTER TABLE `Usuario` ADD CONSTRAINT `FK_Usuario_Persona` FOREIGN KEY (`Id_Persona`) REFERENCES `Persona` (`Id`);
-ALTER TABLE `Usuario_Rol` ADD CONSTRAINT `FK_Usuario_Rol_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `Usuario` (`Id`);
-ALTER TABLE `Usuario_Rol` ADD CONSTRAINT `FK_Usuario_Rol_Rol` FOREIGN KEY (`Id_Rol`) REFERENCES `Rol` (`Id`);
+ALTER TABLE `Asistencia` 
+ADD CONSTRAINT `FK_Asistencia_Empleado` FOREIGN KEY (`Id_Empleado`) REFERENCES `Empleado` (`Id`);
+
+ALTER TABLE `Detalle_Asistencia` 
+ADD CONSTRAINT `FK_Detalle_Asistencia_Asistencia` FOREIGN KEY (`Id_Asistencia`) REFERENCES `Asistencia` (`Id`);
+
+ALTER TABLE `Empleado` 
+ADD CONSTRAINT `FK_Empleado_Departamento` FOREIGN KEY (`Id_Departamento`) REFERENCES `Departamento` (`Id`);
+
+ALTER TABLE `Empleado` 
+ADD CONSTRAINT `FK_Empleado_Horario` FOREIGN KEY (`Id_Horario`) REFERENCES `Horario` (`Id`);
+
+ALTER TABLE `Empleado` 
+ADD CONSTRAINT `FK_Empleado_Persona` FOREIGN KEY (`Id_Persona`) REFERENCES `Persona` (`Id`);
+
+ALTER TABLE `Empleado_Rol` 
+ADD CONSTRAINT `FK_Empleado_Rol_Empleado` FOREIGN KEY (`Id_Empleado`) REFERENCES `Empleado` (`Id`);
+
+ALTER TABLE `Empleado_Rol` 
+ADD CONSTRAINT `FK_Empleado_Rol_Rol` FOREIGN KEY (`Id_Rol`) REFERENCES `Rol` (`Id`);
+
+ALTER TABLE `Huella` 
+ADD CONSTRAINT `FK_Huella_Empleado` FOREIGN KEY (`Id_Empleado`) REFERENCES `Empleado` (`Id`);
+
+ALTER TABLE `Justificacion` 
+ADD CONSTRAINT `FK_Justificacion_Empleado` FOREIGN KEY (`Id_Empleado`) REFERENCES `Empleado` (`Id`);
+
+ALTER TABLE `Justificacion` 
+ADD CONSTRAINT `FK_Justificacion_Asistencia` FOREIGN KEY (`Id_Asistencia`) REFERENCES `Asistencia` (`Id`);
+
+ALTER TABLE `Mantenimiento` 
+ADD CONSTRAINT `FK_Mantenimiento_Usuario` FOREIGN KEY (`Id_usuario`) REFERENCES `Usuario` (`Id`);
+
+ALTER TABLE `Permiso_Rol` 
+ADD CONSTRAINT `FK_Permiso_Rol_Rol` FOREIGN KEY (`Id_rol`) REFERENCES `Rol` (`Id`);
+
+ALTER TABLE `Reporte` 
+ADD CONSTRAINT `FK_Reporte_Empleado` FOREIGN KEY (`Id_Empleado`) REFERENCES `Empleado` (`Id`);
+
+ALTER TABLE `Solicitud_Permiso` 
+ADD CONSTRAINT `FK_Solicitud_Permiso_Empleado` FOREIGN KEY (`Id_Empleado`) REFERENCES `Empleado` (`Id`);
+
+ALTER TABLE `Telefono` 
+ADD CONSTRAINT `FK_Telefono_Persona` FOREIGN KEY (`Id_Persona`) REFERENCES `Persona` (`Id`);
+
+ALTER TABLE `Usuario` 
+ADD CONSTRAINT `FK_Usuario_Persona` FOREIGN KEY (`Id_Persona`) REFERENCES `Persona` (`Id`);
+
+ALTER TABLE `Usuario_Rol` 
+ADD CONSTRAINT `FK_Usuario_Rol_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `Usuario` (`Id`);
+
+ALTER TABLE `Usuario_Rol` 
+ADD CONSTRAINT `FK_Usuario_Rol_Rol` FOREIGN KEY (`Id_Rol`) REFERENCES `Rol` (`Id`);
