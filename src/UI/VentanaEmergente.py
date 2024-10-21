@@ -10,16 +10,15 @@ class VentanaEmergente(QDialog):
         # Eliminar el borde de la ventana
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setWindowTitle(title)
-        self.setStyleSheet("""
-            border: 2px solid #4A90E2;
-            border-radius: 10px;""")
-        # self.size = QSize(400, 400)
+        self.setStyleSheet("border: 2px solid #4A90E2;border-radius: 10px;")
+        
         self.setMinimumSize(300,300)
         self.setMaximumSize(550, 550)  # Establece un tamaño máximo de 600x400 píxeles
 
         # Crear un layout vertical
         self.layout = QVBoxLayout()
         self.layout.setContentsMargins(0,0,0,0)
+        
         # Crear un QFrame con un fondo de color
         self.frame = QFrame()
         self.frame.setStyleSheet("background-color:#FFFFFF;border: 1px solid transparent;border-radius: 10px;")
@@ -31,7 +30,7 @@ class VentanaEmergente(QDialog):
         self.frame.setLayout(self.frameLayout)
 
         # Diccionario de iconos con sus rutas
-        self.path_icono = {"Warning": "iconos/Warning.png", "Check": "iconos/Check.png", "Error": "iconos/Error.png","Save":"iconos/Save.png"}
+        self.path_icono = {"Warning": "iconos/Warning.png", "Check": "iconos/Check.png", "Error": "iconos/Error.png","Save":"iconos/Save.png","Question":"iconos/Question.png"}
 
         # Agregar un QLabel para el icono
         if Icono:
@@ -44,16 +43,21 @@ class VentanaEmergente(QDialog):
             self.icon_label.setAlignment(Qt.AlignCenter)
             self.frameLayout.addWidget(self.icon_label)  # Añadir el QLabel al layout del frame
 
-        self.icon_label.setStyleSheet("""QLabel {
-                border-radius: 10px;
-                background-color: #F0F2FF;
-            }""")
+        self.icon_label.setStyleSheet("QLabel {border-radius: 10px;background-color: #F0F2FF;}")
 
         # Agregar un QLabel para el mensaje
         self.message_label = QLabel(message)
         self.message_label.setAlignment(Qt.AlignCenter)
         self.message_label.setStyleSheet("font: 700 10pt \"Segoe UI\";")
         self.message_label.setWordWrap(True)
+        
+        #Titulo
+        self.titulo_label = QLabel(title)
+        self.titulo_label.setAlignment(Qt.AlignCenter)
+        self.titulo_label.setStyleSheet("font: 700 16pt \"Segoe UI\";")
+        self.titulo_label.setWordWrap(True)
+        
+        self.frameLayout.addWidget(self.titulo_label)
         self.frameLayout.addWidget(self.message_label)
 
         # Crear un layout horizontal para los botones

@@ -18,7 +18,7 @@ class InicioSesion(QWidget):
         
         ##Encabezado de la pagina
         self.frameEncabezado = QFrame()
-        self.frameEncabezado.setStyleSheet("background-color:#D2D2FF;")
+        self.frameEncabezado.setStyleSheet("background-color:#000A94;")
         
         ##Cuerpo de la pagina
         self.framCuerpo = QFrame()
@@ -26,7 +26,7 @@ class InicioSesion(QWidget):
         
         ## Pie de la pagina
         self.framePiePagina = QFrame()
-        self.framePiePagina.setStyleSheet("background-color:#D2D2FF")
+        self.framePiePagina.setStyleSheet("background-color:#000A94")
         
         ##Agregar encabezado, cuerpo y pie de pagina
         self.root_layout.addWidget(self.frameEncabezado,15)
@@ -59,16 +59,15 @@ class InicioSesion(QWidget):
         
         ## Nombre del encabezado(Titulo de la pagina)
         self.nombreEncabezado = QLabel()
-        self.nombreEncabezado.setStyleSheet("font: 700 24pt \"Segoe UI\";color:#000000;")
+        self.nombreEncabezado.setStyleSheet("font: 700 24pt \"Segoe UI\";color:#FFFFFF;")
         self.nombreEncabezado.setText("ACCESO BIOMETRICO")
         self.nombreEncabezado.setAlignment(Qt.AlignCenter) ##alineacion del texto en el centro del label
         
         ## Nombre de la vista en la que se ubica(ejemplo: Administracion de empleados)
         self.nombreVista = QLabel()
         self.nombreVista.setText("Inicio de sesión")
-        self.nombreVista.setStyleSheet("font: 700 16pt \"Segoe UI\";color:#000000;")
+        self.nombreVista.setStyleSheet("font: 700 16pt \"Segoe UI\";color:#FFFFFF;")
         self.nombreVista.setAlignment(Qt.AlignCenter)
-        
         
         # QSizePolicy.Fixed: El widget no se puede redimensionar. Tiene un tamaño fijo.
         # QSizePolicy.Minimum: El widget no se reducirá más allá de su tamaño mínimo, pero puede expandirse si hay espacio adicional disponible.
@@ -122,7 +121,7 @@ class InicioSesion(QWidget):
         # shadow_effect.setColor(Qt.black)  # Color de la sombra
         
         self.frameLogin = QFrame()  ## donde iran los inputs del login 
-        self.frameLogin.setStyleSheet("background-color:#CBCBF7;border-radius: 30px;")
+        self.frameLogin.setStyleSheet("background-color:#DDE2FE;border-radius: 30px;")
         # self.frameLogin.setGraphicsEffect(shadow_effect)
         
         self.layoutLogin = QVBoxLayout() ##donde se acomodaran los inputs
@@ -215,7 +214,7 @@ class InicioSesion(QWidget):
         contrasena = self.inputContrasena.text()
         
         if not usuario.strip() and not contrasena.strip():
-            advertencia = VentanaEmergente("Advertencia","Ingrese su usuario y contraseña","Warning",True,False)
+            advertencia = VentanaEmergente("¡Advertencia!","¡Ingrese su usuario y contraseña!","Question",True,False)
             advertencia.exec()
         else:
             usuario = Usuario(usuario,contrasena)
