@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
+from UI.TarjetasFrameMenu import TarjetaOpcion
 import sys
 
 class MenuPrincipal(QWidget):
@@ -75,12 +76,10 @@ class MenuPrincipal(QWidget):
         self.gridlayoutCuerpo.setSpacing(10)
         self.gridlayoutCuerpo.setContentsMargins(20,20,20,20)
         
-        self.frameAdminPersona = QFrame()
-        self.frameAdminPersona.setStyleSheet("background-color:#000000")
+        self.frameAdminPersona = TarjetaOpcion("Administracion de personas","Registrar,modifcar,eliminar personas")
         self.frameAdminPersona.mouseDoubleClickEvent = self.frame_double_click
         
-        self.frameAminDepartamento = QFrame()
-        self.frameAminDepartamento.setStyleSheet("background-color:#000000")
+        self.frameAminDepartamento = TarjetaOpcion("Administracion de personas", "Registrar, modificar, eliminar departamentos")
         
         self.gridlayoutCuerpo.addWidget(self.frameAdminPersona,1,1)
         self.framCuerpo.setLayout(self.gridlayoutCuerpo)
