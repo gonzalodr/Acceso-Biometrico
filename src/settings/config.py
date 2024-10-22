@@ -27,6 +27,12 @@ TBDEPARTAMENTO_ID = "Id"
 TBDEPARTAMENTO_NOMBRE ="Nombre"
 TBDEPARTAMENTO_DESCRIPCION = "Descripcion"
 
+#Tabla de usuarios y sus campos
+TBUSUARIO_ID = "Id"
+TBUSUARIO_ID_PERSONA = "id_persona"
+TBUSUARIO_USUARIO = "Usuario"
+TBUSUARIO_CONTRASENA = "contrasena"
+
 # Tabla rol y sus campos
 TBROL = "rol"
 TBROL_ID = "Id"
