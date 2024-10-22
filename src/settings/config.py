@@ -38,3 +38,11 @@ TBROL = "rol"
 TBROL_ID = "Id"
 TBROL_NOMBRE = "Nombre"
 TBROL_DESCRIPCION = "Descripcion"
+
+##
+#   Tabla usuario y sus campos
+#
+TBUSUARIO = "usuario"
+TBUSUARIOIDPERSONA = "Id_Persona"
+TBUSUARIOUSUARIO = "Usuario"
+TBUSUARIOCONTRASENA = "Contrasena"

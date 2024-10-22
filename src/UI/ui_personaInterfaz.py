@@ -97,7 +97,7 @@ class Ui_personaInterfaz(object):
         self.lblNombrePagina.setObjectName(u"lblNombrePagina")
         self.lblNombrePagina.setStyleSheet(u"font: 700 16pt \"Segoe UI\";color: #FFFFFF")
         self.lblNombrePagina.setIndent(10)
-        self.gridLayoutEncabezado_2.addWidget(self.lblNombrePagina, 1, 0, 1, 1)
+        self.gridLayoutEncabezado_2.addWidget(self.lblNombrePagina, 1, 0,1,1)
 
         #Nombre de la pagina nombre de la aplicacion
         self.label = QLabel(self.gridLayoutWidget)

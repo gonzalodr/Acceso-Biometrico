@@ -32,13 +32,7 @@ tableStyleSheet = u"""
                                 padding: 10px;	
                                 font: 700 10pt \"Segoe UI\";
                         }"""
-##mesboxStyleSheet = u"""
-  ##          QMessageBox {
-    ##            background-color: White;
-      ##          color: Black;
-        ##        font: 14px Arial;
-          ##  }
-            ##"""  
+
 mesboxStyleSheet = u"""
             QMessageBox {
                 background-color: #F0F0F0;  /* Cambia a un gris claro o cualquier color que prefieras */

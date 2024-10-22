@@ -60,8 +60,7 @@ class DepartamentoData:
             if conexion:
                 conexion.close()
         return resultado
-
-            
+       
     def delete_departamento(self, departamento_id):
         conexion, resultado = conection()
         if not resultado["success"]:
@@ -83,8 +82,7 @@ class DepartamentoData:
             if conexion:
                 conexion.close()
                 return resultado
-            
-            
+              
     def list_departamentos(self, pagina=1, tam_pagina=10, ordenar_por = TBDEPARTAMENTO_ID, tipo_orden="ASC", busqueda = None):
         conexion, resultado = conection()
         cursor = None
