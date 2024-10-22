@@ -15,23 +15,25 @@ class Ventana(QMainWindow):
         
         ## Creacion de una lista de vistas
         self.listasVistas = QStackedWidget()
-     
         
-        ## Creacion de un objeto vista
+        ## Inicio de la sesion
         vista1 = InicioSesion(parent=self)
+        self.setCentralWidget(vista1)
+        ##Crear la logica del btn iniciar secion 
         
-        
-        
-        vista2 = MenuPrincipal(parent=self)
-        self.listasVistas.addWidget(vista1) ## se ingresa a la vista
-        self.listasVistas.addWidget(vista2)
-        
-        self.listasVistas.setCurrentIndex(0) ## mostrar la vista 2
-        
-        ##Le indico que todas las vistas seran centradas y acomodada a la ventana
-        self.setCentralWidget(self.listasVistas)
         
         # self.setCentralWidget(vista1)
         self.setWindowTitle("Acceso biometrico")
+        
+    def accion_btn_iniciar_sesion(self):
+
+        vista2 = MenuPrincipal(parent=self)
+        ## se ingresa a la vista
+        self.listasVistas.addWidget(vista2)
+        self.listasVistas.setCurrentIndex(0) ## mostrar la vista 2
+        ##Le indico que todas las vistas seran centradas y acomodada a la ventana
+        self.setCentralWidget(self.listasVistas)
+            
+
 
 
