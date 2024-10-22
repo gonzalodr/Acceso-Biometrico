@@ -153,48 +153,27 @@ class UsuarioData:
                 conexion.close()
         return resultado
 
-def inicioSesion(usuario: Usuario):
-    conexion, resultado = conection()
-    if not resultado["success"]:
-        return resultado
-
-    try:
-        cursor = conexion.cursor(dictionary=True)
-        query = f"SELECT {TBUSUARIO_CONTRASENA} FROM {TBUSUARIO} WHERE {TBUSUARIO_USUARIO} = %s"
-        cursor.execute(query, (usuario.usuario,))
-        registro = cursor.fetchone()
-
-        if registro:
-            exito, mensaje = _verificarContrasenaHash(usuario.contrasena, registro[TBUSUARIO_CONTRASENA].encode("utf-8"))
-            resultado["success"] = exito
-            resultado["message"] = mensaje
-        else:
-            resultado["success"] = False
-            resultado["message"] = "¡El usuario no existe!"
-    except Exception as e:
-        resultado["success"] = False
-        resultado["message"] = f"Error al iniciar sesión: {e}"
-    finally:
-        if cursor:
-            cursor.close()
-        if conexion:
-            conexion.close()
-    return resultado
-
-    def verificar_usuario_contrasena(self, correo, contrasena):
+def get_usuario_by_correo_o_usuario(self, identificador):
         try:
-            # Buscar el usuario por correo
-            usuario = self.get_usuario_by_correo(correo)
+            # Busca el usuario tanto por correo como por nombre de usuario
+            usuario = db_session.query(Usuario).filter(
+                (Usuario.correo == identificador) | (Usuario.usuario == identificador)
+            ).first()
+            return usuario if usuario else None
+        except Exception as e:
+            print(f"Error al buscar el usuario: {e}")
+            return None
+    
+    def verificar_usuario_contrasena(self, identificador, contrasena):
+        try:
+            # Buscar el usuario por correo o nombre de usuario
+            usuario = self.get_usuario_by_correo_o_usuario(identificador)
             
             # Verifica si el usuario existe
             if usuario:
                 # Comparar la contraseña encriptada
                 if bcrypt.checkpw(contrasena.encode('utf-8'), usuario.contrasena.encode('utf-8')):
                     return {"success": True, "usuario": usuario, "message": "Inicio de sesión exitoso"}
-                else:
-                    return {"success": False, "message": "Contraseña incorrecta"}
-            else:
-                return {"success": False, "message": "Usuario no encontrado"}
         except Exception as e:
-            print(f"Error al verificar el inicio de sesión: {e}")
-            return {"success": False, "message": "Error en el proceso de inicio de sesión"}
+            print(f"Error en la base de datos: {e}")
+            return {"success": False, "message": f"Error: {str(e)}"}

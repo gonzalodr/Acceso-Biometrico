@@ -64,10 +64,6 @@ def insertarUsuario(usuario: Usuario):
 
 
 
-    def iniciar_sesion(self, correo, contrasena):
-
-        if not self._validar_correo(correo):
-            return {"success": False, "message": "El formato del correo no es válido"}
-
-        resultado = self.usuarioData.verificar_usuario_contrasena(correo, contrasena)
+        def iniciar_sesion(self, identificador, contrasena):
+        resultado = self.usuarioData.verificar_usuario_contrasena(identificador, contrasena)
         return resultado
