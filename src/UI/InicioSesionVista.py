@@ -173,7 +173,7 @@ class InicioSesion(QWidget):
         self.botonIniciar.setText("Iniciar sesión")
         self.botonIniciar.setStyleSheet("background-color:#ADA2FF")
         self.botonIniciar.setStyleSheet(btnStyleSheet)
-        self.botonIniciar.clicked.connect(self.accion_inicio_sesion)
+        # self.botonIniciar.clicked.connect(self.accion_inicio_sesion)
         
         # agregar checkbox
         self.checkVerContrasena = QCheckBox("Mostrar contraseña")
@@ -204,27 +204,27 @@ class InicioSesion(QWidget):
         else:
             self.inputContrasena.setEchoMode(QLineEdit.Password)
      
-    def accion_inicio_sesion(self):
-        usuario = self.inputUsuario.text()
-        contrasena = self.inputContrasena.text()
+    # def accion_inicio_sesion(self):
+    #     usuario = self.inputUsuario.text()
+    #     contrasena = self.inputContrasena.text()
         
-        if not usuario.strip() and not contrasena.strip():
-            advertencia = DialogoEmergente("¡Advertencia!","¡Ingrese su usuario y contraseña!","Check")
-            advertencia.exec()
-        else:
-            usuario = Usuario(usuario,contrasena)
-            servicesUser = UsuarioServices()
-            result = servicesUser.inicioSesion(usuario) 
-            print()
-            print(result)
-            print()
-            if result["success"]:
-                if not result["login"]:
-                    self.labelError.setText(result["message"])
-                else:
-                    pass
-            else:
-                self.labelError.setText("Error de conexion.")
+    #     if not usuario.strip() and not contrasena.strip():
+    #         advertencia = DialogoEmergente("¡Advertencia!","¡Ingrese su usuario y contraseña!","Check")
+    #         advertencia.exec()
+    #     else:
+    #         usuario = Usuario(usuario,contrasena)
+    #         servicesUser = UsuarioServices()
+    #         result = servicesUser.inicioSesion(usuario) 
+    #         print()
+    #         print(result)
+    #         print()
+    #         if result["success"]:
+    #             if not result["login"]:
+    #                 self.labelError.setText(result["message"])
+    #             else:
+    #                 pass
+    #         else:
+    #             self.labelError.setText("Error de conexion.")
         
         
         

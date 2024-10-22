@@ -32,25 +32,12 @@ class MenuPrincipal(QWidget):
         self.setLayout(self.root_layout)
         
         self.configurar_encabezado()
+        self.configurar_cuerpo()
         
     def configurar_encabezado(self):
         self.gridEncabezado = QGridLayout() ## Crea un grid (Matriz) donde se acomodaran los widgets
         self.gridEncabezado.setSpacing(0)   ## Espacio entre widgets es 0
         self.gridEncabezado.setContentsMargins(0,0,0,0) ## El margen osea borders seran 0
-        
-        #       Alineación horizontal
-        # Qt.AlignLeft: Alinea el texto a la izquierda.
-        # Qt.AlignRight: Alinea el texto a la derecha.
-        # Qt.AlignHCenter: Alinea el texto horizontalmente en el centro.
-        # Qt.AlignJustify: Justifica el texto para que ocupe todo el ancho disponible.
-        #       Alineación vertical
-        # Qt.AlignTop: Alinea el texto en la parte superior.
-        # Qt.AlignBottom: Alinea el texto en la parte inferior.
-        # Qt.AlignVCenter: Alinea el texto verticalmente en el centro.
-        #       Alineación combinada
-        # Qt.AlignCenter: Alinea el texto tanto horizontal como verticalmente en el centro.
-                
-        
         
         ## Nombre del encabezado(Titulo de la pagina)
         self.nombreEncabezado = QLabel()
@@ -63,14 +50,6 @@ class MenuPrincipal(QWidget):
         self.nombreVista.setText("Menu principal")
         self.nombreVista.setStyleSheet("font: 700 16pt \"Segoe UI\";color:#FFFFFF;")
         self.nombreVista.setAlignment(Qt.AlignCenter)
-
-        # QSizePolicy.Fixed: El widget no se puede redimensionar. Tiene un tamaño fijo.
-        # QSizePolicy.Minimum: El widget no se reducirá más allá de su tamaño mínimo, pero puede expandirse si hay espacio adicional disponible.
-        # QSizePolicy.Maximum: El widget puede reducirse hasta su tamaño mínimo pero no se expandirá más allá de su tamaño actual.
-        # QSizePolicy.Preferred: El widget se redimensiona según su tamaño preferido, pero puede expandirse si hay espacio adicional disponible o reducirse hasta su tamaño mínimo si es necesario.
-        # QSizePolicy.Expanding: El widget siempre intentará ocupar todo el espacio disponible, expandiéndose lo máximo posible en la dirección especificada.
-        # QSizePolicy.MinimumExpanding: El widget tiene un tamaño mínimo, pero si hay espacio adicional disponible, se expandirá como un widget con política de expansión completa.
-        # QSizePolicy.Ignored: El tamaño del widget no se tiene en cuenta en absoluto, y el widget se redimensionará para llenar todo el espacio disponible, independientemente de sus restricciones de tamaño.
         
         #Spaciador isquierda y derecha (Expanding: el espacio se expande de acuerdo a la ventana)
         self.espaciolefth_Enc = QSpacerItem(1,1, QSizePolicy.Expanding, QSizePolicy.Expanding)
@@ -83,11 +62,7 @@ class MenuPrincipal(QWidget):
         ## Añadir label al gridencabezado
         self.gridEncabezado.addWidget(self.nombreEncabezado,0,1)
         self.gridEncabezado.addWidget(self.nombreVista,1,1)
-        ##     0   1   2
-        #   0|   | N |   |
-        #   1| l | V | r |
-        #   2|   | b |   |
-        # ##
+
         ##Añadir espaciadores 
         self.gridEncabezado.addItem(self.espaciolefth_Enc,1,0)
         self.gridEncabezado.addItem(self.espacioright_Enc,1,2)
@@ -95,4 +70,21 @@ class MenuPrincipal(QWidget):
         self.frameEncabezado.setLayout(self.gridEncabezado) ## se añade el layout al frame encabezado
 
     def configurar_cuerpo(self):
-        pass
+        #cuerpo colocacion de las opciones
+        self.gridlayoutCuerpo = QGridLayout()
+        self.gridlayoutCuerpo.setSpacing(10)
+        self.gridlayoutCuerpo.setContentsMargins(20,20,20,20)
+        
+        self.frameAdminPersona = QFrame()
+        self.frameAdminPersona.setStyleSheet("background-color:#000000")
+        self.frameAdminPersona.mouseDoubleClickEvent = self.frame_double_click
+        
+        self.frameAminDepartamento = QFrame()
+        self.frameAminDepartamento.setStyleSheet("background-color:#000000")
+        
+        self.gridlayoutCuerpo.addWidget(self.frameAdminPersona,1,1)
+        self.framCuerpo.setLayout(self.gridlayoutCuerpo)
+        
+    def frame_double_click(self,event):
+        if event.button() == Qt.LeftButton:
+            print("Frame doble clickeado")
