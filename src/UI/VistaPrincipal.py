@@ -16,15 +16,15 @@ class MenuPrincipal(QWidget):
         
         ##Encabezado de la pagina
         self.frameEncabezado = QFrame()
-        self.frameEncabezado.setStyleSheet("background-color:#000A94;")
+        self.frameEncabezado.setStyleSheet("background-color:#BCB9FF;")
         
         ##Cuerpo de la pagina
         self.framCuerpo = QFrame()
-        self.framCuerpo.setStyleSheet("background-color:#F0F2FF;")
+        self.framCuerpo.setStyleSheet("background-color:#FFFFFF;")
         
         ## Pie de la pagina
         self.framePiePagina = QFrame()
-        self.framePiePagina.setStyleSheet("background-color:#000A94")
+        self.framePiePagina.setStyleSheet("background-color:#BCB9FF")
         
         ##Agregar encabezado, cuerpo y pie de pagina
         self.root_layout.addWidget(self.frameEncabezado,15)
@@ -42,14 +42,14 @@ class MenuPrincipal(QWidget):
         
         ## Nombre del encabezado(Titulo de la pagina)
         self.nombreEncabezado = QLabel()
-        self.nombreEncabezado.setStyleSheet("font: 700 24pt \"Segoe UI\";color:#FFFFFF;")
+        self.nombreEncabezado.setStyleSheet("font: 700 24pt \"Segoe UI\";color:#000000;")
         self.nombreEncabezado.setText("ACCESO BIOMETRICO")
         self.nombreEncabezado.setAlignment(Qt.AlignCenter) ##alineacion del texto en el centro del label
         
         ## Nombre de la vista en la que se ubica(ejemplo: Administracion de empleados)
         self.nombreVista = QLabel()
         self.nombreVista.setText("Menu principal")
-        self.nombreVista.setStyleSheet("font: 700 16pt \"Segoe UI\";color:#FFFFFF;")
+        self.nombreVista.setStyleSheet("font: 700 16pt \"Segoe UI\";color:#000000;")
         self.nombreVista.setAlignment(Qt.AlignCenter)
         
         #Spaciador isquierda y derecha (Expanding: el espacio se expande de acuerdo a la ventana)
@@ -80,8 +80,11 @@ class MenuPrincipal(QWidget):
         self.frameAdminPersona.mouseDoubleClickEvent = self.frame_double_click
         
         self.frameAminDepartamento = TarjetaOpcion("Administracion de personas", "Registrar, modificar, eliminar departamentos")
-        
+        self.frameAminDepartamento.mouseDoubleClickEvent = self.frame_double_click
+
         self.gridlayoutCuerpo.addWidget(self.frameAdminPersona,1,1)
+        self.gridlayoutCuerpo.addWidget(self.frameAminDepartamento,1,2)
+        
         self.framCuerpo.setLayout(self.gridlayoutCuerpo)
         
     def frame_double_click(self,event):

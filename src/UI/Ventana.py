@@ -43,9 +43,6 @@ class Ventana(QMainWindow):
             usuario = Usuario(usuario,contrasena)
             servicesUser = UsuarioServices()
             result = servicesUser.inicioSesion(usuario) 
-            print()
-            print(result)
-            print()
             if result["success"]:
                 if result["login"]:
                     ##CARGA TODAS LAS VISTAS              

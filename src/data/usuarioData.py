@@ -1,6 +1,7 @@
 from models.usuario import Usuario
 from data.data import conection
 from settings.config import *
+import bcrypt
 
 class UsuarioData:
     
@@ -62,8 +63,7 @@ class UsuarioData:
             if conexion:
                 conexion.close()
         return resultado
-
-            
+       
     def delete_usuario(self, usuario_id):
         conexion, resultado = conection()
         if not resultado["success"]:
@@ -85,8 +85,7 @@ class UsuarioData:
             if conexion:
                 conexion.close()
         return resultado
-            
-            
+
     def list_usuarios(self, pagina=1, tam_pagina=10, ordenar_por = TBUSUARIO_ID, tipo_orden="ASC", busqueda = None):
         conexion, resultado = conection()
         cursor = None
@@ -153,7 +152,7 @@ class UsuarioData:
                 conexion.close()
         return resultado
 
-def get_usuario_by_correo_o_usuario(self, identificador):
+    def get_usuario_by_correo_o_usuario(self, identificador):
         try:
             # Busca el usuario tanto por correo como por nombre de usuario
             usuario = db_session.query(Usuario).filter(
@@ -168,7 +167,6 @@ def get_usuario_by_correo_o_usuario(self, identificador):
         try:
             # Buscar el usuario por correo o nombre de usuario
             usuario = self.get_usuario_by_correo_o_usuario(identificador)
-            
             # Verifica si el usuario existe
             if usuario:
                 # Comparar la contraseña encriptada

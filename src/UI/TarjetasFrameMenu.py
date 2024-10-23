@@ -5,26 +5,35 @@ from PySide6.QtCore import *
 
 class TarjetaOpcion(QFrame):
     def __init__(self, opcionText="", opcionDesc="", icono =None,parent=None):
-        self.setStyleSheet("background-color:#000000;")
-        self.setMaximumSize(QSize(100,70))
+        super().__init__(parent)
+        self.setStyleSheet("""
+                            QFrame{
+                                background-color:#D2D0F7;
+                                border-radius:10px;
+                            }
+                            QFrame::hover{
+                               background-color:#D8D6FF;
+                            }""")
+        self.setMaximumSize(QSize(300,125))
         
         #icono
         self.lblIcono = QLabel()
-        self.lblIcono.setText("I")
-        self.lblIcono.setStyleSheet("color:#FFFFFF;")
+        self.lblIcono.setText("Icono")
+        self.lblIcono.setStyleSheet("color:#000000;background-color:transparent;")
         
         #nombre de la opcion
         self.lblOpcion = QLabel()
-        self.lblOpcion.setStyleSheet("font: 700 12pt \"Segoe UI\";color:#FFFFFF;")
+        self.lblOpcion.setStyleSheet("font: 700 14pt \"Segoe UI\";color:#000000;background-color:transparent;")
         self.lblOpcion.setWordWrap(True)
         self.lblOpcion.setText(opcionText)
         
         #descripcion de la opcion
         self.lblDescrip = QLabel();
-        self.lblDescrip.setStyleSheet("font: 700 8pt \"Segoe UI\";color:#FFFFFF;")
-        self.lblDescrip.wordWrap(True)
+        self.lblDescrip.setStyleSheet("font: 700 10pt \"Segoe UI\";color:#000000;background-color:transparent;")
+        self.lblDescrip.setWordWrap(True)
         self.lblDescrip.setText(opcionDesc)
         
+        #configura acomoda la tarjeta
         self.configurarFrame()
         
     def configurarFrame(self):
@@ -40,8 +49,8 @@ class TarjetaOpcion(QFrame):
         self.layoutText.addWidget(self.lblOpcion,25)
         self.layoutText.addWidget(self.lblDescrip,75)
         # agrega tanto el icono como el layout de los textos como el icono
-        self.layoutFrame.addWidget(self.lblIcono,25)
-        self.layoutFrame.addLayout(self.layoutText,72)
+        self.layoutFrame.addWidget(self.lblIcono,30)
+        self.layoutFrame.addLayout(self.layoutText,70)
          
         self.setLayout(self.layoutFrame)
         

@@ -18,7 +18,7 @@ class InicioSesion(QWidget):
         
         ##Encabezado de la pagina
         self.frameEncabezado = QFrame()
-        self.frameEncabezado.setStyleSheet("background-color:#000A94;")
+        self.frameEncabezado.setStyleSheet("background-color:#000587;")
         
         ##Cuerpo de la pagina
         self.framCuerpo = QFrame()
