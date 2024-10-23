@@ -37,7 +37,7 @@ class Ventana(QMainWindow):
         # usuario = self.inputUsuario.text()
         # contrasena = self.inputContrasena.text()
         if not usuario.strip() and not contrasena.strip():
-            advertencia = DialogoEmergente("¡Advertencia!","¡Ingrese su usuario y contraseña!","Check")
+            advertencia = DialogoEmergente("¡Advertencia!","¡Ingrese su usuario y contraseña!","Warning")
             advertencia.exec()
         else:
             servicesUser = UsuarioServices()
@@ -45,6 +45,8 @@ class Ventana(QMainWindow):
             print(result)
             if result["success"]:
                 if result["login"]:
+                    advertencia = DialogoEmergente("¡Iniciando sesión!",result["message"],"Check")
+                    advertencia.exec()
                     ##CARGA TODAS LAS VISTAS              
                     menu = MenuPrincipal(parent=self)
                     ## se ingresa a la vista
