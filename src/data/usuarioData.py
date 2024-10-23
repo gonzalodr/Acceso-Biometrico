@@ -9,7 +9,6 @@ class UsuarioData:
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
-        
         try:
             cursor = conexion.cursor()
             query = f"""INSERT INTO {TBUSUARIO}(
@@ -153,25 +152,52 @@ class UsuarioData:
         return resultado
 
     def get_usuario_by_correo_o_usuario(self, identificador):
+        conexion, resultado = conection()
+        cursor = None
+        if not resultado["success"]:
+            return resultado
         try:
-            # Busca el usuario tanto por correo como por nombre de usuario
-            usuario = db_session.query(Usuario).filter(
-                (Usuario.correo == identificador) | (Usuario.usuario == identificador)
-            ).first()
-            return usuario if usuario else None
+            cursor = conexion.cursor();
+            query = f"""
+                    SELECT 
+                        {TBUSUARIO_CONTRASENA} 
+                    FROM {TBUSUARIO} U
+                    INNER JOIN {TBPERSONA} P ON P.{TBPERSONA_ID} =  U.{TBUSUARIO_ID_PERSONA}
+                    WHERE
+                        P.{TBPERSONA_CORREO} = %s OR U.{TBUSUARIO_USUARIO} = %s 
+                    """
+            cursor.execute(query,[identificador,identificador])# ingresa los parametros
+            usuarioPass = cursor.fetchone()#obtiene la unica contraseña
+            
+            if usuarioPass:
+                resultado = {"success":True,"password":usuarioPass[0]}
+            else:
+                resultado = {"success":True,"message":"Usuario o contraseña incorrecta"}
         except Exception as e:
-            print(f"Error al buscar el usuario: {e}")
-            return None
-    
+            resultado["success"] = False
+            resultado["message"] = f"Error al buscar usuario y contraseñas: {e}"
+        finally:
+            if conexion:
+                conexion.close()
+        return resultado
+           
     def verificar_usuario_contrasena(self, identificador, contrasena):
         try:
             # Buscar el usuario por correo o nombre de usuario
             usuario = self.get_usuario_by_correo_o_usuario(identificador)
             # Verifica si el usuario existe
-            if usuario:
+            if usuario["success"]:
                 # Comparar la contraseña encriptada
-                if bcrypt.checkpw(contrasena.encode('utf-8'), usuario.contrasena.encode('utf-8')):
-                    return {"success": True, "usuario": usuario, "message": "Inicio de sesión exitoso"}
+                if "password" in usuario:
+                    if bcrypt.checkpw(contrasena.encode('utf-8'), usuario["password"].encode('utf-8')):
+                        return {"success": True, "login":True, "message": "Inicio de sesión exitoso"}
+                    else:
+                        return {"success":True, "login":False,"message":"Usuario o contraseña incorrecta"}
+                else:
+                    return {"success":True, "login":False,"message":"Usuario o contraseña incorrecta"}
+            else:
+                raise ValueError(usuario["message"])
         except Exception as e:
-            print(f"Error en la base de datos: {e}")
-            return {"success": False, "message": f"Error: {str(e)}"}
+            return {"success":False,"message":f"Error al verificar usuari y contrasena {e}"}
+
+            

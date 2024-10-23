@@ -1,6 +1,6 @@
 #creacion de una clase 
 class Usuario:
-    def __init__(self, usuario, contrasena, id=0, id_persona=0):
+    def __init__(self, usuario, contrasena, id_persona=0, id=0):
         self.id = id
         self.id_persona = id_persona
         self.usuario = usuario

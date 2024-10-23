@@ -19,30 +19,30 @@ class Ventana(QMainWindow):
         ## Creacion de una lista de vistas
         self.listasVistas = QStackedWidget()
         
-        menu = MenuPrincipal(parent=self)
-        self.setCentralWidget(menu)
+        # menu = MenuPrincipal(parent=self)
+        # self.setCentralWidget(menu)
         
         # ## Inicio de la sesion
-        # login = InicioSesion(parent=self)
+        login = InicioSesion(parent=self)
         
-        # ##Crear la logica del btn iniciar sesion
-        # login.botonIniciar.clicked.connect(lambda:self.accion_btn_iniciar_sesion(login.inputUsuario.text(),login.inputContrasena.text()))
+        ##Crear la logica del btn iniciar sesion
+        login.botonIniciar.clicked.connect(lambda:self.accion_btn_iniciar_sesion(login.inputUsuario.text(),login.inputContrasena.text(),login))
         
         # ##presenta la pantalla
-        # self.setCentralWidget(login)
+        self.setCentralWidget(login)
         # self.setCentralWidget(vista1)
         self.setWindowTitle("Acceso biometrico")
         
-    def accion_btn_iniciar_sesion(self,usuario,contrasena):
+    def accion_btn_iniciar_sesion(self,usuario,contrasena,login):
         # usuario = self.inputUsuario.text()
         # contrasena = self.inputContrasena.text()
         if not usuario.strip() and not contrasena.strip():
             advertencia = DialogoEmergente("¡Advertencia!","¡Ingrese su usuario y contraseña!","Check")
             advertencia.exec()
         else:
-            usuario = Usuario(usuario,contrasena)
             servicesUser = UsuarioServices()
-            result = servicesUser.inicioSesion(usuario) 
+            result = servicesUser.iniciar_sesion(usuario,contrasena)
+            print(result)
             if result["success"]:
                 if result["login"]:
                     ##CARGA TODAS LAS VISTAS              
@@ -54,9 +54,10 @@ class Ventana(QMainWindow):
                     ##Le indico que todas las vistas seran centradas y acomodada a la ventana
                     self.setCentralWidget(self.listasVistas)
                 else:
-                    pass
+                    login.labelError.setText(result["message"])
             else:
-                self.labelError.setText("Error de conexion.")
+                login.labelError.setText("Error de conexion")
+                
         
         
 
