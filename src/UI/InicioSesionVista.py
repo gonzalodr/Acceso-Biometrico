@@ -6,6 +6,7 @@ from models.usuario import Usuario
 from UI.DialogoEmergente import DialogoEmergente
 
 class InicioSesion(QWidget):
+    sesion = Signal(str)
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setup_ui()
@@ -37,6 +38,7 @@ class InicioSesion(QWidget):
         self.configurar_encabezado()
         self.configurar_cuerpo()
         self.configurar_login()
+        self.configurar_sombras()
 
     def configurar_encabezado(self):
         self.gridEncabezado = QGridLayout() ## Crea un grid (Matriz) donde se acomodaran los widgets
@@ -106,8 +108,8 @@ class InicioSesion(QWidget):
         self.gridCuerpo.setContentsMargins(0,0,0,0) ## sin margenes
         
         #Spaciador isquierda y derecha (Expanding: el espacio se expande de acuerdo a la ventana)
-        self.espaciolefth_Cuer = QSpacerItem(150,0, QSizePolicy.MinimumExpanding, QSizePolicy.Expanding)
-        self.espacioright_Cuer = QSpacerItem(150,0, QSizePolicy.MinimumExpanding, QSizePolicy.Expanding)
+        self.espaciolefth_Cuer = QSpacerItem(100,0, QSizePolicy.MinimumExpanding, QSizePolicy.Expanding)
+        self.espacioright_Cuer = QSpacerItem(100,0, QSizePolicy.MinimumExpanding, QSizePolicy.Expanding)
         
         ##Spaciador arriba y abajo QSpacerItem(tamañoX, tamañoY,QSizeExpanding, QSizeExpanding)
         self.espaciotop_Cuer = QSpacerItem(0,100, QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -115,6 +117,8 @@ class InicioSesion(QWidget):
         
         self.frameLogin = QFrame()  ## donde iran los inputs del login 
         self.frameLogin.setStyleSheet("background-color:#DDE2FE;border-radius: 30px;")
+        self.frameLogin.setMinimumSize(QSize(300,300))
+        self.frameLogin.setMaximumSize(QSize(400,350))
         # self.frameLogin.setGraphicsEffect(shadow_effect)
         
         self.layoutLogin = QVBoxLayout() ##donde se acomodaran los inputs
@@ -129,7 +133,7 @@ class InicioSesion(QWidget):
         # Añadir los espaciadores y el frame al gridCuerpo
         self.gridCuerpo.addItem(self.espaciotop_Cuer, 0, 1)        # Espaciador arriba
         self.gridCuerpo.addItem(self.espaciolefth_Cuer, 1, 0)      # Espaciador izquierda
-        self.gridCuerpo.addWidget(self.frameLogin, 1, 1)           # Frame del login en el centro
+        self.gridCuerpo.addWidget(self.frameLogin, 1, 1,Qt.AlignHCenter)           # Frame del login en el centro
         self.gridCuerpo.addItem(self.espacioright_Cuer, 1, 2)      # Espaciador derecha
         self.gridCuerpo.addItem(self.espaciobottom_Cuer, 2, 1)     # Espaciador abajo
 
@@ -204,6 +208,20 @@ class InicioSesion(QWidget):
         else:
             self.inputContrasena.setEchoMode(QLineEdit.Password)
      
+    def configurar_sombras(self):
+        self.sombra_encabezado = QGraphicsDropShadowEffect(parent=self.frameEncabezado)
+        self.sombra_encabezado.setBlurRadius(30)
+        self.sombra_encabezado.setXOffset(0)
+        self.sombra_encabezado.setYOffset(10)
+        self.frameEncabezado.setGraphicsEffect(self.sombra_encabezado)
+        
+        self.sombra_login =QGraphicsDropShadowEffect(self.frameLogin)
+        self.sombra_login.setBlurRadius(40)
+        self.sombra_login.setXOffset(0)
+        self.sombra_login.setYOffset(0)
+        self.frameLogin.setGraphicsEffect(self.sombra_login)
+                
+        
     # def accion_inicio_sesion(self):
     #     usuario = self.inputUsuario.text()
     #     contrasena = self.inputContrasena.text()

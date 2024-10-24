@@ -23,8 +23,7 @@ LineEditStyleSheet = u"""QLineEdit {
 tableStyleSheet = u"""
                         QTableWidget {    
                                 background-color: white;
-                                border: 2px solid #007acc; 
-                                border-radius: 5px;
+                                border-radius: 10px;
                         }
                         QHeaderView::section {    
                                 background-color:rgb(96, 53, 223);    

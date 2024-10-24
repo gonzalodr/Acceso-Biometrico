@@ -4,6 +4,7 @@ from UI.TarjetasFrameMenu import TarjetaOpcion
 import sys
 
 class MenuPrincipal(QWidget):
+    senal_cambio_ventana = Signal(int)
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setup_ui()
@@ -17,10 +18,10 @@ class MenuPrincipal(QWidget):
         ##Encabezado de la pagina
         self.frameEncabezado = QFrame()
         self.frameEncabezado.setStyleSheet("background-color:#BCB9FF;")
-        
+
         ##Cuerpo de la pagina
         self.framCuerpo = QFrame()
-        self.framCuerpo.setStyleSheet("background-color:#FFFFFF;")
+        self.framCuerpo.setStyleSheet("background-color:#FFFFFF;border-radius:20px")
         
         ## Pie de la pagina
         self.framePiePagina = QFrame()
@@ -81,12 +82,19 @@ class MenuPrincipal(QWidget):
         
         self.frameAminDepartamento = TarjetaOpcion("Administracion de personas", "Registrar, modificar, eliminar departamentos")
         self.frameAminDepartamento.mouseDoubleClickEvent = self.frame_double_click
+        
+        self.frameAdminRol = TarjetaOpcion("Administracion de roles", "Registrar, modificar, eliminar roles")
+
+        self.frameAdminUsuarios = TarjetaOpcion("Administracion de usuarios","Registrar, modificar, eliminar usuarios ")
 
         self.gridlayoutCuerpo.addWidget(self.frameAdminPersona,1,1)
         self.gridlayoutCuerpo.addWidget(self.frameAminDepartamento,1,2)
+        self.gridlayoutCuerpo.addWidget(self.frameAdminRol,1,3)
+        self.gridlayoutCuerpo.addWidget(self.frameAdminUsuarios,1,4)
         
         self.framCuerpo.setLayout(self.gridlayoutCuerpo)
         
     def frame_double_click(self,event):
         if event.button() == Qt.LeftButton:
             print("Frame doble clickeado")
+            self.senal_cambio_ventana(333)

@@ -213,7 +213,7 @@ class Ui_personaInterfaz(object):
         self.tbPersona.horizontalHeader().setStretchLastSection(True)
         self.tbPersona.verticalHeader().setVisible(False)
         self.tbPersona.verticalHeader().setHighlightSections(False)
-        self.gridLayoutCuerpo_3.addWidget(self.tbPersona, 1, 1, 1, 1)
+        self.gridLayoutCuerpo_3.addWidget(self.tbPersona, 1, 1, 1,1)
 
         self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
         self.gridLayoutCuerpo_3.addItem(self.verticalSpacer_2, 4, 1, 1, 1)

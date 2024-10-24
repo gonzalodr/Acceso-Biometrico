@@ -8,11 +8,11 @@ class TarjetaOpcion(QFrame):
         super().__init__(parent)
         self.setStyleSheet("""
                             QFrame{
-                                background-color:#D2D0F7;
+                                background-color:#FFFFFF;
                                 border-radius:10px;
                             }
                             QFrame::hover{
-                               background-color:#D8D6FF;
+                               background-color:#DDDDDD;
                             }""")
         self.setMaximumSize(QSize(300,125))
         
@@ -53,6 +53,14 @@ class TarjetaOpcion(QFrame):
         self.layoutFrame.addLayout(self.layoutText,70)
          
         self.setLayout(self.layoutFrame)
+        self.configurar_sombra()
+    
+    def configurar_sombra(self):
+        self.sombra = QGraphicsDropShadowEffect(self)
+        self.sombra.setBlurRadius(20)
+        self.sombra.setXOffset(0)
+        self.sombra.setYOffset(0)
+        self.setGraphicsEffect(self.sombra)
         
         
             

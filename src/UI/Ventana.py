@@ -15,7 +15,7 @@ class Ventana(QMainWindow):
         ## Tamaño para poder redimencionar
         # self.size= QSize(500, 500)
         self.setMinimumSize(700, 600)
-        
+        self.setStyleSheet("background-color:#BCB9FF;")
         ## Creacion de una lista de vistas
         self.listasVistas = QStackedWidget()
         
@@ -53,6 +53,7 @@ class Ventana(QMainWindow):
                     self.listasVistas.addWidget(menu)
                     ##muestra el menu 
                     self.listasVistas.setCurrentIndex(0) 
+
                     ##Le indico que todas las vistas seran centradas y acomodada a la ventana
                     self.setCentralWidget(self.listasVistas)
                 else:
