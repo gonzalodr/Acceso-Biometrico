@@ -12,6 +12,5 @@ class Persona:
         self.correo = correo
         self.direccion = direccion
     def __repr__(self):
-        return f"""Id: {self.id}\nNombre: {self.nombre}\nApellidos: {self.apellido1} {self.apellido2}\n{self.cedula}\n{self.direccion}\n\n"""
-    def mostrar(self):
-        return f"{self.nombre} {self.apellido1} {self.apellido2}, N.Ced: {self.cedula}, {self.estadoCivil} \n"
+        return f"""Id: {self.id}\nNombre: {self.nombre}\nApellidos: {self.apellido1} {self.apellido2}\n{self.cedula}\n{self.direccion}\n\n
+                    Fecha: {self.fecha_nacimiento}"""

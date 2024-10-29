@@ -72,6 +72,6 @@ class PersonaServices:
         return self.personaData.list_personas(pagina,tam_pagina,ordenar_por,tipo_orden, busqueda)
 
     def obtenerPersonaPorId(self, id):
-        pass
+        return self.personaData.get_persona_by_id(id)
     
     

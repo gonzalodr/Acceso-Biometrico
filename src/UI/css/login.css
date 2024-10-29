@@ -1,0 +1,45 @@
+#vistaLogin #frameFondo{
+    background-color:#EEEEEE;
+}
+#vistaLogin QLabel{
+    font: 1000 45pt "Cooper Black";
+    color:#000000;
+    border-radius:5px;
+}
+
+#frameLogin{
+    background-color:#FFFFFF;
+    border-radius:15px;
+}
+
+#frameLogin QLabel{
+    background-color:transparent;
+    font: 100 15pt "Cooper Black";
+}
+
+#frameLogin QLineEdit{
+    background-color:transparent;
+    font-size:15px;border:none;
+    border-bottom:1px solid #000000;
+}
+#frameLogin QPushButton{
+    border-radius:10px;
+    background-color:#FFFFFF;
+    font: 100 12pt "Cooper Black";
+}
+#frameLogin QPushButton::Hover{
+    background-color:#DDDDDD;
+}
+
+#frameLogin QPushButton::Pressed{
+    background-color: #00a5cf;
+    color:#FFFFFF;
+}
+#frameLogin QCheckBox{
+    font: 1 10pt "Cooper Black";
+}
+#frameLogin #loginError{
+    background-color:transparent;
+    color:Red;
+    font: 1 10pt "Cooper Black";
+}

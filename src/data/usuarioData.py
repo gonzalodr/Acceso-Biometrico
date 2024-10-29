@@ -160,7 +160,9 @@ class UsuarioData:
             cursor = conexion.cursor();
             query = f"""
                     SELECT 
-                        {TBUSUARIO_CONTRASENA} 
+                        U.{TBUSUARIO_USUARIO},
+                        U.{TBUSUARIO_CONTRASENA},
+                        P.{TBPERSONA_ID}
                     FROM {TBUSUARIO} U
                     INNER JOIN {TBPERSONA} P ON P.{TBPERSONA_ID} =  U.{TBUSUARIO_ID_PERSONA}
                     WHERE
@@ -170,7 +172,8 @@ class UsuarioData:
             usuarioPass = cursor.fetchone()#obtiene la unica contraseña
             
             if usuarioPass:
-                resultado = {"success":True,"password":usuarioPass[0]}
+                usuario = Usuario(usuario=usuarioPass[0],id_persona=usuarioPass[2])
+                resultado = {"success":True,"password":usuarioPass[1], "usuario":usuario}
             else:
                 resultado = {"success":True,"message":"Usuario o contraseña incorrecta"}
         except Exception as e:
@@ -190,7 +193,7 @@ class UsuarioData:
                 # Comparar la contraseña encriptada
                 if "password" in usuario:
                     if bcrypt.checkpw(contrasena.encode('utf-8'), usuario["password"].encode('utf-8')):
-                        return {"success": True, "login":True, "message": "Inicio de sesión exitoso"}
+                        return {"success": True, "login":True, "message": "Inicio de sesión exitoso","usuario":usuario["usuario"]}
                     else:
                         return {"success":True, "login":False,"message":"Usuario o contraseña incorrecta"}
                 else:

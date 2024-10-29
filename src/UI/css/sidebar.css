@@ -1,0 +1,24 @@
+#sidebarWidget QFrame{
+    background-color:#EEEEEE;
+    border-radius:10px;
+}
+
+#sidebarWidget QPushButton{
+    background-color:#EEEEEE;
+    border-radius:10px;
+    font: 100 12pt "Cooper Black";
+}
+
+#sidebarWidget QPushButton::Hover{
+    background-color:#DDDDDD;
+}
+
+#sidebarWidget QPushButton:checked {
+    background-color: #00a5cf;       
+    color: white;
+}
+#sidebarWidget #iconoUser{
+    background-color:#AAAAAA;
+    border-radius:75px;
+    font: 100 12pt "Cooper Black";
+}

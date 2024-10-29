@@ -214,6 +214,61 @@ class PersonaData:
                 conexion.close()
         return resultado
    
+    ##
+    # Obtiene el objeto por persona
+    # ##
+    def get_persona_by_id(self, persona_id):
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+
+        try:
+            cursor = conexion.cursor()
+            query = f"""SELECT
+                            {TBPERSONA_FOTO}, 
+                            {TBPERSONA_NOMBRE}, 
+                            {TBPERSONA_APELLIDO1}, 
+                            {TBPERSONA_APELLIDO2}, 
+                            {TBPERSONA_NACIMIENTO}, 
+                            {TBPERSONA_CEDULA}, 
+                            {TBPERSONA_ESTADO_CIVIL}, 
+                            {TBPERSONA_CORREO}, 
+                            {TBPERSONA_DIRECCION},
+                            {TBPERSONA_ID} 
+                        FROM {TBPERSONA} 
+                        WHERE id = %s"""
+            
+            cursor.execute(query, (persona_id,))
+            data = cursor.fetchone()
+            
+            if data:
+                persona = Persona(
+                    foto=data[0],
+                    nombre=data[1],
+                    apellido1=data[2],
+                    apellido2=data[3],
+                    fecha_nacimiento=data[4],
+                    cedula=data[5],
+                    estado_civil=data[6],
+                    correo=data[7],
+                    direccion=data[8],
+                    id=data[9]
+                )
+                print("Data")
+                print(repr(persona))
+                print("_________________")
+                resultado["success"] = True
+                resultado["data"] = persona
+            else:
+                resultado["success"] = False
+                resultado["message"] = "No se encontró ninguna persona con el ID proporcionado."
+        except Exception as e:
+            resultado["success"] = False
+            resultado["message"] = f"Error al obtener persona: {e}"
+        finally:
+            if conexion:
+                conexion.close()
+        return resultado
 # sql
 # SELECT * 
 # FROM persona 

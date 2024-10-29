@@ -1,100 +1,170 @@
+
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
-from UI.TarjetasFrameMenu import TarjetaOpcion
+from Utils.Utils import *
+from UI.slideBar import *
+from UI.AdministraPersona.adminPersona import *
+from models.usuario import *
 import sys
 
-class MenuPrincipal(QWidget):
-    senal_cambio_ventana = Signal(int)
-    def __init__(self, parent=None):
+class vistaPrincipal(QWidget):
+    listaOpciones = [] #numero Index en el stack, el nombre, icono
+    usuario:Usuario = None
+    
+    def __init__(self,usuario:Usuario, parent= None,):
         super().__init__(parent)
-        self.setup_ui()
+        self.usuario = usuario
+        self.setObjectName("vistaPrincipal")
+        
+        """
+        add_Style: establece el diseño visual de nuestra ventana
+        """
+        add_Style("css","ventanaPrincipal.css",self)
+        
+        """
+        frame: Es el frame que le da color a toda la ventana 
+        """
+        frame = QFrame()
+        frame.setObjectName("frameFondoPrincipal")
+        frame.setContentsMargins(0,0,0,0)
+        
+        """
+        layoutFrame: Acomoda tanto la seccion de encabezado como la de cuerpo 
+        """
+        layoutFrame = QVBoxLayout()
+        layoutFrame.setContentsMargins(10,10,10,10)
+        layoutFrame.setSpacing(10)
+        
+        """
+        frameEncabezado: le da color al encabezado de la ventana
+        """
+        frameEncabezado = QFrame()
+        frameEncabezado.setObjectName("frameEnca")
+        frameEncabezado.setContentsMargins(0,0,0,0)
+        Sombrear(frameEncabezado,30,0,5)
+        
+        """
+        layoutEncabezado: Acomoda todos los elementos que se mostraran en el encabezado
+        """
+        layoutEncabezado = QHBoxLayout()
+        layoutEncabezado.setSpacing(0)
+        layoutEncabezado.setContentsMargins(20,5,20,5)
+        
+        """
+            btnAbrir_SideBar: Este boton nos permitirar abrir y cerrar nuestro sidebar de la ventana
+        """
+        self.btnAbrir_SideBar = QPushButton(text="=")
+        self.btnAbrir_SideBar.setCursor(Qt.PointingHandCursor)
+        self.btnAbrir_SideBar.setMaximumSize(QSize(40,40))
+        Sombrear(self.btnAbrir_SideBar,20,0,5)
+        
+        
+        """
+            lblEncabezado: Mostrara el nombre de nuestra ventana.
+        """
+        self.lblEncabezado = QLabel(text=f"Bienvenido/a {usuario.usuario}.")
+        self.lblEncabezado.setAlignment(Qt.AlignCenter)
+        self.lblEncabezado.setMaximumHeight(30)
+        # Sombrear(self.lblEncabezado,30,0,5)
+        
+        """
+            lblIconUser: Mostrara la foto de nuestro usuario
+        """
+        self.lblIconoUser = QLabel(text="User")
+        self.lblIconoUser.setObjectName("iconoUser")
+        self.lblIconoUser.setMaximumSize(QSize(50,50))
+        self.lblIconoUser.setMinimumSize(QSize(50,50))
+        Sombrear(self.lblIconoUser,30,0,5)
+        
+        """
+            Acomodamos los elementos de nuestra ventana
+        """
+        layoutEncabezado.addWidget(self.btnAbrir_SideBar,1)
+        layoutEncabezado.addStretch(4)
+        layoutEncabezado.addWidget(self.lblEncabezado,2)
+        layoutEncabezado.addStretch(4)
+        layoutEncabezado.addWidget(self.lblIconoUser,1)
+        """Agregamos nuestro layout del encabezado a nuestro frame"""
+        frameEncabezado.setLayout(layoutEncabezado)
+        
+        layoutFrame.addWidget(frameEncabezado,1)
+        
+        """Este layoout es para acomodar los elementos del cuerpo de la ventana"""    
+        layoutCuerpo = QHBoxLayout()
+        layoutCuerpo.setSpacing(20)
+        layoutCuerpo.setContentsMargins(1,10,1,10)
+        
+        self.stackVistas = QStackedWidget()
+        self._llenar_stack_vista()
+        
+        self.sidebar = SlideBar(listaOpciones=self.listaOpciones)
+        self.btnAbrir_SideBar.clicked.connect(self.sidebar.accion_anim)
 
-    def setup_ui(self):
-        ## layout principal
-        self.root_layout = QVBoxLayout()
-        self.root_layout.setSpacing(0)
-        self.root_layout.setContentsMargins(0,0,0,0)#ajusta el margen(bordes laterales)#000587
+        """Recibimos una señal la cual nos servira para detectar los btn del sidebar"""
+        self.sidebar.index_opcion_selecionada.connect(self.seleccion_sidebar)
         
-        ##Encabezado de la pagina
-        self.frameEncabezado = QFrame()
-        self.frameEncabezado.setStyleSheet("background-color:#BCB9FF;")
+        layoutCuerpo.addWidget(self.sidebar,1)
+        layoutCuerpo.addWidget(self.stackVistas,3)
+        self._llenar_stack_vista() 
+        """Agregando sidebar"""
+        layoutFrame.addLayout(layoutCuerpo,9)
+        
+        """Acomodando todo en la ventana"""
+        frame.setLayout(layoutFrame)
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0,0,0,0)
+        layout.addWidget(frame)
+        self.setLayout(layout)
+        
+    
+    def _llenar_stack_vista(self):
+        self.stackVistas.addWidget(self._widget_presentacion())
+        """
+            Aqui se crean las vistas de acuerdo a los permisos
+        """
+        if True:
+            adminpersona = AdminPerson(parent=self)
+            adminpersona.cerrar_adminP.connect(self._salir_crud)
+            index =  self.stackVistas.addWidget(adminpersona)
+            self.listaOpciones.append((index,"Administrar Persona")) 
 
-        ##Cuerpo de la pagina
-        self.framCuerpo = QFrame()
-        self.framCuerpo.setStyleSheet("background-color:#FFFFFF;border-radius:20px")
+        self.stackVistas.setCurrentIndex(0)
+        pass
+    
+    def _widget_presentacion(self):
+        widgetP = QWidget()
+        widgetP.setObjectName("widgetDefault")
         
-        ## Pie de la pagina
-        self.framePiePagina = QFrame()
-        self.framePiePagina.setStyleSheet("background-color:#BCB9FF")
-        
-        ##Agregar encabezado, cuerpo y pie de pagina
-        self.root_layout.addWidget(self.frameEncabezado,15)
-        self.root_layout.addWidget(self.framCuerpo, 80)
-        self.root_layout.addWidget(self.framePiePagina,5)
-        self.setLayout(self.root_layout)
-        
-        self.configurar_encabezado()
-        self.configurar_cuerpo()
-        
-    def configurar_encabezado(self):
-        self.gridEncabezado = QGridLayout() ## Crea un grid (Matriz) donde se acomodaran los widgets
-        self.gridEncabezado.setSpacing(0)   ## Espacio entre widgets es 0
-        self.gridEncabezado.setContentsMargins(0,0,0,0) ## El margen osea borders seran 0
-        
-        ## Nombre del encabezado(Titulo de la pagina)
-        self.nombreEncabezado = QLabel()
-        self.nombreEncabezado.setStyleSheet("font: 700 24pt \"Segoe UI\";color:#000000;")
-        self.nombreEncabezado.setText("ACCESO BIOMETRICO")
-        self.nombreEncabezado.setAlignment(Qt.AlignCenter) ##alineacion del texto en el centro del label
-        
-        ## Nombre de la vista en la que se ubica(ejemplo: Administracion de empleados)
-        self.nombreVista = QLabel()
-        self.nombreVista.setText("Menu principal")
-        self.nombreVista.setStyleSheet("font: 700 16pt \"Segoe UI\";color:#000000;")
-        self.nombreVista.setAlignment(Qt.AlignCenter)
-        
-        #Spaciador isquierda y derecha (Expanding: el espacio se expande de acuerdo a la ventana)
-        self.espaciolefth_Enc = QSpacerItem(1,1, QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.espacioright_Enc = QSpacerItem(1,1, QSizePolicy.Expanding, QSizePolicy.Expanding)
-        
-        ##Spaciador arriba y abajo QSpacerItem(tamañoX, tamañoY,QSizeExpanding, QSizeExpanding)
-        self.espaciotop_Enc = QSpacerItem(0,10, QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.espaciobottom_Enc = QSpacerItem(0,10, QSizePolicy.Expanding, QSizePolicy.Maximum)
-        
-        ## Añadir label al gridencabezado
-        self.gridEncabezado.addWidget(self.nombreEncabezado,0,1)
-        self.gridEncabezado.addWidget(self.nombreVista,1,1)
+        frame = QFrame()
 
-        ##Añadir espaciadores 
-        self.gridEncabezado.addItem(self.espaciolefth_Enc,1,0)
-        self.gridEncabezado.addItem(self.espacioright_Enc,1,2)
-        self.gridEncabezado.addItem(self.espaciobottom_Enc,2,2)
-        self.frameEncabezado.setLayout(self.gridEncabezado) ## se añade el layout al frame encabezado
+        layout = QVBoxLayout()
+        layout.addWidget(frame)
+        lblPresentacion = QLabel(text="Acceso Biometrico")
+        lblPresentacion.setAlignment(Qt.AlignCenter)
+        Sombrear(lblPresentacion,20,0,0)
+        
+        layoutP = QVBoxLayout()
+        layoutP.setContentsMargins(0,0,0,0)
+        layoutP.addWidget(lblPresentacion)
+        frame.setLayout(layoutP)
+        widgetP.setLayout(layout)
+        Sombrear(widgetP,50,0,0)
+        return widgetP
 
-    def configurar_cuerpo(self):
-        #cuerpo colocacion de las opciones
-        self.gridlayoutCuerpo = QGridLayout()
-        self.gridlayoutCuerpo.setSpacing(10)
-        self.gridlayoutCuerpo.setContentsMargins(20,20,20,20)
-        
-        self.frameAdminPersona = TarjetaOpcion("Administracion de personas","Registrar,modifcar,eliminar personas")
-        self.frameAdminPersona.mouseDoubleClickEvent = self.frame_double_click
-        
-        self.frameAminDepartamento = TarjetaOpcion("Administracion de personas", "Registrar, modificar, eliminar departamentos")
-        self.frameAminDepartamento.mouseDoubleClickEvent = self.frame_double_click
-        
-        self.frameAdminRol = TarjetaOpcion("Administracion de roles", "Registrar, modificar, eliminar roles")
+    def _salir_crud(self):
+        self.sidebar.deseleccionar()
+        self.stackVistas.setCurrentIndex(0)
+    
+    def seleccion_sidebar(self,index):
+        if index < 2:
+            self.stackVistas.setCurrentIndex(index)
 
-        self.frameAdminUsuarios = TarjetaOpcion("Administracion de usuarios","Registrar, modificar, eliminar usuarios ")
-
-        self.gridlayoutCuerpo.addWidget(self.frameAdminPersona,1,1)
-        self.gridlayoutCuerpo.addWidget(self.frameAminDepartamento,1,2)
-        self.gridlayoutCuerpo.addWidget(self.frameAdminRol,1,3)
-        self.gridlayoutCuerpo.addWidget(self.frameAdminUsuarios,1,4)
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    ventana = Ventana()
+    ventana.setWindowTitle("Prueba de Ventana")
+    ventana.show()
+    ventana.showMaximized()
+    sys.exit(app.exec())
+ 
         
-        self.framCuerpo.setLayout(self.gridlayoutCuerpo)
-        
-    def frame_double_click(self,event):
-        if event.button() == Qt.LeftButton:
-            print("Frame doble clickeado")
-            self.senal_cambio_ventana(333)
