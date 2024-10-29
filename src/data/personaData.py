@@ -254,9 +254,6 @@ class PersonaData:
                     direccion=data[8],
                     id=data[9]
                 )
-                print("Data")
-                print(repr(persona))
-                print("_________________")
                 resultado["success"] = True
                 resultado["data"] = persona
             else:
