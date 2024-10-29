@@ -159,12 +159,4 @@ class vistaPrincipal(QWidget):
         if index < 2:
             self.stackVistas.setCurrentIndex(index)
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    ventana = Ventana()
-    ventana.setWindowTitle("Prueba de Ventana")
-    ventana.show()
-    ventana.showMaximized()
-    sys.exit(app.exec())
- 
         
