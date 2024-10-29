@@ -160,12 +160,13 @@ class AdminPerson(QWidget):
 
     def _mostrar_mensaje_sin_datos(self):
         # Si la tabla está vacía, agregar una fila con el mensaje "Sin datos"
+        #Limpiamos las filas 
+        self.tbPersona.setRowCount(0)
         if self.tbPersona.rowCount() == 0:
             self.tbPersona.setRowCount(1)
             item = QTableWidgetItem("Sin datos")
             item.setTextAlignment(Qt.AlignCenter)
             self.tbPersona.setItem(0, 0, item)
-
             # Deshabilitar la edición de la celda y ocultar las celdas adicionales
             for col in range(1, self.tbPersona.columnCount()):
                 self.tbPersona.setItem(0, col, QTableWidgetItem(""))  # Celdas vacías
@@ -173,6 +174,7 @@ class AdminPerson(QWidget):
 
     def _cargar_tabla(self):
         result = self.Pservices.obtenerListaPersonas(pagina=self.paginaActual,tam_pagina=10,tipo_orden="DESC",busqueda=self.busqueda)
+        print(result)
         if result["success"]:
             if len(result["data"]) >=0:
                 listaPersona = result["data"]["listaPersonas"]

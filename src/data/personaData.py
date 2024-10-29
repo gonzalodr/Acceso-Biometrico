@@ -257,8 +257,7 @@ class PersonaData:
                 resultado["success"] = True
                 resultado["data"] = persona
             else:
-                resultado["success"] = False
-                resultado["message"] = "No se encontró ninguna persona con el ID proporcionado."
+                raise ValueError("No se encontró ninguna persona con el ID proporcionado.")
         except Exception as e:
             resultado["success"] = False
             resultado["message"] = f"Error al obtener persona: {e}"

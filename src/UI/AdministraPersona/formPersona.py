@@ -107,21 +107,6 @@ class formPersona(QDialog):
         
         layoutForm.addWidget(lblDirecc,6,1)
         layoutForm.addWidget(self.inputDireccion,7,1)
-        """
-        llenar el form con los datos id del objetos
-        """
-        if id != None:
-            self.idP = id
-            persona:Persona = self._obtener_registroId(id)
-            print(repr(persona))
-            self.inputNombre.setText(persona.nombre)
-            self.inputApellido1.setText(persona.apellido1)
-            self.inputApellido2.setText(persona.apellido2)
-            self.inputNacimiento.setDate(QDate.fromString(str(persona.fecha_nacimiento), "yyyy-MM-dd"))
-            self.inputCedula.setText(persona.cedula)
-            self.inputCorreo.setText(persona.correo)
-            self.inputDireccion.setPlainText(persona.direccion)
-            self.inputEstCivil.setCurrentText(persona.estado_civil)
         
         
         """Acomodando el resto del layout
@@ -146,17 +131,17 @@ class formPersona(QDialog):
         layoutFrame.addLayout(layoutForm)
         layoutFrame.addLayout(boton_layout)
         
-        
         boton_box.accepted.connect(self._accion_persona)
-    
         boton_box.rejected.connect(self._cancelar_registro)        
-        
+
         frame.setLayout(layoutFrame)
         layout = QVBoxLayout()
         layout.setContentsMargins(0,0,0,0)
         layout.addWidget(frame)
         self.setLayout(layout)
         Sombrear(self,30,0,0,"green")
+        if id:
+            self._obtener_registroId(id)
         
     def eventFilter(self, source, event):
         if event.type() == 10:  # Enter (Mouse Enter)
@@ -172,7 +157,6 @@ class formPersona(QDialog):
         dialEmergente = DialogoEmergente("¿?","¿Estas seguro que que quieres cancelar?","Question",True,True)
         opcion = dialEmergente.exec()
         if opcion == QDialog.Accepted:
-            print("Se aceptó el diálogo.")
             self.reject()
         elif opcion == QDialog.Rejected:
             print("Se rechazó el diálogo.")
@@ -203,15 +187,26 @@ class formPersona(QDialog):
         result = self.Pservices.obtenerPersonaPorId(id)
         if result["success"]:
             if result["data"]:
-                return result["data"]
+                persona:Persona = result["data"]
+                self.idP = persona.id
+                self.inputNombre.setText(persona.nombre)
+                self.inputApellido1.setText(persona.apellido1)
+                self.inputApellido2.setText(persona.apellido2)
+                self.inputNacimiento.setDate(QDate.fromString(str(persona.fecha_nacimiento), "yyyy-MM-dd"))
+                self.inputCedula.setText(persona.cedula)
+                self.inputCorreo.setText(persona.correo)
+                self.inputDireccion.setPlainText(persona.direccion)
+                self.inputEstCivil.setCurrentText(persona.estado_civil)
             else:
                 dial = DialogoEmergente("Error","Hubo un error de carga.","Error")
                 dial.exec()
-                self.reject()
+                QTimer.singleShot(0, self.reject)
+                return None
         else:
             dial = DialogoEmergente("Error","Hubo un error de carga.","Error")
             dial.exec()
-            self.reject()
+            QTimer.singleShot(0, self.reject)
+            return None
     
     def _accion_persona(self):
         person:Persona = Persona(
@@ -229,6 +224,8 @@ class formPersona(QDialog):
         if self._validar_campos():
             if self.idP:
                 result = self.Pservices.modificarPersona(person)
+                print(repr(person))
+                print(result)
                 if result["success"]:
                     dial = DialogoEmergente("Actualizacion",result["message"],"Check")
                     dial.exec()
@@ -238,6 +235,8 @@ class formPersona(QDialog):
                     dial.exec()
             else:
                 result = self.Pservices.insertarPersona(person)
+                print(repr(person))
+                print(result)
                 if result["success"]:
                     dial = DialogoEmergente("Registrar","Persona registrada exitosamente","Check")
                     dial.exec()
