@@ -12,6 +12,7 @@
 QLabel {
     border-radius: 10px;
     background-color: transparent;
+    color: #000000; /* Asegura que el texto del encabezado esté en negro */
 }
 
 #frameEmerg #mensaje{

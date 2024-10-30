@@ -27,6 +27,7 @@
     background-color:transparent;
     font-size:15px;border:none;
     border-bottom:1px solid #000000;
+    color: #000000; /* Texto en negro para el campo de entrada */
 }
 #admin QLabel{
     background-color:transparent;
@@ -43,6 +44,7 @@ QTableWidget {
     background-color: #AAAAAA;
     border-radius:10px;
     border:1px solid #000000;
+    color: #000000; /* Asegura que el texto en toda la tabla sea negro */
 }
 
 QTableWidget::item {

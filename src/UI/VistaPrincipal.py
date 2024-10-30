@@ -4,6 +4,7 @@ from PySide6.QtCore import *
 from Utils.Utils import *
 from UI.slideBar import *
 from UI.AdministraPersona.adminPersona import *
+from UI.AdministraDepartamento.adminDepartamento import *  # Importa la clase AdminDepartamento
 from models.usuario import *
 import sys
 
@@ -127,6 +128,12 @@ class vistaPrincipal(QWidget):
             adminpersona.cerrar_adminP.connect(self._salir_crud)
             index =  self.stackVistas.addWidget(adminpersona)
             self.listaOpciones.append((index,"Administrar Persona")) 
+            
+            # Agregando la nueva opción para administrar departamentos
+           ## admindepartamento = AdminDepartament(parent=self)  # Instancia de la clase
+           ## admindepartamento.cerrar_adminD.connect(self._salir_crud)
+            ##index_departamento = self.stackVistas.addWidget(admindepartamento)  # Añadiendo al stack
+            ##self.listaOpciones.append((index_departamento, "Administrar Departamento"))  # Agregando a la lista de opciones
 
         self.stackVistas.setCurrentIndex(0)
         pass
