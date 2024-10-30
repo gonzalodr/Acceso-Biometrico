@@ -6,6 +6,7 @@
 #sidebarWidget QPushButton{
     background-color:#EEEEEE;
     border-radius:10px;
+    color: #000000; /* Asegura que el texto del encabezado esté en negro */
     font: 100 12pt "Cooper Black";
 }
 
@@ -20,5 +21,6 @@
 #sidebarWidget #iconoUser{
     background-color:transparent;
     border-radius:75px;
+    color: #000000; /* Asegura que el texto del encabezado esté en negro */
     font: 100 12pt "Cooper Black";
 }

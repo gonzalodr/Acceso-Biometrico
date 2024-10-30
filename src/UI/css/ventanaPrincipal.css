@@ -9,6 +9,7 @@
 
 #frameEnca QLabel{
     background-color:transparent;
+    color: #000000; /* Asegura que el texto del encabezado esté en negro */
     font: 100 18pt "Cooper Black";
 }
 #frameEnca #iconoUser{
@@ -39,5 +40,6 @@
 }
 #widgetDefault QLabel{
     background-color:transparent;
+    color: #000000; /* Asegura que el texto del encabezado esté en negro */
     font: 100 30pt "Cooper Black";
 }

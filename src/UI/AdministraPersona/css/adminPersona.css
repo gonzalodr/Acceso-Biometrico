@@ -27,6 +27,7 @@
     background-color:transparent;
     font-size:15px;border:none;
     border-bottom:1px solid #000000;
+    color: #000000; /* Texto en negro para el campo de entrada */
 }
 #admin QLabel{
     background-color:transparent;
