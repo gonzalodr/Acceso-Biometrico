@@ -8,7 +8,7 @@ from services.personaService import *
 class formPersona(QDialog):
     update:bool = False
     Pservices = PersonaServices()
-    idP = None
+    idP = 0
     
     def __init__(self, parent=None, titulo="Registrar persona.",id = None):
         super().__init__(parent)
@@ -34,6 +34,22 @@ class formPersona(QDialog):
         layoutForm.setHorizontalSpacing(45)
         
         """LLenando lado derecho 8 inputs"""
+        lblFoto = QLabel(text="Foto. (opcional)")
+        self.lblicono = QLabel(text="")
+        self.lblicono.setFixedSize(100,70)
+        self.url_foto = ""
+        self.btnFoto = QPushButton(text="seleccionar foto")
+        self.btnFoto.setMinimumHeight(35)
+        self.btnFoto.clicked.connect(self._seleccionar_foto)
+        
+        layoutFoto = QHBoxLayout()
+        layoutFoto.setContentsMargins(0,0,0,0)
+        layoutFoto.addWidget(lblFoto)
+        layoutFoto.addSpacing(5)
+        layoutFoto.addWidget(self.btnFoto)
+             
+        
+        
         lblNombre = QLabel(text="Nombre")   
         self.inputNombre = QLineEdit()
         self.inputNombre.setPlaceholderText("Ingrese su nombre")
@@ -58,17 +74,20 @@ class formPersona(QDialog):
         self.inputCedula.installEventFilter(self)
         Sombrear(self.inputCedula,20,0,0)
         
-        layoutForm.addWidget(lblNombre,0,0)
-        layoutForm.addWidget(self.inputNombre,1,0)
+        layoutForm.addLayout(layoutFoto,0,0)
+        layoutForm.addWidget(self.lblicono,1,0)
         
-        layoutForm.addWidget(lblApellido1,2,0)
-        layoutForm.addWidget(self.inputApellido1,3,0)
+        layoutForm.addWidget(lblNombre,2,0)
+        layoutForm.addWidget(self.inputNombre,3,0)
         
-        layoutForm.addWidget(lblApellido2,4,0)
-        layoutForm.addWidget(self.inputApellido2,5,0)
+        layoutForm.addWidget(lblApellido1,4,0)
+        layoutForm.addWidget(self.inputApellido1,5,0)
         
-        layoutForm.addWidget(lblCedula,6,0)
-        layoutForm.addWidget(self.inputCedula,7,0,Qt.AlignTop)
+        layoutForm.addWidget(lblApellido2,6,0)
+        layoutForm.addWidget(self.inputApellido2,7,0)
+        
+        layoutForm.addWidget(lblCedula,8,0)
+        layoutForm.addWidget(self.inputCedula,9,0,Qt.AlignTop)
         
         """Llenando el lado izquierdo 8 inputs"""
         lblNacim = QLabel(text="Fecha Nacimiento")
@@ -142,6 +161,27 @@ class formPersona(QDialog):
         Sombrear(self,30,0,0,"green")
         if id:
             self._obtener_registroId(id)
+            
+    def _seleccionar_foto(self):
+        if len(self.url_foto) == 0: 
+            file_path, _ = QFileDialog.getOpenFileName(
+                self,
+                "Seleccionar Imagen",
+                "",
+                "Imágenes (*.png *.jpg *.jpeg)"
+            )
+            if file_path:
+                pixmap = QPixmap(file_path)
+                self.lblicono.setPixmap(pixmap.scaled(self.lblicono.size()))
+                self.url_foto = file_path
+                self.btnFoto.setText("Eliminar foto")
+            else:
+                pass
+        else:
+            self.lblicono.clear()
+            self.url_foto = ""
+            self.btnFoto.setText("Seleccionar foto")
+            
         
     def eventFilter(self, source, event):
         if event.type() == 10:  # Enter (Mouse Enter)
@@ -209,6 +249,14 @@ class formPersona(QDialog):
             return None
     
     def _accion_persona(self):
+        fotografia = None
+        try:
+            with open(self.url_foto, "rb") as file:
+                fotografia = file.read()
+        except Exception as e:
+            print(f"Error al cargar foto: {e}")
+            fotografia = None
+            
         person:Persona = Persona(
             nombre = self.inputNombre.text(),
             apellido1 = self.inputApellido1.text(),
@@ -219,15 +267,14 @@ class formPersona(QDialog):
             estado_civil = self.inputEstCivil.currentText(),
             direccion=self.inputDireccion.toPlainText(),
             id=self.idP,
-            foto = None
+            foto = fotografia
         )
         if self._validar_campos():
-            if self.idP:
+            if self.idP > 0:
                 result = self.Pservices.modificarPersona(person)
-                print(repr(person))
                 print(result)
                 if result["success"]:
-                    dial = DialogoEmergente("Actualizacion",result["message"],"Check")
+                    dial = DialogoEmergente("Actualización",result["message"],"Check")
                     dial.exec()
                     self.reject()
                 else:
@@ -235,7 +282,6 @@ class formPersona(QDialog):
                     dial.exec()
             else:
                 result = self.Pservices.insertarPersona(person)
-                print(repr(person))
                 print(result)
                 if result["success"]:
                     dial = DialogoEmergente("Registrar","Persona registrada exitosamente","Check")

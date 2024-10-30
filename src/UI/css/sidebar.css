@@ -18,7 +18,7 @@
     color: white;
 }
 #sidebarWidget #iconoUser{
-    background-color:#AAAAAA;
+    background-color:transparent;
     border-radius:75px;
     font: 100 12pt "Cooper Black";
 }

@@ -6,7 +6,7 @@ from UI.DialogoEmergente import *
 
 class SlideBar(QWidget):
     index_opcion_selecionada = Signal(int)
-    senal_abrirConfig =Signal()
+    senal_abrirConfig = Signal()
     
     def __init__(self,parent= None, listaOpciones=[]):
         """
@@ -117,11 +117,13 @@ class SlideBar(QWidget):
         for btn in self.grupoOpciones.buttons():
             btn.setChecked(False) #Deselecciona el btn
 
-    def accion_anim(self):
+    def accion_anim(self,btnSidebar):
         if self.tamano == 60:
             self._animacion_abrir()
+            cargar_icono_svg(QObjeto=btnSidebar,archivoSVG="arrow-bar-left.svg")
         elif self.tamano == 300:
             self._animacion_cerrar()
+            cargar_icono_svg(QObjeto=btnSidebar,archivoSVG="arrow-bar-right.svg")
 
     def _animacion_cerrar(self):
         # Crear animación para reducir el ancho
@@ -131,25 +133,10 @@ class SlideBar(QWidget):
         anim_cerrar.setStartValue(self.tamano)
         anim_cerrar.setEndValue(50)
         anim_cerrar.start()
-        
-        # # Crear animación para ocultar el QLabel
-        # ocultarIcono = QPropertyAnimation(self.lblUsuario, b"opacity",self.lblUsuario)
-        # ocultarIcono.setDuration(100)
-        # ocultarIcono.setStartValue(1)
-        # ocultarIcono.setEndValue(0)
-        # ocultarIcono.start()
-        # ocultarIcono.setEasingCurve(QEasingCurve.InOutQuad)
-
-        # # Agrupar las animaciones para ejecutarlas en paralelo
-        # animGrupo = QParallelAnimationGroup(self)
-        # animGrupo.addAnimation(anim_cerrar)
-        # animGrupo.addAnimation(ocultarIcono)
-        # animGrupo.start()
         self.tamano = 60
         self.lblUsuario.setVisible(False)
 
     def _animacion_abrir(self):
-        
         # Crear animación para aumentar el ancho
         anim_abrir = QPropertyAnimation(self, b"maximumWidth",self)
         anim_abrir.setDuration(500)
@@ -157,18 +144,5 @@ class SlideBar(QWidget):
         anim_abrir.setStartValue(self.tamano)
         anim_abrir.setEndValue(300)
         anim_abrir.start()
-        # # Crear animación para mostrar el QLabel
-        # mostrar_Icon = QPropertyAnimation(self.lblUsuario, b"opacity",self.lblUsuario)
-        # mostrar_Icon.setDuration(100)
-        # mostrar_Icon.setStartValue(0)
-        # mostrar_Icon.setEndValue(1)
-        # mostrar_Icon.start()
-        # # mostrar_Icon.setEasingCurve(QEasingCurve.InOutQuad)
-
-        # # Agrupar las animaciones para ejecutarlas en paralelo
-        # animGrupo = QParallelAnimationGroup(self)
-        # animGrupo.addAnimation(anim_abrir)
-        # animGrupo.addAnimation(mostrar_Icon)
-        # animGrupo.start()
         self.tamano = 300
         self.lblUsuario.setVisible(True)

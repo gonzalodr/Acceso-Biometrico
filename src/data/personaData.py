@@ -8,11 +8,13 @@ class PersonaData:
     ##
     # Se guarda un objeto persona
     # ##
-    def create_persona(self, persona: Persona):
-        conexion, resultado = conection()
-        if not resultado["success"]:
-            return resultado
-        
+    def create_persona(self, persona: Persona, conexion_externa = None):
+        if conexion_externa is None:
+            conexion, resultado = conection()
+            if not resultado["success"]:
+                return resultado
+        else:
+            conexion = conexion_externa
         try:
             cursor = conexion.cursor()
             query = f"""INSERT INTO {TBPERSONA} (
@@ -26,7 +28,7 @@ class PersonaData:
                 {TBPERSONA_CORREO} , 
                 {TBPERSONA_DIRECCION}) 
                 VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s)"""
-            
+    
             cursor.execute(query, (
                 persona.foto,
                 persona.nombre,
@@ -38,15 +40,20 @@ class PersonaData:
                 persona.correo,
                 persona.direccion
             ))
-            
             conexion.commit()
+            
+            id_persona = cursor.lastrowid
+            
             resultado["success"] = True
             resultado["message"] = "Persona creada exitosamente."
+            resultado["id_persona"] = id_persona
         except Exception as e:
             resultado["success"] = False
             resultado["message"] = f"Error al crear persona: {e}"
         finally:
-            if conexion:
+            if cursor and conexion_externa is None:
+                cursor.close()
+            if conexion and conexion_externa is None:
                 conexion.close()
         return resultado
 

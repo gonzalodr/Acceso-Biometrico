@@ -53,9 +53,11 @@ class vistaPrincipal(QWidget):
         """
             btnAbrir_SideBar: Este boton nos permitirar abrir y cerrar nuestro sidebar de la ventana
         """
-        self.btnAbrir_SideBar = QPushButton(text="=")
+        self.btnAbrir_SideBar = QPushButton(text="")
         self.btnAbrir_SideBar.setCursor(Qt.PointingHandCursor)
-        self.btnAbrir_SideBar.setMaximumSize(QSize(40,40))
+        self.btnAbrir_SideBar.setMaximumSize(QSize(45,45))
+        self.btnAbrir_SideBar.setContentsMargins(3,3,3,3)
+        cargar_icono_svg(QObjeto=self.btnAbrir_SideBar,archivoSVG="arrow-bar-right.svg")
         Sombrear(self.btnAbrir_SideBar,20,0,5)
         
         
@@ -74,6 +76,7 @@ class vistaPrincipal(QWidget):
         self.lblIconoUser.setObjectName("iconoUser")
         self.lblIconoUser.setMaximumSize(QSize(50,50))
         self.lblIconoUser.setMinimumSize(QSize(50,50))
+        self.cargar_imagen_usuario(self.lblIconoUser)
         Sombrear(self.lblIconoUser,30,0,5)
         
         """
@@ -98,14 +101,15 @@ class vistaPrincipal(QWidget):
         self._llenar_stack_vista()
         
         self.sidebar = SlideBar(listaOpciones=self.listaOpciones)
-        self.btnAbrir_SideBar.clicked.connect(self.sidebar.accion_anim)
+        self.cargar_imagen_usuario(self.sidebar.lblUsuario)
+        self.btnAbrir_SideBar.clicked.connect(lambda click, btn = self.btnAbrir_SideBar:self.sidebar.accion_anim(btnSidebar=btn))
 
         """Recibimos una señal la cual nos servira para detectar los btn del sidebar"""
         self.sidebar.index_opcion_selecionada.connect(self.seleccion_sidebar)
         
         layoutCuerpo.addWidget(self.sidebar,1)
         layoutCuerpo.addWidget(self.stackVistas,3)
-        self._llenar_stack_vista() 
+        
         """Agregando sidebar"""
         layoutFrame.addLayout(layoutCuerpo,9)
         
@@ -123,10 +127,12 @@ class vistaPrincipal(QWidget):
             Aqui se crean las vistas de acuerdo a los permisos
         """
         if True:
-            adminpersona = AdminPerson(parent=self)
+            adminpersona = AdminPersona(parent=self)
             adminpersona.cerrar_adminP.connect(self._salir_crud)
             index =  self.stackVistas.addWidget(adminpersona)
             self.listaOpciones.append((index,"Administrar Persona")) 
+
+
 
         self.stackVistas.setCurrentIndex(0)
         pass
@@ -158,5 +164,21 @@ class vistaPrincipal(QWidget):
     def seleccion_sidebar(self,index):
         if index < 2:
             self.stackVistas.setCurrentIndex(index)
-
-        
+    
+    def cargar_imagen_usuario(self,user,imagen = None):
+        try:
+            if imagen is not None:
+                if not isinstance(imagen, bytes):
+                    imagen = bytes(imagen)
+                
+                pixmap = QPixmap()
+                pixmap.loadFromData(imagen)
+                pixmap = pixmap.scaled(user.size(),Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                user.setPixmap(pixmap)
+            else:
+                raise ValueError("La imagen es nulo")
+        except Exception as e: 
+            if hasattr(user, 'setPixmap'):
+                cargar_icono_svg(QObjeto=user, carpeta="iconos", archivoSVG="person-circle.svg")
+            else:
+                print("El objeto proporcionado no es un QLabel o no tiene el método setPixmap.")

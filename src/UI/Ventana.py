@@ -3,6 +3,7 @@ from PySide6.QtCore import *
 from models.usuario import Usuario
 from UI.inicioSesion import *
 from UI.VistaPrincipal import *
+from UI.DialogoEmergente import *
 
 
 ##
@@ -24,6 +25,13 @@ class Ventana(QMainWindow):
     def _autenticacion_login(self,user:Usuario):
         vista = vistaPrincipal(usuario=user)
         self.setCentralWidget(vista)
+    
+    def closeEvent(self, event):
+        dial = DialogoEmergente("¿?","¿Estas seguro que quieres cerrar la aplicación?","Question",True,True)
+        if dial.exec() == QDialog.Accepted:
+            event.accept()  # Aceptar el cierre de la ventana
+        else:
+            event.ignore() 
 
                 
         

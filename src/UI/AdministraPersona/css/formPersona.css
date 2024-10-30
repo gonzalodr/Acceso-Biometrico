@@ -17,7 +17,13 @@
     background-color: transparent;
     font: 10 13pt "Cooper Black";
 }
-
+#formFrame QPushButton{
+    background-color: #dadada;
+    color: #000000;
+    font: 10 12pt "Arial";
+    border-radius: 5px;
+    border: 1px solid #818181;
+}
 #formPersona QLineEdit{
     background-color:transparent;
     font-size:15px;border:none;

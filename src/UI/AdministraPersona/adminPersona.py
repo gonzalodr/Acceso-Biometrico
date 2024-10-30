@@ -4,7 +4,7 @@ from Utils.Utils import *
 from UI.AdministraPersona.formPersona import *
 from services.personaService import *
 
-class AdminPerson(QWidget):
+class AdminPersona(QWidget):
     cerrar_adminP = Signal()
     paginaActual = 1
     ultimaPagina = 1
@@ -88,6 +88,7 @@ class AdminPerson(QWidget):
         self.tbPersona.horizontalHeader().setFixedHeight(40)
         self.tbPersona.verticalHeader().setVisible(False)
         self.tbPersona.horizontalHeader().setStretchLastSection(True)
+        self.tbPersona.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         Sombrear(self.tbPersona,30,0,0)
 
         # self.tbPersona.setStyleSheet()
@@ -174,7 +175,6 @@ class AdminPerson(QWidget):
 
     def _cargar_tabla(self):
         result = self.Pservices.obtenerListaPersonas(pagina=self.paginaActual,tam_pagina=10,tipo_orden="DESC",busqueda=self.busqueda)
-        print(result)
         if result["success"]:
             if len(result["data"]) >=0:
                 listaPersona = result["data"]["listaPersonas"]
@@ -204,12 +204,16 @@ class AdminPerson(QWidget):
                     btnEliminar = QPushButton(text="Eliminar")
                     btnEliminar.clicked.connect(lambda checked, idx=persona.id: self._eliminarRegistro(idx))
                     btnEliminar.setMinimumSize(QSize(80,35))
-                    btnEliminar.setStyleSheet("background-color:green;color:white;")
+                    btnEliminar.setStyleSheet("""   QPushButton{background-color:#ff5151;color:white;}
+                                                    QPushButton::hover{background-color:#ff0000;color:white;}
+                                              """)
 
                     btnEditar = QPushButton("Editar")
                     btnEditar.clicked.connect(lambda checked, idx = persona.id: self._editar_Persona(idx))
                     btnEditar.setMinimumSize(QSize(80,35))
-                    btnEditar.setStyleSheet("background-color:red;color:white;")
+                    btnEditar.setStyleSheet(""" QPushButton{background-color:#00b800;color:white;}
+                                                QPushButton::hover{background-color:#00a800;color:white;}
+                                            """)
                     
                     button_widget = QWidget()
                     button_widget.setStyleSheet(u"background-color:transparent;")
