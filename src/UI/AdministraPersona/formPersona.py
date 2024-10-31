@@ -6,11 +6,27 @@ from UI.DialogoEmergente import *
 from services.personaService import *
 
 class formPersona(QDialog):
-    update:bool = False
-    Pservices = PersonaServices()
-    idP = 0
-    fotografia = None
+    update:bool = False ##en teoria no se necesita
+    Pservices = PersonaServices() # lo cambian por su servis
+    idP = 0 ##el ide del registro este solo se usan para saber si esta modificando o creando
+    fotografia = None ##esto no lo necesitan
+    ##constructor
     def __init__(self, parent=None, titulo="Registrar persona.",id = None):
+        
+        """
+            Formulario que permite tanto registrar como modifcara.
+            
+            :param parent: por defecto lo pueden dejar nulo
+            
+            :param titulo: este recibe el titulo del formular, por defecto Registrar persona 
+            en caso de que se modificar algun registro se le pasa titulo actualizar
+            
+            :param id: por defecto biene nulo, si es nulo es que va a crear un registro si no es nulo
+            y este parametro se pasa significa que va a modificar
+        """
+        
+        
+        
         super().__init__(parent)
         self.setObjectName("formPersona")
         self.setMinimumSize(QSize(700,650))
@@ -33,7 +49,10 @@ class formPersona(QDialog):
         layoutForm.setContentsMargins(20,10,20,20)
         layoutForm.setHorizontalSpacing(45)
         layoutForm.setVerticalSpacing(1)
-        
+        """
+            De aqui hacia abajo, si son mas de 3 o 4 registros, preferible colocarlos 
+            en una sola columna del layoutForm
+        """
         """LLenando lado derecho 5 inputs"""
         lblFoto = QLabel(text="Foto. (opcional)")
         self.lblicono = QLabel(text="")
@@ -49,7 +68,7 @@ class formPersona(QDialog):
         layoutFoto.addWidget(self.btnFoto)
              
         
-        
+        """Crean los labels, inputs y labels de error"""
         lblNombre = QLabel(text="Nombre")   
         self.inputNombre = QLineEdit()
         self.inputNombre.setPlaceholderText("Ingrese su nombre")
@@ -79,6 +98,20 @@ class formPersona(QDialog):
         self.errorCedula =QLabel()
         Sombrear(self.inputCedula,20,0,0)
         
+        """
+            usan la funcion contenedor para agregar los inputs 
+            primero el label nombre del input, luego el input, luego el label de error.
+            
+            los ultimos dos numeros indican la fila y posicion como una matriz
+            preferible desde la columna iniciar de la columna 0 y fila 0
+              0 1 2 3 4
+            0| | | | | |   
+            1| | | | | |
+            2| | | | | |
+            3| | | | | |
+            4| | | | | |
+        """
+        """Llenando la columna 0 de nuestro form"""
         layoutForm.addLayout(layoutFoto,0,0)
         layoutForm.addWidget(self.lblicono,1,0)
         layoutForm.addLayout(self._contenedor(lblNombre,self.inputNombre,self.errorNombre),2,0)
@@ -86,6 +119,9 @@ class formPersona(QDialog):
         layoutForm.addLayout(self._contenedor(lblApellido2,self.inputApellido2,self.errorApellido2),4,0)
         layoutForm.addLayout(self._contenedor(lblCedula,self.inputCedula,self.errorCedula),5,0)
         
+        """En caso de ser muchos inputs colocar parte en la primera columna 
+            y parte en la segunda en la segunda columna del form
+        """
         """Llenando el lado izquierdo 4 inputs"""
         lblNacim = QLabel(text="Fecha Nacimiento")
         self.inputNacimiento = QDateEdit()
@@ -99,7 +135,7 @@ class formPersona(QDialog):
         self.inputCorreo = QLineEdit()
         self.inputCorreo.setPlaceholderText("Ingrese su correo electrónico. Ejem: persona@example.com")
         self.inputCorreo.installEventFilter(self)
-        self.inputCorreo.editingFinished.connect(self._verificar_correo)##
+        self.inputCorreo.editingFinished.connect(self._verificar_correo)## aqui para revisar en "tiempo real" si el correo existe o si ya esta registrado
         self.errorCorreo =QLabel()
         Sombrear(self.inputCorreo,20,0,0)
         
@@ -116,6 +152,7 @@ class formPersona(QDialog):
         self.errorDireccion =QLabel()
         Sombrear(self.inputDireccion,20,0,0)
         
+        """LLenando el form la columna 1 """
         layoutForm.addLayout(self._contenedor(lblNacim,self.inputNacimiento,self.errorNacimiento),2,1)
         layoutForm.addLayout(self._contenedor(lblCorreo,self.inputCorreo,self.errorCorreo),3,1)
         layoutForm.addLayout(self._contenedor(lblEstCivil,self.inputEstCivil,self.errorEstCivil),4,1)
@@ -144,6 +181,9 @@ class formPersona(QDialog):
         layoutFrame.addLayout(layoutForm)
         layoutFrame.addLayout(boton_layout)
         
+        """Asegurense de que los metodos tiene su propio nombre y funcionen correctamente
+            aqui conecta los botones con el metodo realizar registro o cancelar
+        """
         boton_box.accepted.connect(self._accion_persona)
         boton_box.rejected.connect(self._cancelar_registro)        
 
@@ -153,9 +193,12 @@ class formPersona(QDialog):
         layout.addWidget(frame)
         self.setLayout(layout)
         Sombrear(self,30,0,0,"green")
+        
+        """Aqui se revisa si el formulario recibio un id por parametros"""
         if id:
-            self._obtener_registroId(id)
+            self._obtener_registroId(id)##carga los inputs con los datos de la consulta obtener por id
       
+    """Esto no se toca"""  
     def _contenedor(self,label:QLabel,input,label_error:QLabel):
         layout = QVBoxLayout()
         layout.setContentsMargins(0,0,0,0)
@@ -171,6 +214,10 @@ class formPersona(QDialog):
         layout.addWidget(label_error)
         return layout
     
+    """Estos metodos son especificos para mi crud persona
+        lo pueden usar de referencia en caso de que algun dato se deba revisar si ya esta en la bd
+        o si cumple con lo que se requiere
+    """
     def _verificar_correo(self):
         correo = self.inputCorreo.text()
         if correo.strip():
@@ -192,7 +239,8 @@ class formPersona(QDialog):
             else:
                 Sombrear(self.inputCedula,20,0,0)
                 self.errorCedula.setText("")
-                  
+         
+    """Metodo especifico de mi crud"""         
     def _seleccionar_foto(self):
         if self.fotografia is None: 
             file_path, _ = QFileDialog.getOpenFileName(
@@ -218,7 +266,10 @@ class formPersona(QDialog):
             self.lblicono.clear()
             self.btnFoto.setText("Seleccionar foto")
             self.fotografia = None
-                 
+     
+    """Solo lo hice para que al pasar el cursor por un inpunt muestre un mesaje
+        no es tan necesario lo pueden dejar a como esta
+    """            
     def eventFilter(self, source, event):
         if event.type() == 10:  # Enter (Mouse Enter)
             if isinstance(source, QLineEdit): 
@@ -229,7 +280,12 @@ class formPersona(QDialog):
                 QToolTip.hideText()
         return super().eventFilter(source, event)
      
+    """Cancelar, muesstra mensaje si el usuario 
+        le dio cancelar pero tenia inputs ya llenados
+    """ 
     def _cancelar_registro(self):
+        
+        """Si se encuentra inputs con datos entonces pregunta si esta seguro retirarse"""
         if self._validar_inputs_sin_con_datos():
             dialEmergente = DialogoEmergente("¿?","¿Estas seguro que que quieres cancelar?","Question",True,True)
             opcion = dialEmergente.exec()
@@ -237,11 +293,14 @@ class formPersona(QDialog):
                 self.reject()
             elif opcion == QDialog.Rejected:
                 print("Se rechazó el diálogo.")
-        else:
+        else:##si los inputs estan sin datos entonces cierra el formulario de manera normal
             self.reject()##cerrar la ventana
             
+    """Este metodo se usa para la funcion
+        accion persona lo cual se encarga de insertar o actualizar en bd
+    """        
     def _validar_campos(self):
-        # Verifica si los campos requeridos están vacíos
+        # Verifica si los campos requeridos están vacíos entonces muestra una alerta
         if self._validar_inputs_vacios():
             dialEmergente = DialogoEmergente("Advertencia","Llene todos los campos.","Warning")
             dialEmergente.exec()
@@ -249,14 +308,17 @@ class formPersona(QDialog):
         else:
             return True
     
+    """Reviza que los inputs esten llenados antes de insertar
+        se usa en la funcion _validar_campos
+    """
     def _validar_inputs_vacios(self):
         vacios:bool = False
             
-        if not self.inputNombre.text().strip():
+        if not self.inputNombre.text().strip(): ##si no tienes datos, los sombres de rojo
             Sombrear(self.inputNombre,20,0,0,"red")
             vacios = True
         else:
-            Sombrear(self.inputNombre,20,0,0)
+            Sombrear(self.inputNombre,20,0,0) ##de lo contrario los regresa al estado normal
             
         if not self.inputApellido1.text().strip():
             Sombrear(self.inputApellido1,20,0,0,"red")
@@ -302,18 +364,27 @@ class formPersona(QDialog):
             
         return vacios
     
+    """Validacion para cancelar registro
+        se fija si hay algun input con datos
+        return true si es asi
+    """
     def _validar_inputs_sin_con_datos(self):
         if self.inputNombre.text().strip() or self.inputApellido1.text().strip() or self.inputApellido2.text().strip() or self. inputCedula.text().strip() or self.inputCorreo.text().strip() or self.inputDireccion.toPlainText().strip():
             return True
         else:
             return False
     
+    """El ide que recibimos en el constructor lo usarmos en este metodo, para llenar los inputso esto
+        en el caso de modificar
+    """
     def _obtener_registroId(self, id):
         result = self.Pservices.obtenerPersonaPorId(id)
         if result["success"]:
             if result["data"]:
                 persona:Persona = result["data"]
+                ##guarda ele ide para saber que registro se va a modifcar
                 self.idP = persona.id
+                ##llena los inputs
                 self.fotografia = persona.foto
                 self.inputNombre.setText(persona.nombre)
                 self.inputApellido1.setText(persona.apellido1)
@@ -342,6 +413,10 @@ class formPersona(QDialog):
             QTimer.singleShot(0, self.reject)
             return None
     
+    
+    """"Este metodo se encarga tanto de guardar como de actualizar los
+        con los datos del formulario d
+    """
     def _accion_persona(self):
 
         person:Persona = Persona(
@@ -356,7 +431,7 @@ class formPersona(QDialog):
             id=self.idP,
             foto = self.fotografia
         )
-        if self._validar_campos():
+        if self._validar_campos():##valida si todos los campos necesarios estan llenos
             result = self.Pservices.verificacionCorreo(correo=self.inputCorreo.text(),id=self.idP)
             if not result["success"]:
                 self.errorCorreo.setText(result["message"])
@@ -368,7 +443,7 @@ class formPersona(QDialog):
                 Sombrear(self.inputCedula,20,0,0,"red")
                 return
                
-            if self.idP > 0:
+            if self.idP > 0:##si el atributo idP es mayor a 0 quiere decir que se va actualizar 
                 result = self.Pservices.modificarPersona(person)
                 print(result)
                 if result["success"]:
@@ -378,7 +453,7 @@ class formPersona(QDialog):
                 else:
                     dial = DialogoEmergente("Erro","Error al actualizar a la persona","Error")
                     dial.exec()
-            else:
+            else:#de lo contrario lo toma como un crear
                 result = self.Pservices.insertarPersona(person)
                 print(result)
                 if result["success"]:
