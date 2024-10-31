@@ -5,6 +5,65 @@ from settings.config import *
 
 
 class PersonaData:
+    
+    def cedula_exists(self, cedula: str, persona_id: int = None) -> bool:
+        """Verifica si la cédula ya existe en la base de datos."""
+        conexion, resultado = conection()  # Asegúrate de tener una función de conexión adecuada
+        if not resultado["success"]:
+            return True  # Retorna True si la conexión falla para evitar continuar
+        
+        try:
+            cursor = conexion.cursor()
+            
+            # Consulta para verificar la existencia de la cédula
+            query = f"SELECT COUNT(*) FROM {TBPERSONA} WHERE {TBPERSONA_CEDULA} = %s"
+            
+            # Agregamos una cláusula para ignorar el ID proporcionado
+            if persona_id is not None and persona_id > 0:
+                query += f" AND id != %s"
+                cursor.execute(query, (cedula, persona_id))
+            else:
+                cursor.execute(query, (cedula,))
+            
+            count = cursor.fetchone()[0]
+            return count > 0  # Retorna True si hay al menos una cédula encontrada
+        except Exception as e:
+            print(f"Error al verificar la cédula: {e}")
+            return True  # Retorna True en caso de error para evitar duplicados
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
+    
+    
+    def email_exists(self, email: str, persona_id: int = None) -> bool:
+        """Verifica si el correo electrónico ya existe en la base de datos."""
+        conexion, resultado = conection()  # Asegúrate de tener una función de conexión adecuada
+        if not resultado["success"]:
+            return True  # Retorna True si la conexión falla para evitar continuar
+        
+        try:
+            cursor = conexion.cursor()
+            # Consulta para verificar la existencia del correo
+            query = f"SELECT COUNT(*) FROM {TBPERSONA} WHERE {TBPERSONA_CORREO} = %s"
+            # Agregamos una cláusula para ignorar el ID proporcionado
+            if persona_id is not None and persona_id > 0:
+                query += f" AND id != %s"
+                cursor.execute(query, (email, persona_id))
+            else:
+                cursor.execute(query, (email,))
+            
+            count = cursor.fetchone()[0]
+            return count > 0  # Retorna True si hay al menos un correo encontrado
+        except Exception as e:
+            print(f"Error al verificar el correo: {e}")
+            return True  # Retorna True en caso de error para evitar duplicados
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
     ##
     # Se guarda un objeto persona
     # ##

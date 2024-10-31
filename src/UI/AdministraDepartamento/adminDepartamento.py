@@ -17,7 +17,7 @@ class AdminDepartament(QWidget):
     
         add_Style(carpeta="css", archivoQSS="adminDepartamento.css", QObjeto=self)
     
-        layout = QBoxLayout();
+        layout = QVBoxLayout();
         layout.setContentsMargins(10, 10, 10, 10)
     
         frame = QFrame()
@@ -82,7 +82,7 @@ class AdminDepartament(QWidget):
         #Tabla Departamento
         self.tbDepartamento = QTableWidget()
         if (self.tbDepartamento.colorCount() < 3):
-            self.tbDepartamento.setColumnCount(9)
+            self.tbDepartamento.setColumnCount(3)
         header_labels = ["Nombre", "Descripcion", "Accciones"]
         self.tbDepartamento.setHorizontalHeaderLabels(header_labels)
         self.tbDepartamento.horizontalHeader().setFixedHeight(40)
@@ -154,7 +154,7 @@ class AdminDepartament(QWidget):
         layout.addWidget(frame)
         self.setLayout(layout)
         Sombrear(self,30,0,0)
-        self.cargarTabla()
+        self._cargar_tabla()
         
     def _cerrar(self):
              self.cerrar_adminD.emit()
@@ -168,55 +168,55 @@ class AdminDepartament(QWidget):
                 item = QTableWidgetItem("Sin datos")
                 item.setTextAlignment(Qt.AlignCenter)
                 self.tbDepartamento.setItem(0, 0, item)
-            # Deshabilitar la edición de la celda y ocultar las celdas adicionales
+                # Deshabilitar la edición de la celda y ocultar las celdas adicionales
                 for col in range(1, self.tbDepartamento.columnCount()):
                     self.tbDepartamento.setItem(0, col, QTableWidgetItem(""))  # Celdas vacías
-                self.tbDepartamento.setSpan(0, 0, 1, self.tbDepartamento.columnCount())
+                self.tbDepartamento.setSpan(0,0,1,self.tbDepartamento.columnCount())
                 
     def _cargar_tabla(self):
-        result = self.Pservices.obtenerListaDepartamento(pagina=self.paginaActual,tam_pagina=10,tipo_orden="DESC",busqueda=self.busqueda)
+        result = self.Pservices.obtenerListaDepartamento(pagina=self.paginaActual, tam_pagina=10, tipo_orden="DESC", busqueda=self.busqueda)
         print(result)
         if result["success"]:
-            if len(result["data"]) >=0:
-                listaDepartamento = result["data"]["listaDepartamentos"]
-                paginaActual = result["data"]["pagina_actual"]
-                tamPagina = result["data"]["tam_pagina"]
-                totalPaginas = result["data"]["total_paginas"]
-                totalRegistros = result["data"]["total_registros"]
-                #carga los valores de la pagina
-                self._actualizar_lblPagina(paginaActual,totalPaginas)
-                self._actualizarValoresPaginado(paginaActual,totalPaginas)
-
-                #Limpiamos las filas 
+            listaDepartamento = result["data"]["listaDepartamentos"]
+            if len(listaDepartamento) > 0:
+                # Limpia la tabla antes de cargar los nuevos datos
                 self.tbDepartamento.setRowCount(0)
-                #recorrer la lista traia de la base de datos.
-                for index, departamento in enumerate(listaDepartamento):
-                    self.tbDepartamento.insertRow(index)  # Crea una fila por registro
-                    self.tbDepartamento.setRowHeight(index,45)
-                    self.addItem_a_tabla(index,0,departamento.nombre)
-                    self.addItem_a_tabla(index,1,departamento.descripcion)
+                self.tbDepartamento.setColumnCount(3)  # Asegúrate de que el número de columnas coincida
+                header_labels = ["Nombre", "Descripcion", "Acciones"]
+                self.tbDepartamento.setHorizontalHeaderLabels(header_labels)
 
-                    btnEliminar = QPushButton(text="Eliminar")
-                    btnEliminar.clicked.connect(lambda checked, idx=departamento.id: self._eliminarRegistro(idx))
-                    btnEliminar.setMinimumSize(QSize(80,35))
+                # Llenado de la tabla con los datos recibidos
+                for index, departamento in enumerate(listaDepartamento):
+                    self.tbDepartamento.insertRow(index)
+                    self.tbDepartamento.setRowHeight(index, 45)
+                    self.addItem_a_tabla(index, 0, departamento["nombre"])
+                    self.addItem_a_tabla(index, 1, departamento["descripcion"])
+
+                    # Botones para editar y eliminar
+                    btnEliminar = QPushButton("Eliminar")
+                    btnEliminar.clicked.connect(lambda _, idx=departamento["id"]: self._eliminarRegistro(idx))
+                    btnEliminar.setFixedSize(80, 35)
                     btnEliminar.setStyleSheet("background-color:green;color:white;")
 
                     btnEditar = QPushButton("Editar")
-                    btnEditar.clicked.connect(lambda checked, idx = departamento.id: self._editar_Departamento(idx))
-                    btnEditar.setMinimumSize(QSize(80,35))
+                    btnEditar.clicked.connect(lambda _, idx=departamento["id"]: self._editar_Departamento(idx))
+                    btnEditar.setFixedSize(80, 35)
                     btnEditar.setStyleSheet("background-color:red;color:white;")
-                    
-                    button_widget = QWidget()
-                    button_widget.setStyleSheet(u"background-color:transparent;")
-                    layout = QHBoxLayout()
-                    layout.addWidget(btnEditar)
-                    layout.addSpacing(15)
-                    layout.addWidget(btnEliminar)
-                    button_widget.setLayout(layout)
 
-                    # layout.setAlignment(Qt.AlignCenter)  # Centrar el botón
-                    layout.setContentsMargins(10, 0, 10,0)  # Quitar márgenes
-                    self.tbDepartamento.setCellWidget(index, 8, button_widget)
+                    # Crear un contenedor para los botones
+                    button_widget = QWidget()
+                    button_layout = QHBoxLayout(button_widget)
+                    button_layout.addWidget(btnEditar)
+                    button_layout.addWidget(btnEliminar)
+                    button_layout.setContentsMargins(0, 0, 0, 0)
+                    button_layout.setSpacing(10)
+
+                    # Añadir el contenedor de botones a la última columna de la fila actual
+                    self.tbDepartamento.setCellWidget(index, 2, button_widget)
+
+                    # Actualizar etiquetas de paginación
+                    self._actualizar_lblPagina(result["data"]["pagina_actual"], result["data"]["total_paginas"])
+                    self._actualizarValoresPaginado(result["data"]["pagina_actual"], result["data"]["total_paginas"])
             else:
                 self._mostrar_mensaje_sin_datos()
         else:

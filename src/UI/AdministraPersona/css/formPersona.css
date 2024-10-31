@@ -18,6 +18,11 @@
     font: 10 13pt "Cooper Black";
     color: #000000; /* Texto en negro para el título */
 }
+#formPersona #lblerror{
+    background-color: transparent;
+    font: 1 8pt "Arial";
+    color: #ba0000; /* Texto en negro para el título */
+}
 #formFrame QPushButton{
     background-color: #dadada;
     color: #000000;

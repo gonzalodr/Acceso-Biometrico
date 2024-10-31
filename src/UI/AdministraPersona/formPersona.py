@@ -9,7 +9,7 @@ class formPersona(QDialog):
     update:bool = False
     Pservices = PersonaServices()
     idP = 0
-    
+    fotografia = None
     def __init__(self, parent=None, titulo="Registrar persona.",id = None):
         super().__init__(parent)
         self.setObjectName("formPersona")
@@ -32,12 +32,12 @@ class formPersona(QDialog):
         layoutForm = QGridLayout()
         layoutForm.setContentsMargins(20,10,20,20)
         layoutForm.setHorizontalSpacing(45)
+        layoutForm.setVerticalSpacing(1)
         
         """LLenando lado derecho 8 inputs"""
         lblFoto = QLabel(text="Foto. (opcional)")
         self.lblicono = QLabel(text="")
-        self.lblicono.setFixedSize(100,70)
-        self.url_foto = ""
+        self.lblicono.setFixedSize(100,100)
         self.btnFoto = QPushButton(text="seleccionar foto")
         self.btnFoto.setMinimumHeight(35)
         self.btnFoto.clicked.connect(self._seleccionar_foto)
@@ -54,78 +54,74 @@ class formPersona(QDialog):
         self.inputNombre = QLineEdit()
         self.inputNombre.setPlaceholderText("Ingrese su nombre")
         self.inputNombre.installEventFilter(self)
+        self.errorNombre =QLabel()
         Sombrear(self.inputNombre,20,0,0)
+        
+        
         
         lblApellido1 = QLabel(text="Primer apellido")
         self.inputApellido1 = QLineEdit()
         self.inputApellido1.setPlaceholderText("Ingrese su primer apellido")
         self.inputApellido1.installEventFilter(self)
+        self.errorApellido1 =QLabel()
         Sombrear(self.inputApellido1,20,0,0)
         
         lblApellido2 = QLabel(text="Segundo apellido")
         self.inputApellido2 = QLineEdit()
         self.inputApellido2.setPlaceholderText("Ingrese su segundo apellido")
         self.inputApellido2.installEventFilter(self)
+        self.errorApellido2 =QLabel()
         Sombrear(self.inputApellido2,20,0,0)
         
         lblCedula = QLabel(text="Cedula")
         self.inputCedula = QLineEdit()
         self.inputCedula.setPlaceholderText("Ingrese su cédula")
         self.inputCedula.installEventFilter(self)
+        self.inputCedula.editingFinished.connect(self._verificar_cedula)
+        self.errorCedula =QLabel()
         Sombrear(self.inputCedula,20,0,0)
         
         layoutForm.addLayout(layoutFoto,0,0)
         layoutForm.addWidget(self.lblicono,1,0)
-        
-        layoutForm.addWidget(lblNombre,2,0)
-        layoutForm.addWidget(self.inputNombre,3,0)
-        
-        layoutForm.addWidget(lblApellido1,4,0)
-        layoutForm.addWidget(self.inputApellido1,5,0)
-        
-        layoutForm.addWidget(lblApellido2,6,0)
-        layoutForm.addWidget(self.inputApellido2,7,0)
-        
-        layoutForm.addWidget(lblCedula,8,0)
-        layoutForm.addWidget(self.inputCedula,9,0,Qt.AlignTop)
+        layoutForm.addLayout(self._contenedor(lblNombre,self.inputNombre,self.errorNombre),2,0)
+        layoutForm.addLayout(self._contenedor(lblApellido1,self.inputApellido1,self.errorApellido1),3,0)
+        layoutForm.addLayout(self._contenedor(lblApellido2,self.inputApellido2,self.errorApellido2),4,0)
+        layoutForm.addLayout(self._contenedor(lblCedula,self.inputCedula,self.errorCedula),5,0)
         
         """Llenando el lado izquierdo 8 inputs"""
         lblNacim = QLabel(text="Fecha Nacimiento")
-        
         self.inputNacimiento = QDateEdit()
         self.inputNacimiento.setCalendarPopup(True)
         self.inputNacimiento.setDisplayFormat("yyyy-MM-dd")
         self.inputNacimiento.setMaximumDate(QDate.currentDate())
+        self.errorNacimiento =QLabel()
         Sombrear(self.inputNacimiento,20,0,0)
         
         lblCorreo = QLabel(text="Correo. Ejemplo:persona@example.com")
         self.inputCorreo = QLineEdit()
         self.inputCorreo.setPlaceholderText("Ingrese su correo electrónico. Ejem: persona@example.com")
         self.inputCorreo.installEventFilter(self)
+        self.inputCorreo.editingFinished.connect(self._verificar_correo)
+        self.errorCorreo =QLabel()
         Sombrear(self.inputCorreo,20,0,0)
         
         lblEstCivil = QLabel(text="Estado Civil")
         self.inputEstCivil = QComboBox()
         self.inputEstCivil.addItems(["Soltero/a", "Casado/a", "Divorciado/a", "Viudo/a"])
+        self.errorEstCivil =QLabel()
         Sombrear(self.inputEstCivil,20,0,0)
         
         lblDirecc = QLabel(text="Direccion")
         self.inputDireccion = QTextEdit()
         self.inputDireccion.setPlaceholderText("Ingrese su dirección completa")
         self.inputDireccion.setMaximumHeight(50)
+        self.errorDireccion =QLabel()
         Sombrear(self.inputDireccion,20,0,0)
         
-        layoutForm.addWidget(lblNacim,0,1)
-        layoutForm.addWidget(self.inputNacimiento,1,1)
-        
-        layoutForm.addWidget(lblCorreo,2,1)
-        layoutForm.addWidget(self.inputCorreo,3,1)
-        
-        layoutForm.addWidget(lblEstCivil,4,1)
-        layoutForm.addWidget(self.inputEstCivil,5,1)
-        
-        layoutForm.addWidget(lblDirecc,6,1)
-        layoutForm.addWidget(self.inputDireccion,7,1)
+        layoutForm.addLayout(self._contenedor(lblNacim,self.inputNacimiento,self.errorNacimiento),2,1)
+        layoutForm.addLayout(self._contenedor(lblCorreo,self.inputCorreo,self.errorCorreo),3,1)
+        layoutForm.addLayout(self._contenedor(lblEstCivil,self.inputEstCivil,self.errorEstCivil),4,1)
+        layoutForm.addLayout(self._contenedor(lblDirecc,self.inputDireccion,self.errorDireccion),5,1)
         
         
         """Acomodando el resto del layout
@@ -161,9 +157,46 @@ class formPersona(QDialog):
         Sombrear(self,30,0,0,"green")
         if id:
             self._obtener_registroId(id)
-            
+      
+    def _contenedor(self,label:QLabel,input,label_error:QLabel):
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0,0,0,0)
+        layout.setSpacing(5)
+        
+        label_error.setObjectName("lblerror")
+        label_error.setMaximumHeight(25)
+        label_error.setMinimumHeight(25)
+        label_error.setWordWrap(True)
+        
+        layout.addWidget(label)
+        layout.addWidget(input)
+        layout.addWidget(label_error)
+        return layout
+    
+    def _verificar_correo(self):
+        correo = self.inputCorreo.text()
+        if correo.strip():
+            result = self.Pservices.verificacionCorreo(correo=correo,id=self.idP)
+            if not result["success"]:
+                self.errorCorreo.setText(result["message"])
+                Sombrear(self.inputCorreo,20,0,0,"red")
+            else:
+                Sombrear(self.inputCorreo,20,0,0)
+                self.errorCorreo.setText("")
+    
+    def _verificar_cedula(self):
+        cedula = self.inputCedula.text()
+        if cedula.strip():
+            result = self.Pservices.validar_cedula(cedula=cedula,id=self.idP)
+            if not result["success"]:
+                self.errorCedula.setText(result["message"])
+                Sombrear(self.inputCedula,20,0,0,"red")   
+            else:
+                Sombrear(self.inputCedula,20,0,0)
+                self.errorCedula.setText("")
+                  
     def _seleccionar_foto(self):
-        if len(self.url_foto) == 0: 
+        if self.fotografia is None: 
             file_path, _ = QFileDialog.getOpenFileName(
                 self,
                 "Seleccionar Imagen",
@@ -173,16 +206,21 @@ class formPersona(QDialog):
             if file_path:
                 pixmap = QPixmap(file_path)
                 self.lblicono.setPixmap(pixmap.scaled(self.lblicono.size()))
-                self.url_foto = file_path
                 self.btnFoto.setText("Eliminar foto")
+                try:
+                    if file_path:
+                        with open(file_path, "rb") as file:
+                            self.fotografia = file.read()
+                except Exception as e:
+                    print(f"Error al cargar foto: {e}")
+                    self.fotografia = None
             else:
                 pass
         else:
             self.lblicono.clear()
-            self.url_foto = ""
             self.btnFoto.setText("Seleccionar foto")
-            
-        
+            self.fotografia = None
+                 
     def eventFilter(self, source, event):
         if event.type() == 10:  # Enter (Mouse Enter)
             if isinstance(source, QLineEdit): 
@@ -194,13 +232,16 @@ class formPersona(QDialog):
         return super().eventFilter(source, event)
      
     def _cancelar_registro(self):
-        dialEmergente = DialogoEmergente("¿?","¿Estas seguro que que quieres cancelar?","Question",True,True)
-        opcion = dialEmergente.exec()
-        if opcion == QDialog.Accepted:
+        if self._validar_inputs_sin_con_datos():
+            dialEmergente = DialogoEmergente("¿?","¿Estas seguro que que quieres cancelar?","Question",True,True)
+            opcion = dialEmergente.exec()
+            if opcion == QDialog.Accepted:
+                self.reject()
+            elif opcion == QDialog.Rejected:
+                print("Se rechazó el diálogo.")
+        else:
             self.reject()
-        elif opcion == QDialog.Rejected:
-            print("Se rechazó el diálogo.")
-          
+            
     def _validar_campos(self):
         # Verifica si los campos requeridos están vacíos
         if self._validar_inputs_vacios():
@@ -208,17 +249,63 @@ class formPersona(QDialog):
             dialEmergente.exec()
             return False
         else:
-            correo = self.inputCorreo.text()
-            result = self.Pservices.verificacionCorreo(correo=correo)
-            if not result["success"]:
-                dial = DialogoEmergente("!Advertencia¡",result["message"],"Warning")
-                dial.exec()
-                return False
-            else:
-                return True
+            return True
     
     def _validar_inputs_vacios(self):
-        if not self.inputNombre.text().strip() or not self.inputApellido1.text().strip() or not self.inputApellido2.text().strip() or not self. inputCedula.text().strip() or not self.inputNacimiento.date().toString("yyyy-MM-dd") or not self.inputCorreo.text().strip() or not self.inputEstCivil.currentText() or not self.inputDireccion.toPlainText().strip():
+        vacios:bool = False
+            
+        if not self.inputNombre.text().strip():
+            Sombrear(self.inputNombre,20,0,0,"red")
+            vacios = True
+        else:
+            Sombrear(self.inputNombre,20,0,0)
+            
+        if not self.inputApellido1.text().strip():
+            Sombrear(self.inputApellido1,20,0,0,"red")
+            vacios = True
+        else:
+            Sombrear(self.inputApellido1,20,0,0)
+            
+        if not self.inputApellido2.text().strip():
+            Sombrear(self.inputApellido2,20,0,0,"red")
+            vacios = True
+        else:
+            Sombrear(self.inputApellido2,20,0,0)
+            
+        if not self. inputCedula.text().strip():
+            Sombrear(self.inputCedula,20,0,0,"red")
+            vacios = True
+        else:
+            Sombrear(self.inputCedula,20,0,0)
+            
+        if not self.inputNacimiento.date().toString("yyyy-MM-dd"):
+            Sombrear(self.inputNacimiento,20,0,0,"red")
+            vacios = True
+        else:
+            Sombrear(self.inputNacimiento,20,0,0)
+            
+        if not self.inputCorreo.text().strip():
+            Sombrear(self.inputCorreo,20,0,0,"red") 
+            vacios = True
+        else:
+            Sombrear(self.inputCorreo,20,0,0)
+            
+        if not self.inputEstCivil.currentText():
+            Sombrear(self.inputEstCivil,20,0,0,"red")
+            vacios = True
+        else:
+            Sombrear(self.inputEstCivil,20,0,0)
+            
+        if not self.inputDireccion.toPlainText().strip():
+            Sombrear(self.inputDireccion,20,0,0,"red")
+            vacios = True
+        else:
+            Sombrear(self.inputDireccion,20,0,0)
+            
+        return vacios
+    
+    def _validar_inputs_sin_con_datos(self):
+        if self.inputNombre.text().strip() or self.inputApellido1.text().strip() or self.inputApellido2.text().strip() or self. inputCedula.text().strip() or self.inputCorreo.text().strip() or self.inputDireccion.toPlainText().strip():
             return True
         else:
             return False
@@ -229,6 +316,7 @@ class formPersona(QDialog):
             if result["data"]:
                 persona:Persona = result["data"]
                 self.idP = persona.id
+                self.fotografia = persona.foto
                 self.inputNombre.setText(persona.nombre)
                 self.inputApellido1.setText(persona.apellido1)
                 self.inputApellido2.setText(persona.apellido2)
@@ -237,6 +325,14 @@ class formPersona(QDialog):
                 self.inputCorreo.setText(persona.correo)
                 self.inputDireccion.setPlainText(persona.direccion)
                 self.inputEstCivil.setCurrentText(persona.estado_civil)
+                
+                self.btnFoto.setText("Eliminar foto " if self.fotografia is not None else "Seleccionar foto")
+                if self.fotografia:
+                    pixmap = QPixmap()
+                    pixmap.loadFromData(self.fotografia)
+                    self.lblicono.setPixmap(pixmap.scaled(self.lblicono.size()))
+                    self.lblicono.show()
+                    
             else:
                 dial = DialogoEmergente("Error","Hubo un error de carga.","Error")
                 dial.exec()
@@ -249,13 +345,7 @@ class formPersona(QDialog):
             return None
     
     def _accion_persona(self):
-        fotografia = None
-        try:
-            with open(self.url_foto, "rb") as file:
-                fotografia = file.read()
-        except Exception as e:
-            print(f"Error al cargar foto: {e}")
-            fotografia = None
+
             
         person:Persona = Persona(
             nombre = self.inputNombre.text(),
@@ -267,7 +357,7 @@ class formPersona(QDialog):
             estado_civil = self.inputEstCivil.currentText(),
             direccion=self.inputDireccion.toPlainText(),
             id=self.idP,
-            foto = fotografia
+            foto = self.fotografia
         )
         if self._validar_campos():
             if self.idP > 0:

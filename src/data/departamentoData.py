@@ -81,7 +81,7 @@ class DepartamentoData:
         finally:
             if conexion:
                 conexion.close()
-                return resultado
+        return resultado
               
     def list_departamentos(self, pagina=1, tam_pagina=10, ordenar_por = TBDEPARTAMENTO_ID, tipo_orden="ASC", busqueda = None):
         conexion, resultado = conection()

@@ -132,6 +132,11 @@ class vistaPrincipal(QWidget):
             adminpersona.cerrar_adminP.connect(self._salir_crud)
             index =  self.stackVistas.addWidget(adminpersona)
             self.listaOpciones.append((index,"Administrar Persona")) 
+        if True:
+            AdminDepart = AdminDepartament()
+            AdminDepart.cerrar_adminD.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(AdminDepart)
+            self.listaOpciones.append((index,"Admin. Departamento"))
             
             # Agregando la nueva opción para administrar departamentos
            ## admindepartamento = AdminDepartament(parent=self)  # Instancia de la clase
@@ -169,15 +174,14 @@ class vistaPrincipal(QWidget):
         self.stackVistas.setCurrentIndex(0)
     
     def seleccion_sidebar(self,index):
-        if index < 2:
-            self.stackVistas.setCurrentIndex(index)
+        print(index)
+        self.stackVistas.setCurrentIndex(index)
     
     def cargar_imagen_usuario(self,user,imagen = None):
         try:
             if imagen is not None:
                 if not isinstance(imagen, bytes):
                     imagen = bytes(imagen)
-                
                 pixmap = QPixmap()
                 pixmap.loadFromData(imagen)
                 pixmap = pixmap.scaled(user.size(),Qt.KeepAspectRatio, Qt.SmoothTransformation)
