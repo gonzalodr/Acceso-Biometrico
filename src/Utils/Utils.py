@@ -100,7 +100,6 @@ def cargar_icono_svg(QObjeto, carpeta:str="iconos",archivoSVG:str="", Size:QSize
     # Crear el renderer y el QPixmap
     svg_renderer = QSvgRenderer(path_icono)
     pixmap = QPixmap(Size if Size else QSize(QObjeto.size().height(), QObjeto.size().height()))
-    print(pixmap.size())
     pixmap.fill(Qt.transparent)
     
     painter = QPainter(pixmap)

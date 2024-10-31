@@ -6,6 +6,18 @@ import os
 
 class DialogoEmergente(QDialog):
     def __init__(self, title="Advertencia", message="¡Advertencia!", Icono="Warning", show_accept_button=True, show_cancel_button=False):
+        """
+            DialogoEmergente: Muestra pequeños avisos al usuario
+            
+            :param title: Es el pequeño titulo que se le mostrar en la ventanita
+            :param message: Este el mensaje que se quiere dar
+            :param Icono: es el icono que se debe mostrar, "Warning","Error","Check","Question".
+            :param show_accept_button: boleano, si se ingresa True muestra el boton aceptar
+            :param show_cancel_button: boleano, si se ingresa True muestra el boton cancelar
+            
+            Nota: si no se ingresa que boton va a mostrar por defecto saldra activo el boton aceptar
+        """
+        
         super().__init__()
         # Eliminar el borde de la ventana
         self.setObjectName("DialEmergente")

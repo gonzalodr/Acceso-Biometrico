@@ -145,6 +145,8 @@ class IniciarSesion(QWidget):
             if result["success"]:
                 if result["login"]:
                     usuario = result["usuario"]
+                    self.inputUser.setText("")
+                    self.inputPass.setText("")
                     self.autenticacion.emit(usuario)
                 else:
                     self.lblError.setText(result["message"])

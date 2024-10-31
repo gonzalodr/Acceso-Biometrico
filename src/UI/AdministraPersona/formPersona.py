@@ -34,7 +34,7 @@ class formPersona(QDialog):
         layoutForm.setHorizontalSpacing(45)
         layoutForm.setVerticalSpacing(1)
         
-        """LLenando lado derecho 8 inputs"""
+        """LLenando lado derecho 5 inputs"""
         lblFoto = QLabel(text="Foto. (opcional)")
         self.lblicono = QLabel(text="")
         self.lblicono.setFixedSize(100,100)
@@ -56,8 +56,6 @@ class formPersona(QDialog):
         self.inputNombre.installEventFilter(self)
         self.errorNombre =QLabel()
         Sombrear(self.inputNombre,20,0,0)
-        
-        
         
         lblApellido1 = QLabel(text="Primer apellido")
         self.inputApellido1 = QLineEdit()
@@ -88,7 +86,7 @@ class formPersona(QDialog):
         layoutForm.addLayout(self._contenedor(lblApellido2,self.inputApellido2,self.errorApellido2),4,0)
         layoutForm.addLayout(self._contenedor(lblCedula,self.inputCedula,self.errorCedula),5,0)
         
-        """Llenando el lado izquierdo 8 inputs"""
+        """Llenando el lado izquierdo 4 inputs"""
         lblNacim = QLabel(text="Fecha Nacimiento")
         self.inputNacimiento = QDateEdit()
         self.inputNacimiento.setCalendarPopup(True)
@@ -101,7 +99,7 @@ class formPersona(QDialog):
         self.inputCorreo = QLineEdit()
         self.inputCorreo.setPlaceholderText("Ingrese su correo electrónico. Ejem: persona@example.com")
         self.inputCorreo.installEventFilter(self)
-        self.inputCorreo.editingFinished.connect(self._verificar_correo)
+        self.inputCorreo.editingFinished.connect(self._verificar_correo)##
         self.errorCorreo =QLabel()
         Sombrear(self.inputCorreo,20,0,0)
         
@@ -240,12 +238,12 @@ class formPersona(QDialog):
             elif opcion == QDialog.Rejected:
                 print("Se rechazó el diálogo.")
         else:
-            self.reject()
+            self.reject()##cerrar la ventana
             
     def _validar_campos(self):
         # Verifica si los campos requeridos están vacíos
         if self._validar_inputs_vacios():
-            dialEmergente = DialogoEmergente("Advertencia","Llene todos los campos.","Warnig")
+            dialEmergente = DialogoEmergente("Advertencia","Llene todos los campos.","Warning")
             dialEmergente.exec()
             return False
         else:
@@ -346,7 +344,6 @@ class formPersona(QDialog):
     
     def _accion_persona(self):
 
-            
         person:Persona = Persona(
             nombre = self.inputNombre.text(),
             apellido1 = self.inputApellido1.text(),
@@ -360,6 +357,17 @@ class formPersona(QDialog):
             foto = self.fotografia
         )
         if self._validar_campos():
+            result = self.Pservices.verificacionCorreo(correo=self.inputCorreo.text(),id=self.idP)
+            if not result["success"]:
+                self.errorCorreo.setText(result["message"])
+                Sombrear(self.inputCorreo,20,0,0,"red")
+                return
+            result = self.Pservices.validar_cedula(cedula=self.inputCedula.text(),id=self.idP)
+            if not result["success"]:
+                self.errorCedula.setText(result["message"])
+                Sombrear(self.inputCedula,20,0,0,"red")
+                return
+               
             if self.idP > 0:
                 result = self.Pservices.modificarPersona(person)
                 print(result)
