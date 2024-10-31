@@ -155,7 +155,6 @@ class AdminPersona(QWidget):
         Sombrear(self,30,0,0)
         self._cargar_tabla()
 
-
     def _cerrar(self):
         self.cerrar_adminP.emit()
 
@@ -176,8 +175,8 @@ class AdminPersona(QWidget):
     def _cargar_tabla(self):
         result = self.Pservices.obtenerListaPersonas(pagina=self.paginaActual,tam_pagina=10,tipo_orden="DESC",busqueda=self.busqueda)
         if result["success"]:
-            if len(result["data"]) >=0:
-                listaPersona = result["data"]["listaPersonas"]
+            listaPersona = result["data"]["listaPersonas"]
+            if len(listaPersona) >0:
                 paginaActual = result["data"]["pagina_actual"]
                 tamPagina = result["data"]["tam_pagina"]
                 totalPaginas = result["data"]["total_paginas"]
