@@ -3,6 +3,7 @@ from PySide6.QtCore import *
 from Utils.Utils import *
 from UI.AdministraPersona.formPersona import *
 from services.personaService import *
+from datetime import datetime
 
 class AdminPersona(QWidget):
     cerrar_adminP = Signal()
@@ -216,7 +217,7 @@ class AdminPersona(QWidget):
                     self.addItem_a_tabla(index,2,persona.apellido2)
                     self.addItem_a_tabla(index,3,persona.cedula)
                     self.addItem_a_tabla(index,4,persona.correo)
-                    self.addItem_a_tabla(index,5,str(persona.fecha_nacimiento))
+                    self.addItem_a_tabla(index,5,self._formatear_fecha(str(persona.fecha_nacimiento)))
                     self.addItem_a_tabla(index,6,persona.estado_civil)
                     self.addItem_a_tabla(index,7,persona.direccion)
 
@@ -246,6 +247,8 @@ class AdminPersona(QWidget):
                     button_widget.setLayout(layout)
                     layout.setContentsMargins(10, 0, 10,0)
                     ##el segundo numero indica el numero de columna osea la ultima, varia de acuerdo al bojeto
+                    self.tbPersona.horizontalHeader().setSectionResizeMode(8, QHeaderView.Fixed)
+                    self.tbPersona.setColumnWidth(8,210)
                     self.tbPersona.setCellWidget(index, 8, button_widget) 
             else:
                 self._mostrar_mensaje_sin_datos("No hay registros")
@@ -312,7 +315,7 @@ class AdminPersona(QWidget):
         se aseguran que el nombre este igual
     """
     def _buscarPersona(self):
-        input_busqueda = self.inputBuscar.text();
+        input_busqueda = self.inputBuscar.text()
         if input_busqueda:
             self.busqueda = input_busqueda
             self._cargar_tabla()
@@ -320,6 +323,26 @@ class AdminPersona(QWidget):
         else:
             self.paginaActual = 1
             self._cargar_tabla()
+
+    def _formatear_fecha(self,fecha:str):
+        año, mes, dia = fecha.split("-")
+        mes
+        meses = {
+            '01': 'enero',
+            '02': 'febrero',
+            '03': 'marzo',
+            '04': 'abril',
+            '05': 'mayo',
+            '06': 'junio',
+            '07': 'julio',
+            '08': 'agosto',
+            '09': 'septiembre',
+            '10': 'octubre',
+            '11': 'noviembre',
+            '12': 'diciembre'
+        }
+        mes_nombre = meses[mes]
+        return f"{int(dia)} de {mes_nombre} del {año}"
 
     """Lo modifican de acuerdo a su crud
         aseguresen que se muestre bien los mensajes
