@@ -47,13 +47,16 @@ QTableWidget {
 
 QTableWidget::item {
     background-color: #FFFFFF; 
+    color: #000000;
 }
  QTableWidget::item:alternate {
         background-color: #d0d0d0;
+        color: #000000;
 }
 
 QTableWidget::item:selected {
     background-color:transparent;
+    color: #000000;
 }
 
 QHeaderView::section {

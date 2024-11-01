@@ -114,7 +114,7 @@ class DepartamentoData:
                     WHERE {TBDEPARTAMENTO_NOMBRE} LIKE %s 
                     OR {TBDEPARTAMENTO_DESCRIPCION} LIKE %s
                 """
-                valores = [f"%{busqueda}%"] * 5  # Para usar el valor de búsqueda con LIKE en todas las columnas
+                valores = [f"%{busqueda}%", f"%{busqueda}%"]  # Para usar el valor de búsqueda con LIKE en todas las columnas
             
             # Añadir la cláusula ORDER BY y LIMIT/OFFSET
             query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
@@ -153,6 +153,42 @@ class DepartamentoData:
         finally:
             if cursor:
                 cursor.close()
+            if conexion:
+                conexion.close()
+        return resultado
+    
+    
+    def get_departamento_by_id(self, departamento_id):
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+
+        try:
+            cursor = conexion.cursor()
+            query = f"""SELECT
+                            {TBDEPARTAMENTO_NOMBRE}, 
+                            {TBDEPARTAMENTO_DESCRIPCION}, 
+                            {TBDEPARTAMENTO_ID} 
+                        FROM {TBDEPARTAMENTO} 
+                        WHERE id = %s"""
+            
+            cursor.execute(query, (departamento_id,))
+            data = cursor.fetchone()
+            
+            if data:
+                departamento = Departamento(   
+                    nombre=data[0],
+                    descripcion=data[1],
+                    id=data[2]
+                )
+                resultado["success"] = True
+                resultado["data"] = departamento
+            else:
+                raise ValueError("No se encontró ningun departamento con el ID proporcionado.")
+        except Exception as e:
+            resultado["success"] = False
+            resultado["message"] = f"Error al obtener departamento: {e}"
+        finally:
             if conexion:
                 conexion.close()
         return resultado
