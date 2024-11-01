@@ -197,7 +197,7 @@ class formPersona(QDialog):
         """Aqui se revisa si el formulario recibio un id por parametros"""
         if id:
             self._obtener_registroId(id)##carga los inputs con los datos de la consulta obtener por id
-      
+
     """Esto no se toca"""  
     def _contenedor(self,label:QLabel,input,label_error:QLabel):
         layout = QVBoxLayout()

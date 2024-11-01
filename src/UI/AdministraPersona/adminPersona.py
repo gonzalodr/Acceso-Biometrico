@@ -172,22 +172,23 @@ class AdminPersona(QWidget):
     """ lo modifican de acuerdo al nombre de su tabla
         no se modifica mas
     """
-    def _mostrar_mensaje_sin_datos(self):
-        # Si la tabla está vacía, agregar una fila con el mensaje "Sin datos"
+    def _mostrar_mensaje_sin_datos(self,mensaje:str):
+        #Borra filas en caso de que la conexion se haya ido
         self.tbPersona.setRowCount(0)
         if self.tbPersona.rowCount() == 0:
-            self.tbPersona.setRowCount(1)
-            item = QTableWidgetItem("Sin datos")
+            # Si la tabla está vacía, agregar una fila con el mensaje "Sin datos"
+            self.tbPersona.setRowCount(1)  # Establecer una fila
+            item = QTableWidgetItem(mensaje)
             item.setTextAlignment(Qt.AlignCenter)
+            item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
             self.tbPersona.setItem(0, 0, item)
-            # Deshabilitar la edición de la celda y ocultar las celdas adicionales
-            for col in range(1, self.tbPersona.columnCount()):
-                self.tbPersona.setItem(0, col, QTableWidgetItem(""))  # Celdas vacías
-            self.tbPersona.setSpan(0, 0, 1, self.tbPersona.columnCount())
+
+            # Fusionar la celda con el mensaje "Sin datos" en el número de columnas
+            if self.tbPersona.columnCount() > 0:  # Asegurarse de que hay columnas
+                self.tbPersona.setSpan(0, 0, 1, self.tbPersona.columnCount())
 
     def _cargar_tabla(self):
         result = self.Pservices.obtenerListaPersonas(pagina=self.paginaActual,tam_pagina=10,tipo_orden="DESC",busqueda=self.busqueda)
-        
         if result["success"]: ##si se hizo la consulta a la bd correctamete de lo contrario se salta el llenado
             listaPersona = result["data"]["listaPersonas"]
             if len(listaPersona) >0:
@@ -244,9 +245,9 @@ class AdminPersona(QWidget):
                     ##el segundo numero indica el numero de columna osea la ultima, varia de acuerdo al bojeto
                     self.tbPersona.setCellWidget(index, 8, button_widget) 
             else:
-                self._mostrar_mensaje_sin_datos()
+                self._mostrar_mensaje_sin_datos("No hay registros")
         else:
-            self._mostrar_mensaje_sin_datos()
+            self._mostrar_mensaje_sin_datos("Error de conexión")
 
     """Esto no cambia, el dato debe ser string"""
     def addItem_a_tabla(self,row, colum,dato):

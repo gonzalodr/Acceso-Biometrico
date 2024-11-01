@@ -16,7 +16,7 @@ class vistaPrincipal(QWidget):
         super().__init__(parent)
         self.usuario = usuario
         self.setObjectName("vistaPrincipal")
-        
+        print("Construyendo el objeto")
         """
         add_Style: establece el diseño visual de nuestra ventana
         """
@@ -137,7 +137,9 @@ class vistaPrincipal(QWidget):
             AdminDepart.cerrar_adminD.connect(self._salir_crud)
             index = self.stackVistas.addWidget(AdminDepart)
             self.listaOpciones.append((index,"Admin. Departamento"))
-
+        print("LLenando stack")
+        print(self.listaOpciones)
+        print()
         self.stackVistas.setCurrentIndex(0)
         pass
     

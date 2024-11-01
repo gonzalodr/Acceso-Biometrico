@@ -72,6 +72,13 @@ QHeaderView::section:last {
     border-top-right-radius: 10px;
 }
 
+QTableWidget::item:first-child {
+    border-bottom-left-radius: 5px; 
+}
+QTableWidget::item:last-child {
+    border-bottom-right-radius: 5px;
+}
+
 QTableWidget #btneliminar{
     background-color:#ff5151;
     color:white;  
