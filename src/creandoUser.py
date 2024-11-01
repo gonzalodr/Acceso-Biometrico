@@ -15,6 +15,6 @@ from services.usuarioService import *
 Uservices = UsuarioServices()
 #usuario contraseña e id de la persona
 #user:Usuario = Usuario("gabriel","contraseñaGabi",2)
-user: Usuario = Usuario("Javier", "Javier", 3)
-Uservices.insertarUsuario(user)
+#user: Usuario = Usuario("Maik", "Maik0024", 1)
+#Uservices.insertarUsuario(user)
 

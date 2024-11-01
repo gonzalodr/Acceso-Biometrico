@@ -23,22 +23,20 @@ class AdminDepartament(QWidget):
         frame = QFrame()
     
         self.layoutFrame = QVBoxLayout()
-        self.layoutFrame.setContentsMargins(10, 10, 10, 10)
+        self.layoutFrame.setContentsMargins(0, 0, 0, 0)
         self.layoutFrame.setSpacing(0)
     
         titulo = QLabel(text="Administrar departamentos")
         titulo.setObjectName("titulo")
         titulo.setMinimumHeight(50)
         titulo.setAlignment(Qt.AlignCenter)
-        
         self.layoutFrame.addWidget(titulo)
         
         layoutTop = QHBoxLayout()
         layoutTop.setContentsMargins(30, 30, 30, 30)  # Establecemos márgenes
         layoutTop.setSpacing(5)  # Establecemos espaciado entre widgets
         layoutTop.setAlignment(Qt.AlignCenter)  # Centramos los elementos
-
-        minimoTamBtn = QSize(140, 40)
+        minimoTamBtn = QSize(120, 40)
         
         self.btnCerrar = QPushButton(text="Cerrar")
         self.btnCerrar.setFixedSize(minimoTamBtn)  # Establecemos tamaño fijo
@@ -85,9 +83,11 @@ class AdminDepartament(QWidget):
             self.tbDepartamento.setColumnCount(3)
         header_labels = ["Nombre", "Descripcion", "Accciones"]
         self.tbDepartamento.setHorizontalHeaderLabels(header_labels)
+        
         self.tbDepartamento.horizontalHeader().setFixedHeight(40)
         self.tbDepartamento.verticalHeader().setVisible(False)
         self.tbDepartamento.horizontalHeader().setStretchLastSection(True)
+        self.tbDepartamento.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         Sombrear(self.tbDepartamento, 30, 0, 0)
         
         # Layout para la tabla
@@ -175,48 +175,56 @@ class AdminDepartament(QWidget):
                 
     def _cargar_tabla(self):
         result = self.Pservices.obtenerListaDepartamento(pagina=self.paginaActual, tam_pagina=10, tipo_orden="DESC", busqueda=self.busqueda)
-        print(result)
+ 
         if result["success"]:
             listaDepartamento = result["data"]["listaDepartamentos"]
             if len(listaDepartamento) > 0:
+                paginaActual = result["data"]["pagina_actual"]
+                tamPagina = result["data"]["tam_pagina"]
+                totalPaginas = result["data"]["total_paginas"]
+                totalRegistros = result["data"]["total_registros"]
+                 #carga los valores de la pagina en teoria quedan igual
+                self._actualizar_lblPagina(paginaActual,totalPaginas)
+                self._actualizarValoresPaginado(paginaActual,totalPaginas)
+                
                 # Limpia la tabla antes de cargar los nuevos datos
                 self.tbDepartamento.setRowCount(0)
-                self.tbDepartamento.setColumnCount(3)  # Asegúrate de que el número de columnas coincida
-                header_labels = ["Nombre", "Descripcion", "Acciones"]
-                self.tbDepartamento.setHorizontalHeaderLabels(header_labels)
-
                 # Llenado de la tabla con los datos recibidos
                 for index, departamento in enumerate(listaDepartamento):
                     self.tbDepartamento.insertRow(index)
                     self.tbDepartamento.setRowHeight(index, 45)
-                    self.addItem_a_tabla(index, 0, departamento["nombre"])
-                    self.addItem_a_tabla(index, 1, departamento["descripcion"])
+                    
+                    
+                    self.addItem_a_tabla(index, 0, departamento.nombre)
+                    self.addItem_a_tabla(index, 1, departamento.descripcion)
 
                     # Botones para editar y eliminar
                     btnEliminar = QPushButton("Eliminar")
-                    btnEliminar.clicked.connect(lambda _, idx=departamento["id"]: self._eliminarRegistro(idx))
-                    btnEliminar.setFixedSize(80, 35)
-                    btnEliminar.setStyleSheet("background-color:green;color:white;")
-
+                    btnEliminar.clicked.connect(lambda checked, idx=departamento.id: self._eliminarRegistro(idx))
+                    btnEliminar.setMinimumSize(QSize(80,35))
+                    btnEliminar.setStyleSheet("""   QPushButton{background-color:#ff5151;color:white;}
+                                                    QPushButton::hover{background-color:#ff0000;color:white;}
+                                              """)
+                    
                     btnEditar = QPushButton("Editar")
-                    btnEditar.clicked.connect(lambda _, idx=departamento["id"]: self._editar_Departamento(idx))
-                    btnEditar.setFixedSize(80, 35)
-                    btnEditar.setStyleSheet("background-color:red;color:white;")
+                    btnEditar.clicked.connect(lambda checked, idx=departamento.id: self._editar_Departamento(idx))
+                    btnEditar.setMinimumSize(QSize(80,35))
+                    btnEditar.setStyleSheet(""" QPushButton{background-color:#00b800;color:white;}
+                                                QPushButton::hover{background-color:#00a800;color:white;}
+                                            """)
 
                     # Crear un contenedor para los botones
                     button_widget = QWidget()
-                    button_layout = QHBoxLayout(button_widget)
-                    button_layout.addWidget(btnEditar)
-                    button_layout.addWidget(btnEliminar)
-                    button_layout.setContentsMargins(0, 0, 0, 0)
-                    button_layout.setSpacing(10)
+                    button_widget.setStyleSheet(u"background-color:transparent;")
+                    layout = QHBoxLayout()
+                    layout.addWidget(btnEditar)
+                    layout.addSpacing(15)
+                    layout.addWidget(btnEliminar)
+                    button_widget.setLayout(layout)
+                    layout.setContentsMargins(10, 0, 10,0)
 
                     # Añadir el contenedor de botones a la última columna de la fila actual
                     self.tbDepartamento.setCellWidget(index, 2, button_widget)
-
-                    # Actualizar etiquetas de paginación
-                    self._actualizar_lblPagina(result["data"]["pagina_actual"], result["data"]["total_paginas"])
-                    self._actualizarValoresPaginado(result["data"]["pagina_actual"], result["data"]["total_paginas"])
             else:
                 self._mostrar_mensaje_sin_datos()
         else:
@@ -299,8 +307,10 @@ class AdminDepartament(QWidget):
         blur_effect = QGraphicsBlurEffect(self)
         blur_effect.setBlurRadius(10)  # Ajusta el radio de desenfoque según sea necesario
         self.setGraphicsEffect(blur_effect)
+        
         form = formDepartamento(titulo="Actualizar departamento",id=id)
         form.exec()
+        
         self._cargar_tabla()
         self.setGraphicsEffect(None)
 
@@ -308,6 +318,7 @@ class AdminDepartament(QWidget):
         blur_effect = QGraphicsBlurEffect(self)
         blur_effect.setBlurRadius(10)  # Ajusta el radio de desenfoque según sea necesario
         self.setGraphicsEffect(blur_effect)
+        
         form = formDepartamento()
         form.exec()
         self._cargar_tabla()
