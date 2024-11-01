@@ -120,10 +120,10 @@ class SlideBar(QWidget):
     def accion_anim(self,btnSidebar):
         if self.tamano == 60:
             self._animacion_abrir()
-            cargar_icono_svg(QObjeto=btnSidebar,archivoSVG="arrow-bar-left.svg")
+            cargar_icono_svg(QObjeto=btnSidebar,archivoSVG="arrow-bar-left.svg",Size=QSize(btnSidebar.size().width()-15,btnSidebar.size().height()-15))
         elif self.tamano == 300:
             self._animacion_cerrar()
-            cargar_icono_svg(QObjeto=btnSidebar,archivoSVG="arrow-bar-right.svg")
+            cargar_icono_svg(QObjeto=btnSidebar,archivoSVG="arrow-bar-right.svg",Size=QSize(btnSidebar.size().width()-15,btnSidebar.size().height()-15))
 
     def _animacion_cerrar(self):
         # Crear animación para reducir el ancho

@@ -27,19 +27,19 @@ class AdminPersona(QWidget):
         self.layoutFrame.setContentsMargins(0,0,0,0)
         self.layoutFrame.setSpacing(0)
 
+        """ 
+            Aqui solo cambian el titulo de el widget osea del crud
+        """
         titulo = QLabel(text="Administrar personas")
         titulo.setObjectName("titulo")
         titulo.setMinimumHeight(50)
         titulo.setAlignment(Qt.AlignCenter)
-
         self.layoutFrame.addWidget(titulo)
-
-
+        
         layoutTop = QHBoxLayout()
         layoutTop.setContentsMargins(30,30,30,30)
         layoutTop.setSpacing(5)
         layoutTop.setAlignment(Qt.AlignCenter)
-
         minimoTamBtn = QSize(120,40)
 
         ##botones de arriba
@@ -58,14 +58,14 @@ class AdminPersona(QWidget):
         self.btnBuscar = QPushButton(text="Buscar")
         self.btnBuscar.setCursor(Qt.PointingHandCursor)
         self.btnBuscar.setFixedSize(minimoTamBtn)
-        self.btnBuscar.clicked.connect(self._buscarPersona)
+        self.btnBuscar.clicked.connect(self._buscarPersona) ##revicen que el metonod _buscarPersona haga bien su trabajp
         Sombrear(self.btnBuscar,20,0,0)
 
         self.btnCrear = QPushButton(text="Crear")
         self.btnCrear.setCursor(Qt.PointingHandCursor)
         self.btnCrear.setFixedSize(minimoTamBtn)
         self.btnCrear.setObjectName("crear")
-        self.btnCrear.clicked.connect(self._crear_persona)
+        self.btnCrear.clicked.connect(self._crear_persona) ##esto no se mueve
         Sombrear(self.btnCrear,20,0,0)
 
         ##acomodando botones de arriba en el layout
@@ -79,20 +79,31 @@ class AdminPersona(QWidget):
         layoutTop.addWidget(self.btnCrear,2)
         layoutTop.addStretch(5)
         self.layoutFrame.addLayout(layoutTop)
-
-        self.tbPersona = QTableWidget()
+        
+        """
+            Esto lo deben cambiar cada crean la tabla de acuerdo a la cantidad
+            atributos del objeto
+            Nota: no debe existir columna de id esto no se debe mostrar nunca
+        """
+        self.tbPersona = QTableWidget() ##crean el objeto tabla
         if (self.tbPersona.columnCount() < 9):
-            self.tbPersona.setColumnCount(9)
+            self.tbPersona.setColumnCount(9) ##indican la cantidad de columnas.
+        ##crean un array de titulos para cada columna    
         header_labels = ["Nombre", "1° Apellido", "2° Apellido", "Cedula", "Correo", "Nacimiento", "Estado civil", "Dirección","Acciones"]
-        self.tbPersona.setHorizontalHeaderLabels(header_labels)
+        self.tbPersona.setHorizontalHeaderLabels(header_labels) ##ingreasan el array aqui
+        """Esto ya no hace falta momverlo solo cambiar el nombre tbPersona por el nombre que 
+            le pusieron a su tabla
+        """
         self.tbPersona.horizontalHeader().setFixedHeight(40)
         self.tbPersona.verticalHeader().setVisible(False)
         self.tbPersona.horizontalHeader().setStretchLastSection(True)
         self.tbPersona.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         Sombrear(self.tbPersona,30,0,0)
 
-        # self.tbPersona.setStyleSheet()
 
+        """de aqui para abajo no se mueve solo asegurese que la tabla se este llamando
+            correctamente
+        """
         layoutTb = QHBoxLayout()
         layoutTb.setContentsMargins(70,40,70,40)
         layoutTb.addWidget(self.tbPersona)
@@ -103,8 +114,7 @@ class AdminPersona(QWidget):
         layoutButtom.setAlignment(Qt.AlignCenter)
         layoutButtom.setContentsMargins(10,10,10,40)
         layoutButtom.setSpacing(5)
-
-
+        """ de aqui para abajo no se modifica nada en teoria"""
         self.btnPrimerPagina = QPushButton(text="Primera Pagina.")
         self.btnPrimerPagina.setFixedSize(minimoTamBtn)
         self.btnPrimerPagina.setCursor(Qt.PointingHandCursor)
@@ -153,15 +163,17 @@ class AdminPersona(QWidget):
         layout.addWidget(frame)
         self.setLayout(layout)
         Sombrear(self,30,0,0)
-        self._cargar_tabla()
+        self._cargar_tabla() 
 
-
+    """Esto no se toca"""
     def _cerrar(self):
         self.cerrar_adminP.emit()
 
+    """ lo modifican de acuerdo al nombre de su tabla
+        no se modifica mas
+    """
     def _mostrar_mensaje_sin_datos(self):
         # Si la tabla está vacía, agregar una fila con el mensaje "Sin datos"
-        #Limpiamos las filas 
         self.tbPersona.setRowCount(0)
         if self.tbPersona.rowCount() == 0:
             self.tbPersona.setRowCount(1)
@@ -175,14 +187,15 @@ class AdminPersona(QWidget):
 
     def _cargar_tabla(self):
         result = self.Pservices.obtenerListaPersonas(pagina=self.paginaActual,tam_pagina=10,tipo_orden="DESC",busqueda=self.busqueda)
-        if result["success"]:
-            if len(result["data"]) >=0:
-                listaPersona = result["data"]["listaPersonas"]
+        
+        if result["success"]: ##si se hizo la consulta a la bd correctamete de lo contrario se salta el llenado
+            listaPersona = result["data"]["listaPersonas"]
+            if len(listaPersona) >0:
                 paginaActual = result["data"]["pagina_actual"]
                 tamPagina = result["data"]["tam_pagina"]
                 totalPaginas = result["data"]["total_paginas"]
                 totalRegistros = result["data"]["total_registros"]
-                #carga los valores de la pagina
+                #carga los valores de la pagina en teoria quedan igual
                 self._actualizar_lblPagina(paginaActual,totalPaginas)
                 self._actualizarValoresPaginado(paginaActual,totalPaginas)
 
@@ -192,6 +205,10 @@ class AdminPersona(QWidget):
                 for index, persona in enumerate(listaPersona):
                     self.tbPersona.insertRow(index)  # Crea una fila por registro
                     self.tbPersona.setRowHeight(index,45)
+                    
+                    """"Agregar a tabla de acuerdo a los atributos de su clase
+                        usa la funcion addItem_a_tabla()
+                    """
                     self.addItem_a_tabla(index,0,persona.nombre)
                     self.addItem_a_tabla(index,1,persona.apellido1)
                     self.addItem_a_tabla(index,2,persona.apellido2)
@@ -201,20 +218,21 @@ class AdminPersona(QWidget):
                     self.addItem_a_tabla(index,6,persona.estado_civil)
                     self.addItem_a_tabla(index,7,persona.direccion)
 
+                    """No cambia"""
                     btnEliminar = QPushButton(text="Eliminar")
-                    btnEliminar.clicked.connect(lambda checked, idx=persona.id: self._eliminarRegistro(idx))
+                    btnEliminar.clicked.connect(lambda checked, idx=persona.id: self._eliminarRegistro(idx))##cambier solo el persona.id por su objeto.id
                     btnEliminar.setMinimumSize(QSize(80,35))
                     btnEliminar.setStyleSheet("""   QPushButton{background-color:#ff5151;color:white;}
                                                     QPushButton::hover{background-color:#ff0000;color:white;}
                                               """)
 
                     btnEditar = QPushButton("Editar")
-                    btnEditar.clicked.connect(lambda checked, idx = persona.id: self._editar_Persona(idx))
+                    btnEditar.clicked.connect(lambda checked, idx = persona.id: self._editar_Persona(idx)) ##cambier solo el persona.id por su objeto, y el nombre de la funcion
                     btnEditar.setMinimumSize(QSize(80,35))
                     btnEditar.setStyleSheet(""" QPushButton{background-color:#00b800;color:white;}
                                                 QPushButton::hover{background-color:#00a800;color:white;}
                                             """)
-                    
+                    """No se modifica"""
                     button_widget = QWidget()
                     button_widget.setStyleSheet(u"background-color:transparent;")
                     layout = QHBoxLayout()
@@ -222,23 +240,25 @@ class AdminPersona(QWidget):
                     layout.addSpacing(15)
                     layout.addWidget(btnEliminar)
                     button_widget.setLayout(layout)
-
-                    # layout.setAlignment(Qt.AlignCenter)  # Centrar el botón
-                    layout.setContentsMargins(10, 0, 10,0)  # Quitar márgenes
-                    self.tbPersona.setCellWidget(index, 8, button_widget)
+                    layout.setContentsMargins(10, 0, 10,0)
+                    ##el segundo numero indica el numero de columna osea la ultima, varia de acuerdo al bojeto
+                    self.tbPersona.setCellWidget(index, 8, button_widget) 
             else:
                 self._mostrar_mensaje_sin_datos()
         else:
             self._mostrar_mensaje_sin_datos()
 
+    """Esto no cambia, el dato debe ser string"""
     def addItem_a_tabla(self,row, colum,dato):
         dato_item = QTableWidgetItem(dato)
         dato_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # No editable
         self.tbPersona.setItem(row, colum, dato_item)
 
+    """No se modifica"""
     def _actualizar_lblPagina(self,numPagina, totalPagina):
         self.lblNumPagina.setText(f"Pagina {numPagina} de {totalPagina} ")
 
+    """En teoria no se modifica"""
     def _actualizarValoresPaginado(self,paginaActual,totalPaginas):
         self.paginaActual = paginaActual
         self.ultimaPagina = totalPaginas
@@ -263,25 +283,30 @@ class AdminPersona(QWidget):
             self.btnAnterior.setEnabled(True)
             self.btnSiguiente.setEnabled(True)
             self.btnUltimaPagina.setEnabled(True)
-
+    """En teoria no se modifica"""
     def _irPrimeraPagina(self):
         self.paginaActual = 1
         self._cargar_tabla()
-
+    
+    """En teoria no se modifica"""
     def _irUltimaPagina(self):
         self.paginaActual = self.ultimaPagina
         self._cargar_tabla()
-
+    """En teoria no se modifica"""
     def _irSiguientePagina(self):
         if (self.paginaActual+1) <= self.ultimaPagina:
             self.paginaActual = self.paginaActual+1
             self._cargar_tabla()
-
+    """En teoria no se modifica"""
     def _irAnteriorPagina(self):
         if (self.paginaActual - 1) >= 1:
             self.paginaActual = self.paginaActual-1
             self._cargar_tabla()
-
+    """Lo modifican de acuerdo a su objeto osea el metodo llebe el nombre de su objeto
+        ejemplo _buscarDepartamento
+        esta funcion esta conectada al botno buscar
+        se aseguran que el nombre este igual
+    """
     def _buscarPersona(self):
         input_busqueda = self.inputBuscar.text();
         if input_busqueda:
@@ -292,9 +317,12 @@ class AdminPersona(QWidget):
             self.paginaActual = 1
             self._cargar_tabla()
 
+    """Lo modifican de acuerdo a su crud
+        aseguresen que se muestre bien los mensajes
+    """
     def _eliminarRegistro(self, idx):
             dial = DialogoEmergente("¿?","¿Seguro que quieres eliminar este registro?","Question",True,True)
-            if dial.exec() == QDialog.Accepted:
+            if dial.exec() == QDialog.Accepted:##se revisa  si aceptro el dialogo emergente
                 result = self.Pservices.eliminarPersona(idx)
                 if result["success"]:
                     dial = DialogoEmergente("","Se elimino el registro correctamente.","Check")
@@ -303,23 +331,27 @@ class AdminPersona(QWidget):
                 else:
                     dial = DialogoEmergente("","Hubo un error al eliminar este registro.","Error")
                     dial.exec()
-
+    
+    """Modifican nada mas el form osea crean el objeto de su formulario"""
     def _editar_Persona(self,id):
         blur_effect = QGraphicsBlurEffect(self)
         blur_effect.setBlurRadius(10)  # Ajusta el radio de desenfoque según sea necesario
         self.setGraphicsEffect(blur_effect)
+        """Aqui crean un omjeto form pasan el titulo y el id"""
         form = formPersona(titulo="Actualizar persona",id=id)
-        form.exec()
-        self._cargar_tabla()
+        form.exec()#Levantan la ventana
+        
+        self._cargar_tabla()#luego de terminar se recarga la tabla
         self.setGraphicsEffect(None)
 
     def _crear_persona(self):
         blur_effect = QGraphicsBlurEffect(self)
         blur_effect.setBlurRadius(10)  # Ajusta el radio de desenfoque según sea necesario
         self.setGraphicsEffect(blur_effect)
+        """Se crean un ombjeto form para crear este no llevara titulo ni id"""
         form = formPersona()
-        form.exec()
-        self._cargar_tabla()
+        form.exec() ##se ejecuta
+        self._cargar_tabla() ##se recarga la tabla despues de terminar
         self.setGraphicsEffect(None)
         
 

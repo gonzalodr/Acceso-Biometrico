@@ -23,6 +23,7 @@
     font: 1 8pt "Arial";
     color: #ba0000; /* Texto en negro para el título */
 }
+
 #formFrame QPushButton{
     background-color: #dadada;
     color: #000000;

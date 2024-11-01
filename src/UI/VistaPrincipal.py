@@ -57,8 +57,7 @@ class vistaPrincipal(QWidget):
         self.btnAbrir_SideBar = QPushButton(text="")
         self.btnAbrir_SideBar.setCursor(Qt.PointingHandCursor)
         self.btnAbrir_SideBar.setMaximumSize(QSize(45,45))
-        self.btnAbrir_SideBar.setContentsMargins(3,3,3,3)
-        cargar_icono_svg(QObjeto=self.btnAbrir_SideBar,archivoSVG="arrow-bar-right.svg")
+        cargar_icono_svg(QObjeto=self.btnAbrir_SideBar,archivoSVG="arrow-bar-right.svg",Size=QSize(self.btnAbrir_SideBar.size().width()-15,self.btnAbrir_SideBar.size().height()-15))
         Sombrear(self.btnAbrir_SideBar,20,0,5)
         
         
@@ -131,20 +130,13 @@ class vistaPrincipal(QWidget):
             adminpersona = AdminPersona(parent=self)
             adminpersona.cerrar_adminP.connect(self._salir_crud)
             index =  self.stackVistas.addWidget(adminpersona)
-            self.listaOpciones.append((index,"Administrar Persona")) 
+            self.listaOpciones.append((index,"Administrar Persona"))
+             
         if True:
             AdminDepart = AdminDepartament()
             AdminDepart.cerrar_adminD.connect(self._salir_crud)
             index = self.stackVistas.addWidget(AdminDepart)
             self.listaOpciones.append((index,"Admin. Departamento"))
-            
-            # Agregando la nueva opción para administrar departamentos
-           ## admindepartamento = AdminDepartament(parent=self)  # Instancia de la clase
-           ## admindepartamento.cerrar_adminD.connect(self._salir_crud)
-            ##index_departamento = self.stackVistas.addWidget(admindepartamento)  # Añadiendo al stack
-            ##self.listaOpciones.append((index_departamento, "Administrar Departamento"))  # Agregando a la lista de opciones
-
-
 
         self.stackVistas.setCurrentIndex(0)
         pass
