@@ -53,6 +53,7 @@ class AdminPersona(QWidget):
         self.inputBuscar.setClearButtonEnabled(True)
         self.inputBuscar.setPlaceholderText("Buscar persona por nombre, apellidos, cedula o correo.")
         self.inputBuscar.setFixedSize(QSize(500,30))
+        self.inputBuscar.textChanged.connect(self._cargar_tabla)
         Sombrear(self.inputBuscar,20,0,0)
 
         self.btnBuscar = QPushButton(text="Buscar")

@@ -133,7 +133,7 @@ class vistaPrincipal(QWidget):
             self.listaOpciones.append((index,"Administrar Persona"))
              
         if True:
-            AdminDepart = AdminDepartament()
+            AdminDepart = AdminDepartament(parent=self)
             AdminDepart.cerrar_adminD.connect(self._salir_crud)
             index = self.stackVistas.addWidget(AdminDepart)
             self.listaOpciones.append((index,"Admin. Departamento"))
