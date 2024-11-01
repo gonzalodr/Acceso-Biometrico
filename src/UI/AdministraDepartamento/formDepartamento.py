@@ -13,7 +13,7 @@ class formDepartamento(QDialog):
         
         super().__init__(parent)
         self.setObjectName("formDepartamento")
-        self.setMinimumSize(QSize(700,650))
+        self.setMinimumSize(QSize(700/2,650/2))
         self.setWindowFlags(Qt.FramelessWindowHint)
         add_Style(archivoQSS="formDepartamento.css",QObjeto=self)
         
@@ -194,25 +194,25 @@ class formDepartamento(QDialog):
             descripcion= self.inputDescripcion.text(),
             id=self.idP,
         )
-               
-        if self.idP > 0:##si el atributo idP es mayor a 0 quiere decir que se va actualizar 
-                result = self.Pservices.modificarDepartamento(departament)
-                print(result)
-                if result["success"]:
-                    dial = DialogoEmergente("Actualización",result["message"],"Check")
-                    dial.exec()
-                    self.reject()
-                else:
-                    dial = DialogoEmergente("Erro","Error al actualizar departamento","Error")
-                    dial.exec()
-        else:#de lo contrario lo toma como un crear
-                result = self.Pservices.insertarDepartamento(departament)
-                print(result)
-                if result["success"]:
-                    dial = DialogoEmergente("Registrar","Departamento registrado exitosamente","Check")
-                    dial.exec()
-                    self.reject()
-                else:
-                    dial = DialogoEmergente("Erro","Error al registrar el departamento","Error")
-                    dial.exec()
+        if self._validar_campos():      
+            if self.idP > 0:##si el atributo idP es mayor a 0 quiere decir que se va actualizar 
+                    result = self.Pservices.modificarDepartamento(departament)
+                    print(result)
+                    if result["success"]:
+                        dial = DialogoEmergente("Actualización",result["message"],"Check")
+                        dial.exec()
+                        self.reject()
+                    else:
+                        dial = DialogoEmergente("Erro","Error al actualizar departamento","Error")
+                        dial.exec()
+            else:#de lo contrario lo toma como un crear
+                    result = self.Pservices.insertarDepartamento(departament)
+                    print(result)
+                    if result["success"]:
+                        dial = DialogoEmergente("Registrar","Departamento registrado exitosamente","Check")
+                        dial.exec()
+                        self.reject()
+                    else:
+                        dial = DialogoEmergente("Erro","Error al registrar el departamento","Error")
+                        dial.exec()
         
