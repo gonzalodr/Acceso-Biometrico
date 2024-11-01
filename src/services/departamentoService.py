@@ -64,4 +64,4 @@ class DepartamentoServices:
         return self.departamentoData.list_departamentos(pagina, tam_pagina, ordenar_por, tipo_orden, busqueda)
 
     def obtenerDepartamentoPorId(self, id):
-        pass
+        return self.departamentoData.get_departamento_by_id(id)

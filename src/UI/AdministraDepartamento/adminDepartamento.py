@@ -49,6 +49,7 @@ class AdminDepartament(QWidget):
         self.inputBuscar.setClearButtonEnabled(True)  # Activamos el botón de limpiar
         self.inputBuscar.setPlaceholderText("Buscar departamento por nombre o descripción.")  # Texto de marcador
         self.inputBuscar.setFixedSize(QSize(500, 30))  # Establecemos tamaño fijo
+        self.inputBuscar.textChanged.connect(self._cargar_tabla)
         Sombrear(self.inputBuscar, 20, 0, 0)  # Aplicamos efecto de sombreado
         
         
@@ -79,7 +80,7 @@ class AdminDepartament(QWidget):
         
         #Tabla Departamento
         self.tbDepartamento = QTableWidget()
-        if (self.tbDepartamento.colorCount() < 3):
+        if (self.tbDepartamento.columnCount() < 3):
             self.tbDepartamento.setColumnCount(3)
         header_labels = ["Nombre", "Descripcion", "Accciones"]
         self.tbDepartamento.setHorizontalHeaderLabels(header_labels)
@@ -175,7 +176,6 @@ class AdminDepartament(QWidget):
                 
     def _cargar_tabla(self):
         result = self.Pservices.obtenerListaDepartamento(pagina=self.paginaActual, tam_pagina=10, tipo_orden="DESC", busqueda=self.busqueda)
- 
         if result["success"]:
             listaDepartamento = result["data"]["listaDepartamentos"]
             if len(listaDepartamento) > 0:
