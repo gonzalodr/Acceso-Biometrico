@@ -224,6 +224,7 @@ class AdminPersona(QWidget):
                     btnEliminar = QPushButton(text="Eliminar")
                     btnEliminar.clicked.connect(lambda checked, idx=persona.id: self._eliminarRegistro(idx))##cambier solo el persona.id por su objeto.id
                     btnEliminar.setMinimumSize(QSize(80,35))
+                    btnEliminar.setMaximumWidth(100)
                     btnEliminar.setStyleSheet("""   QPushButton{background-color:#ff5151;color:white;}
                                                     QPushButton::hover{background-color:#ff0000;color:white;}
                                               """)
@@ -231,6 +232,7 @@ class AdminPersona(QWidget):
                     btnEditar = QPushButton("Editar")
                     btnEditar.clicked.connect(lambda checked, idx = persona.id: self._editar_Persona(idx)) ##cambier solo el persona.id por su objeto, y el nombre de la funcion
                     btnEditar.setMinimumSize(QSize(80,35))
+                    btnEditar.setMaximumWidth(100)
                     btnEditar.setStyleSheet(""" QPushButton{background-color:#00b800;color:white;}
                                                 QPushButton::hover{background-color:#00a800;color:white;}
                                             """)
