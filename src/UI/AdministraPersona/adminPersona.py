@@ -100,6 +100,9 @@ class AdminPersona(QWidget):
         self.tbPersona.verticalHeader().setVisible(False)
         self.tbPersona.horizontalHeader().setStretchLastSection(True)
         self.tbPersona.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.tbPersona.setColumnWidth(8, 220)
+        self.tbPersona.horizontalHeader().setSectionsMovable(False)
+        self.tbPersona.horizontalHeader().setMinimumSectionSize(50)
         Sombrear(self.tbPersona,30,0,0)
 
 
