@@ -139,9 +139,9 @@ class vistaPrincipal(QWidget):
             index = self.stackVistas.addWidget(AdminDepart)
             self.listaOpciones.append((index,"Admin. Departamento"))
         if True:
-            AdminRol =AdminRol(parent=self)
-            AdminRol.cerrar_adminR.connect(self._salir_crud)
-            index = self.stackVistas.addWidget(AdminRol)
+            adminrol =AdminRol(parent=self)
+            adminrol.cerrar_adminR.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(adminrol)
             self.listaOpciones.append((index,"Admin. Rol"))
         print("LLenando stack")
         print(self.listaOpciones)
