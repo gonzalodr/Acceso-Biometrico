@@ -75,20 +75,20 @@ QHeaderView::section:last {
     border-top-right-radius: 10px;
 }
 
-QTableWidget #btneliminar{
+QTableWidget #btnEliminar{
     background-color:#ff5151;
     color:white;  
 }
-QTableWidget #btneliminar::hover{
+QTableWidget #btnEliminar::hover{
     background-color:#ff0000;
     color:white;  
 }
 
-QTableWidget #btneditar{
+QTableWidget #btnEditar{
     background-color:#00b800;
     color:white;
 }
-QTableWidget #btneditar::hover{
+QTableWidget #btnEditar::hover{
     background-color:#00a800;
     color:white;
 }

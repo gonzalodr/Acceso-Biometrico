@@ -1,4 +1,4 @@
-#formDepartamento{
+#formRol{
     background-color: #ffffff;
     border: 2px solid #ffffff;
 }
@@ -9,16 +9,16 @@
     border-radius: 10px;
 }
 
-#formDepartamento #titulo{
+#formRol #titulo{
     background-color: transparent;
     font: 10 20pt "Cooper Black";
 }
-#formDepartamento QLabel{
+#formRol QLabel{
     background-color: transparent;
     font: 10 13pt "Cooper Black";
     color: #000000; /* Texto en negro para el título */
 }
-#formDepartamento #lblerror{
+#formRol #lblerror{
     background-color: transparent;
     font: 1 8pt "Arial";
     color: #ba0000; /* Texto en negro para el título */
@@ -31,48 +31,48 @@
     border-radius: 5px;
     border: 1px solid #818181;
 }
-#formDepartamento QLineEdit{
+#formRol QLineEdit{
     background-color:transparent;
     font-size:15px;border:none;
     border-bottom:1px solid #000000;
     color: #000000; /* Texto en negro para campos de entrada */
     
 }
-#formDepartamento QDateEdit{
+#formRol QDateEdit{
     background-color:transparent;
     font-size:15px;border:none;
     border-bottom:1px solid #000000;
     color: #000000; /* Texto en negro para campos de fecha */
 }
-#formDepartamento QComboBox{
+#formRol QComboBox{
     background-color:transparent;
     font-size:15px;border:none;
     border-bottom:1px solid #000000;
     color: #000000; /* Texto en negro para combo boxes */
 }
-#formDepartamento QTextEdit{
+#formRol QTextEdit{
     background-color:transparent;
     font-size:15px;border:none;
     border:1px solid #000000;
     color: #000000; /* Texto en negro para campos de texto */
 }
 
-#formDepartamento #btncancelar{
+#formRol #btnCancelar{
     background-color:#325fc6 ;
     border-radius: 5px;
     color:#ffffff;
     font: 10 13pt "Cooper Black";
 }
-#formDepartamento #btncancelar::Hover{
+#formRol #btnCancelar::Hover{
     background-color: #213a75;
 }
-#formDepartamento #btnregistrar{
+#formRol #btnRegistrar{
     background-color: #409da1;
     border-radius: 5px;
     color:#ffffff;
     font: 10 13pt "Cooper Black";
 }
-#formDepartamento #btnregistrar::hover{
+#formRol #btnRegistrar::hover{
     background-color:#00627d;
 }
 

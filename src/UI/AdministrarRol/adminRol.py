@@ -13,7 +13,7 @@ class AdminRol(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setObjectName("adminRol")
+        self.setObjectName("admin")
 
         add_Style(carpeta="css", archivoQSS="adminRol.css", QObjeto=self)
 
@@ -202,20 +202,29 @@ class AdminRol(QWidget):
                     btnEditar = QPushButton("Editar")
                     btnEditar.clicked.connect(lambda checked, idx=rol.id: self._editar_Rol(idx))
                     btnEditar.setMinimumSize(QSize(80, 35))
-                    btnEditar.setStyleSheet("""   QPushButton{background-color:#007bff;color:white;}
-                                                    QPushButton::hover{background-color:#0056b3;color:white;}
-                                              """)
+                    btnEditar.setStyleSheet(""" QPushButton{background-color:#00b800;color:white;}
+                                                QPushButton::hover{background-color:#00a800;color:white;}
+                                            """)
 
-                    self.tbRol.setCellWidget(index, 2, QWidget())
-                    layoutBotones = QHBoxLayout()
-                    layoutBotones.setContentsMargins(0, 0, 0, 0)
-                    layoutBotones.addWidget(btnEditar)
-                    layoutBotones.addWidget(btnEliminar)
-                    self.tbRol.setCellWidget(index, 2, QWidget())
-                    self.tbRol.cellWidget(index, 2).setLayout(layoutBotones)
+                    
+                    button_widget = QWidget()
+                    button_widget.setStyleSheet(u"background-color:transparent;")
+                    layout = QHBoxLayout()
+                    layout.addWidget(btnEditar)
+                    layout.addSpacing(15)
+                    layout.addWidget(btnEliminar)
+                    button_widget.setLayout(layout)
+                    layout.setContentsMargins(10, 0, 10,0)
 
+                    self.tbRol.setCellWidget(index, 2, button_widget)
             else:
                 self._mostrar_mensaje_sin_datos()
+
+
+    def addItem_a_tabla(self,row, colum,dato):
+        dato_item = QTableWidgetItem(dato)
+        dato_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # No editable
+        self.tbRol.setItem(row, colum, dato_item)
 
     def _actualizar_lblPagina(self, paginaActual, totalPaginas):
         self.lblNumPagina.setText(f"Página {paginaActual} de {totalPaginas} páginas.")
@@ -237,18 +246,19 @@ class AdminRol(QWidget):
         self._cargar_tabla()
 
     def _eliminarRegistro(self, id_rol):
-        confirmacion = QMessageBox.question(self, "Confirmación", "¿Está seguro de que desea eliminar este rol?",
-                                             QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-        if confirmacion == QMessageBox.Yes:
-            result = self.Rservices.eliminarRol(id_rol)
-            if result["success"]:
-                self._cargar_tabla()
-                QMessageBox.information(self, "Éxito", "Rol eliminado correctamente.")
-            else:
-                QMessageBox.warning(self, "Error", result["message"])
+        dial = DialogoEmergente("¿?","¿Seguro que quieres eliminar este registro?","Question",True,True)
+        if dial.exec() == QDialog.Accepted:
+                result = self.Pservices.eliminarDepartamento(id_rol)
+                if result["success"]:
+                    dial = DialogoEmergente("","Se elimino el registro correctamente.","Check")
+                    dial.exec()
+                    self._cargar_tabla()
+                else:
+                    dial = DialogoEmergente("","Hubo un error al eliminar este registro.","Error")
+                    dial.exec()
 
     def _editar_Rol(self, id_rol):
-        rol_form = formRol(rol_id=id_rol)
+        rol_form = formRol(id=id_rol)
         rol_form.exec()
         self._cargar_tabla()
 
