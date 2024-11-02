@@ -6,6 +6,7 @@ from services.departamentoService import *
 
 class AdminDepartament(QWidget):
     cerrar_adminD = Signal()
+    
     paginaActual = 1
     ultimaPagina = 1
     busqueda = None

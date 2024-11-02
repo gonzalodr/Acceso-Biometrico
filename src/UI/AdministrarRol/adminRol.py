@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from Utils.Utils import *
-from UI.AdministraRol.formRol import *
+from UI.AdministrarRol.formRol import *
 from services.rolService import *
 
 class AdminRol(QWidget):
@@ -11,7 +11,7 @@ class AdminRol(QWidget):
     busqueda = None
     Rservices = RolServices()
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("adminRol")
 
@@ -232,9 +232,9 @@ class AdminRol(QWidget):
         self._cargar_tabla()
 
     def _crear_rol(self):
-        self.rol_form = RolForm()
-        self.rol_form.show()
-        self.rol_form.guardar.connect(self._cargar_tabla)
+        rol_form = formRol()
+        rol_form.exec()
+        self._cargar_tabla()
 
     def _eliminarRegistro(self, id_rol):
         confirmacion = QMessageBox.question(self, "Confirmación", "¿Está seguro de que desea eliminar este rol?",
@@ -248,9 +248,9 @@ class AdminRol(QWidget):
                 QMessageBox.warning(self, "Error", result["message"])
 
     def _editar_Rol(self, id_rol):
-        self.rol_form = RolForm(rol_id=id_rol)
-        self.rol_form.show()
-        self.rol_form.guardar.connect(self._cargar_tabla)
+        rol_form = formRol(rol_id=id_rol)
+        rol_form.exec()
+        self._cargar_tabla()
 
     def _irPrimeraPagina(self):
         self.paginaActual = 1

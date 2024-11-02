@@ -5,5 +5,5 @@ class Rol:
         self.descripcion = descripcion
         self.id = id
 
-        def mostrar(self):
+    def mostrar(self):
         return f"{self.nombre} {self.descripcion}"
