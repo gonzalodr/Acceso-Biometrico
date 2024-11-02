@@ -19,10 +19,11 @@ class AdminPersona(QWidget):
 
         add_Style(carpeta="css",archivoQSS="adminPersona.css",QObjeto=self)
 
-        layout = QVBoxLayout();
+        layout = QVBoxLayout()
         layout.setContentsMargins(10,10,10,10)
 
         frame = QFrame()
+        print(layout.parent)
 
         self.layoutFrame = QVBoxLayout()
         self.layoutFrame.setContentsMargins(0,0,0,0)

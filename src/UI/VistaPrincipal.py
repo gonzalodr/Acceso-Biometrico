@@ -100,7 +100,7 @@ class vistaPrincipal(QWidget):
         self.stackVistas = QStackedWidget()
         self._llenar_stack_vista()
         
-        self.sidebar = SlideBar(listaOpciones=self.listaOpciones)
+        self.sidebar = SlideBar(listaOpciones=self.listaOpciones, parent=self)
         self.cargar_imagen_usuario(self.sidebar.lblUsuario)
         self.btnAbrir_SideBar.clicked.connect(lambda click, btn = self.btnAbrir_SideBar:self.sidebar.accion_anim(btnSidebar=btn))
 

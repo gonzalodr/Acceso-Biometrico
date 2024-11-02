@@ -11,7 +11,7 @@ from UI.DialogoEmergente import *
 class Ventana(QMainWindow):
     def __init__(self):
         super().__init__()      
-        # self.setMinimumSize(700, 600)
+        self.setMinimumSize(700, 600)
         # self.tiempo_inactividad = 1 * 10 * 1000  # Ajusta el tiempo de inactividad aquí (en milisegundos)
 
         # self.temporizador_inactividad = QTimer(self)
@@ -25,7 +25,7 @@ class Ventana(QMainWindow):
     def _autenticacion_login(self,user:Usuario):
         self.setCentralWidget(None)
         # self.temporizador_inactividad.start(self.tiempo_inactividad) 
-        vista = vistaPrincipal(usuario=user)
+        vista = vistaPrincipal(parent=self,usuario=user)
         self.setCentralWidget(vista)
         
     # def cerrar_sesion_por_inactividad(self):
@@ -48,12 +48,12 @@ class Ventana(QMainWindow):
     #         self.temporizador_inactividad.start(self.tiempo_inactividad)
     #     return super().event(event)
     
-    # def closeEvent(self, event):
-    #     dial = DialogoEmergente("¿?","¿Estas seguro que quieres cerrar la aplicación?","Question",True,True)
-    #     if dial.exec() == QDialog.Accepted:
-    #         event.accept()  # Aceptar el cierre de la ventana
-    #     else:
-    #         event.ignore() 
+    def closeEvent(self, event):
+        dial = DialogoEmergente("¿?","¿Estas seguro que quieres cerrar la aplicación?","Question",True,True)
+        if dial.exec() == QDialog.Accepted:
+            event.accept()  # Aceptar el cierre de la ventana
+        else:
+            event.ignore() 
 
                 
         
