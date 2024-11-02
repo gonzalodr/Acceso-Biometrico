@@ -5,6 +5,7 @@ from Utils.Utils import *
 from UI.slideBar import *
 from UI.AdministraPersona.adminPersona import *
 from UI.AdministraDepartamento.adminDepartamento import *  # Importa la clase AdminDepartamento
+from UI.AdministrarRol.adminRol import *
 from models.usuario import *
 import sys
 
@@ -137,6 +138,11 @@ class vistaPrincipal(QWidget):
             AdminDepart.cerrar_adminD.connect(self._salir_crud)
             index = self.stackVistas.addWidget(AdminDepart)
             self.listaOpciones.append((index,"Admin. Departamento"))
+        if True:
+            AdminRol =AdminRol(parent=self)
+            AdminRol.cerrar_adminR.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(AdminRol)
+            self.listaOpciones.append((index,"Admin. Rol"))
         print("LLenando stack")
         print(self.listaOpciones)
         print()
