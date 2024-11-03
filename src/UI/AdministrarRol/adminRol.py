@@ -14,9 +14,7 @@ class AdminRol(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("admin")
-
         add_Style(carpeta="css", archivoQSS="adminRol.css", QObjeto=self)
-
         layout = QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
 
@@ -229,6 +227,8 @@ class AdminRol(QWidget):
         self.lblNumPagina.setText(f"Página {paginaActual} de {totalPaginas} páginas.")
 
     def _actualizarValoresPaginado(self, paginaActual, totalPaginas):
+        self.paginaActual = paginaActual
+        self.ultimaPagina = totalPaginas
         self.btnSiguiente.setEnabled(paginaActual < totalPaginas)
         self.btnUltimaPagina.setEnabled(paginaActual < totalPaginas)
         self.btnPrimerPagina.setEnabled(paginaActual > 1)
@@ -240,14 +240,18 @@ class AdminRol(QWidget):
         self._cargar_tabla()
 
     def _crear_rol(self):
+        blur_effect = QGraphicsBlurEffect(self)
+        blur_effect.setBlurRadius(10)
+        self.setGraphicsEffect(blur_effect)
         rol_form = formRol()
         rol_form.exec()
         self._cargar_tabla()
+        self.setGraphicsEffect(None)
 
     def _eliminarRegistro(self, id_rol):
         dial = DialogoEmergente("¿?","¿Seguro que quieres eliminar este registro?","Question",True,True)
         if dial.exec() == QDialog.Accepted:
-                result = self.Rservices.eliminarDepartamento(id_rol)
+                result = self.Rservices.eliminarRol(id_rol)
                 if result["success"]:
                     dial = DialogoEmergente("","Se elimino el registro correctamente.","Check")
                     dial.exec()
@@ -257,9 +261,14 @@ class AdminRol(QWidget):
                     dial.exec()
 
     def _editar_Rol(self, id_rol):
+        blur_effect = QGraphicsBlurEffect(self)
+        blur_effect.setBlurRadius(10)
+        self.setGraphicsEffect(blur_effect)
         rol_form = formRol(id=id_rol)
         rol_form.exec()
         self._cargar_tabla()
+        self._cargar_tabla()
+        self.setGraphicsEffect(None)
 
     def _irPrimeraPagina(self):
         self.paginaActual = 1

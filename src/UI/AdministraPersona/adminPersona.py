@@ -273,27 +273,11 @@ class AdminPersona(QWidget):
     def _actualizarValoresPaginado(self,paginaActual,totalPaginas):
         self.paginaActual = paginaActual
         self.ultimaPagina = totalPaginas
-        ## Valores necesarios para las paginacion:
-        if totalPaginas <= 1:
-            self.btnPrimerPagina.setEnabled(False)
-            self.btnAnterior.setEnabled(False)
-            self.btnSiguiente.setEnabled(False)
-            self.btnUltimaPagina.setEnabled(False)
-        elif paginaActual == 1:
-            self.btnPrimerPagina.setEnabled(False)
-            self.btnAnterior.setEnabled(False)
-            self.btnSiguiente.setEnabled(True)
-            self.btnUltimaPagina.setEnabled(True)
-        elif paginaActual == totalPaginas:
-            self.btnPrimerPagina.setEnabled(True)
-            self.btnAnterior.setEnabled(True)
-            self.btnSiguiente.setEnabled(False)
-            self.btnUltimaPagina.setEnabled(False)
-        else:
-            self.btnPrimerPagina.setEnabled(True)
-            self.btnAnterior.setEnabled(True)
-            self.btnSiguiente.setEnabled(True)
-            self.btnUltimaPagina.setEnabled(True)
+        self.btnSiguiente.setEnabled(paginaActual < totalPaginas)
+        self.btnUltimaPagina.setEnabled(paginaActual < totalPaginas)
+        self.btnPrimerPagina.setEnabled(paginaActual > 1)
+        self.btnAnterior.setEnabled(paginaActual > 1)
+
     """En teoria no se modifica"""
     def _irPrimeraPagina(self):
         self.paginaActual = 1
