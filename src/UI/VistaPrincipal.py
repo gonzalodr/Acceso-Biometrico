@@ -143,9 +143,7 @@ class vistaPrincipal(QWidget):
             adminrol.cerrar_adminR.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminrol)
             self.listaOpciones.append((index,"Admin. Rol"))
-        print("LLenando stack")
-        print(self.listaOpciones)
-        print()
+      
         self.stackVistas.setCurrentIndex(0)
         pass
     

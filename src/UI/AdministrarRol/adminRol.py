@@ -220,7 +220,6 @@ class AdminRol(QWidget):
             else:
                 self._mostrar_mensaje_sin_datos()
 
-
     def addItem_a_tabla(self,row, colum,dato):
         dato_item = QTableWidgetItem(dato)
         dato_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # No editable
@@ -248,7 +247,7 @@ class AdminRol(QWidget):
     def _eliminarRegistro(self, id_rol):
         dial = DialogoEmergente("¿?","¿Seguro que quieres eliminar este registro?","Question",True,True)
         if dial.exec() == QDialog.Accepted:
-                result = self.Pservices.eliminarDepartamento(id_rol)
+                result = self.Rservices.eliminarDepartamento(id_rol)
                 if result["success"]:
                     dial = DialogoEmergente("","Se elimino el registro correctamente.","Check")
                     dial.exec()

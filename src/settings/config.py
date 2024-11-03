@@ -46,3 +46,15 @@ TBUSUARIO = "usuario"
 TBUSUARIOIDPERSONA = "Id_Persona"
 TBUSUARIOUSUARIO = "Usuario"
 TBUSUARIOCONTRASENA = "Contrasena"
+
+##
+#    Tabla de permisos de rol  
+#
+TBPERMISOROL = "permiso_rol"
+TBPERMISOROL_ID = "Id"
+TBPERMISOROL_ROL_ID = "Id_rol"
+TBPERMISOROL_TABLA = "nombre_tabla"
+TBPERMISOROL_VER = "Ver"
+TBPERMISOROL_INSERTAR = "Insertar"
+TBPERMISOROL_EDITAR = "Editar"
+TBPERMISOROL_ELIMINAR = "Eliminar"
