@@ -6,6 +6,7 @@ from UI.slideBar import *
 from UI.AdministraPersona.adminPersona import *
 from UI.AdministraDepartamento.adminDepartamento import *  # Importa la clase AdminDepartamento
 from UI.AdministrarRol.adminRol import *
+from UI.AdministrarPermisosRol.AdminPermisosRol import *
 from models.usuario import *
 import sys
 
@@ -142,7 +143,12 @@ class vistaPrincipal(QWidget):
             adminrol =AdminRol(parent=self)
             adminrol.cerrar_adminR.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminrol)
-            self.listaOpciones.append((index,"Admin. Rol"))
+            self.listaOpciones.append((index,"Administrar Rol"))
+        if True:
+            adminPermisosRol = AdminPermisosRol()
+            adminPermisosRol.cerrar_adminP.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(adminPermisosRol)
+            self.listaOpciones.append((index,"Admin. Permisos rol"))
       
         self.stackVistas.setCurrentIndex(0)
         pass
