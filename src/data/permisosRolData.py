@@ -4,18 +4,18 @@ from models.permiso_rol import *
 
 class PermisosRolData:
     
-    def verificar_rol_permiso(self,permiso:Permiso_Rol):
+    def verificar_rol_permiso(self,rol_id:int, tabla:str, id:int =0):
         conexion, resultado = conection()
         if not resultado["success"]:
-            return resultado
+            return False
         try:
             with conexion.cursor() as cursor:
                 query = f"SELECT COUNT(*) FROM {TBPERMISOROL} WHERE {TBPERMISOROL_ROL_ID} = %s AND {TBPERMISOROL_TABLA} = %s "
-                if permiso.id is not None and permiso.id > 0:
+                if id is not None and id > 0:
                     query += f" AND id != %s"
-                    cursor.execute(query, (permiso.rol_id,permiso.tabla, permiso.id))
+                    cursor.execute(query, (rol_id, tabla, id))
                 else:
-                    cursor.execute(query, (permiso.rol_id,permiso.tabla))
+                    cursor.execute(query, (rol_id, tabla))
                 count = cursor.fetchone()[0]
                 return count > 0 
         except Exception as e:

@@ -19,8 +19,8 @@ class PermisosRolServices:
     def obtener_permiso_rol_por_id(self,id):
         return self.permisoroldata.get_permiso_rol_ById(id)
     
-    def verificar_permiso_rol_tabla(self, permiso:Permiso_Rol):
-        return self.permisoroldata.verificar_rol_permiso(permiso=permiso)
+    def verificar_permiso_rol_tabla(self, rol_id:int, tabla:str, id:int =0):
+        return self.permisoroldata.verificar_rol_permiso(rol_id=rol_id,tabla=tabla,id=id)
     
     def verificar_permisos_accesos_tabla(self,permisos:Permiso_Rol):
         if permisos.editar:

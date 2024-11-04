@@ -67,3 +67,6 @@ class RolServices:
     def obtenerRolPorId(self, id):
         # Obtener rol por ID
         return self.rolData.get_rol_by_id(id)
+
+    def obtener_todo_roles(self):
+        return self.rolData.obtener_todo_roles()

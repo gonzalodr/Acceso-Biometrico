@@ -173,3 +173,37 @@ class RolData:
             if conexion:
                 conexion.close()
         return resultado
+
+    def obtener_todo_roles(self):
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+        
+        listaRoles = []
+        try:
+            with conexion.cursor(dictionary=True) as cursor:
+                query = f"SELECT * FROM {TBROL}"
+                cursor.execute(query)
+                registros = cursor.fetchall()
+                for registro in registros:
+                    rol = Rol(
+                        nombre=registro[TBROL_NOMBRE],
+                        descripcion=registro[TBROL_DESCRIPCION],
+                        id=registro[TBROL_ID]
+                    )
+                    listaRoles.append(rol)
+                
+                resultado["data"] = {
+                    "listaRoles": listaRoles,
+                }
+                resultado["success"] = True
+                resultado["message"] = "Roles listados exitosamente."
+        except Exception as e:
+            resultado["success"] = False
+            resultado["message"] = f"Error al listar roles: {e}"
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
+        return resultado

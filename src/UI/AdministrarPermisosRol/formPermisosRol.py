@@ -10,8 +10,10 @@ from settings.variable import *
 class formPermiso(QDialog):
     update:bool = False 
     permisosServices = PermisosRolServices() 
+    rolServices = RolServices()
     idP = 0 
     fotografia = None
+    listaRolesID = {}
     ##constructor
     def __init__(self, parent=None, titulo="Registrar permiso.",id = None):
         super().__init__(parent)
@@ -35,7 +37,7 @@ class formPermiso(QDialog):
         layoutForm = QGridLayout()
         layoutForm.setContentsMargins(20,10,20,20)
         layoutForm.setHorizontalSpacing(45)
-        layoutForm.setVerticalSpacing(1)
+        layoutForm.setVerticalSpacing(5)
 
         """ 
             Aqui cargar el combo box de registros
@@ -43,6 +45,7 @@ class formPermiso(QDialog):
         lblRol = QLabel(text="Seleccionar rol")   
         self.inputRol = QComboBox()
         self.errorRol = QLabel(text="")
+        self._cargar_roles()
         
         
         #permisos para dicha tabla
@@ -51,24 +54,42 @@ class formPermiso(QDialog):
         self.inputTabla.addItems(ACCESO_TABLE.keys())
         self.errorTabla = QLabel(text="")
         
+        lblPermisos = QLabel(text="Otorgar los siguientes permisos:")
+        
         self.checkVer = QCheckBox("permiso ver")
-        Sombrear(self.checkVer,30,0,5)
+        self.checkVer.clicked.connect(self._checked_verificacion_ver)
+        Sombrear(self.checkVer,30,0,0)
         
         self.checkCrear = QCheckBox("permiso crear")
-        Sombrear(self.checkCrear,30,0,5)
+        self.checkCrear.clicked.connect(self._checked_verificacion)
+        Sombrear(self.checkCrear,30,0,0)
         
         self.checkEditar = QCheckBox("permiso editar")
-        Sombrear(self.checkEditar,30,0,5)
+        self.checkEditar.clicked.connect(self._checked_verificacion)
+        Sombrear(self.checkEditar,30,0,0)
 
         self.checkEliminar = QCheckBox("permiso eliminar")
-        Sombrear(self.checkEliminar,30,0,5)
+        self.checkEliminar.clicked.connect(self._checked_verificacion)
+        Sombrear(self.checkEliminar,30,0,0)
+
+        self.error =QLabel(text="")
+        self.error.setObjectName("lblerror")
+        self.error.setMaximumHeight(30)
+        self.error.setMinimumHeight(30)
+        self.error.setWordWrap(True)
+
+        self._verificar_permiso()
+        self.inputTabla.currentIndexChanged.connect(self._verificar_permiso)
+        self.inputRol.currentIndexChanged.connect(self._verificar_permiso)
 
         layoutForm.addLayout(self._contenedor(lblRol,self.inputRol,self.errorRol),0,0)
         layoutForm.addLayout(self._contenedor(lblAcceso,self.inputTabla,self.errorTabla),1,0)
-        layoutForm.addWidget(self.checkVer,2,0)
-        layoutForm.addWidget(self.checkCrear,3,0)
-        layoutForm.addWidget(self.checkEditar,4,0)
-        layoutForm.addWidget(self.checkEliminar,5,0)        
+        layoutForm.addWidget(lblPermisos,2,0)
+        layoutForm.addWidget(self.checkVer,3,0)
+        layoutForm.addWidget(self.checkCrear,4,0)
+        layoutForm.addWidget(self.checkEditar,5,0)
+        layoutForm.addWidget(self.checkEliminar,6,0)    
+        layoutForm.addWidget(self.error,7,0)    
         
         
         
@@ -105,7 +126,6 @@ class formPermiso(QDialog):
         if id:
             self._obtener_registroId(id)
 
-    """Esto no se toca"""  
     def _contenedor(self,label:QLabel,input,label_error:QLabel):
         layout = QVBoxLayout()
         layout.setContentsMargins(0,0,0,0)
@@ -120,178 +140,133 @@ class formPermiso(QDialog):
         layout.addWidget(input)
         layout.addWidget(label_error)
         return layout
-    
-    def eventFilter(self, source, event):
-        if event.type() == 10:  # Enter (Mouse Enter)
-            if isinstance(source, QLineEdit): 
-                text = source.placeholderText()
-                QToolTip.showText(event.globalPos(),text, source)
-        elif event.type() == 11:  # Leave (Mouse Leave)
-            if isinstance(source, QLineEdit):
-                QToolTip.hideText()
-        return super().eventFilter(source, event)
+
+    def _verificar_permiso(self):
+        rolid = self.listaRolesID[self.inputRol.currentText()]
+        tabla = ACCESO_TABLE[self.inputTabla.currentText()]
+        
+        result = self.permisosServices.verificar_permiso_rol_tabla(rol_id=rolid, tabla=tabla, id=self.idP)
+        if result:
+            self.error.setText(f"El rol \'{self.inputRol.currentText()}\' ya posee el acceso a \'{self.inputTabla.currentText()}\'")
+            return False
+        else:
+            self.error.setText("")
+            return True
+
+    def _checked_verificacion_ver(self):
+        if not self.checkVer.isChecked():
+            self.checkCrear.setChecked(False)
+            self.checkEditar.setChecked(False)
+            self.checkEliminar.setChecked(False)
+
+    def _checked_verificacion(self):
+        if self.checkCrear.isChecked() or self.checkEditar.isChecked() or self.checkEliminar.isChecked():
+            self.checkVer.setChecked(True)
 
     def _cancelar_registro(self):
-        # if self._validar_inputs_sin_con_datos():
-        #     dialEmergente = DialogoEmergente("¿?","¿Estas seguro que que quieres cancelar?","Question",True,True)
-        #     opcion = dialEmergente.exec()
-        #     if opcion == QDialog.Accepted:
-        #         self.reject()
-        #     elif opcion == QDialog.Rejected:
-        #         print("Se rechazó el diálogo.")
-        # else:##si los inputs estan sin datos entonces cierra el formulario de manera normal
-        #     self.reject()##cerrar la ventana
-        pass
-                
+        if not self._validar_inputs_vacios():
+            dialEmergente = DialogoEmergente("¿?","¿Estas seguro que que quieres cancelar?","Question",True,True)
+            opcion = dialEmergente.exec()
+            if opcion == QDialog.Accepted:
+                 self.reject()
+            elif opcion == QDialog.Rejected:
+                 print("Se rechazó el diálogo.")
+        else:
+             self.reject()##cerrar la ventana
+
+    def _cargar_roles(self):
+        result = self.rolServices.obtener_todo_roles()
+        if result["success"]:
+            listaRoles = result["data"]["listaRoles"]
+            if len(listaRoles) > 0:
+                for rol in listaRoles:
+                    self.inputRol.addItem(rol.nombre)
+                    self.listaRolesID[rol.nombre] = rol.id
+            else:
+                dialEmergente = DialogoEmergente("","No existen roles.","Warning")
+                dialEmergente.exec()
+                self.reject()
+        else:
+            dialEmergente = DialogoEmergente("","Ocurrio un error","Error")
+            dialEmergente.exec()
+            self.reject()
+                      
     def _validar_campos(self):
-        # Verifica si los campos requeridos están vacíos entonces muestra una alerta
-        # if self._validar_inputs_vacios():
-        #     dialEmergente = DialogoEmergente("Advertencia","Llene todos los campos.","Warning")
-        #     dialEmergente.exec()
-        #     return False
-        # else:
-        #     return True
-        pass
+        if self._validar_inputs_vacios():
+            dialEmergente = DialogoEmergente("Advertencia","Debes conceder al menos un permiso.","Warning")
+            dialEmergente.exec()
+            return False
+        else:
+            return True
 
     def _validar_inputs_vacios(self):
-        # vacios:bool = False
-            
-        # if not self.inputNombre.text().strip(): ##si no tienes datos, los sombres de rojo
-        #     Sombrear(self.inputNombre,20,0,0,"red")
-        #     vacios = True
-        # else:
-        #     Sombrear(self.inputNombre,20,0,0) ##de lo contrario los regresa al estado normal
-            
-        # if not self.inputApellido1.text().strip():
-        #     Sombrear(self.inputApellido1,20,0,0,"red")
-        #     vacios = True
-        # else:
-        #     Sombrear(self.inputApellido1,20,0,0)
-            
-        # if not self.inputApellido2.text().strip():
-        #     Sombrear(self.inputApellido2,20,0,0,"red")
-        #     vacios = True
-        # else:
-        #     Sombrear(self.inputApellido2,20,0,0)
-            
-        # if not self. inputCedula.text().strip():
-        #     Sombrear(self.inputCedula,20,0,0,"red")
-        #     vacios = True
-        # else:
-        #     Sombrear(self.inputCedula,20,0,0)
-            
-        # if not self.inputNacimiento.date().toString("yyyy-MM-dd"):
-        #     Sombrear(self.inputNacimiento,20,0,0,"red")
-        #     vacios = True
-        # else:
-        #     Sombrear(self.inputNacimiento,20,0,0)
-            
-        # if not self.inputCorreo.text().strip():
-        #     Sombrear(self.inputCorreo,20,0,0,"red") 
-        #     vacios = True
-        # else:
-        #     Sombrear(self.inputCorreo,20,0,0)
-            
-        # if not self.inputEstCivil.currentText():
-        #     Sombrear(self.inputEstCivil,20,0,0,"red")
-        #     vacios = True
-        # else:
-        #     Sombrear(self.inputEstCivil,20,0,0)
-            
-        # if not self.inputDireccion.toPlainText().strip():
-        #     Sombrear(self.inputDireccion,20,0,0,"red")
-        #     vacios = True
-        # else:
-        #     Sombrear(self.inputDireccion,20,0,0)
-        # return vacios
-        pass
+        if not self.checkCrear.isChecked() and not self.checkEditar.isChecked() and not self.checkEliminar.isChecked() and not self.checkVer.isChecked():
+            return True
+        else:
+            return False
 
-
-
-    def _validar_inputs_sin_con_datos(self):
-        # if self.inputNombre.text().strip() or self.inputApellido1.text().strip() or self.inputApellido2.text().strip() or self. inputCedula.text().strip() or self.inputCorreo.text().strip() or self.inputDireccion.toPlainText().strip():
-        #     return True
-        # else:
-        #     return False
-        pass
     def _obtener_registroId(self, id):
-        # result = self.permisosServices.obtenerPersonaPorId(id)
-        # if result["success"]:
-        #     if result["data"]:
-        #         persona:Persona = result["data"]
-        #         ##guarda ele ide para saber que registro se va a modifcar
-        #         self.idP = persona.id
-        #         ##llena los inputs
-        #         self.fotografia = persona.foto
-        #         self.inputNombre.setText(persona.nombre)
-        #         self.inputApellido1.setText(persona.apellido1)
-        #         self.inputApellido2.setText(persona.apellido2)
-        #         self.inputNacimiento.setDate(QDate.fromString(str(persona.fecha_nacimiento), "yyyy-MM-dd"))
-        #         self.inputCedula.setText(persona.cedula)
-        #         self.inputCorreo.setText(persona.correo)
-        #         self.inputDireccion.setPlainText(persona.direccion)
-        #         self.inputEstCivil.setCurrentText(persona.estado_civil)
+        result = self.permisosServices.obtener_permiso_rol_por_id(id)
+        if result["success"]:
+            if result["data"]:
+                permiso:Permiso_Rol = result["data"]
                 
-        #         self.btnFoto.setText("Eliminar foto " if self.fotografia is not None else "Seleccionar foto")
-        #         if self.fotografia:
-        #             pixmap = QPixmap()
-        #             pixmap.loadFromData(self.fotografia)
-        #             self.lblicono.setPixmap(pixmap.scaled(self.lblicono.size()))
-        #             self.lblicono.show()
-                    
-        #     else:
-        #         dial = DialogoEmergente("Error","Hubo un error de carga.","Error")
-        #         dial.exec()
-        #         QTimer.singleShot(0, self.reject)
-        #         return None
-        # else:
-        #     dial = DialogoEmergente("Error","Hubo un error de carga.","Error")
-        #     dial.exec()
-        #     QTimer.singleShot(0, self.reject)
-        #     return None
-        pass
-    def _accion_permiso(self):
+                dato = self.rolServices.obtenerRolPorId(permiso.rol_id)
+                rol = dato["data"]
+                acceso_a = [key for key, value in ACCESO_TABLE.items() if value == permiso.tabla]
+                
+                
+                self.inputRol.setCurrentText(rol.nombre)
+                self.inputRol.setDisabled(True)
+                self.inputTabla.setCurrentText(str(acceso_a[0]))
+                self.inputTabla.setDisabled(True)
+                self.checkVer.setChecked(permiso.ver)
+                self.checkCrear.setChecked(permiso.crear)
+                self.checkEditar.setChecked(permiso.editar)
+                self.checkEliminar.setChecked(permiso.eliminar)
+                self.idP = permiso.id
+            else:
+                dial = DialogoEmergente("Error","Hubo un error de carga.","Error")
+                dial.exec()
+                QTimer.singleShot(0, self.reject)
+                return None
+        else:
+            dial = DialogoEmergente("Error","Hubo un error al intentar editar.","Error")
+            dial.exec()
+            QTimer.singleShot(0, self.reject)
+            return None 
 
-        # person:Persona = Persona(
-        #     nombre = self.inputNombre.text(),
-        #     apellido1 = self.inputApellido1.text(),
-        #     apellido2 = self.inputApellido2.text(),
-        #     cedula = self.inputCedula.text(),
-        #     fecha_nacimiento = self.inputNacimiento.date().toString("yyyy-MM-dd"),
-        #     correo = self.inputCorreo.text(),
-        #     estado_civil = self.inputEstCivil.currentText(),
-        #     direccion=self.inputDireccion.toPlainText(),
-        #     id=self.idP,
-        #     foto = self.fotografia
-        # )
-        # if self._validar_campos():##valida si todos los campos necesarios estan llenos
-        #     result = self.permisosServices.verificacionCorreo(correo=self.inputCorreo.text(),id=self.idP)
-        #     if not result["success"]:
-        #         self.errorCorreo.setText(result["message"])
-        #         Sombrear(self.inputCorreo,20,0,0,"red")
-        #         return
-        #     result = self.permisosServices.validar_cedula(cedula=self.inputCedula.text(),id=self.idP)
-        #     if not result["success"]:
-        #         self.errorCedula.setText(result["message"])
-        #         Sombrear(self.inputCedula,20,0,0,"red")
-        #         return
-               
-        #     if self.idP > 0:##si el atributo idP es mayor a 0 quiere decir que se va actualizar 
-        #         result = self.permisosServices.modificarPersona(person)
-        #         if result["success"]:
-        #             dial = DialogoEmergente("Actualización",result["message"],"Check")
-        #             dial.exec()
-        #             self.reject()
-        #         else:
-        #             dial = DialogoEmergente("Erro","Error al actualizar a la persona","Error")
-        #             dial.exec()
-        #     else:#de lo contrario lo toma como un crear
-        #         result = self.permisosServices.insertarPersona(person)
-        #         if result["success"]:
-        #             dial = DialogoEmergente("Registrar","Persona registrada exitosamente","Check")
-        #             dial.exec()
-        #             self.reject()
-        #         else:
-        #             dial = DialogoEmergente("Erro","Error al registrar a la persona","Error")
-        #             dial.exec()
-        pass
+    def _accion_permiso(self):
+        permiso:Permiso_Rol = Permiso_Rol(
+            rol_id  = self.listaRolesID[self.inputRol.currentText()],
+            tabla   = ACCESO_TABLE[self.inputTabla.currentText()],
+            ver     = self.checkVer.isChecked(),
+            crear   = self.checkCrear.isChecked(),
+            editar  = self.checkEditar.isChecked(),
+            eliminar= self.checkEliminar.isChecked(),
+            id      = self.idP
+        )
+        if not self._verificar_permiso():
+            dial = DialogoEmergente("¡Advertencia!",self.error.text(),"Warning")
+            dial.exec()
+            return
+
+        if self._validar_campos():
+            if self.idP > 0:
+                result = self.permisosServices.actualizar_permiso_rol(permiso=permiso)
+                if result["success"]:
+                    dial = DialogoEmergente("Actualización",result["message"],"Check")
+                    dial.exec()
+                    self.reject()
+                else:
+                    dial = DialogoEmergente("Erro","Error al actualizar a el permiso","Error")
+                    dial.exec()
+            else:
+                result = self.permisosServices.insertar_permiso_rol(permiso=permiso)
+                if result["success"]:
+                    dial = DialogoEmergente("Registrar","Permiso registrado exitosamente","Check")
+                    dial.exec()
+                    self.reject()
+                else:
+                    dial = DialogoEmergente("Erro","Error al registrar a el permiso","Error")
+                    dial.exec()
