@@ -217,6 +217,8 @@ class AdminRol(QWidget):
                     self.tbRol.setCellWidget(index, 2, button_widget)
             else:
                 self._mostrar_mensaje_sin_datos()
+        else:
+            self._mostrar_mensaje_sin_datos()
 
     def addItem_a_tabla(self,row, colum,dato):
         dato_item = QTableWidgetItem(dato)
