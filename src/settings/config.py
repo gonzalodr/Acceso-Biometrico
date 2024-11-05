@@ -2,13 +2,13 @@ DATABASE_CONFIG = {
     "host": "localhost",
     "user": "root",
     "password": "",
-    "database":"accesobiometrico"
+    "database": "accesobiometrico",
 }
 
 ##
 # declaracion de los nombres de las tablas
 ##
-#Tabla persona y sus campos
+# Tabla persona y sus campos
 TBPERSONA = "persona"
 TBPERSONA_ID = "Id"
 TBPERSONA_FOTO = "Foto"
@@ -24,10 +24,10 @@ TBPERSONA_DIRECCION = "Direccion"
 # Tabla departamento  y sus campos
 TBDEPARTAMENTO = "departamento"
 TBDEPARTAMENTO_ID = "Id"
-TBDEPARTAMENTO_NOMBRE ="Nombre"
+TBDEPARTAMENTO_NOMBRE = "Nombre"
 TBDEPARTAMENTO_DESCRIPCION = "Descripcion"
 
-#Tabla de usuarios y sus campos
+# Tabla de usuarios y sus campos
 TBUSUARIO_ID = "Id"
 TBUSUARIO_ID_PERSONA = "id_persona"
 TBUSUARIO_USUARIO = "Usuario"
@@ -60,3 +60,11 @@ TBPERMISOROL_VER = "Ver"
 TBPERMISOROL_INSERTAR = "Insertar"
 TBPERMISOROL_EDITAR = "Editar"
 TBPERMISOROL_ELIMINAR = "Eliminar"
+# Tabla horario y sus campos
+TBHORARIO = "horario"
+TBHORARIO_ID = "Id"
+TBHORARIO_DIAS_SEMANALES = "Dias_Semanales"
+TBHORARIO_TIPO_JORNADA = "Tipo_Jornada"
+TBHORARIO_HORA_INICIO = "Hora_Inicio"
+TBHORARIO_HORA_FIN = "Hora_Fin"
+TBHORARIO_DESCRIPCION = "Descripcion"

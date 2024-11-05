@@ -1,0 +1,146 @@
+#adminHorario QFrame {
+    background-color: #FFFFFF;
+    border-radius: 10px;
+}
+
+#adminHorario QPushButton {
+    border-radius: 10px;
+    background-color: #004e64;
+    font: 50 10pt "Cooper Black";
+    color: #FFFFFF;
+}
+
+#adminHorario QPushButton::Hover {
+    background-color: #00708f;
+}
+
+#adminHorario QPushButton::Pressed {
+    background-color: #00a9d8;
+    color: #000000;
+}
+
+#adminHorario QPushButton:disabled {
+    background-color: #BBBBBB;
+    color: #999999;
+}
+
+#adminHorario QLineEdit {
+    background-color: transparent;
+    font-size: 15px;
+    border: none;
+    border-bottom: 1px solid #000000;
+    color: #000000;
+}
+
+#adminHorario QLabel {
+    background-color: transparent;
+    font: 10 10pt "Cooper Black";
+}
+
+#adminHorario #titulo {
+    background-color: transparent;
+    font: 10 20pt "Cooper Black";
+}
+
+QTableWidget {
+    background-color: #AAAAAA;
+    border-radius: 10px;
+    border: 1px solid #000000;
+    font: 50 10pt "Arial";
+}
+
+QTableWidget::item {
+    background-color: #FFFFFF;
+}
+
+QTableWidget::item:alternate {
+    background-color: #d0d0d0;
+}
+
+QTableWidget::item:selected {
+    background-color: transparent;
+}
+
+QHeaderView::section {
+    background-color: #004e64;
+    color: #FFFFFF;
+    padding: 0px;
+    font: 50 12pt "Cooper Black";
+    border-left: 1px solid #FFFFFF;
+}
+
+QHeaderView::section:first {
+    border-top-left-radius: 10px;
+}
+
+QHeaderView::section:last {
+    border-top-right-radius: 10px;
+}
+
+QTableWidget::item:first-child {
+    border-bottom-left-radius: 5px;
+}
+
+QTableWidget::item:last-child {
+    border-bottom-right-radius: 5px;
+}
+
+QTableWidget #btneliminar {
+    background-color: #ff5151;
+    color: white;
+}
+
+QTableWidget #btneliminar::hover {
+    background-color: #ff0000;
+    color: white;
+}
+
+QTableWidget #btneditar {
+    background-color: #00b800;
+    color: white;
+}
+
+QTableWidget #btneditar::hover {
+    background-color: #00a800;
+    color: white;
+}
+
+/* Estilo de barra de desplazamiento vertical */
+QScrollBar:vertical {
+    border: none;
+    background: #f0f0f0;
+    width: 15px;
+    margin: 22px 0 22px 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #126398;
+    min-height: 20px;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    background: none;
+}
+
+QScrollBar::up-arrow:vertical,
+QScrollBar::down-arrow:vertical {
+    background: none;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #115d7b;
+}
+
+/* Estilo de barra de desplazamiento horizontal */
+QScrollBar:horizontal {
+    border: none;
+    background: #D4D4D4;
+    height: 16px;
+    margin: 0 22px 0 22px;
+    border-radius: 2px;
+}
+
+QScrollBar::handle:hover {
+    background: #115d7b;
+}

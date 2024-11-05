@@ -1,0 +1,86 @@
+#formHorario {
+    background-color: #ffffff;
+    border: 2px solid #ffffff;
+}
+
+#formFrame {
+    background-color: #ffffff;
+    border: 1px solid #007286;
+    border-radius: 10px;
+}
+
+#formHorario #titulo {
+    background-color: transparent;
+    font: 10 20pt "Cooper Black";
+}
+
+#formHorario QLabel {
+    background-color: transparent;
+    font: 10 13pt "Cooper Black";
+    color: #000000;
+    /* Texto en negro para el título */
+}
+
+#formHorario #lblerror {
+    background-color: transparent;
+    font: 1 8pt "Arial";
+    color: #ba0000;
+    /* Texto para mensajes de error */
+}
+
+#formFrame QPushButton {
+    background-color: #dadada;
+    color: #000000;
+    font: 10 12pt "Arial";
+    border-radius: 5px;
+    border: 1px solid #818181;
+}
+
+#formHorario QLineEdit {
+    background-color: transparent;
+    font-size: 15px;
+    border: none;
+    border-bottom: 1px solid #000000;
+    color: #000000;
+    /* Texto en negro para campos de entrada */
+}
+
+#formHorario QTimeEdit {
+    background-color: transparent;
+    font-size: 15px;
+    border: none;
+    border-bottom: 1px solid #000000;
+    color: #000000;
+    /* Texto en negro para campos de tiempo */
+}
+
+#formHorario QTextEdit {
+    background-color: transparent;
+    font-size: 15px;
+    border: none;
+    border: 1px solid #000000;
+    color: #000000;
+    /* Texto en negro para campos de texto */
+}
+
+#formHorario #btncancelar {
+    background-color: #325fc6;
+    border-radius: 5px;
+    color: #ffffff;
+    font: 10 13pt "Cooper Black";
+}
+
+#formHorario #btncancelar::hover {
+    background-color: #213a75;
+}
+
+#formHorario #btnregistrar {
+    background-color: #409da1;
+    border-radius: 5px;
+    color: #ffffff;
+    font: 10 13pt "Cooper Black";
+}
+
+#formHorario #btnregistrar::hover {
+    background-color: #00627d;
+}
