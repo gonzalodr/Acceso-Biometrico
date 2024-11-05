@@ -15,7 +15,7 @@ class SlideBar(QWidget):
             :param listaBotones: Esta recibe el nombre del btn como el valor numerico
             del la opcion. Tambien debe recibir la ruta del icono o se agregara uno por defecto a cada boton.
         """
-        super().__init__(parent=None)
+        super().__init__(parent=parent)
         self.setObjectName("sidebarWidget")
         self.setMaximumWidth(300)
         self.setMinimumWidth(60)

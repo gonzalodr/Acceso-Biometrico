@@ -1,0 +1,80 @@
+#form{
+    background-color: #ffffff;
+    border: 2px solid #ffffff;
+}
+
+#formFrame{
+    background-color:#ffffff;
+    border: 1px solid #007286;
+    border-radius: 10px;
+}
+#form QCheckBox{
+    font: 1 10pt "Arial";
+}
+#form #titulo{
+    background-color: transparent;
+    font: 10 20pt "Cooper Black";
+}
+#form QLabel{
+    background-color: transparent;
+    font: 10 13pt "Cooper Black";
+    color: #000000; /* Texto en negro para el título */
+}
+#form #lblerror{
+    background-color: transparent;
+    font: 1 8pt "Arial";
+    color: #ba0000; /* Texto en negro para el título */
+}
+
+#formFrame QPushButton{
+    background-color: #dadada;
+    color: #000000;
+    font: 10 12pt "Arial";
+    border-radius: 5px;
+    border: 1px solid #818181;
+}
+#form QLineEdit{
+    background-color:transparent;
+    font-size:15px;border:none;
+    border-bottom:1px solid #000000;
+    color: #000000; /* Texto en negro para campos de entrada */
+    
+}
+#form QDateEdit{
+    background-color:transparent;
+    font-size:15px;border:none;
+    border-bottom:1px solid #000000;
+    color: #000000; /* Texto en negro para campos de fecha */
+}
+#form QComboBox{
+    background-color:transparent;
+    font-size:15px;border:none;
+    border-bottom:1px solid #000000;
+    color: #000000; /* Texto en negro para combo boxes */
+}
+#form QTextEdit{
+    background-color:transparent;
+    font-size:15px;border:none;
+    border:1px solid #000000;
+    color: #000000; /* Texto en negro para campos de texto */
+}
+
+#form #btncancelar{
+    background-color:#325fc6 ;
+    border-radius: 5px;
+    color:#ffffff;
+    font: 10 13pt "Cooper Black";
+}
+#form #btncancelar::Hover{
+    background-color: #213a75;
+}
+#form #btnregistrar{
+    background-color: #409da1;
+    border-radius: 5px;
+    color:#ffffff;
+    font: 10 13pt "Cooper Black";
+}
+#form #btnregistrar::hover{
+    background-color:#00627d;
+}
+

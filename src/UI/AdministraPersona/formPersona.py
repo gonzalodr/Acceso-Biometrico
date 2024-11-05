@@ -445,7 +445,6 @@ class formPersona(QDialog):
                
             if self.idP > 0:##si el atributo idP es mayor a 0 quiere decir que se va actualizar 
                 result = self.Pservices.modificarPersona(person)
-                print(result)
                 if result["success"]:
                     dial = DialogoEmergente("Actualización",result["message"],"Check")
                     dial.exec()
@@ -455,7 +454,6 @@ class formPersona(QDialog):
                     dial.exec()
             else:#de lo contrario lo toma como un crear
                 result = self.Pservices.insertarPersona(person)
-                print(result)
                 if result["success"]:
                     dial = DialogoEmergente("Registrar","Persona registrada exitosamente","Check")
                     dial.exec()

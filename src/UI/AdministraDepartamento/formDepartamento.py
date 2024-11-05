@@ -13,7 +13,7 @@ class formDepartamento(QDialog):
         
         super().__init__(parent)
         self.setObjectName("formDepartamento")
-        self.setMinimumSize(QSize(700/2,650/2))
+        self.setMinimumSize(QSize(400,350))
         self.setWindowFlags(Qt.FramelessWindowHint)
         add_Style(archivoQSS="formDepartamento.css",QObjeto=self)
         

@@ -5,6 +5,8 @@ from UI.slideBar import *
 from UI.AdministrarHorario.adminHorario import *
 from UI.AdministraPersona.adminPersona import *
 from UI.AdministraDepartamento.adminDepartamento import *  # Importa la clase AdminDepartamento
+from UI.AdministrarRol.adminRol import *
+from UI.AdministrarPermisosRol.AdminPermisosRol import *
 from models.usuario import *
 import sys
 
