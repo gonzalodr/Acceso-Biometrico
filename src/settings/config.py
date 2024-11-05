@@ -50,6 +50,8 @@ TBUSUARIOCONTRASENA = "Contrasena"
 ##
 #    Tabla de permisos de rol  
 #
+
+
 TBPERMISOROL = "permiso_rol"
 TBPERMISOROL_ID = "Id"
 TBPERMISOROL_ROL_ID = "Id_rol"
