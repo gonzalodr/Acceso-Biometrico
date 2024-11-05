@@ -49,7 +49,7 @@ CREATE TABLE `Empleado_Rol`
 CREATE TABLE `Horario`
 (
  `Id`           int NOT NULL AUTO_INCREMENT,
- `Dia_Semanal`  varchar(20) NOT NULL,
+ `Dias_Semanales`  varchar(20) NOT NULL,
  `Tipo_Jornada` varchar(30) NOT NULL,
  `Hora_Inicio`  time NOT NULL,
  `Hora_Fin`     time NOT NULL,
