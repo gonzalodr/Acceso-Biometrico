@@ -159,12 +159,24 @@ class vistaPrincipal(QWidget):
             AdminDepart.cerrar_adminD.connect(self._salir_crud)
             index = self.stackVistas.addWidget(AdminDepart)
             self.listaOpciones.append((index, "Admin. Departamento"))
+        if True:
+            adminrol = AdminRol()
+            adminrol.cerrar_adminR.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(adminrol)
+            self.listaOpciones.append((index,"Administrar rol"))
+        
+        if True:
+            adminpermisos = AdminPermisosRol()
+            adminpermisos.cerrar_adminP.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(adminpermisos)
+            self.listaOpciones.append((index,"Admin. permisos rol"))
+            
+            
         print("LLenando stack")
         print(self.listaOpciones)
         print()
         self.stackVistas.setCurrentIndex(0)
         pass
-
     def _widget_presentacion(self):
         widgetP = QWidget()
         widgetP.setObjectName("widgetDefault")
