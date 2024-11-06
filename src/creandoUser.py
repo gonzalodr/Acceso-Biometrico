@@ -14,7 +14,7 @@ from services.usuarioService import *
 ## se fija que id tiene el registro persona que hicieron y crean el usuario con ese id
 Uservices = UsuarioServices()
 #usuario contraseña e id de la persona
-user:Usuario = Usuario("yeiler","12345678",4)
+user:Usuario = Usuario("gonzalo","12345678",6)
 #user: Usuario = Usuario("Maik", "Maik0024", 1)
-Uservices.insertarUsuario(user)
+print(Uservices.insertarUsuario(user))
 

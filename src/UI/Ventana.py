@@ -11,7 +11,7 @@ from UI.DialogoEmergente import *
 class Ventana(QMainWindow):
     def __init__(self):
         super().__init__()      
-        self.setMinimumSize(700, 600)
+        self.setMinimumSize(1300, 700)
         # self.tiempo_inactividad = 1 * 10 * 1000  # Ajusta el tiempo de inactividad aquí (en milisegundos)
         # self.temporizador_inactividad = QTimer(self)
         # self.temporizador_inactividad.timeout.connect(self.cerrar_sesion_por_inactividad)
