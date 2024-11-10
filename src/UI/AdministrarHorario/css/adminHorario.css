@@ -51,6 +51,7 @@ QTableWidget {
 
 QTableWidget::item {
     background-color: #FFFFFF;
+    color: #000000; 
 }
 
 QTableWidget::item:alternate {
