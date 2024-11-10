@@ -27,6 +27,7 @@
     border-radius:10px;
     background-color:#FFFFFF;
     font: 100 12pt "Cooper Black";
+    color:#000000;
 }
 #frameLogin QPushButton::Hover{
     background-color:#DDDDDD;
@@ -38,6 +39,7 @@
 }
 #frameLogin QCheckBox{
     font: 1 10pt "Cooper Black";
+    color:#000000;
 }
 #frameLogin #loginError{
     background-color:transparent;
