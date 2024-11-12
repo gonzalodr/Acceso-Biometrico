@@ -115,5 +115,20 @@ def cargar_icono_svg(QObjeto, carpeta:str="iconos",archivoSVG:str="", Size:QSize
     else:
         print("QObjeto no es compatible con QLabel ni QPushButton")
 
-        
-      
+def cargar_estilos(tema:str = 'default', archivoCSS:str='login.css', QObjeto = None): 
+    ruta_relativa = os.getcwd()
+    ruta = os.path.join(ruta_relativa,'src','UI','css',tema,archivoCSS)
+    print('Ruta de fichero : '+ruta)
+    try:
+        with open(ruta, "r") as file:
+            style = file.read()
+        if QObjeto:
+            QObjeto.setStyleSheet(style)
+        else:
+            return style  
+    except FileNotFoundError:
+        print(f"Error: El archivo {ruta} no se encontró.")
+        return None
+    except Exception as e:
+        print(f"Se produjo un error al leer el archivo: {e}")
+        return None

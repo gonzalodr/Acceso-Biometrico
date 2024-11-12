@@ -3,14 +3,37 @@
     border: 2px solid #ffffff;
 }
 
-#formFrame{
+#form #formFrame{
     background-color:#ffffff;
     border: 1px solid #007286;
     border-radius: 10px;
 }
 #form QCheckBox{
     font: 1 10pt "Arial";
+    color:#000000;
 }
+
+
+#form QCheckBox{
+    font: 1 10pt "Arial";
+    color:#000000;
+    background-color: transparent;
+}
+#form QCheckBox::indicator {
+    width: 15px; /* Tamaño del cuadro */
+    height: 15px;
+    border-radius: 5px;
+    background-color: #ffffff;
+}
+#form QCheckBox::indicator:unchecked {
+    background-color: #ffffff; /* Color cuando está desmarcado */
+    border: 2px solid #000000;
+}
+#form QCheckBox::indicator:checked {
+    background-color: lightgreen; /* Color cuando está marcado */
+    border: 2px solid green;
+}
+
 #form #titulo{
     background-color: transparent;
     font: 10 20pt "Cooper Black";

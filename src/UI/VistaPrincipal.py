@@ -15,23 +15,13 @@ class vistaPrincipal(QWidget):
     listaOpciones = []  # numero Index en el stack, el nombre, icono
     usuario: Usuario = None
 
-    def __init__(
-        self,
-        usuario: Usuario,
-        parent=None,
-    ):
+    def __init__(self, usuario: Usuario, parent=None,):
         super().__init__(parent)
         self.usuario = usuario
         self.setObjectName("vistaPrincipal")
-        print("Construyendo el objeto")
-        """
-        add_Style: establece el diseño visual de nuestra ventana
-        """
-        add_Style("css", "ventanaPrincipal.css", self)
 
-        """
-        frame: Es el frame que le da color a toda la ventana 
-        """
+        cargar_estilos('claro','ventanaPrincipal.css',self)
+
         frame = QFrame()
         frame.setObjectName("frameFondoPrincipal")
         frame.setContentsMargins(0, 0, 0, 0)
@@ -80,7 +70,6 @@ class vistaPrincipal(QWidget):
         self.lblEncabezado = QLabel(text=f"Bienvenido/a {usuario.usuario}.")
         self.lblEncabezado.setAlignment(Qt.AlignCenter)
         self.lblEncabezado.setMaximumHeight(30)
-        # Sombrear(self.lblEncabezado,30,0,5)
 
         """
             lblIconUser: Mostrara la foto de nuestro usuario
@@ -139,9 +128,6 @@ class vistaPrincipal(QWidget):
 
     def _llenar_stack_vista(self):
         self.stackVistas.addWidget(self._widget_presentacion())
-        """
-            Aqui se crean las vistas de acuerdo a los permisos
-        """
         if True:
             adminpersona = AdminPersona(parent=self)
             adminpersona.cerrar_adminP.connect(self._salir_crud)
@@ -171,12 +157,8 @@ class vistaPrincipal(QWidget):
             index = self.stackVistas.addWidget(adminpermisos)
             self.listaOpciones.append((index,"Admin. permisos rol"))
             
-            
-        print("LLenando stack")
-        print(self.listaOpciones)
-        print()
         self.stackVistas.setCurrentIndex(0)
-        pass
+        
     def _widget_presentacion(self):
         widgetP = QWidget()
         widgetP.setObjectName("widgetDefault")
@@ -220,10 +202,6 @@ class vistaPrincipal(QWidget):
                 raise ValueError("La imagen es nulo")
         except Exception as e:
             if hasattr(user, "setPixmap"):
-                cargar_icono_svg(
-                    QObjeto=user, carpeta="iconos", archivoSVG="person-circle.svg"
-                )
+                cargar_icono_svg( QObjeto=user, carpeta="iconos", archivoSVG="person-circle.svg")
             else:
-                print(
-                    "El objeto proporcionado no es un QLabel o no tiene el método setPixmap."
-                )
+                print("El objeto proporcionado no es un QLabel o no tiene el método setPixmap.")

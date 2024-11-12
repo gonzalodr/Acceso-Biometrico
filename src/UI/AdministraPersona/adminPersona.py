@@ -17,7 +17,8 @@ class AdminPersona(QWidget):
         super().__init__(parent)
         self.setObjectName("admin")
 
-        add_Style(carpeta="css",archivoQSS="adminPersona.css",QObjeto=self)
+        # add_Style(carpeta="css",archivoQSS="adminPersona.css",QObjeto=self)
+        cargar_estilos('claro','admin.css',self)
 
         layout = QVBoxLayout()
         layout.setContentsMargins(10,10,10,10)
@@ -83,20 +84,12 @@ class AdminPersona(QWidget):
         layoutTop.addStretch(5)
         self.layoutFrame.addLayout(layoutTop)
         
-        """
-            Esto lo deben cambiar cada crean la tabla de acuerdo a la cantidad
-            atributos del objeto
-            Nota: no debe existir columna de id esto no se debe mostrar nunca
-        """
         self.tbPersona = QTableWidget() ##crean el objeto tabla
         if (self.tbPersona.columnCount() < 9):
             self.tbPersona.setColumnCount(9) ##indican la cantidad de columnas.
         ##crean un array de titulos para cada columna    
         header_labels = ["Nombre", "1° Apellido", "2° Apellido", "Cedula", "Correo", "Nacimiento", "Estado civil", "Dirección","Acciones"]
         self.tbPersona.setHorizontalHeaderLabels(header_labels) ##ingreasan el array aqui
-        """Esto ya no hace falta momverlo solo cambiar el nombre tbPersona por el nombre que 
-            le pusieron a su tabla
-        """
         self.tbPersona.horizontalHeader().setFixedHeight(40)
         self.tbPersona.verticalHeader().setVisible(False)
         self.tbPersona.horizontalHeader().setStretchLastSection(True)
@@ -106,10 +99,6 @@ class AdminPersona(QWidget):
         self.tbPersona.horizontalHeader().setMinimumSectionSize(50)
         Sombrear(self.tbPersona,30,0,0)
 
-
-        """de aqui para abajo no se mueve solo asegurese que la tabla se este llamando
-            correctamente
-        """
         layoutTb = QHBoxLayout()
         layoutTb.setContentsMargins(70,40,70,40)
         layoutTb.addWidget(self.tbPersona)
@@ -120,7 +109,7 @@ class AdminPersona(QWidget):
         layoutButtom.setAlignment(Qt.AlignCenter)
         layoutButtom.setContentsMargins(10,10,10,40)
         layoutButtom.setSpacing(5)
-        """ de aqui para abajo no se modifica nada en teoria"""
+
         self.btnPrimerPagina = QPushButton(text="Primera Pagina.")
         self.btnPrimerPagina.setFixedSize(minimoTamBtn)
         self.btnPrimerPagina.setCursor(Qt.PointingHandCursor)
@@ -171,13 +160,9 @@ class AdminPersona(QWidget):
         Sombrear(self,30,0,0)
         self._cargar_tabla() 
 
-    """Esto no se toca"""
     def _cerrar(self):
         self.cerrar_adminP.emit()
 
-    """ lo modifican de acuerdo al nombre de su tabla
-        no se modifica mas
-    """
     def _mostrar_mensaje_sin_datos(self,mensaje:str):
         #Borra filas en caso de que la conexion se haya ido
         self.tbPersona.setRowCount(0)
@@ -259,17 +244,14 @@ class AdminPersona(QWidget):
         else:
             self._mostrar_mensaje_sin_datos("Error de conexión")
 
-    """Esto no cambia, el dato debe ser string"""
     def addItem_a_tabla(self,row, colum,dato):
         dato_item = QTableWidgetItem(dato)
         dato_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # No editable
         self.tbPersona.setItem(row, colum, dato_item)
 
-    """No se modifica"""
     def _actualizar_lblPagina(self,numPagina, totalPagina):
         self.lblNumPagina.setText(f"Pagina {numPagina} de {totalPagina} ")
 
-    """En teoria no se modifica"""
     def _actualizarValoresPaginado(self,paginaActual,totalPaginas):
         self.paginaActual = paginaActual
         self.ultimaPagina = totalPaginas
@@ -278,30 +260,24 @@ class AdminPersona(QWidget):
         self.btnPrimerPagina.setEnabled(paginaActual > 1)
         self.btnAnterior.setEnabled(paginaActual > 1)
 
-    """En teoria no se modifica"""
     def _irPrimeraPagina(self):
         self.paginaActual = 1
         self._cargar_tabla()
     
-    """En teoria no se modifica"""
     def _irUltimaPagina(self):
         self.paginaActual = self.ultimaPagina
         self._cargar_tabla()
-    """En teoria no se modifica"""
+
     def _irSiguientePagina(self):
         if (self.paginaActual+1) <= self.ultimaPagina:
             self.paginaActual = self.paginaActual+1
             self._cargar_tabla()
-    """En teoria no se modifica"""
+
     def _irAnteriorPagina(self):
         if (self.paginaActual - 1) >= 1:
             self.paginaActual = self.paginaActual-1
             self._cargar_tabla()
-    """Lo modifican de acuerdo a su objeto osea el metodo llebe el nombre de su objeto
-        ejemplo _buscarDepartamento
-        esta funcion esta conectada al botno buscar
-        se aseguran que el nombre este igual
-    """
+
     def _buscarPersona(self):
         input_busqueda = self.inputBuscar.text()
         if input_busqueda:
@@ -332,9 +308,6 @@ class AdminPersona(QWidget):
         mes_nombre = meses[mes]
         return f"{int(dia)} de {mes_nombre} del {año}"
 
-    """Lo modifican de acuerdo a su crud
-        aseguresen que se muestre bien los mensajes
-    """
     def _eliminarRegistro(self, idx):
             dial = DialogoEmergente("¿?","¿Seguro que quieres eliminar este registro?","Question",True,True)
             if dial.exec() == QDialog.Accepted:##se revisa  si aceptro el dialogo emergente
@@ -346,8 +319,7 @@ class AdminPersona(QWidget):
                 else:
                     dial = DialogoEmergente("","Hubo un error al eliminar este registro.","Error")
                     dial.exec()
-    
-    """Modifican nada mas el form osea crean el objeto de su formulario"""
+
     def _editar_Persona(self,id):
         blur_effect = QGraphicsBlurEffect(self)
         blur_effect.setBlurRadius(10)  # Ajusta el radio de desenfoque según sea necesario

@@ -20,7 +20,8 @@ class formPermiso(QDialog):
         self.setObjectName("form")
         self.setMinimumSize(QSize(700/2,650/2))
         self.setWindowFlags(Qt.FramelessWindowHint)
-        add_Style(archivoQSS="form.css",QObjeto=self)
+        # add_Style(archivoQSS="form.css",QObjeto=self)
+        cargar_estilos('claro','form.css',self)
         
         frame = QFrame()
         layoutFrame = QVBoxLayout()
@@ -144,7 +145,7 @@ class formPermiso(QDialog):
     def _verificar_permiso(self):
         rolid = self.listaRolesID[self.inputRol.currentText()]
         tabla = ACCESO_TABLE[self.inputTabla.currentText()]
-        
+            
         result = self.permisosServices.verificar_permiso_rol_tabla(rol_id=rolid, tabla=tabla, id=self.idP)
         if result:
             self.error.setText(f"El rol \'{self.inputRol.currentText()}\' ya posee el acceso a \'{self.inputTabla.currentText()}\'")
@@ -184,12 +185,12 @@ class formPermiso(QDialog):
                     self.listaRolesID[rol.nombre] = rol.id
             else:
                 dialEmergente = DialogoEmergente("","No existen roles.","Warning")
-                dialEmergente.exec()
-                self.reject()
+                if dialEmergente.exec() == QDialog.Accepted:
+                    self.reject()
         else:
             dialEmergente = DialogoEmergente("","Ocurrio un error","Error")
-            dialEmergente.exec()
-            self.reject()
+            if dialEmergente.exec() == QDialog.Accepted:
+                self.reject()
                       
     def _validar_campos(self):
         if self._validar_inputs_vacios():

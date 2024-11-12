@@ -22,7 +22,8 @@ class SlideBar(QWidget):
         self.setFixedWidth(60)
         self.tamano = 60
         ##Añadomos estilos
-        add_Style(archivoQSS="sidebar.css",QObjeto=self)
+        cargar_estilos('claro','sidebar.css',self)
+
         #creamos el layout para contener el frame
         self.layoutSide = QVBoxLayout()
         self.layoutSide.setSpacing(0)
@@ -72,8 +73,9 @@ class SlideBar(QWidget):
         button.setCursor(Qt.PointingHandCursor)
         button.setMaximumHeight(70)
         button.setMinimumHeight(20)
-        button.clicked.connect(self._abrir_configuracion)
+        # button.clicked.connect(self._abrir_configuracion)
         self.layoutFrame.addWidget(button)
+
         
         button = QPushButton(text=f"Salir")
         button.setCursor(Qt.PointingHandCursor)
@@ -82,8 +84,6 @@ class SlideBar(QWidget):
         button.clicked.connect(self._cerrar_App)
         
         self.layoutFrame.addWidget(button)
-        
-            
         """
             Esta señal permite saber que bonton ha sido seleccionado desde ventan principal
         """

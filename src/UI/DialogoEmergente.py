@@ -23,10 +23,14 @@ class DialogoEmergente(QDialog):
         self.setObjectName("DialEmergente")
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setWindowTitle(title)
-        # self.setStyleSheet("border: 2px solid #4A90E2;border-radius: 10px;")
-        add_Style(archivoQSS="dialogoEmergent.css",QObjeto=self)
-        self.setMinimumSize(300,300)
-        self.setMaximumSize(550, 550)  # Establece un tamaño máximo de 600x400 píxeles
+
+        cargar_estilos('claro','dialogoEmergent.css',self)
+
+        self.minimo_tam = QSize(200,200)
+        self.maximo_tam = QSize(300,300)
+
+        self.setMinimumSize(self.minimo_tam)
+        self.setMaximumSize(self.maximo_tam)
 
         # Crear un layout vertical
         self.layout = QVBoxLayout()
@@ -43,7 +47,12 @@ class DialogoEmergente(QDialog):
         self.frame.setLayout(self.frameLayout)
 
         # Diccionario de iconos con sus rutas
-        self.path_icono = {"Warning": "iconos/Warning.png", "Check": "iconos/Check.png", "Error": "iconos/Error.png","Save":"iconos/Save.png","Question":"iconos/Question.png"}
+        self.path_icono = {"Warning"    : "iconos/Warning.png", 
+                           "Check"      : "iconos/Check.png", 
+                           "Error"      : "iconos/Error.png",
+                           "Save"       :"iconos/Save.png",
+                           "Question"   :"iconos/Question.png"
+                           }
 
         # Agregar un QLabel para el icono
         if Icono:
@@ -93,7 +102,7 @@ class DialogoEmergente(QDialog):
             cancel_button.setObjectName("cancel")
             cancel_button.setMinimumHeight(30)
             cancel_button.clicked.connect(self.reject)
-            self.button_layout.addWidget(cancel_button)  # Corregir el nombre de la variable
+            self.button_layout.addWidget(cancel_button)
             Sombrear(cancel_button,20,0,5)
 
         # Agregar el layout de botones solo si hay botones visibles
@@ -102,3 +111,5 @@ class DialogoEmergente(QDialog):
             
         # Establecer el layout principal en el diálogo
         self.setLayout(self.layout)
+
+        

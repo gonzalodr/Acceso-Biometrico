@@ -15,11 +15,11 @@ class IniciarSesion(QWidget):
         super().__init__(parent)
         self.setObjectName("vistaLogin")
         #añade estilo a la interfaz
-        add_Style("css","login.css",self)
+        # add_Style("css","login.css",self)
+        cargar_estilos('claro','login.css',self)
 
         frame = QFrame()
         frame.setObjectName("frameFondo")
-        #
 
         layout = QVBoxLayout()
         layout.setSpacing(20)
