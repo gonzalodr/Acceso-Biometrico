@@ -14,8 +14,8 @@ class IniciarSesion(QWidget):
     def __init__(self, parent= None):
         super().__init__(parent)
         self.setObjectName("vistaLogin")
+        
         #añade estilo a la interfaz
-        # add_Style("css","login.css",self)
         cargar_estilos('claro','login.css',self)
 
         frame = QFrame()
@@ -27,13 +27,9 @@ class IniciarSesion(QWidget):
 
         self.layoutFrame = QVBoxLayout()
         self.layoutFrame.setSpacing(10)
-        # self.layoutFrame.setAlignment(Qt.AlignCenter)
 
         lblApp = QLabel(text="ACCESO BIOMETRICO")
-        # lblApp.setStyleSheet("font: 1000 45pt \"Cooper Black\";color:#000000;border-radius:5px;")
         lblApp.setAlignment(Qt.AlignCenter)
-        # lblApp.setGraphicsEffect(self._Sombras(lblApp,50,0,0))
-
 
         self.layoutFrame.addWidget(lblApp,2)
         self.layoutFrame.addStretch(2)

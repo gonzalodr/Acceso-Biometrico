@@ -8,12 +8,10 @@ from services.rolService import *
 from settings.variable import *
 
 class formPermiso(QDialog):
-    update:bool = False 
     permisosServices = PermisosRolServices() 
     rolServices = RolServices()
     idP = 0 
-    fotografia = None
-    listaRolesID = {}
+    listaRolesID = {} #crea un diccionario de roles con sus ids
     ##constructor
     def __init__(self, parent=None, titulo="Registrar permiso.",id = None):
         super().__init__(parent)
@@ -34,7 +32,6 @@ class formPermiso(QDialog):
         lblTitulo.setAlignment(Qt.AlignCenter)
         layoutFrame.addWidget(lblTitulo)
         
-        
         layoutForm = QGridLayout()
         layoutForm.setContentsMargins(20,10,20,20)
         layoutForm.setHorizontalSpacing(45)
@@ -46,8 +43,6 @@ class formPermiso(QDialog):
         lblRol = QLabel(text="Seleccionar rol")   
         self.inputRol = QComboBox()
         self.errorRol = QLabel(text="")
-        self._cargar_roles()
-        
         
         #permisos para dicha tabla
         lblAcceso = QLabel(text="Acceso a")
@@ -79,9 +74,6 @@ class formPermiso(QDialog):
         self.error.setMinimumHeight(30)
         self.error.setWordWrap(True)
 
-        self._verificar_permiso()
-        self.inputTabla.currentIndexChanged.connect(self._verificar_permiso)
-        self.inputRol.currentIndexChanged.connect(self._verificar_permiso)
 
         layoutForm.addLayout(self._contenedor(lblRol,self.inputRol,self.errorRol),0,0)
         layoutForm.addLayout(self._contenedor(lblAcceso,self.inputTabla,self.errorTabla),1,0)
@@ -91,8 +83,6 @@ class formPermiso(QDialog):
         layoutForm.addWidget(self.checkEditar,5,0)
         layoutForm.addWidget(self.checkEliminar,6,0)    
         layoutForm.addWidget(self.error,7,0)    
-        
-        
         
         boton_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         boton_box.button(QDialogButtonBox.Cancel).setText("Cancelar")
@@ -122,10 +112,14 @@ class formPermiso(QDialog):
         layout.addWidget(frame)
         self.setLayout(layout)
         Sombrear(self,30,0,0,"green")
-        
-        """Aqui se revisa si el formulario recibio un id por parametros"""
+    
         if id:
             self._obtener_registroId(id)
+
+        self._cargar_roles()
+        self._verificar_permiso()
+        self.inputTabla.currentIndexChanged.connect(self._verificar_permiso)
+        self.inputRol.currentIndexChanged.connect(self._verificar_permiso)
 
     def _contenedor(self,label:QLabel,input,label_error:QLabel):
         layout = QVBoxLayout()
@@ -143,16 +137,16 @@ class formPermiso(QDialog):
         return layout
 
     def _verificar_permiso(self):
-        rolid = self.listaRolesID[self.inputRol.currentText()]
-        tabla = ACCESO_TABLE[self.inputTabla.currentText()]
-            
-        result = self.permisosServices.verificar_permiso_rol_tabla(rol_id=rolid, tabla=tabla, id=self.idP)
-        if result:
-            self.error.setText(f"El rol \'{self.inputRol.currentText()}\' ya posee el acceso a \'{self.inputTabla.currentText()}\'")
-            return False
-        else:
-            self.error.setText("")
-            return True
+            rolid = self.listaRolesID[self.inputRol.currentText()]
+            tabla = ACCESO_TABLE[self.inputTabla.currentText()]
+            result = self.permisosServices.verificar_permiso_rol_tabla(rol_id=rolid, tabla=tabla, id=self.idP)
+         
+            if result and self.idP == 0:
+                self.error.setText(f"El rol \'{self.inputRol.currentText()}\' ya posee el acceso a \'{self.inputTabla.currentText()}\'")
+                return False
+            else:
+                self.error.setText("")
+                return True
 
     def _checked_verificacion_ver(self):
         if not self.checkVer.isChecked():
@@ -171,7 +165,7 @@ class formPermiso(QDialog):
             if opcion == QDialog.Accepted:
                  self.reject()
             elif opcion == QDialog.Rejected:
-                 print("Se rechazó el diálogo.")
+                pass
         else:
              self.reject()##cerrar la ventana
 

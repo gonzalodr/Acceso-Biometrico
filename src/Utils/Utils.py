@@ -118,7 +118,6 @@ def cargar_icono_svg(QObjeto, carpeta:str="iconos",archivoSVG:str="", Size:QSize
 def cargar_estilos(tema:str = 'default', archivoCSS:str='login.css', QObjeto = None): 
     ruta_relativa = os.getcwd()
     ruta = os.path.join(ruta_relativa,'src','UI','css',tema,archivoCSS)
-    print('Ruta de fichero : '+ruta)
     try:
         with open(ruta, "r") as file:
             style = file.read()
