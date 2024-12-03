@@ -54,10 +54,18 @@ def cargar_Icono(QObjeto,archivoImg:str="",Size:QSize=None):
     ruta_relativa = os.getcwd()
     ruta = os.path.join(ruta_relativa,'src','UI','iconos',archivoImg)
     pixmap = QPixmap(ruta) 
+
+    # Qt.SmoothTransformation:
+    # Mejora la calidad del escalado mediante interpolación suave.
+    # Evita bordes pixelados o borrosos en imágenes escaladas.
+    # Aspect Ratio:
+    # Utilizamos Qt.KeepAspectRatio para mantener la proporción de la imagen al escalarla.
+
     if Size:
-        pixmap = pixmap.scaled(Size) 
+        pixmap = pixmap.scaled(Size, Qt.KeepAspectRatio, Qt.SmoothTransformation) 
     else:
-        pixmap = pixmap.scaled(Size if Size else QSize(QObjeto.size().height(), QObjeto.size().height())) 
+        pixmap = pixmap.scaled(Size if Size else QSize(QObjeto.size().height(), QObjeto.size().height()),  Qt.KeepAspectRatio, Qt.SmoothTransformation) 
+
     QObjeto.setPixmap(pixmap)
        
 def cargar_icono_svg(QObjeto, carpeta:str="iconos",archivoSVG:str="", Size:QSize=None):
