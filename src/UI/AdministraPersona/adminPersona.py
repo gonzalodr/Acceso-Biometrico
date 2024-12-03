@@ -24,7 +24,6 @@ class AdminPersona(QWidget):
         layout.setContentsMargins(10,10,10,10)
 
         frame = QFrame()
-        print(layout.parent)
 
         self.layoutFrame = QVBoxLayout()
         self.layoutFrame.setContentsMargins(0,0,0,0)

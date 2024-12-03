@@ -56,6 +56,14 @@
     border-radius: 5px;
     border: 1px solid #818181;
 }
+#form QTimeEdit {
+    background-color: transparent;
+    font-size: 15px;
+    border: none;
+    border-bottom: 1px solid #000000;
+    color: #000000;
+    /* Texto en negro para campos de tiempo */
+}
 #form QLineEdit{
     background-color:transparent;
     font-size:15px;border:none;

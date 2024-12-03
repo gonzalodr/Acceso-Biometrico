@@ -8,16 +8,17 @@ from datetime import timedelta
 
 
 class formHorario(QDialog):
-    update: bool = False
+\
     Hservices = HorarioService()  # Instancia del servicio de horarios
     idH = 0  # ID del registro para diferenciar entre creación y actualización
 
     def __init__(self, parent=None, titulo="Registrar Horario", id=None):
         super().__init__(parent)
-        self.setObjectName("formHorario")
+        self.setObjectName("form")
         self.setMinimumSize(QSize(700, 500))
         self.setWindowFlags(Qt.FramelessWindowHint)
-        add_Style(carpeta="css", archivoQSS="formHorario.css", QObjeto=self)
+        # add_Style(carpeta="css", archivoQSS="formHorario.css", QObjeto=self)
+        cargar_estilos('claro','form.css',self)
 
         # Configuración del frame principal
         frame = QFrame()
@@ -104,16 +105,27 @@ class formHorario(QDialog):
         # Botones de acción
         boton_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         boton_box.button(QDialogButtonBox.Cancel).setText("Cancelar")
-        boton_box.button(QDialogButtonBox.Ok).setText(
-            "Registrar" if id is None else "Actualizar"
-        )
+        boton_box.button(QDialogButtonBox.Cancel).setObjectName("btncancelar")
+        boton_box.button(QDialogButtonBox.Cancel).setMinimumSize(QSize(100,30))
+        
+        boton_box.button(QDialogButtonBox.Ok).setText("Registrar" if id == None else "Actualizar")
+        boton_box.button(QDialogButtonBox.Ok).setObjectName("btnregistrar")
+        boton_box.button(QDialogButtonBox.Ok).setMinimumSize(QSize(100,30))
+
         boton_box.accepted.connect(self._accion_horario)
         boton_box.rejected.connect(self.reject)
+       
+        # Centrar los botones
+        boton_layout = QHBoxLayout()
+        boton_layout.addStretch()
+        boton_layout.addWidget(boton_box)
+        boton_layout.addStretch()
         layoutFrame.addLayout(layoutForm)
-        layoutFrame.addWidget(boton_box)
+        layoutFrame.addLayout(boton_layout)
 
         frame.setLayout(layoutFrame)
         layout = QVBoxLayout()
+        layout.setContentsMargins(0,0,0,0)
         layout.addWidget(frame)
         self.setLayout(layout)
 
@@ -267,6 +279,6 @@ class formHorario(QDialog):
             if opcion == QDialog.Accepted:
                 self.reject()
             elif opcion == QDialog.Rejected:
-                print("Se rechazó el diálogo.")
+                pass 
         else:  ##si los inputs estan sin datos entonces se cierra el formulario de manera normal
             self.reject()  ##cerrar la ventana

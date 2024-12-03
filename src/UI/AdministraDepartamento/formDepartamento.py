@@ -12,10 +12,11 @@ class formDepartamento(QDialog):
     def __init__(self, parent=None, titulo="Registrar Departamento.",id = None):
         
         super().__init__(parent)
-        self.setObjectName("formDepartamento")
+        self.setObjectName("form")
         self.setMinimumSize(QSize(400,350))
         self.setWindowFlags(Qt.FramelessWindowHint)
-        add_Style(archivoQSS="formDepartamento.css",QObjeto=self)
+        # add_Style(archivoQSS="formDepartamento.css",QObjeto=self)
+        cargar_estilos('claro','form.css',self)
         
         frame = QFrame()
         layoutFrame = QVBoxLayout()
@@ -78,9 +79,7 @@ class formDepartamento(QDialog):
         layout.setContentsMargins(0,0,0,0)
         layout.addWidget(frame)
         self.setLayout(layout)
-        Sombrear(self,30,0,0,"green")
         
-         
         """Aqui se revisa si el formulario recibio un id por parametros"""
         if id:
             self._obtener_registroId(id)##carga los inputs con los datos de la consulta obtener por id
@@ -100,10 +99,7 @@ class formDepartamento(QDialog):
         layout.addWidget(input)
         layout.addWidget(label_error)
         return layout
-    
-    """Solo lo hice para que al pasar el cursor por un inpunt muestre un mesaje
-        no es tan necesario lo pueden dejar a como esta
-    """            
+        
     def eventFilter(self, source, event):
         if event.type() == 10:  # Enter (Mouse Enter)
             if isinstance(source, QLineEdit): 
@@ -115,22 +111,16 @@ class formDepartamento(QDialog):
         return super().eventFilter(source, event)
     
     def _cancelar_registro(self):
-        
-        """Si se encuentra inputs con datos entonces pregunta si esta seguro retirarse"""
         if self._validar_inputs_sin_con_datos():
             dialEmergente = DialogoEmergente("¿?","¿Estas seguro que que quieres cancelar?","Question",True,True)
             opcion = dialEmergente.exec()
             if opcion == QDialog.Accepted:
                 self.reject()
             elif opcion == QDialog.Rejected:
-                print("Se rechazó el diálogo.")
+                pass
         else:##si los inputs estan sin datos entonces cierra el formulario de manera normal
             self.reject()##cerrar la ventana
-            
-            
-    """Este metodo se usa para la funcion
-        accion persona lo cual se encarga de insertar o actualizar en bd
-    """        
+               
     def _validar_campos(self):
         # Verifica si los campos requeridos están vacíos entonces muestra una alerta
         if self._validar_inputs_vacios():
@@ -139,10 +129,7 @@ class formDepartamento(QDialog):
             return False
         else:
             return True
-        
-    """Reviza que los inputs esten llenados antes de insertar
-        se usa en la funcion _validar_campos
-    """
+
     def _validar_inputs_vacios(self):
         vacios:bool = False
             
@@ -197,7 +184,6 @@ class formDepartamento(QDialog):
         if self._validar_campos():      
             if self.idP > 0:##si el atributo idP es mayor a 0 quiere decir que se va actualizar 
                     result = self.Pservices.modificarDepartamento(departament)
-                    print(result)
                     if result["success"]:
                         dial = DialogoEmergente("Actualización",result["message"],"Check")
                         dial.exec()
@@ -207,7 +193,7 @@ class formDepartamento(QDialog):
                         dial.exec()
             else:#de lo contrario lo toma como un crear
                     result = self.Pservices.insertarDepartamento(departament)
-                    print(result)
+                 
                     if result["success"]:
                         dial = DialogoEmergente("Registrar","Departamento registrado exitosamente","Check")
                         dial.exec()

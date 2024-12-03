@@ -16,9 +16,10 @@ class AdminDepartament(QWidget):
         super().__init__(parent)
         self.setObjectName("admin")
     
-        add_Style(carpeta="css", archivoQSS="adminDepartamento.css", QObjeto=self)
-    
-        layout = QVBoxLayout();
+        # add_Style(carpeta="css", archivoQSS="adminDepartamento.css", QObjeto=self)
+        cargar_estilos('claro','admin.css',self)
+        
+        layout = QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
     
         frame = QFrame()

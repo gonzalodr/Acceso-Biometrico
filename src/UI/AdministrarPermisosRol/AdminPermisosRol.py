@@ -26,8 +26,6 @@ class AdminPermisosRol(QWidget):
         layout.setContentsMargins(10,10,10,10)
 
         frame = QFrame()
-        print(layout.parent)
-
         self.layoutFrame = QVBoxLayout()
         self.layoutFrame.setContentsMargins(0,0,0,0)
         self.layoutFrame.setSpacing(0)
@@ -204,11 +202,14 @@ class AdminPermisosRol(QWidget):
                 for index, permisos in enumerate(listaPermisos):
                     self.tbPermisosRol.insertRow(index)
                     self.tbPermisosRol.setRowHeight(index,45)
+
                     dato = self.rolServices.obtenerRolPorId(permisos.rol_id)
                     rol = dato["data"]
                     acceso_a = [key for key, value in ACCESO_TABLE.items() if value == permisos.tabla]
+
                     self.addItem_a_tabla(index,0,str(rol.nombre))
                     self.addItem_a_tabla(index,1,str(acceso_a[0]))
+                    
                     self.addItem_a_tabla(index,2,("Si" if permisos.ver else "No"))
                     self.addItem_a_tabla(index,3,("Si" if permisos.crear else "No"))
                     self.addItem_a_tabla(index,4,("Si" if permisos.editar else "No"))

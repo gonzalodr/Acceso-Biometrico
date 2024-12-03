@@ -11,7 +11,7 @@ class DialogoEmergente(QDialog):
             
             :param title: Es el pequeño titulo que se le mostrar en la ventanita
             :param message: Este el mensaje que se quiere dar
-            :param Icono: es el icono que se debe mostrar, "Warning","Error","Check","Question".
+            :param Icono: es el icono que se debe mostrar, "Warning","Error","Check","Question" y "Save".
             :param show_accept_button: boleano, si se ingresa True muestra el boton aceptar
             :param show_cancel_button: boleano, si se ingresa True muestra el boton cancelar
             

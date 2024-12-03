@@ -78,7 +78,8 @@ class vistaPrincipal(QWidget):
         self.lblIconoUser.setObjectName("iconoUser")
         self.lblIconoUser.setMaximumSize(QSize(50, 50))
         self.lblIconoUser.setMinimumSize(QSize(50, 50))
-        self.cargar_imagen_usuario(self.lblIconoUser)
+        cargar_Icono(self.lblIconoUser, archivoImg='user.png')
+        # self.cargar_imagen_usuario(self.lblIconoUser)
         Sombrear(self.lblIconoUser, 30, 0, 5)
 
         """
@@ -103,12 +104,9 @@ class vistaPrincipal(QWidget):
         self._llenar_stack_vista()
 
         self.sidebar = SlideBar(listaOpciones=self.listaOpciones)
-        self.cargar_imagen_usuario(self.sidebar.lblUsuario)
-        self.btnAbrir_SideBar.clicked.connect(
-            lambda click, btn=self.btnAbrir_SideBar: self.sidebar.accion_anim(
-                btnSidebar=btn
-            )
-        )
+        cargar_Icono(self.sidebar.lblUsuario, archivoImg='user.png')
+        # self.cargar_imagen_usuario(self.sidebar.lblUsuario)
+        self.btnAbrir_SideBar.clicked.connect(lambda click, btn=self.btnAbrir_SideBar: self.sidebar.accion_anim(btnSidebar=btn))
 
         """Recibimos una señal la cual nos servira para detectar los btn del sidebar"""
         self.sidebar.index_opcion_selecionada.connect(self.seleccion_sidebar)
@@ -184,7 +182,6 @@ class vistaPrincipal(QWidget):
         self.stackVistas.setCurrentIndex(0)
 
     def seleccion_sidebar(self, index):
-        print(index)
         self.stackVistas.setCurrentIndex(index)
 
     def cargar_imagen_usuario(self, user, imagen=None):

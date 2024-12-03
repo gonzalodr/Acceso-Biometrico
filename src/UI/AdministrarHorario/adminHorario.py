@@ -15,9 +15,11 @@ class AdminHorario(QWidget):
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
-        self.setObjectName("adminHorario")
+        self.setObjectName("admin")
 
-        add_Style(carpeta="css", archivoQSS="adminHorario.css", QObjeto=self)
+        # add_Style(carpeta="css", archivoQSS="adminHorario.css", QObjeto=self)
+        cargar_estilos('claro','admin.css',self)
+
 
         layout = QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)

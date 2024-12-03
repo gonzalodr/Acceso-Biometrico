@@ -66,8 +66,8 @@ class IniciarSesion(QWidget):
         lblIcono.setMaximumHeight(120)
         lblIcono.setAlignment(Qt.AlignCenter)
         #lblIcono.setScaledContents(True)
-        cargar_icono_svg(lblIcono,carpeta="iconos",archivoSVG="person-circle.svg")
-
+        #%c_icono_svg(lblIcono,carpeta="iconos",archivoSVG="person-circle.svg")
+        cargar_Icono(lblIcono, archivoImg='user.png')
 
         lblUsurio = QLabel(text="Usuario")
         lblUsurio.setMaximumHeight(40)

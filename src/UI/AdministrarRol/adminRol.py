@@ -170,9 +170,6 @@ class AdminRol(QWidget):
 
     def _cargar_tabla(self):
         result = self.Rservices.obtenerListaRol(pagina=self.paginaActual, tam_pagina=10, tipo_orden="DESC", busqueda=self.busqueda)
-        print()
-        print(result)
-        print()
         if result["success"]:
             listaRol = result["data"]["listaRoles"]
             if len(listaRol) > 0:

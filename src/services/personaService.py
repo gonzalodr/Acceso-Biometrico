@@ -59,8 +59,6 @@ class PersonaServices:
         
     def modificarPersona(self,persona: Persona):
         result = self.verificacionCorreo(persona.correo,persona.id)
-        print("Services modificar")
-        print(result)
         if not result["success"]:
             return result
         

@@ -4,7 +4,7 @@ from models.usuario import *
 from services.usuarioService import *
 
 if __name__ == "__main__":
-    print()
+    pass
     ## crean primero una presona
     # Pservices = PersonaServices()
     # persona:Persona = Persona("Gonzalo","Dormos", "Rodriguez","2002-07-01","605310603","Soltero\\a","gonzalodormos26@gmail.com","Puerto viejo,Sarapiqui")

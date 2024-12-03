@@ -176,7 +176,6 @@ class formPersona(QDialog):
         layout.setContentsMargins(0,0,0,0)
         layout.addWidget(frame)
         self.setLayout(layout)
-        Sombrear(self,30,0,0,"green")
         
         """Aqui se revisa si el formulario recibio un id por parametros"""
         if id:
@@ -263,7 +262,7 @@ class formPersona(QDialog):
             if opcion == QDialog.Accepted:
                 self.reject()
             elif opcion == QDialog.Rejected:
-                print("Se rechazó el diálogo.")
+                pass
         else:##si los inputs estan sin datos entonces cierra el formulario de manera normal
             self.reject()##cerrar la ventana
                

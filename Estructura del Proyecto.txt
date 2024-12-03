@@ -23,6 +23,7 @@ Acceso-Biometrico/           #Estructura para organizar el proyecto
 │   │
 │   ├──settings/             #Carpeta para las configuraciones
 │   │   ├── __init__.py      #Hace que settings sea un modulo 
+│   │   ├── config.ini
 │   │   └── config.py        #archivo con la configuracion del proyecto, variables globales
 │   │
 │   │
