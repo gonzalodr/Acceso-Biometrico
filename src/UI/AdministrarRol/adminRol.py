@@ -14,7 +14,8 @@ class AdminRol(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("admin")
-        add_Style(carpeta="css", archivoQSS="adminRol.css", QObjeto=self)
+        cargar_estilos('claro','admin.css',self)
+        
         layout = QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
 

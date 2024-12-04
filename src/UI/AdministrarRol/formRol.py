@@ -11,11 +11,11 @@ class formRol(QDialog):
 
     def __init__(self, parent=None, titulo="Registrar Rol", id=None):
         super().__init__(parent)
-        self.setObjectName("formRol")
+        self.setObjectName("form")
         self.setMinimumSize(QSize(400, 350))
         self.setWindowFlags(Qt.FramelessWindowHint)
-        add_Style(archivoQSS="formRol.css", QObjeto=self)
-
+        cargar_estilos('claro','form.css',self)
+        
         frame = QFrame()
         layoutFrame = QVBoxLayout()
         frame.setObjectName("formFrame")
