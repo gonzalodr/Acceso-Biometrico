@@ -7,3 +7,7 @@
 <a href="https://www.flaticon.com/free-icons/setup" title="setup icons">Setup icons created by Freepik - Flaticon</a>
 
 <a href="https://www.flaticon.com/free-icons/exit" title="exit icons">Exit icons created by Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/free-icons/employees" title="employees icons">Employees icons created by Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/free-icons/team" title="team icons">Team icons created by Freepik - Flaticon</a>

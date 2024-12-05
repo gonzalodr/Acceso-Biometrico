@@ -123,11 +123,12 @@ class vistaPrincipal(QWidget):
 
     def _llenar_stack_vista(self):
         self.stackVistas.addWidget(self._widget_presentacion())
+        
         if True:
             adminpersona = AdminPersona(parent=self)
             adminpersona.cerrar_adminP.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminpersona)
-            self.listaOpciones.append((index, "Administrar Persona",''))
+            self.listaOpciones.append((index, "Administrar Persona",'employees.png'))
 
         if True:
             adminHorario = AdminHorario(parent=self)
