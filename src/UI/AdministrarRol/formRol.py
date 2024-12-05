@@ -52,11 +52,11 @@ class formRol(QDialog):
 
         boton_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         boton_box.button(QDialogButtonBox.Cancel).setText("Cancelar")
-        boton_box.button(QDialogButtonBox.Cancel).setObjectName("btnCancelar")
+        boton_box.button(QDialogButtonBox.Cancel).setObjectName("btncancelar")
         boton_box.button(QDialogButtonBox.Cancel).setMinimumSize(QSize(100, 30))
 
         boton_box.button(QDialogButtonBox.Ok).setText("Registrar" if id is None else "Actualizar")
-        boton_box.button(QDialogButtonBox.Ok).setObjectName("btnRegistrar")
+        boton_box.button(QDialogButtonBox.Ok).setObjectName("btnregistrar")
         boton_box.button(QDialogButtonBox.Ok).setMinimumSize(QSize(100, 30))
         Sombrear(boton_box, 20, 0, 5)
 

@@ -21,53 +21,31 @@ def Sombrear(QObjeto,shadow:int=0,xOffset:int=0,yOffset:int=0, color:str=None):
     if color:
         sombra.setColor(color)
     QObjeto.setGraphicsEffect(sombra)
-    
-def add_Style(carpeta:str="css",archivoQSS:str="login.css",QObjeto = None):
-    """
-    Aplica un estilo a un objeto Q o devuelve el estilo como un string.
-    
-    :param carpeta: Nombre de la carpeta donde se encuentra el archivo QSS.
-    :param archivoQSS: Nombre del archivo QSS a cargar.
-    :param QObjeto: El objeto Q al que se le aplicará el estilo (opcional).
-    :return: El estilo en forma de string si no se pasa QObjeto, None si se aplica el estilo.
-    """
-    # Obtener la ruta del archivo donde se llamó a este método
-    caller_frame = inspect.stack()[1]
-    caller_file = caller_frame.filename
-    current_dir = os.path.dirname(caller_file)
-    path_qss = os.path.join(current_dir, carpeta, archivoQSS)
-    try:
-        with open(path_qss, "r") as file:
-            style = file.read()
-        if QObjeto:
-            QObjeto.setStyleSheet(style)
-        else:
-            return style  
-    except FileNotFoundError:
-        print(f"Error: El archivo {path_qss} no se encontró.")
-        return None
-    except Exception as e:
-        print(f"Se produjo un error al leer el archivo: {e}")
-        return None
-    
+     
 def cargar_Icono(QObjeto,archivoImg:str="",Size:QSize=None):
-    ruta_relativa = os.getcwd()
-    ruta = os.path.join(ruta_relativa,'src','UI','iconos',archivoImg)
-    pixmap = QPixmap(ruta) 
+    try:
+        ruta_relativa = os.getcwd()
+        ruta = os.path.join(ruta_relativa,'src','UI','iconos',archivoImg)
+        if not os.path.exists(ruta):
+            raise ValueError(f'La ruta \'{ruta}\' no existe')
+        if os.path.splitext(ruta)[1] != '.png':
+            raise ValueError(f'La extencion del archivo en la ruta \'{ruta}\' no es validad, esta debe ser \'.png\'')
+        pixmap = QPixmap(ruta) 
 
-    # Qt.SmoothTransformation:
-    # Mejora la calidad del escalado mediante interpolación suave.
-    # Evita bordes pixelados o borrosos en imágenes escaladas.
-    # Aspect Ratio:
-    # Utilizamos Qt.KeepAspectRatio para mantener la proporción de la imagen al escalarla.
+        # Qt.SmoothTransformation:
+        # Mejora la calidad del escalado mediante interpolación suave.
+        # Evita bordes pixelados o borrosos en imágenes escaladas.
+        # Aspect Ratio:
+        # Utilizamos Qt.KeepAspectRatio para mantener la proporción de la imagen al escalarla.
 
-    if Size:
-        pixmap = pixmap.scaled(Size, Qt.KeepAspectRatio, Qt.SmoothTransformation) 
-    else:
-        pixmap = pixmap.scaled(Size if Size else QSize(QObjeto.size().height(), QObjeto.size().height()),  Qt.KeepAspectRatio, Qt.SmoothTransformation) 
-
-    QObjeto.setPixmap(pixmap)
-       
+        if Size:
+            pixmap = pixmap.scaled(Size, Qt.KeepAspectRatio, Qt.SmoothTransformation) 
+        else:
+            pixmap = pixmap.scaled(Size if Size else QSize(QObjeto.size().height(), QObjeto.size().height()),  Qt.KeepAspectRatio, Qt.SmoothTransformation) 
+        QObjeto.setPixmap(pixmap)
+    except Exception as e:
+        print(f'Error: {e}')
+    
 def cargar_icono_svg(QObjeto, carpeta:str="iconos",archivoSVG:str="", Size:QSize=None):
     # Obtener el directorio del archivo que llama a esta función
     # tipo = type(QObjeto)
@@ -114,3 +92,24 @@ def cargar_estilos(tema:str = 'default', archivoCSS:str='login.css', QObjeto = N
     except Exception as e:
         print(f"Se produjo un error al leer el archivo: {e}")
         return None
+
+def cargar_icono(Qpushbutton:QPushButton,icono:str,Size:QSize = None):
+    try:
+        ruta_relativa = os.getcwd()
+        ruta = os.path.join(ruta_relativa, 'src', 'UI', 'iconos', icono)
+
+        if not os.path.exists(ruta):
+            raise ValueError(f'La ruta \'{ruta}\' no existe')
+        
+        if os.path.splitext(ruta)[1] != '.png':
+            raise ValueError(f'La extencion del archivo en la ruta \'{ruta}\' no es validad, esta debe ser \'.png\'')
+        
+        icono_q = QIcon(ruta)
+        Qpushbutton.setIcon(icono_q)
+        if Size is not None:
+            Qpushbutton.setIconSize(Size)
+        else:
+            altura = Qpushbutton.size().height()-30
+            Qpushbutton.setIconSize(QSize(altura, altura))
+    except Exception as e:
+        print(f'Error: {e}')

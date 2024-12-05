@@ -61,18 +61,21 @@ class SlideBar(QWidget):
         
         for opcion in listaOpciones:
             button = QPushButton(text=f"{opcion[1]}")
+            
             button.setProperty("index", opcion[0])
             button.setCursor(Qt.PointingHandCursor)
             button.setMaximumHeight(70)
-            button.setMinimumHeight(20)
+            button.setMinimumHeight(70)
             button.setCheckable(True)
+            cargar_icono(button,opcion[2]) 
             self.grupoOpciones.addButton(button)
             self.layoutFrame.addWidget(button)
             
         button = QPushButton(text=f"Conficguracion")
         button.setCursor(Qt.PointingHandCursor)
         button.setMaximumHeight(70)
-        button.setMinimumHeight(20)
+        button.setMinimumHeight(70)
+        cargar_icono(button,'settings.png') 
         # button.clicked.connect(self._abrir_configuracion)
         self.layoutFrame.addWidget(button)
 
@@ -80,7 +83,8 @@ class SlideBar(QWidget):
         button = QPushButton(text=f"Salir")
         button.setCursor(Qt.PointingHandCursor)
         button.setMaximumHeight(70)
-        button.setMinimumHeight(20)
+        button.setMinimumHeight(70)
+        cargar_icono(button,'exit.png') 
         button.clicked.connect(self._cerrar_App)
         
         self.layoutFrame.addWidget(button)
@@ -88,9 +92,18 @@ class SlideBar(QWidget):
             Esta señal permite saber que bonton ha sido seleccionado desde ventan principal
         """
         self.grupoOpciones.buttonClicked.connect(self.botton_seleccionado)
-
+       
         self.frame.setLayout(self.layoutFrame)
-        self.layoutSide.addWidget(self.frame)
+
+        # self.layoutSide.addWidget(self.frame)
+        # Crear un QScrollArea
+        self.scrollArea = QScrollArea(self)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)  # Solo scroll vertical
+        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+
+        self.scrollArea.setWidget(self.frame)
+        self.layoutSide.addWidget(self.scrollArea)
         self.setLayout(self.layoutSide)
         Sombrear(self,50,0,0)
 

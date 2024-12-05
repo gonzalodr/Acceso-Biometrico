@@ -12,7 +12,7 @@ import sys
 
 
 class vistaPrincipal(QWidget):
-    listaOpciones = []  # numero Index en el stack, el nombre, icono
+    listaOpciones = []  # numero Index en el stack, el nombre o texto, icono
     usuario: Usuario = None
 
     def __init__(self, usuario: Usuario, parent=None,):
@@ -21,7 +21,7 @@ class vistaPrincipal(QWidget):
         self.setObjectName("vistaPrincipal")
 
         cargar_estilos('claro','ventanaPrincipal.css',self)
-
+        
         frame = QFrame()
         frame.setObjectName("frameFondoPrincipal")
         frame.setContentsMargins(0, 0, 0, 0)
@@ -54,10 +54,7 @@ class vistaPrincipal(QWidget):
         self.btnAbrir_SideBar = QPushButton(text="")
         self.btnAbrir_SideBar.setCursor(Qt.PointingHandCursor)
         self.btnAbrir_SideBar.setMaximumSize(QSize(45, 45))
-        cargar_icono_svg(
-            QObjeto=self.btnAbrir_SideBar,
-            archivoSVG="arrow-bar-right.svg",
-            Size=QSize(
+        cargar_icono_svg(QObjeto=self.btnAbrir_SideBar,archivoSVG="arrow-bar-right.svg",Size=QSize(
                 self.btnAbrir_SideBar.size().width() - 15,
                 self.btnAbrir_SideBar.size().height() - 15,
             ),
@@ -130,45 +127,42 @@ class vistaPrincipal(QWidget):
             adminpersona = AdminPersona(parent=self)
             adminpersona.cerrar_adminP.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminpersona)
-            self.listaOpciones.append((index, "Administrar Persona"))
+            self.listaOpciones.append((index, "Administrar Persona",''))
 
         if True:
             adminHorario = AdminHorario(parent=self)
             adminHorario.cerrar_adminH.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminHorario)
-            self.listaOpciones.append((index, "Administrar Horarios"))
+            self.listaOpciones.append((index, "Administrar Horarios",'weekly.png'))
 
         if True:
             AdminDepart = AdminDepartament(parent=self)
             AdminDepart.cerrar_adminD.connect(self._salir_crud)
             index = self.stackVistas.addWidget(AdminDepart)
-            self.listaOpciones.append((index, "Admin. Departamento"))
+            self.listaOpciones.append((index, "Admin. Departamento",'company-department.png'))
         if True:
             adminrol = AdminRol()
             adminrol.cerrar_adminR.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminrol)
-            self.listaOpciones.append((index,"Administrar rol"))
+            self.listaOpciones.append((index,"Administrar rol",'workforce.png'))
         
         if True:
             adminpermisos = AdminPermisosRol()
             adminpermisos.cerrar_adminP.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminpermisos)
-            self.listaOpciones.append((index,"Admin. permisos rol"))
-            
+            self.listaOpciones.append((index,"Admin. permisos rol",'access-control-list.png'))
+
         self.stackVistas.setCurrentIndex(0)
         
     def _widget_presentacion(self):
         widgetP = QWidget()
         widgetP.setObjectName("widgetDefault")
-
         frame = QFrame()
-
         layout = QVBoxLayout()
         layout.addWidget(frame)
         lblPresentacion = QLabel(text="Acceso Biometrico")
         lblPresentacion.setAlignment(Qt.AlignCenter)
         Sombrear(lblPresentacion, 20, 0, 0)
-
         layoutP = QVBoxLayout()
         layoutP.setContentsMargins(0, 0, 0, 0)
         layoutP.addWidget(lblPresentacion)
@@ -184,21 +178,3 @@ class vistaPrincipal(QWidget):
     def seleccion_sidebar(self, index):
         self.stackVistas.setCurrentIndex(index)
 
-    def cargar_imagen_usuario(self, user, imagen=None):
-        try:
-            if imagen is not None:
-                if not isinstance(imagen, bytes):
-                    imagen = bytes(imagen)
-                pixmap = QPixmap()
-                pixmap.loadFromData(imagen)
-                pixmap = pixmap.scaled(
-                    user.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
-                )
-                user.setPixmap(pixmap)
-            else:
-                raise ValueError("La imagen es nulo")
-        except Exception as e:
-            if hasattr(user, "setPixmap"):
-                cargar_icono_svg( QObjeto=user, carpeta="iconos", archivoSVG="person-circle.svg")
-            else:
-                print("El objeto proporcionado no es un QLabel o no tiene el método setPixmap.")
