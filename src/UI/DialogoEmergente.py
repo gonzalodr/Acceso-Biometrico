@@ -8,7 +8,6 @@ class DialogoEmergente(QDialog):
     def __init__(self, title="Advertencia", message="¡Advertencia!", Icono="Warning", show_accept_button=True, show_cancel_button=False):
         """
             DialogoEmergente: Muestra pequeños avisos al usuario
-            
             :param title: Es el pequeño titulo que se le mostrar en la ventanita
             :param message: Este el mensaje que se quiere dar
             :param Icono: es el icono que se debe mostrar, "Warning","Error","Check","Question" y "Save".
@@ -17,7 +16,6 @@ class DialogoEmergente(QDialog):
             
             Nota: si no se ingresa que boton va a mostrar por defecto saldra activo el boton aceptar
         """
-        
         super().__init__()
         # Eliminar el borde de la ventana
         self.setObjectName("DialEmergente")
@@ -28,9 +26,12 @@ class DialogoEmergente(QDialog):
 
         self.minimo_tam = QSize(200,200)
         self.maximo_tam = QSize(300,300)
-
         self.setMinimumSize(self.minimo_tam)
-        self.setMaximumSize(self.maximo_tam)
+
+        self.final_width = 300
+        self.final_height = 300
+        self.setMaximumHeight(self.final_height)
+        self.setMaximumWidth(self.final_width)
 
         # Crear un layout vertical
         self.layout = QVBoxLayout()
@@ -67,22 +68,18 @@ class DialogoEmergente(QDialog):
             self.frameLayout.addWidget(self.icon_label)  # Añadir el QLabel al layout del frame
 
         Sombrear(self.icon_label,20,0,5)
-        #self.icon_label.setStyleSheet("QLabel {border-radius: 10px;background-color: #F0F2FF;}")
-
         # Agregar un QLabel para el mensaje
         self.message_label = QLabel(message)
         self.message_label.setObjectName("mensaje")
         self.message_label.setAlignment(Qt.AlignCenter)
-        # self.message_label.setStyleSheet("font: 700 10pt \"Segoe UI\";")
         self.message_label.setWordWrap(True)
         
         #Titulo
         self.titulo_label = QLabel(title)
         self.titulo_label.setObjectName("titulo")
         self.titulo_label.setAlignment(Qt.AlignCenter)
-        # self.titulo_label.setStyleSheet("font: 700 16pt \"Segoe UI\";")
         self.titulo_label.setWordWrap(True)
-        
+
         self.frameLayout.addWidget(self.titulo_label)
         self.frameLayout.addWidget(self.message_label)
 
@@ -111,5 +108,22 @@ class DialogoEmergente(QDialog):
             
         # Establecer el layout principal en el diálogo
         self.setLayout(self.layout)
+        self.animation = QPropertyAnimation(self, b"geometry",self)
+        self.animation.setDuration(700)
 
-        
+    def showEvent(self, event):
+        """Ejecutar la animación de apertura con rebote cuando se muestra el diálogo."""
+        start_rect = QRect(self.x() + self.final_width // 2, self.y() + self.final_height // 2, 1, 1)
+        bounce_rect = QRect(self.x() - 15, self.y() - 15, self.final_width + 30, self.final_height + 30)
+        end_rect = QRect(self.x(), self.y(), self.final_width, self.final_height)
+        print(self.x())
+        print(start_rect)
+        print(bounce_rect)
+        print(end_rect)
+        print()
+        self.animation.setKeyValueAt(0, start_rect)
+        self.animation.setKeyValueAt(0.7, bounce_rect)
+        self.animation.setKeyValueAt(1, end_rect)
+        self.animation.setEasingCurve(QEasingCurve.OutBounce)
+        self.animation.start()
+        super().showEvent(event)   
