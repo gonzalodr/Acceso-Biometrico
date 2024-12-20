@@ -1,6 +1,5 @@
 #DialEmergente{
     border: 2px solid #ffffff;
-   
 }
 
 #frameEmerg{
@@ -18,11 +17,13 @@ QLabel {
 #frameEmerg #mensaje{
     background-color:transparent;
     font: 1 12pt "Cooper Black";
+    color: #000000;
 }
 
 #frameEmerg #titulo{
     background-color:transparent;
     font: 1 18pt "Cooper Black";
+    color:#000000;
 }
 
 #frameEmerg #acept{

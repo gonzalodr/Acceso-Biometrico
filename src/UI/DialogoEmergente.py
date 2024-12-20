@@ -17,30 +17,24 @@ class DialogoEmergente(QDialog):
             Nota: si no se ingresa que boton va a mostrar por defecto saldra activo el boton aceptar
         """
         super().__init__()
-        # Eliminar el borde de la ventana
         self.setObjectName("DialEmergente")
-        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.FramelessWindowHint) #elimina el borde de la ventana
         self.setWindowTitle(title)
+        cargar_estilos('claro','dialogoEmergent.css',self)#carga los estilos de la ventana
 
-        cargar_estilos('claro','dialogoEmergent.css',self)
-
-        self.minimo_tam = QSize(200,200)
-        self.maximo_tam = QSize(300,300)
-        self.setMinimumSize(self.minimo_tam)
-
+        ##ajusta el tamano maximo de la ventana
         self.final_width = 300
         self.final_height = 300
-        self.setMaximumHeight(self.final_height)
-        self.setMaximumWidth(self.final_width)
+        self.setMaximumSize(QSize(self.final_width,self.final_height))
 
         # Crear un layout vertical
-        self.layout = QVBoxLayout()
-        self.layout.setContentsMargins(0,0,0,0)
+        self.layoutPrincipal = QVBoxLayout()
+        self.layoutPrincipal.setContentsMargins(0,0,0,0)
         
         # Crear un QFrame con un fondo de color
         self.frame = QFrame()
         self.frame.setObjectName("frameEmerg")
-        self.layout.addWidget(self.frame)
+        self.layoutPrincipal.addWidget(self.frame)
         
         # Crear el layout para el contenido del QFrame
         self.frameLayout = QVBoxLayout()
@@ -51,34 +45,32 @@ class DialogoEmergente(QDialog):
         self.path_icono = {"Warning"    : "iconos/Warning.png", 
                            "Check"      : "iconos/Check.png", 
                            "Error"      : "iconos/Error.png",
-                           "Save"       :"iconos/Save.png",
-                           "Question"   :"iconos/Question.png"
+                           "Save"       : "iconos/Save.png",
+                           "Question"   : "iconos/Question.png"
                            }
 
         # Agregar un QLabel para el icono
         if Icono:
             self.icon_label = QLabel()
-            #direccion del icono
             path_url = os.path.join(os.path.dirname(__file__), self.path_icono.get(Icono, "iconos/Warning.png"))
-            
-            # Cargar el icono PNG
             icon_pixmap = QPixmap(path_url).scaled(128, 128, Qt.KeepAspectRatio)
             self.icon_label.setPixmap(icon_pixmap)
             self.icon_label.setAlignment(Qt.AlignCenter)
             self.frameLayout.addWidget(self.icon_label)  # Añadir el QLabel al layout del frame
 
         Sombrear(self.icon_label,20,0,5)
+        
+        #Qlable para el titulot Titulo
+        self.titulo_label = QLabel(title)
+        self.titulo_label.setObjectName("titulo")
+        self.titulo_label.setAlignment(Qt.AlignCenter)
+        self.titulo_label.setWordWrap(True)
+
         # Agregar un QLabel para el mensaje
         self.message_label = QLabel(message)
         self.message_label.setObjectName("mensaje")
         self.message_label.setAlignment(Qt.AlignCenter)
         self.message_label.setWordWrap(True)
-        
-        #Titulo
-        self.titulo_label = QLabel(title)
-        self.titulo_label.setObjectName("titulo")
-        self.titulo_label.setAlignment(Qt.AlignCenter)
-        self.titulo_label.setWordWrap(True)
 
         self.frameLayout.addWidget(self.titulo_label)
         self.frameLayout.addWidget(self.message_label)
@@ -107,7 +99,7 @@ class DialogoEmergente(QDialog):
             self.frameLayout.addLayout(self.button_layout)
             
         # Establecer el layout principal en el diálogo
-        self.setLayout(self.layout)
+        self.setLayout(self.layoutPrincipal)
         self.animation = QPropertyAnimation(self, b"geometry",self)
         self.animation.setDuration(700)
 
@@ -116,11 +108,9 @@ class DialogoEmergente(QDialog):
         start_rect = QRect(self.x() + self.final_width // 2, self.y() + self.final_height // 2, 1, 1)
         bounce_rect = QRect(self.x() - 15, self.y() - 15, self.final_width + 30, self.final_height + 30)
         end_rect = QRect(self.x(), self.y(), self.final_width, self.final_height)
-        print(self.x())
         print(start_rect)
         print(bounce_rect)
         print(end_rect)
-        print()
         self.animation.setKeyValueAt(0, start_rect)
         self.animation.setKeyValueAt(0.7, bounce_rect)
         self.animation.setKeyValueAt(1, end_rect)
