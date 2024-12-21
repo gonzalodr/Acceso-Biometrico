@@ -39,18 +39,18 @@ Para crear un entorno virtual llamado `venv`, sigue estos pasos:
 ## 3. Activar el Entorno Virtual
 Una vez creado, necesitas activar el entorno virtual:
 
-- **En Windows**:
-      ```bash
-      .\venv\Scripts\activate
-  
-   si esto no funciona prueba con el siguiete comando en la terminal CMD
-      ```bash 
-      .\venv\Scripts\activate.bat
+   * **En Windows**:
+         ```bash
+         .\venv\Scripts\activate
+   
+      si esto no funciona prueba con el siguiete comando en la terminal CMD
+         ```bash 
+         .\venv\Scripts\activate.bat
 
-- **En macOS/Linux**:
-   ````bash
-   source venv/bin/activate
-  
+   * **En macOS/Linux**:
+      ````bash
+      source venv/bin/activate
+   
 
 Cuando esté activado, verás `(venv)` al principio de la línea de comandos.
 ejemplo:
@@ -64,41 +64,41 @@ Para salir del entorno virtual, ejecuta:
 
 
 ## 5. Cargar Dependencias desde requirements.txt
-Si tienes un archivo `requirements.txt`, sigue estos pasos:
-Carga las dependecias desde el `requirements.txt`.
+   Si tienes un archivo `requirements.txt`, sigue estos pasos:
+   Carga las dependecias desde el `requirements.txt`.
 
-# Nota:
-   Se deben instalar todas las dependencias mientras el entorno virtual esta encendido,
-   esto para evitar conflictos con dependencias del sistema.
+   # Nota:
+      Se deben instalar todas las dependencias mientras el entorno virtual esta encendido,
+      esto para evitar conflictos con dependencias del sistema.
 
-1. Asegúrate de que tu entorno esté activado, osea debes ver el `(venv)` al principio de la linea de comandos.
+   1. Asegúrate de que tu entorno esté activado, osea debes ver el `(venv)` al principio de la linea de comandos.
 
-2. Usa este comando para instalar las dependencias:
-      ```bash
-      pip install -r requirements.txt
+   2. Usa este comando para instalar las dependencias:
+         ```bash
+         pip install -r requirements.txt
 
-3. Para actualizar o instalar una nueva dependecia desde el `requirements.txt`, 
-   debes ejecutar el siguiente comando:
-      ```bash
-      pip install --upgrade -r requirements.txt
-   
-## 6. ejecucion de pruebas(opcional de hacer)
-   Para ejecutar pruebas para revisar el funcionamiento de los modulos puedes seguir los siguientes pasos
-1. En la carpeta tests crearas un archivo .py y colocaras al inicio el prefijo (`test_`),
-   Ejemplo:
-      ```bash
-      test_serviceUsuario.py
+   3. Para actualizar o instalar una nueva dependecia desde el `requirements.txt`, 
+      debes ejecutar el siguiente comando:
+         ```bash
+         pip install --upgrade -r requirements.txt
+      
+   ## 6. ejecucion de pruebas(opcional de hacer)
+      Para ejecutar pruebas para revisar el funcionamiento de los modulos puedes seguir los siguientes pasos
+   1. En la carpeta tests crearas un archivo .py y colocaras al inicio el prefijo (`test_`),
+      Ejemplo:
+         ```bash
+         test_serviceUsuario.py
 
-2. Para ejecutar tus pruebas, abre una terminal y navega hasta la carpeta principal de tu proyecto. 
-   Luego escribe:
-      ```bash
-      python -m unittest discover -s tests
+   2. Para ejecutar tus pruebas, abre una terminal y navega hasta la carpeta principal de tu proyecto. 
+      Luego escribe:
+         ```bash
+         python -m unittest discover -s tests
 
-   Esto buscará automáticamente todos los archivos que comienzan con 
-   test_ dentro de la carpeta tests/ y ejecutará las pruebas definidas.
-## 7. Exportacion de la base de datos
-   -Asegurese de que estas exportando la ultima version de la base de datos
-   -Crear una base de datos en MySql con el nombre `accesobiometrico`
+      Esto buscará automáticamente todos los archivos que comienzan con 
+      test_ dentro de la carpeta tests/ y ejecutará las pruebas definidas.
+   ## 7. Exportacion de la base de datos
+      -Asegurese de que estas exportando la ultima version de la base de datos
+      -Crear una base de datos en MySql con el nombre `accesobiometrico`
 
 ## Conclusión
 ¡Ahora sabes cómo crear, activar y desactivar un entorno virtual en Python, así como cargar dependencias desde un archivo `requirements.txt`! Tambien los pasos para importar la base de datos de manera local.
