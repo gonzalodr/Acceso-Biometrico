@@ -40,26 +40,27 @@ Para crear un entorno virtual llamado `venv`, sigue estos pasos:
 Una vez creado, necesitas activar el entorno virtual:
 
 - **En Windows**:
-  ```bash
-  .\venv\Scripts\activate
+      ```bash
+      .\venv\Scripts\activate
   
-  si esto no funciona prueba con el siguiete comando en la terminal CMD
-  ```bash
-  .\venv\Scripts\activate.bat
+   si esto no funciona prueba con el siguiete comando en la terminal CMD
+      ```bash 
+      .\venv\Scripts\activate.bat
 
 - **En macOS/Linux**:
-  ```bash
-  source venv/bin/activate
+   ````bash
+   source venv/bin/activate
   
 
 Cuando esté activado, verás `(venv)` al principio de la línea de comandos.
 ejemplo:
-`(venv)ruta/a/tu/proyecto>`
+   ```bash
+   (venv)ruta/a/tu/proyecto>
 
 ## 4. Desactivar el Entorno Virtual
 Para salir del entorno virtual, ejecuta:
-```bash
-deactivate
+   ```bash
+   deactivate
 
 
 ## 5. Cargar Dependencias desde requirements.txt
@@ -73,25 +74,25 @@ Carga las dependecias desde el `requirements.txt`.
 1. Asegúrate de que tu entorno esté activado, osea debes ver el `(venv)` al principio de la linea de comandos.
 
 2. Usa este comando para instalar las dependencias:
-   ```bash
-   pip install -r requirements.txt
+      ```bash
+      pip install -r requirements.txt
 
 3. Para actualizar o instalar una nueva dependecia desde el `requirements.txt`, 
    debes ejecutar el siguiente comando:
-   ```bash
-   pip install --upgrade -r requirements.txt
+      ```bash
+      pip install --upgrade -r requirements.txt
    
 ## 6. ejecucion de pruebas(opcional de hacer)
    Para ejecutar pruebas para revisar el funcionamiento de los modulos puedes seguir los siguientes pasos
 1. En la carpeta tests crearas un archivo .py y colocaras al inicio el prefijo (`test_`),
    Ejemplo:
-   ```bash
-   test_serviceUsuario.py
+      ```bash
+      test_serviceUsuario.py
 
 2. Para ejecutar tus pruebas, abre una terminal y navega hasta la carpeta principal de tu proyecto. 
    Luego escribe:
-   ```bash
-   python -m unittest discover -s tests
+      ```bash
+      python -m unittest discover -s tests
 
    Esto buscará automáticamente todos los archivos que comienzan con 
    test_ dentro de la carpeta tests/ y ejecutará las pruebas definidas.
