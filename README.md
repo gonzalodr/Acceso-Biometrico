@@ -18,7 +18,7 @@ Para crear un entorno virtual llamado `venv`, sigue estos pasos:
 
 2. **Navega a tu Proyecto**:
    Usa el comando `cd` para cambiar al directorio donde quieres crear el entorno virtual. Por ejemplo:
-   bash
+   ```bash
    cd ruta/a/tu/proyecto
 
    seleciona el directorio del proyecto.
@@ -26,12 +26,12 @@ Para crear un entorno virtual llamado `venv`, sigue estos pasos:
 
 3. **Crear el Entorno Virtual**:
    Ejecuta el siguiente comando:
-   bash
+   ```bash
    python -m virtualenv venv
    
    si tienes mas de una version de python indicar la version deseada, preferible la mas reciente, 
    ejecutas el comando especificando la version, ejemplo:
-   bash
+   ```bash
    python -3.12 -m virtualvenv venv
    
    Esto creará una carpeta llamada `venv` en tu directorio actual.
@@ -40,15 +40,15 @@ Para crear un entorno virtual llamado `venv`, sigue estos pasos:
 Una vez creado, necesitas activar el entorno virtual:
 
 - **En Windows**:
-  bash
+  ```bash
   .\venv\Scripts\activate
   
   si esto no funciona prueba con el siguiete comando en la terminal CMD
-  bash
+  ```bash
   .\venv\Scripts\activate.bat
 
 - **En macOS/Linux**:
-  bash
+  ```bash
   source venv/bin/activate
   
 
@@ -58,7 +58,7 @@ ejemplo:
 
 ## 4. Desactivar el Entorno Virtual
 Para salir del entorno virtual, ejecuta:
-bash
+```bash
 deactivate
 
 
@@ -73,23 +73,24 @@ Carga las dependecias desde el `requirements.txt`.
 1. Asegúrate de que tu entorno esté activado, osea debes ver el `(venv)` al principio de la linea de comandos.
 
 2. Usa este comando para instalar las dependencias:
-   bash
+   ```bash
    pip install -r requirements.txt
 
 3. Para actualizar o instalar una nueva dependecia desde el `requirements.txt`, 
    debes ejecutar el siguiente comando:
-   bash
+   ```bash
    pip install --upgrade -r requirements.txt
    
 ## 6. ejecucion de pruebas(opcional de hacer)
    Para ejecutar pruebas para revisar el funcionamiento de los modulos puedes seguir los siguientes pasos
 1. En la carpeta tests crearas un archivo .py y colocaras al inicio el prefijo (`test_`),
    Ejemplo:
+   ```bash
    test_serviceUsuario.py
 
 2. Para ejecutar tus pruebas, abre una terminal y navega hasta la carpeta principal de tu proyecto. 
    Luego escribe:
-   bash
+   ```bash
    python -m unittest discover -s tests
 
    Esto buscará automáticamente todos los archivos que comienzan con 
