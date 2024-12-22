@@ -79,20 +79,18 @@ class PersonaData:
             query = f"""INSERT INTO {TBPERSONA} (
                 {TBPERSONA_FOTO} , 
                 {TBPERSONA_NOMBRE} ,  
-                {TBPERSONA_APELLIDO1} ,
-                {TBPERSONA_APELLIDO2} ,
+                {TBPERSONA_APELLIDOS} ,
                 {TBPERSONA_NACIMIENTO} ,
                 {TBPERSONA_CEDULA} ,
                 {TBPERSONA_ESTADO_CIVIL} ,
                 {TBPERSONA_CORREO} , 
                 {TBPERSONA_DIRECCION}) 
-                VALUES (%s, %s, %s, %s, %s,%s, %s, %s, %s)"""
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
     
             cursor.execute(query, (
                 persona.foto,
                 persona.nombre,
-                persona.apellido1,
-                persona.apellido2,
+                persona.apellidos,
                 persona.fecha_nacimiento,
                 persona.cedula,
                 persona.estado_civil,
@@ -129,8 +127,7 @@ class PersonaData:
             query = f"""UPDATE {TBPERSONA} SET 
             {TBPERSONA_FOTO} = %s,
             {TBPERSONA_NOMBRE} = %s,
-            {TBPERSONA_APELLIDO1} = %s,
-            {TBPERSONA_APELLIDO2} = %s,
+            {TBPERSONA_APELLIDOS} = %s,
             {TBPERSONA_NACIMIENTO} = %s,
             {TBPERSONA_CEDULA} = %s,
             {TBPERSONA_ESTADO_CIVIL} = %s,
@@ -141,8 +138,7 @@ class PersonaData:
             cursor.execute(query, (
                 persona.foto,
                 persona.nombre,
-                persona.apellido1,
-                persona.apellido2,
+                persona.apellidos,
                 persona.fecha_nacimiento,
                 persona.cedula,
                 persona.estado_civil,
@@ -208,7 +204,7 @@ class PersonaData:
             columna_orden = { 
                 "cedula":TBPERSONA_CEDULA, 
                 "fechaNacimiento":TBPERSONA_NACIMIENTO, 
-                "apellido":TBPERSONA_APELLIDO1, 
+                "apellido":TBPERSONA_APELLIDOS, 
                 "nombre":TBPERSONA_NOMBRE
             }
             ## asigna sobre que tabla realizar el orden
@@ -226,8 +222,7 @@ class PersonaData:
             if busqueda:
                 query += f"""
                     WHERE {TBPERSONA_NOMBRE} LIKE %s 
-                    OR {TBPERSONA_APELLIDO1} LIKE %s
-                    OR {TBPERSONA_APELLIDO2} LIKE %s 
+                    OR {TBPERSONA_APELLIDOS} LIKE %s
                     OR {TBPERSONA_CEDULA} LIKE %s 
                     OR {TBPERSONA_CORREO} LIKE %s
                 """
@@ -244,8 +239,7 @@ class PersonaData:
             for registro in registros:
                 persona = Persona(
                     registro[TBPERSONA_NOMBRE],
-                    registro[TBPERSONA_APELLIDO1],
-                    registro[TBPERSONA_APELLIDO2],
+                    registro[TBPERSONA_APELLIDOS],
                     registro[TBPERSONA_NACIMIENTO],
                     registro[TBPERSONA_CEDULA],
                     registro[TBPERSONA_ESTADO_CIVIL],
@@ -293,8 +287,7 @@ class PersonaData:
             query = f"""SELECT
                             {TBPERSONA_FOTO}, 
                             {TBPERSONA_NOMBRE}, 
-                            {TBPERSONA_APELLIDO1}, 
-                            {TBPERSONA_APELLIDO2}, 
+                            {TBPERSONA_APELLIDOS}, 
                             {TBPERSONA_NACIMIENTO}, 
                             {TBPERSONA_CEDULA}, 
                             {TBPERSONA_ESTADO_CIVIL}, 
