@@ -1,0 +1,37 @@
+Empleado                (Gonzalo Dormos, Yeiler madrigal)
+│
+├──── Mostrar datos, tabla de empleados, Mostrar información basica.
+│		├── Botón para eliminar empleado.
+│		├── Botón para editar empleado.
+│		├── Botón para ver asistencias.
+│               ├── Botón para ver toda la información personal del empleado.
+│               ├── Botón para ver, crear, modificar o eliminar el usuario de cada empleado.
+│		├── Botón para ver las justificaciones, crear, modificar o eliminar justificación
+│		├── Botón para ver los permisos, crear, modificar o eliminar justificaciones.
+│		└── Botón para crear reporte por empleado (aplicar filtros).
+│
+├──── Crear Empleado, solicitar información de la persona.
+│       ├── Seleccionar departamento (opcional).
+│       ├── Seleccionar Rol (opcional).
+│       └── Crear usuario (opcional).
+│
+└──── Crear reporte de todos los empleados (aplicar filtros).
+
+Rol                     (Maikel)
+│
+├──── Mostrar datos, tabla de rol, Mostrar nombre de rol, descripción, nombre del horario.(tabla: horario_rol) 
+│		├── Botón para eliminar rol.
+│		├── Botón para editar rol.
+│       └── Botón para ver toda la información(mostar, nombre, descripción, nombre del horario, y mostrar tabla del horario en semana).
+│
+└──── Crear Rol, solicitar información del rol.
+        ├── Crear el horario, nombre de dicho horario (tabla: horario_rol).
+        └── Crear, asignar las horas ya sea por dia o fijo para toda la semana(tabla:horario).
+
+Perfil                  (Javier Diaz)
+│
+├──── Mostrar datos, tabla de perfil, Mostrar nombre de perfil, el acceso a y sus permisos(ver,crear,editar o eliminar).
+│		├── Botón para eliminar.
+│		└── Botón para editar.
+│
+└──── Crear Perfil, solicitar la información del perfil.
