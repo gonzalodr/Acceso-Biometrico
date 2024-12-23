@@ -1,0 +1,74 @@
+#form{
+    background-color: #ffffff;
+}
+#form QWidget{
+    background-color: transparent;
+}
+#form QPushButton{
+    background-color: #00b9da;
+    font: 100 12pt "Cooper Black";
+    color: #000000;
+    border: 0px solid transparent;
+    border-radius: 10px;
+}
+
+#form  QWidget QLabel{
+    background-color: transparent;
+    color: black;
+    font: 1 12pt "Cooper Black";
+    text-align: center;
+}
+#form QWidget QLineEdit{
+    background-color:transparent;
+    font-size:15px;
+    border:none;
+    border-bottom:1px solid #000000;
+    color: #000000; /* Texto en negro para campos de entrada */
+}
+#form QWidget QDateEdit{
+    background-color:transparent;
+    font-size:15px;
+    border:none;
+    border-bottom:1px solid #000000;
+    color: #000000;
+}
+#form QComboBox{
+    background-color:transparent;
+    font-size:15px;
+    border:none;
+    border-bottom:1px solid #000000;
+    color: #000000; 
+}
+#form QTextEdit{
+    background-color:transparent;
+    font-size:15px;
+    border:none;
+    border-bottom:1px solid #000000;
+    color: #000000; 
+}
+#form #form QDateEdit{
+    background-color:transparent;
+    font-size:15px;border:none;
+    border-bottom:1px solid #000000;
+    color: #000000; /* Texto en negro para campos de fecha */
+}
+
+#form #lblerror{
+    background-color: transparent;
+    font: 1 8pt "Arial";
+    color: #ba0000; /* Texto en negro para el título */
+}
+#form  #lbltituloP{
+    background-color: transparent;
+    color: black;
+    font: 1000 20pt "Cooper Black";
+}
+#form  #lblsubtitulos{
+    background-color: transparent;
+    color: black;
+    font: 1000 14pt "Cooper Black";
+}
+#form #foto{
+    border-radius:0%;
+    border-color: #000000;
+}

@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
-# from Utils.Utils import *
+from Utils.Utils import *
 # from UI.DialogoEmergente import *
 import sys
 
@@ -10,9 +10,9 @@ class formEmpleado(QDialog):
     def __init__(self, parent = None, titulo = 'Registrar empleado', id_empleado = None):
         super().__init__(parent)
         self.setObjectName('form')
-        self.setMinimumSize(QSize(700,650))
+        self.setMinimumSize(QSize(1050,700))
         # self.setWindowFlags(Qt.FramelessWindowHint)
-        # cargar_estilos('claro','form.css',self)
+        cargar_estilos('claro','formEm.css',self)
         '''
         JERARQUIA DE WIDGETS Y OBJETOS QT
 
@@ -94,17 +94,19 @@ class formEmpleado(QDialog):
 
         ## layoutFrame
         layoutFrame = QVBoxLayout()
+        lbltitulo = QLabel(titulo)
+        lbltitulo.setObjectName('lbltituloP')
+        lbltitulo.setAlignment(Qt.AlignCenter)
+        lbltitulo.setMinimumHeight(40)
+        layoutFrame.addWidget(lbltitulo)
 
         ## layoutContent
         self.layoutContent = QHBoxLayout()
-        
-        self._llenar_layoutConten()
 
+        self._llenar_layoutConten()
         layoutFrame.addLayout(self.layoutContent)
         frame.setLayout(layoutFrame)
         self.setLayout(layoutPrin)
-
-
     '''
     LLenado de layoutContent
     '''
@@ -119,6 +121,15 @@ class formEmpleado(QDialog):
         self.layoutCent = QVBoxLayout()
         self.layoutDer = QVBoxLayout()
 
+        #configuracion de los layouts
+        self.layoutIzq.setSpacing(20)
+        self.layoutCent.setSpacing(20)
+        self.layoutDer.setSpacing(20)
+        #margenes
+        # self.layoutIzq.setContentsMargins(15,20,15,0)
+        # self.layoutCent.setContentsMargins(15,20,15,0)
+        # self.layoutDer.setContentsMargins(15,20,15,0)
+
         #creando scrolls
         scroll_areaIzq = QScrollArea()
         scroll_areaIzq.setWidgetResizable(True)
@@ -127,16 +138,10 @@ class formEmpleado(QDialog):
         scroll_areaDer = QScrollArea()
         scroll_areaDer.setWidgetResizable(True)
 
-
         self._llenar_layoutIzq()
         self._llenar_layoutCent()
         self._llenar_layoutDer()
         
-        # self.layoutContent.addLayout(self.layoutIzq)
-        # self.layoutContent.addLayout(self.layoutCent)
-        # self.layoutContent.addLayout(self.layoutDer)
-
-        ###############################
         # Crear los scroll areas
         self.scrollIzq = QScrollArea()
         self.scrollCent = QScrollArea()
@@ -166,15 +171,13 @@ class formEmpleado(QDialog):
         self.layoutContent.addWidget(self.scrollIzq)
         self.layoutContent.addWidget(self.scrollCent)
         self.layoutContent.addWidget(self.scrollDer)
-
-
-        pass
-
     '''
     Llenado de layoutIzq
     '''
     def _llenar_layoutIzq(self):
         tituloIzq = QLabel('Datos Personales')
+        tituloIzq.setObjectName('lblsubtitulos')
+        tituloIzq.setAlignment(Qt.AlignCenter)
 
         self.layoutFoto = QVBoxLayout()
         self._llenar_LayoutFoto()
@@ -194,6 +197,9 @@ class formEmpleado(QDialog):
         #Fecha de nacimiento
         self.lblNacimiento = QLabel('Nacimiento')
         self.inNacimiento = QDateEdit()
+        self.inNacimiento.setCalendarPopup(True)
+        self.inNacimiento.setDisplayFormat('yyyy-MM-dd')
+        self.inNacimiento.setMaximumDate(QDate.currentDate())
         self.errNacimiento = QLabel('Error nacimiento')
         #Correo
         self.lblCorreo = QLabel('Correo')
@@ -206,6 +212,7 @@ class formEmpleado(QDialog):
         #Direccion
         self.lblDireccion = QLabel('Direccion')
         self.inDireccion = QTextEdit()
+        self.inDireccion.setMaximumHeight(30)
         self.errDireccion = QLabel('Error Direccion')
         
         #asignando al layoutIzq
@@ -218,14 +225,14 @@ class formEmpleado(QDialog):
         self.layoutIzq.addLayout(self._contenedor(self.lblCorreo,self.inCorreo,self.errCorreo))
         self.layoutIzq.addLayout(self._contenedor(self.lblEstCivil,self.inEstCivil,self.errEstCivil))
         self.layoutIzq.addLayout(self._contenedor(self.lblDireccion,self.inDireccion,self.errDireccion))
-
-        pass
-
     '''
     Llenado de layoutCent
     '''
     def _llenar_layoutCent(self):
         tituloCent = QLabel('Departamento y Rol')
+        tituloCent.setObjectName('lblsubtitulos')
+        tituloCent.setAlignment(Qt.AlignCenter)
+
         #Departamento
         self.lblDep = QLabel('Departamento')
         self.inDep = QComboBox()
@@ -240,30 +247,36 @@ class formEmpleado(QDialog):
         self.layoutCent.addLayout(self._contenedor(self.lblRol,self.inRol,self.errRol))
         self.layoutCent.setAlignment(Qt.AlignTop) ##Alinea los widgets arriba
 
-        pass
     '''
     Llenado de layoutDer
     '''
     def _llenar_layoutDer(self):
         tituloDer = QLabel('Usuarios')
-
-        pass
+        tituloDer.setObjectName('lblsubtitulos')
+        tituloDer.setAlignment(Qt.AlignCenter)
     '''
     Llenado de layoutFoto
     '''
     def _llenar_LayoutFoto(self):
         self.foto = QLabel('foto')
-        self.btnFoto = QPushButton()
+        self.foto.setObjectName('foto')
+        self.foto.setFixedSize(250,250)
+        self.foto.setAlignment(Qt.AlignCenter)
+        self.foto.setStyleSheet('#foto{border-radius:10;border: 1px solid black;}')
+
+        self.btnFoto = QPushButton(text='Seleccionar foto')
+        self.btnFoto.setFixedHeight(40)
+
+        self.layoutFoto.setAlignment(Qt.AlignCenter)
         self.layoutFoto.addWidget(self.foto)
         self.layoutFoto.addWidget(self.btnFoto)
-        pass
     '''
     Contenedor independiente para cada input
     '''
     def _contenedor(self,label:QLabel,input,label_error:QLabel)->QVBoxLayout:
         layout = QVBoxLayout()
-        layout.setContentsMargins(0,0,0,0)
-        layout.setSpacing(5)
+        layout.setContentsMargins(10,5,10,0)
+        layout.setSpacing(0)
         
         label_error.setObjectName("lblerror")
         label_error.setMaximumHeight(25)
@@ -271,6 +284,7 @@ class formEmpleado(QDialog):
         label_error.setWordWrap(True)
         
         layout.addWidget(label)
+        layout.addSpacing(5)
         layout.addWidget(input)
         layout.addWidget(label_error)
         return layout
@@ -279,4 +293,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     dialogo = formEmpleado()
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
