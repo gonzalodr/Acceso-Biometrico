@@ -95,7 +95,7 @@ class formEmpleado(QDialog):
         ## layoutFrame
         layoutFrame = QVBoxLayout()
         lbltitulo = QLabel(titulo)
-        lbltitulo.setObjectName('lbltituloP')
+        lbltitulo.setObjectName('lbltitulo')
         lbltitulo.setAlignment(Qt.AlignCenter)
         lbltitulo.setMinimumHeight(40)
         layoutFrame.addWidget(lbltitulo)
@@ -110,7 +110,7 @@ class formEmpleado(QDialog):
     '''
     LLenado de layoutContent
     '''
-    def _llenar_layoutConten(self):
+    def _llenar_layoutConten(self): 
         #creando widgets para el scrol
         self.widgetIzq = QWidget()
         self.widgetCent = QWidget()
@@ -161,6 +161,10 @@ class formEmpleado(QDialog):
         widgetIzq.setLayout(self.layoutIzq)
         widgetCent.setLayout(self.layoutCent)
         widgetDer.setLayout(self.layoutDer)
+        #agregando nombres
+        widgetIzq.setObjectName('contenedor')
+        widgetCent.setObjectName('contenedor')
+        widgetDer.setObjectName('contenedor')
 
         # Asignar los widgets a las scroll areas
         self.scrollIzq.setWidget(widgetIzq)
@@ -254,6 +258,10 @@ class formEmpleado(QDialog):
         tituloDer = QLabel('Usuarios')
         tituloDer.setObjectName('lblsubtitulos')
         tituloDer.setAlignment(Qt.AlignCenter)
+
+        self.layoutDer.addWidget(tituloDer)
+
+        self.layoutDer.setAlignment(Qt.AlignTop)
     '''
     Llenado de layoutFoto
     '''
@@ -288,6 +296,9 @@ class formEmpleado(QDialog):
         layout.addWidget(input)
         layout.addWidget(label_error)
         return layout
+
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
