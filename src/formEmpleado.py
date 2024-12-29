@@ -12,7 +12,7 @@ class formEmpleado(QDialog):
         self.setObjectName('form')
         self.setMinimumSize(QSize(1050,700))
         # self.setWindowFlags(Qt.FramelessWindowHint)
-        #cargar_estilos('claro','formEm.css',self)
+        cargar_estilos('claro','formEm.css',self)
         '''
         JERARQUIA DE WIDGETS Y OBJETOS QT
 
