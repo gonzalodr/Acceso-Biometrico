@@ -198,6 +198,7 @@ class formEmpleado(QDialog):
         self.foto.setFixedSize(250,250)
         self.foto.setAlignment(Qt.AlignCenter)
         self.foto.setStyleSheet('#foto{border-radius:10;border: 1px solid black;}')
+        cargar_Icono(self.foto,'userPerson.png')
 
         self.btnFoto = QPushButton(text='Seleccionar foto')
         self.btnFoto.setFixedHeight(40)
@@ -229,30 +230,29 @@ class formEmpleado(QDialog):
     '''
     def _seleccionar_foto(self):
         if self.fotografia is None: 
+            dir_defecto = QStandardPaths.writableLocation(QStandardPaths.PicturesLocation)
             file_path, _ = QFileDialog.getOpenFileName(
-                self,
-                "Seleccionar Imagen",
-                "",
-                "Imágenes (*.png *.jpg *.jpeg)"
+                parent=self,
+                caption="Seleccionar Imagen",
+                dir=dir_defecto, 
+                filter="Imágenes (*.png *.jpg *.jpeg)"
             )
-            
             if file_path:
                 pixmap = QPixmap(file_path)
-                self.foto.setPixmap(pixmap.scaled(self.foto.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation   ))
+                self.foto.setPixmap(pixmap.scaled(self.foto.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
                 self.btnFoto.setText("Eliminar foto")
                 try:
                     if file_path:
                         with open(file_path, "rb") as file:
                             self.fotografia = file.read()
                 except Exception as e:
-                    print(f"Error al cargar foto: {e}")
+                    self.btnFoto.setText("Seleccionar foto")
+                    cargar_Icono(self.foto,'userPerson.png')
                     self.fotografia = None
         else:
-            self.foto.clear()
+            cargar_Icono(self.foto,'userPerson.png')
             self.btnFoto.setText("Seleccionar foto")
             self.fotografia = None
-
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
