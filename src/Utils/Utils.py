@@ -26,10 +26,13 @@ def cargar_Icono(QObjeto,archivoImg:str="",Size:QSize=None):
     try:
         ruta_relativa = os.getcwd()
         ruta = os.path.join(ruta_relativa,'src','UI','iconos',archivoImg)
+
         if not os.path.exists(ruta):
             raise ValueError(f'La ruta \'{ruta}\' no existe')
+        
         if os.path.splitext(ruta)[1] != '.png':
             raise ValueError(f'La extencion del archivo en la ruta \'{ruta}\' no es validad, esta debe ser \'.png\'')
+        
         pixmap = QPixmap(ruta) 
 
         # Qt.SmoothTransformation:

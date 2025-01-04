@@ -7,85 +7,14 @@ import sys
 class formEmpleado(QDialog):
     idEmpleado = None
     fotografia = None
+
     def __init__(self, parent = None, titulo = 'Registrar empleado', id_empleado = None):
         super().__init__(parent)
         self.setObjectName('form')
         self.setMinimumSize(QSize(1050,700))
         # self.setWindowFlags(Qt.FramelessWindowHint)
         cargar_estilos('claro','formEm.css',self)
-        '''
-        JERARQUIA DE WIDGETS Y OBJETOS QT
-
-        *layoutPrin:QLayout
-            *frame:QFrame
-            *layoutFrame:QVBoxLayout
-                *layoutContent:QHBoxLayout
-                    *layoutIzq:QVBoxLayout
-                        *tituloIzq:QLabel
-                        *layoutFoto:QVBoxLayout
-                            *foto:QLable
-                            *btnFoto:QPushButton
-                        *layout:QVBoxLayout
-                            *lblNombre:QLabel
-                            *inNombre:QLineEdit
-                            *errNombre:QLabel
-                        *layout:QVBoxLayout
-                            *lblApellidos:QLabel
-                            *inApellidos:QLineEdit
-                            *errApellidos:QLabel
-                        *layout:QVBoxLayout
-                            *lblCedula:QLabel
-                            *inCedula:QLineEdit
-                            *errCedula:QLabel
-                        *layout:QVBoxLayout
-                            *lblCorreo:QLabel
-                            *inCorreo:QLineEdit
-                            *errCorreo:QLabel
-                        *layout:QVBoxLayout
-                            *lblNacimiento:QLabel
-                            *inNacimiento:QDateEdit
-                            *errNacimiento:QLabel
-                        *layout:QVBoxLayout
-                            *lblEstCivil:QLabel
-                            *inEstCivil:QComboBox
-                            *errEstCivil:QLabel
-                        *layout:QVBoxLayout
-                            *lblDireccion:QLabel
-                            *inDireccion:QTextEdit
-                            *errDireccion:QLabel
-                    *layoutCent:QVBoxLayout
-                        *tituloCent:QLabel
-                        *layout:QVBoxLayout
-                            *lblDepa:QLabel
-                            *inDepa:QComboBox
-                            *errDepa:QLabel
-                        *layout:QVBoxLayout
-                            *lblRol:QLabel
-                            *inRol:QComboBox
-                            *errRol:QLabel
-                    *layoutDer:QVBoxLayout
-                        *tituloDer:QLabel
-                        *layout:QHBoxLayout
-                            *lblCrearUser:QLabel
-                            *btnCrear:QPushButton
-                            *btnElim:QPushButton
-                        *layoutListU:QVBoxLayout
-                            *layoutUser:QVBoxLayou
-                                *layout:QVBoxLayout
-                                    *lblUser:QLabel
-                                    *inUser:QComboBox
-                                    *errUser:QLabel
-                                *layout:QVBoxLayout
-                                    *lblPass:QLabel
-                                    *inPass:QComboBox
-                                    *errPass:QLabel
-                                *layoutPerfil
-                                    *lblPerfil:QLabel
-                                    *inPerfil:QComboBox
-                                    *errPerfil:QLabel
-            button_box:QDialogButtonBox
-
-        '''
+        
         layoutPrin =QVBoxLayout()
         frame = QFrame()
         frame.setObjectName('formFrame')
@@ -258,15 +187,13 @@ class formEmpleado(QDialog):
         tituloDer = QLabel('Usuarios')
         tituloDer.setObjectName('lblsubtitulos')
         tituloDer.setAlignment(Qt.AlignCenter)
-
         self.layoutDer.addWidget(tituloDer)
-
         self.layoutDer.setAlignment(Qt.AlignTop)
     '''
     Llenado de layoutFoto
     '''
     def _llenar_LayoutFoto(self):
-        self.foto = QLabel('foto')
+        self.foto = QLabel()
         self.foto.setObjectName('foto')
         self.foto.setFixedSize(250,250)
         self.foto.setAlignment(Qt.AlignCenter)
@@ -274,6 +201,7 @@ class formEmpleado(QDialog):
 
         self.btnFoto = QPushButton(text='Seleccionar foto')
         self.btnFoto.setFixedHeight(40)
+        self.btnFoto.clicked.connect(self._seleccionar_foto)
 
         self.layoutFoto.setAlignment(Qt.AlignCenter)
         self.layoutFoto.addWidget(self.foto)
@@ -296,10 +224,33 @@ class formEmpleado(QDialog):
         layout.addWidget(input)
         layout.addWidget(label_error)
         return layout
-
     '''
     Logica
     '''
+    def _seleccionar_foto(self):
+        if self.fotografia is None: 
+            file_path, _ = QFileDialog.getOpenFileName(
+                self,
+                "Seleccionar Imagen",
+                "",
+                "Imágenes (*.png *.jpg *.jpeg)"
+            )
+            
+            if file_path:
+                pixmap = QPixmap(file_path)
+                self.foto.setPixmap(pixmap.scaled(self.foto.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation   ))
+                self.btnFoto.setText("Eliminar foto")
+                try:
+                    if file_path:
+                        with open(file_path, "rb") as file:
+                            self.fotografia = file.read()
+                except Exception as e:
+                    print(f"Error al cargar foto: {e}")
+                    self.fotografia = None
+        else:
+            self.foto.clear()
+            self.btnFoto.setText("Seleccionar foto")
+            self.fotografia = None
 
 
 
