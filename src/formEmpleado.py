@@ -33,9 +33,24 @@ class formEmpleado(QDialog):
         self.layoutContent = QHBoxLayout()
 
         self._llenar_layoutConten()
+
         layoutFrame.addLayout(self.layoutContent)
+
+        boton_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        boton_box.button(QDialogButtonBox.Cancel).setText("Cancelar")
+        boton_box.button(QDialogButtonBox.Cancel).setObjectName("btncancelar")
+        boton_box.button(QDialogButtonBox.Cancel).setMinimumSize(QSize(100,30))
+        
+        boton_box.button(QDialogButtonBox.Ok).setText("Registrar" if id == None else "Actualizar")
+        boton_box.button(QDialogButtonBox.Ok).setObjectName("btnregistrar")
+        boton_box.button(QDialogButtonBox.Ok).setMinimumSize(QSize(100,30))
+        Sombrear(boton_box,20,0,5)
+
+        layoutFrame.addWidget(boton_box)
         frame.setLayout(layoutFrame)
         self.setLayout(layoutPrin)
+
+
     '''
     LLenado de layoutContent
     '''
@@ -231,28 +246,23 @@ class formEmpleado(QDialog):
     def _seleccionar_foto(self):
         if self.fotografia is None: 
             dir_defecto = QStandardPaths.writableLocation(QStandardPaths.PicturesLocation)
-            file_path, _ = QFileDialog.getOpenFileName(
-                parent=self,
-                caption="Seleccionar Imagen",
-                dir=dir_defecto, 
-                filter="Imágenes (*.png *.jpg *.jpeg)"
-            )
+            file_path, _ = QFileDialog.getOpenFileName(self,"Seleccionar Imagen",dir_defecto,"Imágenes (*.png *.jpg *.jpeg)")
             if file_path:
-                pixmap = QPixmap(file_path)
-                self.foto.setPixmap(pixmap.scaled(self.foto.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                self.foto.setPixmap(QPixmap(file_path).scaled(self.foto.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
                 self.btnFoto.setText("Eliminar foto")
                 try:
                     if file_path:
                         with open(file_path, "rb") as file:
                             self.fotografia = file.read()
                 except Exception as e:
-                    self.btnFoto.setText("Seleccionar foto")
                     cargar_Icono(self.foto,'userPerson.png')
+                    self.btnFoto.setText("Seleccionar foto")
                     self.fotografia = None
         else:
             cargar_Icono(self.foto,'userPerson.png')
             self.btnFoto.setText("Seleccionar foto")
             self.fotografia = None
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
