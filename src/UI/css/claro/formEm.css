@@ -97,3 +97,23 @@ QScrollBar::add-line, QScrollBar::sub-line {
     background: none; /* Sin botones adicionales */
     border: none;
 }
+
+#form #btncancelar{
+    background-color:#325fc6 ;
+    border-radius: 5px;
+    color:#ffffff;
+    font: 10 13pt "Cooper Black";
+}
+#form #btncancelar::Hover{
+    background-color: #213a75;
+}
+#form #btnregistrar{
+    background-color: #409da1;
+    border-radius: 5px;
+    color:#ffffff;
+    font: 10 13pt "Cooper Black";
+}
+#form #btnregistrar::hover{
+    background-color:#00627d;
+}
+
