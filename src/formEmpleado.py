@@ -49,8 +49,6 @@ class formEmpleado(QDialog):
         layoutFrame.addWidget(boton_box)
         frame.setLayout(layoutFrame)
         self.setLayout(layoutPrin)
-
-
     '''
     LLenado de layoutContent
     '''
@@ -194,7 +192,6 @@ class formEmpleado(QDialog):
         self.layoutCent.addLayout(self._contenedor(self.lblDep,self.inDep,self.errDep))
         self.layoutCent.addLayout(self._contenedor(self.lblRol,self.inRol,self.errRol))
         self.layoutCent.setAlignment(Qt.AlignTop) ##Alinea los widgets arriba
-
     '''
     Llenado de layoutDer
     '''
@@ -216,6 +213,7 @@ class formEmpleado(QDialog):
         cargar_Icono(self.foto,'userPerson.png')
 
         self.btnFoto = QPushButton(text='Seleccionar foto')
+        self.btnFoto.setObjectName('select_foto')
         self.btnFoto.setFixedHeight(40)
         self.btnFoto.clicked.connect(self._seleccionar_foto)
 
@@ -243,6 +241,7 @@ class formEmpleado(QDialog):
     '''
     Logica
     '''
+    #Seleccion de foto
     def _seleccionar_foto(self):
         if self.fotografia is None: 
             dir_defecto = QStandardPaths.writableLocation(QStandardPaths.PicturesLocation)
@@ -251,9 +250,8 @@ class formEmpleado(QDialog):
                 self.foto.setPixmap(QPixmap(file_path).scaled(self.foto.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
                 self.btnFoto.setText("Eliminar foto")
                 try:
-                    if file_path:
-                        with open(file_path, "rb") as file:
-                            self.fotografia = file.read()
+                    with open(file_path, "rb") as file:
+                        self.fotografia = file.read()
                 except Exception as e:
                     cargar_Icono(self.foto,'userPerson.png')
                     self.btnFoto.setText("Seleccionar foto")

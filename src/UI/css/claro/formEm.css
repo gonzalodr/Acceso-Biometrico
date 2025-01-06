@@ -116,4 +116,17 @@ QScrollBar::add-line, QScrollBar::sub-line {
 #form #btnregistrar::hover{
     background-color:#00627d;
 }
+#form #select_foto{
+    background-color: #d5d5d5;
+    border-radius: 5px;
+    color:#000000;
+    font: 10 13pt "Cooper Black";
+}
+#form #select_foto::hover{
+    background-color:#979797;
+}
 
+#form #select_foto::Pressed{
+    background-color: #00a5cf;
+    color:#FFFFFF;
+}
