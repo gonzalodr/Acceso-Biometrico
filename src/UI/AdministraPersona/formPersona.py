@@ -6,7 +6,6 @@ from UI.DialogoEmergente import *
 from services.personaService import *
 
 class formPersona(QDialog):
-    update:bool = False ##en teoria no se necesita
     Pservices = PersonaServices() # lo cambian por su servis
     idP = 0 ##el ide del registro este solo se usan para saber si esta modificando o creando
     fotografia = None ##esto no lo necesitan
