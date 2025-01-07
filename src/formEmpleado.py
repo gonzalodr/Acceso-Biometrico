@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from Utils.Utils import *
+from settings.logger import logger
 # from UI.DialogoEmergente import *
 import sys
 
@@ -261,6 +262,7 @@ class formEmpleado(QDialog):
             self.btnFoto.setText("Seleccionar foto")
             self.fotografia = None
 
+    
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
