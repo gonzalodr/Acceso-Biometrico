@@ -202,6 +202,7 @@ class formPermiso(QDialog):
 
     def _obtener_registroId(self, id):
         result = self.permisosServices.obtener_permiso_rol_por_id(id)
+        print (result)
         if result["success"]:
             if result["data"]:
                 permiso:Permiso_Rol = result["data"]
