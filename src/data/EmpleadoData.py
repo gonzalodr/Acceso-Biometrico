@@ -11,7 +11,7 @@ from models.usuario import Usuario
 
 class EmpleadoData:
     
-    def create_Empleado(datos: Dict[str, Any]):
+    def create_Empleado(datos: Dict[str, Any])->Dict[str,Any]:
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
