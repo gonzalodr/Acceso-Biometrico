@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from Utils.Utils import *
-from settings.logger import logger
 # from UI.DialogoEmergente import *
 import sys
 
