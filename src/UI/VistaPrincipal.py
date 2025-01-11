@@ -152,6 +152,12 @@ class vistaPrincipal(QWidget):
             adminpermisos.cerrar_adminP.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminpermisos)
             self.listaOpciones.append((index,"Admin. permisos rol",'access-control-list.png'))
+            
+        #if True:
+         #   adminpermisosperfil = AdminPermisosPerfil()
+          #  adminpermisosperfil.cerrar_adminP.connect(self._salir_crud)
+           # index = self.stackVistas.addWidget(adminpermisosperfil)
+            #self.listaOpciones.append((index,"Admin. permisos perfil",'access-control-list.png'))
 
         self.stackVistas.setCurrentIndex(0)
         
