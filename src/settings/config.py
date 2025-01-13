@@ -81,5 +81,6 @@ TBPERMISOPERFIL_ELIMINAR = "Eliminar"
 
 #PERFIL
 TBPERFIL = "perfil"
-TBPERFIL = "Nombre"
-TBPERFIL = "Descripcion"
+TBPERFIL_ID = "Id"
+TBPERFIL_NOMBRE = "Nombre"
+TBPERFIL_DESCRIPCION = "Descripcion"
