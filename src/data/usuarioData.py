@@ -1,67 +1,75 @@
 from models.usuario import Usuario
 from data.data import conection
 from settings.config import *
+from settings.logger import logger
 import bcrypt
 
 class UsuarioData:
     
-    def create_usuario(self, usuario: Usuario):
-        conexion, resultado = conection()
-        if not resultado["success"]:
-            return resultado
-        try:
-            cursor = conexion.cursor()
-            query = f"""INSERT INTO {TBUSUARIO}(
-            {TBUSUARIO_ID_PERSONA},
-            {TBUSUARIO_USUARIO},
-            {TBUSUARIO_CONTRASENA})
-            VALUES (%s, %s, %s)"""
-            
-            cursor.execute(query, (
-            usuario.id_persona,
-            usuario.usuario,
-            usuario.contrasena
-            ))
-            conexion.commit()
-            resultado["success"] = True
-            resultado["message"] = "Usuario creado exitosamente"
-        except Exception as e:
-            resultado["success"] = False
-            resultado["message"] = f"Error al crear usuario: {e}"
-        finally:
-            if conexion:
-                conexion.close()
-        return resultado
-            
-    def update_usuario(self, usuario: Usuario):
-        conexion, resultado = conection()
-        cursor = None
-        if not resultado["success"]:
-            return resultado
-        try:
-            cursor = conexion.cursor()
-            query = f"""UPDATE {TBUSUARIO} SET 
-            {TBUSUARIO_USUARIO} = %s,
-            {TBUSUARIO_CONTRASENA} = %s
-            WHERE {TBUSUARIO_ID} = %s"""
+    def create_usuario(self, usuario: Usuario, conexionEx = None):
+        #manejando la conexion exterior
+        if conexionEx is None:
+            conexion, resultado = conection()
+            if not resultado["success"]:
+                return resultado
+        else:
+            conexion = conexionEx
         
-            cursor.execute(query, (
-                usuario.usuario,
-                usuario.contrasena,
-                usuario.id
-            ))
-            conexion.commit()
-            resultado["success"] = True
-            resultado["message"] = "Usuario actualizado exitosamente."
+        try:
+            with conexion.cursor() as cursor:
+                query = f"""INSERT INTO {TBUSUARIO}(
+                {TBUSUARIO_ID_PERSONA},
+                {TBUSUARIO_USUARIO},
+                {TBUSUARIO_CONTRASENA}
+                )VALUES (%s, %s, %s)"""
+                
+                cursor.execute(query, (
+                    usuario.id_persona,
+                    usuario.usuario,
+                    usuario.contrasena
+                    ))
+                
+                id_usuario = cursor.lastrowid
+
+                if conexionEx is None:
+                    conexion.commit() #confirma la inserccion solo si no se recive conexion externa
+
+                return{'success':True, 'message':'Usuario creado exitosamente', 'id_usuario':id_usuario}
         except Exception as e:
-            resultado["success"] = False
-            resultado["message"] = f"Error al actualizar usuario: {e}"
+            logger.error(f'{e}')
+            return {'success':False, 'message':'Ocurrio un error al crear el usuario'}
         finally:
-            if cursor:
-                cursor.close()
-            if conexion:
+            if conexion and conexionEx is None:
                 conexion.close()
-        return resultado
+            
+    def update_usuario(self, usuario: Usuario, conexionEx = None):
+        if conexionEx is None:
+            conexion, resultado = conection()
+            if not resultado["success"]:
+                return resultado
+        else:
+            conexion = conexionEx
+        try:
+            with conexion.cursor() as cursor:
+                query = f"""UPDATE {TBUSUARIO} SET 
+                {TBUSUARIO_USUARIO} = %s,
+                {TBUSUARIO_CONTRASENA} = %s
+                WHERE {TBUSUARIO_ID} = %s"""
+            
+                cursor.execute(query, (
+                    usuario.usuario,
+                    usuario.contrasena,
+                    usuario.id
+                ))
+                if conexionEx is None:
+                    conexion.commit()
+                return {'success':True, 'message':'Usuario actualizado exitosamente'}
+        except Exception as e:
+            logger.error(f'{e}')
+            return {'success':False,'message':'Ocurrio un error al actualizar el usuario.'}
+        finally:
+            if conexion and conexionEx is None:
+                conexion.close()
        
     def delete_usuario(self, usuario_id):
         conexion, resultado = conection()
@@ -201,6 +209,6 @@ class UsuarioData:
             else:
                 raise ValueError(usuario["message"])
         except Exception as e:
-            return {"success":False,"message":f"Error al verificar usuari y contrasena {e}"}
+            return {"success":False,"message":f"Error al verificar usuario y contrasena {e}"}
 
             

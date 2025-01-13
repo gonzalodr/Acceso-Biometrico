@@ -2,7 +2,7 @@
 from models.persona import Persona
 from data.data import conection  # Importa la función para obtener la conexión
 from settings.config import * 
-
+from settings.logger import logger
 
 class PersonaData:
     
@@ -67,97 +67,95 @@ class PersonaData:
     ##
     # Se guarda un objeto persona
     # ##
-    def create_persona(self, persona: Persona, conexion_externa = None):
-        if conexion_externa is None:
+    def create_persona(self, persona: Persona, conexionEx = None):
+        if conexionEx is None:
             conexion, resultado = conection()
             if not resultado["success"]:
                 return resultado
         else:
-            conexion = conexion_externa
+            conexion = conexionEx
+        
         try:
-            cursor = conexion.cursor()
-            query = f"""INSERT INTO {TBPERSONA} (
-                {TBPERSONA_FOTO} , 
-                {TBPERSONA_NOMBRE} ,  
-                {TBPERSONA_APELLIDOS} ,
-                {TBPERSONA_NACIMIENTO} ,
-                {TBPERSONA_CEDULA} ,
-                {TBPERSONA_ESTADO_CIVIL} ,
-                {TBPERSONA_CORREO} , 
-                {TBPERSONA_DIRECCION}) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
-    
-            cursor.execute(query, (
-                persona.foto,
-                persona.nombre,
-                persona.apellidos,
-                persona.fecha_nacimiento,
-                persona.cedula,
-                persona.estado_civil,
-                persona.correo,
-                persona.direccion
-            ))
-            conexion.commit()
-            
-            id_persona = cursor.lastrowid
-            
-            resultado["success"] = True
-            resultado["message"] = "Persona creada exitosamente."
-            resultado["id_persona"] = id_persona
+            with conexion.cursor() as cursor:
+                query = f"""INSERT INTO {TBPERSONA} (
+                    {TBPERSONA_FOTO} , 
+                    {TBPERSONA_NOMBRE} ,  
+                    {TBPERSONA_APELLIDOS} ,
+                    {TBPERSONA_NACIMIENTO} ,
+                    {TBPERSONA_CEDULA} ,
+                    {TBPERSONA_ESTADO_CIVIL} ,
+                    {TBPERSONA_CORREO} , 
+                    {TBPERSONA_DIRECCION}) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
+        
+                cursor.execute(query, (
+                    persona.foto,
+                    persona.nombre,
+                    persona.apellidos,
+                    persona.fecha_nacimiento,
+                    persona.cedula,
+                    persona.estado_civil,
+                    persona.correo,
+                    persona.direccion
+                ))
+
+                id_persona = cursor.lastrowid
+
+                if conexionEx is None:
+                    conexion.commit()
+
+                return {'success':True, 'message': 'Persona guardada exitosamente', 'id_persona':id_persona}
         except Exception as e:
-            resultado["success"] = False
-            resultado["message"] = f"Error al crear persona: {e}"
+            logger.error(f'{e}')
+            return{'success':False, 'message':'Ocurrio un error al registrar a la persona'}
         finally:
-            if cursor and conexion_externa is None:
-                cursor.close()
-            if conexion and conexion_externa is None:
+            if conexion and conexionEx is None:
                 conexion.close()
-        return resultado
 
     ##
     # Se guarda los cambios
     # ##
-    def update_persona(self, persona:Persona):
-        conexion, resultado = conection()
-        cursor = None
-        if not resultado["success"]:
-            return resultado
+    def update_persona(self, persona:Persona, conexionEx = None):
+        if conexionEx is None:
+            conexion, resultado = conection()
+            if not resultado["success"]:
+                return resultado
+        else:
+            conexion = conexionEx
+
         try:
-            cursor = conexion.cursor()
-            query = f"""UPDATE {TBPERSONA} SET 
-            {TBPERSONA_FOTO} = %s,
-            {TBPERSONA_NOMBRE} = %s,
-            {TBPERSONA_APELLIDOS} = %s,
-            {TBPERSONA_NACIMIENTO} = %s,
-            {TBPERSONA_CEDULA} = %s,
-            {TBPERSONA_ESTADO_CIVIL} = %s,
-            {TBPERSONA_CORREO} = %s,
-            {TBPERSONA_DIRECCION} = %s
-             WHERE {TBPERSONA_ID} = %s"""
-            
-            cursor.execute(query, (
-                persona.foto,
-                persona.nombre,
-                persona.apellidos,
-                persona.fecha_nacimiento,
-                persona.cedula,
-                persona.estado_civil,
-                persona.correo,
-                persona.direccion,
-                persona.id
-            ))
-            conexion.commit()
-            resultado["success"] = True
-            resultado["message"] = "Persona actualizada exitosamente."
+            with conexion.cursor() as cursor:
+                query = f"""UPDATE {TBPERSONA} SET 
+                {TBPERSONA_FOTO} = %s,
+                {TBPERSONA_NOMBRE} = %s,
+                {TBPERSONA_APELLIDOS} = %s,
+                {TBPERSONA_NACIMIENTO} = %s,
+                {TBPERSONA_CEDULA} = %s,
+                {TBPERSONA_ESTADO_CIVIL} = %s,
+                {TBPERSONA_CORREO} = %s,
+                {TBPERSONA_DIRECCION} = %s
+                WHERE {TBPERSONA_ID} = %s"""
+                
+                cursor.execute(query, (
+                    persona.foto,
+                    persona.nombre,
+                    persona.apellidos,
+                    persona.fecha_nacimiento,
+                    persona.cedula,
+                    persona.estado_civil,
+                    persona.correo,
+                    persona.direccion,
+                    persona.id
+                ))
+                if conexionEx is None:
+                    conexion.commit()
+                return {'success':True, 'message':'Persona actualizada exitosamente'}
         except Exception as e:
-            resultado["success"] = False
-            resultado["message"] = f"Error al actualizar persona: {e}"
+            logger.error(f'{e}')
+            return {'success':False, 'message':'Ocurrio un error al actualizar la persona'}
         finally:
-            if cursor:
-                cursor.close()
-            if conexion:
+            if conexion and conexionEx is None:
                 conexion.close()
-        return resultado
 
     ##
     # Se elimina la persona
