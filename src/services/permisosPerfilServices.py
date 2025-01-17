@@ -1,6 +1,6 @@
 from data.permisosPerfilData import *
 
-class PermisosRolServices:
+class PermisosPerfilServices:
     def __init__(self):
         self.permisorperfildata = PermisosPerfilData()
 

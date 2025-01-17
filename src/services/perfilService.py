@@ -4,7 +4,7 @@ from data.perfilData import PerfilData
 
 class PerfilServices:
     def __init__(self):
-        self.perfilData = PerfilData
+        self.perfilData = PerfilData()
         
         
     ##

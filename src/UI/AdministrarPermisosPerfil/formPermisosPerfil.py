@@ -8,7 +8,7 @@ from services.perfilService import *
 from settings.variable import *
 
 class formPermiso(QDialog):
-    permisosServices = PermisosRolServices() 
+    permisosServices = PermisosPerfilServices() 
     perfilServices = PerfilServices()
     idP = 0 
     listaPerfilesID = {} #crea un diccionario de roles con sus ids

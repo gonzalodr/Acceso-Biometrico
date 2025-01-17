@@ -46,13 +46,8 @@ QTableWidget {
 }
 
 QTableWidget::item {
-<<<<<<< Updated upstream:src/UI/css/claro/admin.css
     background-color: #FFFFFF;
     color: #000000; 
-=======
-    background-color: #FFFFFF; 
-    color: #000000; /* Cambia el texto a negro */
->>>>>>> Stashed changes:src/UI/AdministraPersona/css/adminPersona.css
 }
  QTableWidget::item:alternate {
         background-color: #d0d0d0;
