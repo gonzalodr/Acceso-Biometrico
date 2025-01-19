@@ -28,7 +28,7 @@ class EmpleadoData:
 
             id_dep:int = datos.get('id_departamento') if datos.get('id_departamento') else None
             id_rol:int = datos.get('id_rol') if datos.get('id_rol') else None
-            id_per:int = datos.get('id_perfil') if datos.get('id_perfil') else None
+            id_per:int = datos.get('id_perfil') if datos.get('id_perfil') else None #perfils
 
             #registrando la persona
             result = self.personadata.create_persona(persona,conexion)
