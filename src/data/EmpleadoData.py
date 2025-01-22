@@ -21,7 +21,7 @@ class EmpleadoData:
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
-
+        
         try:
             persona:Persona = datos.get('persona')
             usuario:Usuario = datos.get('usuario')
@@ -35,7 +35,6 @@ class EmpleadoData:
             if not result['success']:
                 conexion.rollback()
                 return result
-            
             id_persona = result['id_persona'] #optenemos el id
 
             #registrando empleado
@@ -46,20 +45,24 @@ class EmpleadoData:
             id_empleado = result['id_empleado']
 
             #registrando rol empleado
+            if id_rol:
+                pass
 
             #ingresando el usuario
-            usuario.id_persona = id_persona
-            result = self.usuariodata.create_usuario(usuario,conexion)
-            if not result['success']:
-                conexion.rollback()
-                return result
+            if usuario:
+                usuario.id_persona = id_persona
+                result = self.usuariodata.create_usuario(usuario,conexion)
+                if not result['success']:
+                    conexion.rollback()
+                    return result
+                id_usuario = result['id_usuario']
+                
+                #registrando el perfil
+
+
+            #confirmando los registros
+            conexion.commit()
             
-            id_usuario = result['id_usuario']
-
-            #registrando el perfil
-
-
-
         except Exception as e:
             conexion.rollback()
             logger.error(f'{e}') 
