@@ -24,7 +24,6 @@ class PermisosRolData:
             if conexion:
                 conexion.close()
     
-    
     def create_permiso_rol(self, permiso:Permiso_Rol,conexion_externa = None):
         resultado = {"success": False,"message":""}
         

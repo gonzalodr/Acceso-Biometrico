@@ -91,8 +91,10 @@ class EmpleadoData:
                 if conexionEx is None:
                     conexion.commit()
 
-                return {'success':True, 'message':'Empleado registrado exitosamente','id_empleado':id_empleado }
-        
+                return {'success':True, 
+                        'message':'Empleado registrado exitosamente',
+                        'id_empleado':id_empleado 
+                        }
         except Exception as e:
             logger.error(f'{e}')
             return {'success':False, 'message':'Ocurrio un error al registrar al empleado'}
