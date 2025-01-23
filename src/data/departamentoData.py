@@ -157,7 +157,6 @@ class DepartamentoData:
                 conexion.close()
         return resultado
     
-    
     def get_departamento_by_id(self, departamento_id):
         conexion, resultado = conection()
         if not resultado["success"]:
