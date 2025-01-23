@@ -120,9 +120,8 @@ class IniciarSesion(QWidget):
         usuario = self.inputUser.text()
         password = self.inputPass.text()
         if not usuario.strip() or not password.strip():
-            dial = DialogoEmergente("¡Advertencia!","Por favor, ingrese su usuario y contraseña.","Warning",True,False)
-            dial.exec()
-
+            # dial = DialogoEmergente("¡Advertencia!","Por favor, ingrese su usuario y contraseña.","Warning",True,False)
+            # dial.exec()
             self.lblError.setText("Complete los campos para iniciar sesión.")
             if not usuario.strip():
                 Sombrear(self.inputUser,15,0,5,"red")
