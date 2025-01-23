@@ -14,4 +14,3 @@ file_handler.setFormatter(formato)
 
 # anadiendo los manejadores al logger
 logger.addHandler(file_handler)
-logger.info('Hola')
