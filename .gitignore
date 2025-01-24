@@ -5,9 +5,7 @@ __pycache__/
 *.pyc
 *.pyo
 ManejoPermisos.txt
-interfazPrueba/
-*animacion.*
 prueba*.*
-*sombra*.*
 *prueba*.*
 Vistas.asciidoc
+*.log
