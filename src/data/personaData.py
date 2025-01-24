@@ -160,30 +160,29 @@ class PersonaData:
     ##
     # Se elimina la persona
     # ##
-    def delete_persona(self, persona_id):
-        conexion, resultado = conection()
-        cursor = None
-        if not resultado["success"]:
-            return resultado
+    def delete_persona(self, persona_id, conexionEx = None):
+        if conexionEx is None:
+            conexion, resultado = conection()
+            if not resultado["success"]:
+                return resultado
+        else:
+            conexion = conexionEx
+        
         try:
-            cursor = conexion.cursor()
-            query = f"DELETE FROM {TBPERSONA} WHERE {TBPERSONA_ID} = %s "
-            
-            cursor.execute(query, (persona_id,))
-            conexion.commit()
-            
-            resultado["success"] = True
-            resultado["message"] = "Persona eliminada exitosamente."
-        except Exception as e:
-            resultado["success"] = False
-            resultado["message"] = f"Error al eliminar persona: {e}"
-        finally:
-            if cursor:
-                cursor.close()
-            if conexion:
-                conexion.close()
+            with conexion.cursor() as cursor:
+                query = f"DELETE FROM {TBPERSONA} WHERE {TBPERSONA_ID} = %s "
+                cursor.execute(query, (persona_id,))
 
-        return resultado
+                if conexionEx is None:
+                    conexion.commit()
+
+                return {'success':True, 'message':'Persona eliminada exitosamente'}
+        except Exception as e:
+            logger.error(f'{e}')
+            return {'success':False,'message':'Ocurrio un error al eliminar esta persona'}
+        finally:
+            if conexion and conexionEx is None:
+                conexion.close()
     
     ##
     # Se lista las personas
@@ -302,14 +301,13 @@ class PersonaData:
                 persona = Persona(
                     foto=data[0],
                     nombre=data[1],
-                    apellido1=data[2],
-                    apellido2=data[3],
-                    fecha_nacimiento=data[4],
-                    cedula=data[5],
-                    estado_civil=data[6],
-                    correo=data[7],
-                    direccion=data[8],
-                    id=data[9]
+                    apellidos=data[2],
+                    fecha_nacimiento=data[3],
+                    cedula=data[4],
+                    estado_civil=data[5],
+                    correo=data[6],
+                    direccion=data[7],
+                    id=data[8]
                 )
                 resultado["success"] = True
                 resultado["data"] = persona
