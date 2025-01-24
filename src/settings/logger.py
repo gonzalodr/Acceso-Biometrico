@@ -14,3 +14,6 @@ file_handler.setFormatter(formato)
 
 # anadiendo los manejadores al logger
 logger.addHandler(file_handler)
+
+#exportando nada mas el logger
+__all__ = ['logger']
