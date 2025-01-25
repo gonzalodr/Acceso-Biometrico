@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 file_handler = RotatingFileHandler('src/loggers/Debugg.log', maxBytes=2*1024*1024, backupCount=5)
 
 # Estableciendo un formato de escritura
-formato = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+formato = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s - %(filename)s:%(lineno)d')
 file_handler.setFormatter(formato)
 
 # anadiendo los manejadores al logger
