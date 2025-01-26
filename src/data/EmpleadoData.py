@@ -56,7 +56,6 @@ class EmpleadoData:
                     conexion.rollback()
                     return result
                 id_usuario = result['id_usuario']
-                
                 #registrando el perfil
 
 
