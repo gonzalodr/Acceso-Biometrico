@@ -18,16 +18,14 @@ Para crear un entorno virtual llamado `venv`, sigue estos pasos:
 
 2. **Navega a tu Proyecto**:
    Usa el comando `cd` para cambiar al directorio donde quieres crear el entorno virtual. Por ejemplo:
-   ```bash
-   cd ruta/a/tu/proyecto
+      ```bash  cd ruta/a/tu/proyecto
 
    seleciona el directorio del proyecto.
    
 
 3. **Crear el Entorno Virtual**:
    Ejecuta el siguiente comando:
-   ```bash
-   python -m virtualenv venv
+      ```bash python -m virtualenv venv
    
    si tienes mas de una version de python indicar la version deseada, preferible la mas reciente, 
    ejecutas el comando especificando la version, ejemplo:
@@ -40,27 +38,22 @@ Para crear un entorno virtual llamado `venv`, sigue estos pasos:
 Una vez creado, necesitas activar el entorno virtual:
 
    * **En Windows**:
-         ```bash
-         .\venv\Scripts\activate
+         ```bash .\venv\Scripts\activate
    
       si esto no funciona prueba con el siguiete comando en la terminal CMD
-         ```bash 
-         .\venv\Scripts\activate.bat
+         ```bash .\venv\Scripts\activate.bat
 
    * **En macOS/Linux**:
-      ````bash
-      source venv/bin/activate
+      ```bash source venv/bin/activate ```
    
 
 Cuando esté activado, verás `(venv)` al principio de la línea de comandos.
 ejemplo:
-   ```bash
-   (venv)ruta/a/tu/proyecto>
+      ```bash (venv)ruta/a/tu/proyecto> ```
 
 ## 4. Desactivar el Entorno Virtual
 Para salir del entorno virtual, ejecuta:
-   ```bash
-   deactivate
+   ```bash deactivate ```
 
 
 ## 5. Cargar Dependencias desde requirements.txt
