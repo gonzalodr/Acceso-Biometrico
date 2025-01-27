@@ -14,7 +14,7 @@ class formEmpleado(QDialog):
         super().__init__(parent)
         self.setObjectName('form')
         self.setMinimumSize(QSize(1050,700))
-        # self.setWindowFlags(Qt.FramelessWindowHint)
+        
         cargar_estilos('claro','formEm.css',self)
         
         layoutPrin =QVBoxLayout()
