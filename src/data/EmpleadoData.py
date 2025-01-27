@@ -72,7 +72,7 @@ class EmpleadoData:
     '''
     Creando registro empleado
     '''
-    def registrar_empleado(self, id_persona:int, id_departamento:int, conexionEx = None):
+    def registrar_empleado(self, id_persona:int, id_departamento:int, conexionEx = None)->Dict[str,Any]:
         if conexionEx is None:
             conexion, resultado = conection()
             if not resultado["success"]:
@@ -104,5 +104,5 @@ class EmpleadoData:
             if conexion and conexionEx is None:
                 conexion.close()
     
-    def registrar_rol(self, id_rol, id_empleado,conexionEx):
+    def registrar_rol(self, id_rol, id_empleado,conexionEx)->Dict[str,Any]:
         pass

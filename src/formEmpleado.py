@@ -7,6 +7,8 @@ import sys
 class formEmpleado(QDialog):
     idEmpleado = None
     fotografia = None
+    idUsuario = None
+    idPersona = None
 
     def __init__(self, parent = None, titulo = 'Registrar empleado', id_empleado = None):
         super().__init__(parent)
@@ -49,6 +51,7 @@ class formEmpleado(QDialog):
         layoutFrame.addWidget(boton_box)
         frame.setLayout(layoutFrame)
         self.setLayout(layoutPrin)
+        
     '''
     LLenado de layoutContent
     '''
@@ -67,10 +70,6 @@ class formEmpleado(QDialog):
         self.layoutIzq.setSpacing(20)
         self.layoutCent.setSpacing(20)
         self.layoutDer.setSpacing(20)
-        #margenes
-        # self.layoutIzq.setContentsMargins(15,20,15,0)
-        # self.layoutCent.setContentsMargins(15,20,15,0)
-        # self.layoutDer.setContentsMargins(15,20,15,0)
 
         #creando scrolls
         scroll_areaIzq = QScrollArea()
@@ -260,8 +259,6 @@ class formEmpleado(QDialog):
             cargar_Icono(self.foto,'userPerson.png')
             self.btnFoto.setText("Seleccionar foto")
             self.fotografia = None
-
-    
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
