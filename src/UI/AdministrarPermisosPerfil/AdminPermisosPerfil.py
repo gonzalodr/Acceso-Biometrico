@@ -51,7 +51,7 @@ class AdminPermisosPerfil(QWidget):
         
         self.inputBuscar = QLineEdit()
         self.inputBuscar.setClearButtonEnabled(True)
-        self.inputBuscar.setPlaceholderText("Buscar persona por nombre, .")
+        self.inputBuscar.setPlaceholderText("Buscar persona por nombre.")
         self.inputBuscar.setFixedSize(QSize(500,30))
         self.inputBuscar.textChanged.connect(self._cargar_tabla)
         Sombrear(self.inputBuscar,20,0,0)
@@ -183,54 +183,53 @@ class AdminPermisosPerfil(QWidget):
             if self.tbPermisosPerfil.columnCount() > 0:  # Asegurarse de que hay columnas
                 self.tbPermisosPerfil.setSpan(0, 0, 1, self.tbPermisosPerfil.columnCount())
                # """
+    def _crear_boton(self, texto, estilo, funcion, idx):
+        btn = QPushButton(texto)
+        btn.clicked.connect(lambda checked, idx=idx: funcion(idx))
+        btn.setMinimumSize(QSize(80, 35))
+        btn.setMaximumWidth(100)
+        btn.setStyleSheet(estilo)
+        return btn
+
     def _cargar_tabla(self):
-        result = self.permisoperfilServices.listar_permisos_perfil(pagina=self.paginaActual,tam_pagina=10,tipo_orden="DESC",busqueda=self.busqueda)
+        result = self.permisoperfilServices.listar_permisos_perfil(pagina=self.paginaActual, tam_pagina=10, tipo_orden="DESC", busqueda=self.busqueda)
+        
+        
+        
         if result["success"]:
             listaPermisos = result["data"]["listaPermisosPerfil"]
-            if len(listaPermisos) >0:
+            if len(listaPermisos) > 0:
                 paginaActual = result["data"]["pagina_actual"]
                 tamPagina = result["data"]["tam_pagina"]
                 totalPaginas = result["data"]["total_paginas"]
                 totalRegistros = result["data"]["total_registros"]
-                self._actualizar_lblPagina(paginaActual,totalPaginas)
-                self._actualizarValoresPaginado(paginaActual,totalPaginas)
-                
+                self._actualizar_lblPagina(paginaActual, totalPaginas)
+                self._actualizarValoresPaginado(paginaActual, totalPaginas)
+
                 self.tbPermisosPerfil.setRowCount(0)
                 for index, permisos in enumerate(listaPermisos):
                     self.tbPermisosPerfil.insertRow(index)
-                    self.tbPermisosPerfil.setRowHeight(index,45)
+                    self.tbPermisosPerfil.setRowHeight(index, 45)
 
                     dato = self.perfilServices.obtenerPerfilPorId(permisos.perfil_id)
                     perfil = dato["data"]
                     acceso_a = [key for key, value in ACCESO_TABLE.items() if value == permisos.tabla]
 
-                    self.addItem_a_tabla(index,0,str(perfil.nombre))
-                if acceso_a:
-                    self.addItem_a_tabla(index, 1, str(acceso_a[0]))
-                else:
-                    print(f"Advertencia: `acceso_a` está vacío para el índice {index}")
+                    self.addItem_a_tabla(index, 0, str(perfil.nombre))
+                    if acceso_a:
+                        self.addItem_a_tabla(index, 1, str(acceso_a[0]))
+                    else:
+                        print(f"Advertencia: `acceso_a` está vacío para el índice {index}")
+                        self.addItem_a_tabla(index, 1, "N/A")
 
-                    #self.addItem_a_tabla(index,1,str(acceso_a[0]))
-                    
-                    self.addItem_a_tabla(index,2,("Si" if permisos.ver else "No"))
-                    self.addItem_a_tabla(index,3,("Si" if permisos.crear else "No"))
-                    self.addItem_a_tabla(index,4,("Si" if permisos.editar else "No"))
-                    self.addItem_a_tabla(index,5,("Si" if permisos.eliminar else "No"))
+                    self.addItem_a_tabla(index, 2, ("Si" if permisos.ver else "No"))
+                    self.addItem_a_tabla(index, 3, ("Si" if permisos.crear else "No"))
+                    self.addItem_a_tabla(index, 4, ("Si" if permisos.editar else "No"))
+                    self.addItem_a_tabla(index, 5, ("Si" if permisos.eliminar else "No"))
 
-                    btnEliminar = QPushButton(text="Eliminar")
-                    btnEliminar.clicked.connect(lambda checked, idx=permisos.id: self._eliminarRegistro(idx))##cambier solo el persona.id por su objeto.id
-                    btnEliminar.setMinimumSize(QSize(80,35))
-                    btnEliminar.setMaximumWidth(100)
-                    btnEliminar.setStyleSheet("""   QPushButton{background-color:#ff5151;color:white;}
-                                                    QPushButton::hover{background-color:#ff0000;color:white;}
-                                              """)
-                    btnEditar = QPushButton("Editar")
-                    btnEditar.clicked.connect(lambda checked, idx = permisos.id: self._editar_permiso(idx)) ##cambier solo el persona.id por su objeto, y el nombre de la funcion
-                    btnEditar.setMinimumSize(QSize(80,35))
-                    btnEditar.setMaximumWidth(100)
-                    btnEditar.setStyleSheet(""" QPushButton{background-color:#00b800;color:white;}
-                                                QPushButton::hover{background-color:#00a800;color:white;}
-                                            """)
+                    btnEliminar = self._crear_boton("Eliminar", """QPushButton{background-color:#ff5151;color:white;} QPushButton::hover{background-color:#ff0000;color:white;}""", self._eliminarRegistro, permisos.id)
+                    btnEditar = self._crear_boton("Editar", """QPushButton{background-color:#00b800;color:white;} QPushButton::hover{background-color:#00a800;color:white;}""", self._editar_permiso, permisos.id)
+
                     button_widget = QWidget()
                     button_widget.setStyleSheet(u"background-color:transparent;")
                     layout = QHBoxLayout()
@@ -238,12 +237,13 @@ class AdminPermisosPerfil(QWidget):
                     layout.addSpacing(15)
                     layout.addWidget(btnEliminar)
                     button_widget.setLayout(layout)
-                    layout.setContentsMargins(10, 0, 10,0)
-                    self.tbPermisosPerfil.setCellWidget(index, 6, button_widget) 
+                    layout.setContentsMargins(10, 0, 10, 0)
+                    self.tbPermisosPerfil.setCellWidget(index, 6, button_widget)
             else:
                 self._mostrar_mensaje_sin_datos("No hay registros")
         else:
             self._mostrar_mensaje_sin_datos("Error de conexión")
+
         
     def addItem_a_tabla(self,row, colum,dato):
         dato_item = QTableWidgetItem(dato)
