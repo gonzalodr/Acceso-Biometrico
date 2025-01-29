@@ -53,7 +53,7 @@ ejemplo:
 
 ## 4. Desactivar el Entorno Virtual
 Para salir del entorno virtual, ejecuta:
-   ```bash deactivate ```
+      ```bash deactivate
 
 
 ## 5. Cargar Dependencias desde requirements.txt
@@ -67,25 +67,21 @@ Para salir del entorno virtual, ejecuta:
    1. Asegúrate de que tu entorno esté activado, osea debes ver el `(venv)` al principio de la linea de comandos.
 
    2. Usa este comando para instalar las dependencias:
-         ```bash
-         pip install -r requirements.txt
+         ```bash pip install -r requirements.txt
 
    3. Para actualizar o instalar una nueva dependecia desde el `requirements.txt`, 
       debes ejecutar el siguiente comando:
-         ```bash
-         pip install --upgrade -r requirements.txt
+         ```bash pip install --upgrade -r requirements.txt
       
    ## 6. ejecucion de pruebas(opcional de hacer)
       Para ejecutar pruebas para revisar el funcionamiento de los modulos puedes seguir los siguientes pasos
    1. En la carpeta tests crearas un archivo .py y colocaras al inicio el prefijo (`test_`),
       Ejemplo:
-         ```bash
-         test_serviceUsuario.py
+         ```bash test_serviceUsuario.py
 
    2. Para ejecutar tus pruebas, abre una terminal y navega hasta la carpeta principal de tu proyecto. 
       Luego escribe:
-         ```bash
-         python -m unittest discover -s tests
+         ```bash python -m unittest discover -s tests
 
       Esto buscará automáticamente todos los archivos que comienzan con 
       test_ dentro de la carpeta tests/ y ejecutará las pruebas definidas.
