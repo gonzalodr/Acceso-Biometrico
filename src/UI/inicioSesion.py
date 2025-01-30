@@ -90,11 +90,11 @@ class IniciarSesion(QWidget):
 
         self.btnIniciarSesion = QPushButton(text="Iniciar sesión")
         self.btnIniciarSesion.setMaximumHeight(50)
-        self.btnIniciarSesion.clicked.connect(self._evento_IniciarSesion)
+        self.btnIniciarSesion.clicked.connect(self.__evento_IniciarSesion)
         Sombrear(self.btnIniciarSesion,30,0,5)
 
         self.checkVerContrasena = QCheckBox("Mostrar contraseña")
-        self.checkVerContrasena.clicked.connect(self._accion_checkbox)
+        self.checkVerContrasena.clicked.connect(self.__accion_checkbox)
         Sombrear(self.checkVerContrasena,30,0,5)
 
         self.lblError = QLabel(text="")
@@ -116,12 +116,10 @@ class IniciarSesion(QWidget):
 
         self.frameLogin.setLayout(layout)
 
-    def _evento_IniciarSesion(self):
+    def __evento_IniciarSesion(self):
         usuario = self.inputUser.text()
         password = self.inputPass.text()
         if not usuario.strip() or not password.strip():
-            # dial = DialogoEmergente("¡Advertencia!","Por favor, ingrese su usuario y contraseña.","Warning",True,False)
-            # dial.exec()
             self.lblError.setText("Complete los campos para iniciar sesión.")
             if not usuario.strip():
                 Sombrear(self.inputUser,15,0,5,"red")
@@ -146,7 +144,7 @@ class IniciarSesion(QWidget):
             else:
                 self.lblError.setText("Error de conexión")
 
-    def _accion_checkbox(self):
+    def __accion_checkbox(self):
         if self.checkVerContrasena.isChecked():
             self.inputPass.setEchoMode(QLineEdit.Normal)
             Sombrear(self.checkVerContrasena,30,0,5,"green")

@@ -77,7 +77,6 @@ class vistaPrincipal(QWidget):
         self.lblIconoUser.setMaximumSize(QSize(50, 50))
         self.lblIconoUser.setMinimumSize(QSize(50, 50))
         cargar_Icono(self.lblIconoUser, archivoImg='user.png')
-        # self.cargar_imagen_usuario(self.lblIconoUser)
         Sombrear(self.lblIconoUser, 30, 0, 5)
 
         """

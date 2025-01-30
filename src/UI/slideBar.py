@@ -121,10 +121,7 @@ class SlideBar(QWidget):
         self.senal_abrirConfig.emit()
 
     def _cerrar_App(self):
-        dial = DialogoEmergente("¿?","¿Quieres cerrar la aplicación?","Question",True,True)
-        resul = dial.exec()
-        if resul == QDialog.Accepted:
-            QApplication.quit()
+        QApplication.quit()
 
     def deseleccionar(self):
         for btn in self.grupoOpciones.buttons():
