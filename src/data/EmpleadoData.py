@@ -104,5 +104,3 @@ class EmpleadoData:
             if conexion and conexionEx is None:
                 conexion.close()
     
-    def registrar_rol(self, id_rol, id_empleado,conexionEx)->Dict[str,Any]:
-        pass
