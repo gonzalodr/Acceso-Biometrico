@@ -130,11 +130,11 @@ class vistaPrincipal(QWidget):
         #     index = self.stackVistas.addWidget(adminpersona)
         #     self.listaOpciones.append((index, "Administrar Persona",'employees.png'))
 
-        if True:
-            adminHorario = AdminHorario(parent=self)
-            adminHorario.cerrar_adminH.connect(self._salir_crud)
-            index = self.stackVistas.addWidget(adminHorario)
-            self.listaOpciones.append((index, "Administrar Horarios",'weekly.png'))
+        # if True:
+        #     adminHorario = AdminHorario(parent=self)
+        #     adminHorario.cerrar_adminH.connect(self._salir_crud)
+        #     index = self.stackVistas.addWidget(adminHorario)
+        #     self.listaOpciones.append((index, "Administrar Horarios",'weekly.png'))
 
         if True:
             AdminDepart = AdminDepartament(parent=self)
