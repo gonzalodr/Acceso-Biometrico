@@ -82,7 +82,7 @@ class EmpleadoData:
 
             #confirmando los registros
             conexion.commit()
-            
+            return {'success':True, 'message':'Se registro el empleado correctamente.'}
         except Exception as e:
             conexion.rollback()
             logger.error(f'{e}') 

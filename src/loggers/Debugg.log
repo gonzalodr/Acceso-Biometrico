@@ -1,0 +1,4 @@
+2025-02-02 11:48:03,466 - ERROR - 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`accesobiometrico`.`empleado_rol`, CONSTRAINT `FK_Empleado_Rol_Rol` FOREIGN KEY (`Id_Rol`) REFERENCES `rol` (`Id`)) - empleado_RolData.py:39
+2025-02-02 11:54:17,828 - ERROR - 1062 (23000): Duplicate entry '33333333' for key 'Cedula' - personaData.py:109
+2025-02-02 11:54:38,704 - ERROR - 1062 (23000): Duplicate entry '33333333' for key 'Cedula' - personaData.py:109
+2025-02-02 11:54:43,565 - ERROR - 1062 (23000): Duplicate entry '33333333' for key 'Cedula' - personaData.py:109
