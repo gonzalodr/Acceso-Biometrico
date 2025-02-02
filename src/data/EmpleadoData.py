@@ -8,24 +8,37 @@ from typing import Dict, Any        #clase diccionario
 from models.persona import Persona  #clase persona
 from models.usuario import Usuario  #clase usuario
 
-#importando la clases data de usuarioData y personaData
+#importando la clases data de usuarioData, personaData, usuarioPerfilData y empleadoRolData
 from data.personaData import PersonaData
 from data.usuarioData import UsuarioData
+from data.usuario_PerfilData import UsuarioPerfilData
+from data.empleado_RolData import EmpleadoRolData
 
 class EmpleadoData:
     def __init__(self):
         self.personadata = PersonaData()
         self.usuariodata = UsuarioData()
+        self.emplRolData = EmpleadoRolData()
+        self.userPerfilData = UsuarioPerfilData()
 
     def create_Empleado(self, datos: Dict[str, Any])->Dict[str,Any]:
+        '''
+        :param Dict[str,Any]: resive un diccionario del siguiente formato:
+                                {
+                                    'persona':Persona,
+                                    'usuario':Usuario,
+                                    'id_departamento':1,
+                                    'id_perfil':12,
+                                    'id_rol':5
+                                }
+        '''
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
-        
         try:
             persona:Persona = datos.get('persona')
             usuario:Usuario = datos.get('usuario')
-
+          
             id_dep:int = datos.get('id_departamento') if datos.get('id_departamento') else None
             id_rol:int = datos.get('id_rol') if datos.get('id_rol') else None
             id_per:int = datos.get('id_perfil') if datos.get('id_perfil') else None #perfils
@@ -46,8 +59,11 @@ class EmpleadoData:
 
             #registrando rol empleado
             if id_rol:
-                pass
-
+                result = self.emplRolData.create_rol_empleado(id_empleado, id_rol, conexion)
+                if not result['success']:
+                    conexion.rollback()
+                    return result
+            
             #ingresando el usuario
             if usuario:
                 usuario.id_persona = id_persona
@@ -56,8 +72,13 @@ class EmpleadoData:
                     conexion.rollback()
                     return result
                 id_usuario = result['id_usuario']
+                
                 #registrando el perfil
-
+                if id_per:
+                    result = self.userPerfilData.create_usuario_perfil(id_usuario,id_per,conexion)
+                    if not result['success']:
+                        conexion.rollback()
+                        return result
 
             #confirmando los registros
             conexion.commit()

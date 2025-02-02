@@ -14,7 +14,7 @@ from mysql.connector import Error   #controlador de errores
     TBUSUARIOPERFIL_ID_USER = 'Id_Usuario'
     TBUSUARIOPERFIL_ID_PERF = 'Id_Perfil'
 '''
-class UsuarioPerfil:
+class UsuarioPerfilData:
     def create_usuario_perfil(self, id_usuario:int, id_perfil:int, conexionEx = None):
         if conexionEx is None:
             conexion, resultado = conection()
