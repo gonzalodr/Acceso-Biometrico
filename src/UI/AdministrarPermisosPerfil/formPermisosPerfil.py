@@ -137,6 +137,7 @@ class formPermiso(QDialog):
         return layout
 
     def _verificar_permiso(self):
+            print(self.listaPerfilesID)
             perfilid = self.listaPerfilesID[self.inputPerfil.currentText()]
             tabla = ACCESO_TABLE[self.inputTabla.currentText()]
             result = self.permisosServices.verificar_permiso_perfil_tabla(perfil_id=perfilid, tabla=tabla, id=self.idP)
@@ -170,21 +171,25 @@ class formPermiso(QDialog):
              self.reject()##cerrar la ventana
 
     def _cargar_perfiles(self):
-        result = self.perfilServices.obtener_todo_perfiles()
-        if result["success"]:
-            listaPerfiles = result["data"]["listaPerfiles"]
-            if len(listaPerfiles) > 0:
-                for rol in listaPerfiles:
-                    self.inputPerfil.addItem(rol.nombre)
-                    self.listaPerfilesID[rol.nombre] = rol.id
+        try:
+            result = self.perfilServices.obtener_todo_perfiles()
+            if result["success"]:
+                listaPerfiles = result["data"]["listaPerfiles"]
+                if len(listaPerfiles) > 0:
+                    for rol in listaPerfiles:
+                        self.inputPerfil.addItem(rol.nombre)
+                        self.listaPerfilesID[rol.nombre] = rol.id
+                else:
+                    dialEmergente = DialogoEmergente("","No existen perfiles.","Warning")
+                    if dialEmergente.exec() == QDialog.Accepted:
+                        self.reject()
             else:
-                dialEmergente = DialogoEmergente("","No existen perfiles.","Warning")
+                dialEmergente = DialogoEmergente("","Ocurrio un error","Error")
                 if dialEmergente.exec() == QDialog.Accepted:
                     self.reject()
-        else:
-            dialEmergente = DialogoEmergente("","Ocurrio un error","Error")
-            if dialEmergente.exec() == QDialog.Accepted:
-                self.reject()
+        except Exception as e:
+            print(f'\nError:\n{e}\n----------------------\n')
+            self.reject()
                       
     def _validar_campos(self):
         if self._validar_inputs_vacios():
