@@ -124,11 +124,11 @@ class vistaPrincipal(QWidget):
     def _llenar_stack_vista(self):
         self.stackVistas.addWidget(self._widget_presentacion())
         
-        if True:
-            adminpersona = AdminPersona(parent=self)
-            adminpersona.cerrar_adminP.connect(self._salir_crud)
-            index = self.stackVistas.addWidget(adminpersona)
-            self.listaOpciones.append((index, "Administrar Persona",'employees.png'))
+        # if True:
+        #     adminpersona = AdminPersona(parent=self)
+        #     adminpersona.cerrar_adminP.connect(self._salir_crud)
+        #     index = self.stackVistas.addWidget(adminpersona)
+        #     self.listaOpciones.append((index, "Administrar Persona",'employees.png'))
 
         if True:
             adminHorario = AdminHorario(parent=self)
@@ -141,17 +141,18 @@ class vistaPrincipal(QWidget):
             AdminDepart.cerrar_adminD.connect(self._salir_crud)
             index = self.stackVistas.addWidget(AdminDepart)
             self.listaOpciones.append((index, "Admin. Departamento",'company-department.png'))
+
         if True:
             adminrol = AdminRol()
             adminrol.cerrar_adminR.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminrol)
             self.listaOpciones.append((index,"Administrar rol",'workforce.png'))
         
-        if True:
-            adminpermisos = AdminPermisosRol()
-            adminpermisos.cerrar_adminP.connect(self._salir_crud)
-            index = self.stackVistas.addWidget(adminpermisos)
-            self.listaOpciones.append((index,"Admin. permisos rol",'access-control-list.png'))
+        # if True:
+        #     adminpermisos = AdminPermisosRol()
+        #     adminpermisos.cerrar_adminP.connect(self._salir_crud)
+        #     index = self.stackVistas.addWidget(adminpermisos)
+        #     self.listaOpciones.append((index,"Admin. permisos rol",'access-control-list.png'))
             
         if True:
             adminpermisosperfil = AdminPermisosPerfil()

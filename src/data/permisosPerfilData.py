@@ -156,8 +156,7 @@ class PermisosPerfilData:
                 conexion.close()
 
         return resultado
-    
-    
+
     def lista_permisos_perfil(self,pagina=1, tam_pagina=10, ordenar_por = TBPERMISOPERFIL_ID, tipo_orden="ASC", busqueda = None):
         conexion, resultado = conection()
         cursor = None
