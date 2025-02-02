@@ -11,7 +11,7 @@ class PermisosPerfilServices:
         return self.permisorperfildata.update_permiso_perfil(permiso=permiso)
     
     def eliminar_permiso_perfil(self, id_permiso):
-        return self.permisorperfildata.delete_permiso_perfil(permiso_rol_id=id_permiso)
+        return self.permisorperfildata.delete_permiso_perfil(permiso_perfil_id=id_permiso)
     
     def listar_permisos_perfil(self,pagina=1, tam_pagina=10, ordenar_por = TBPERMISOPERFIL_ID, tipo_orden="ASC", busqueda = None):
         return self.permisorperfildata.lista_permisos_perfil(pagina, tam_pagina, ordenar_por, tipo_orden, busqueda)

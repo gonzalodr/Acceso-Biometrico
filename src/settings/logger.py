@@ -1,7 +1,13 @@
 import logging
+import os
 from logging.handlers import RotatingFileHandler
 
-#creando el loger
+# Crear el directorio loggers si no existe
+log_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'loggers')
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+# Creando el logger
 logger = logging.getLogger(__name__)
 
 #creando el manejador de archivos logs

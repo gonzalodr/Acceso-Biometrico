@@ -42,7 +42,7 @@ class formPermiso(QDialog):
         """
         lblRol = QLabel(text="Seleccionar pefil")   
         self.inputPerfil = QComboBox()
-        self.inputPerfil = QLabel(text="")
+        self.errorPerfil = QLabel(text="")
         
         #permisos para dicha tabla
         lblAcceso = QLabel(text="Acceso a")
@@ -75,7 +75,7 @@ class formPermiso(QDialog):
         self.error.setWordWrap(True)
 
 
-        layoutForm.addLayout(self._contenedor(lblRol,self.inputRol,self.errorRol),0,0)
+        layoutForm.addLayout(self._contenedor(lblRol,self.inputPerfil,self.errorPerfil),0,0)
         layoutForm.addLayout(self._contenedor(lblAcceso,self.inputTabla,self.errorTabla),1,0)
         layoutForm.addWidget(lblPermisos,2,0)
         layoutForm.addWidget(self.checkVer,3,0)
@@ -116,10 +116,10 @@ class formPermiso(QDialog):
         if id:
             self._obtener_registroId(id)
 
-        self._cargar_roles()
+        self._cargar_perfiles()
         self._verificar_permiso()
         self.inputTabla.currentIndexChanged.connect(self._verificar_permiso)
-        self.inputRol.currentIndexChanged.connect(self._verificar_permiso)
+        self.inputPerfil.currentIndexChanged.connect(self._verificar_permiso)
 
     def _contenedor(self,label:QLabel,input,label_error:QLabel):
         layout = QVBoxLayout()
@@ -139,7 +139,7 @@ class formPermiso(QDialog):
     def _verificar_permiso(self):
             perfilid = self.listaPerfilesID[self.inputPerfil.currentText()]
             tabla = ACCESO_TABLE[self.inputTabla.currentText()]
-            result = self.permisosServices.verificar_permiso_perfil_tabla(rol_id=perfilid, tabla=tabla, id=self.idP)
+            result = self.permisosServices.verificar_permiso_perfil_tabla(perfil_id=perfilid, tabla=tabla, id=self.idP)
          
             if result and self.idP == 0:
                 self.error.setText(f"El perfil \'{self.inputPerfil.currentText()}\' ya posee el acceso a \'{self.inputTabla.currentText()}\'")
@@ -234,7 +234,7 @@ class formPermiso(QDialog):
 
     def _accion_permiso(self):
         permiso:Permiso_Perfil = Permiso_Perfil(
-            rol_id  = self.listaRolesID[self.inputPerfil.currentText()],
+            perfil_id  = self.listaPerfilesID[self.inputPerfil.currentText()],
             tabla   = ACCESO_TABLE[self.inputTabla.currentText()],
             ver     = self.checkVer.isChecked(),
             crear   = self.checkCrear.isChecked(),
