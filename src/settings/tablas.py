@@ -41,3 +41,10 @@ TBROL = "rol"
 TBROL_ID = "Id"
 TBROL_NOMBRE = "Nombre"
 TBROL_DESCRIPCION = "Descripcion"
+
+#Tabla telefono
+TBTELEFONO = 'telefono'
+TBTELEFONO_ID = 'Id'
+TBTELEFONO_ID_PERSONA = 'Id_Persona'
+TBTELEFONO_NUMERO = 'Numero'
+TBTELEFONO_TIPO_CONTACTO = 'Tipo_Contacto'

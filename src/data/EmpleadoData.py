@@ -7,12 +7,14 @@ from settings.logger import logger  #recolectar los errores
 from typing import Dict, Any        #clase diccionario
 from models.persona import Persona  #clase persona
 from models.usuario import Usuario  #clase usuario
+from models.telefono import Telefono#clase telefono
 
 #importando la clases data de usuarioData, personaData, usuarioPerfilData y empleadoRolData
 from data.personaData import PersonaData
 from data.usuarioData import UsuarioData
-from data.usuario_PerfilData import UsuarioPerfilData
+from data.telefonoData import TelefonoData
 from data.empleado_RolData import EmpleadoRolData
+from data.usuario_PerfilData import UsuarioPerfilData
 
 class EmpleadoData:
     def __init__(self):
@@ -20,23 +22,18 @@ class EmpleadoData:
         self.usuariodata = UsuarioData()
         self.emplRolData = EmpleadoRolData()
         self.userPerfilData = UsuarioPerfilData()
+        self.telefonoData = TelefonoData()
 
+    '''
+    Registra los datos del empleado, persona, creacion de usuarios, asignacion de rol y de departamento
+    '''
     def create_Empleado(self, datos: Dict[str, Any])->Dict[str,Any]:
-        '''
-        :param Dict[str,Any]: resive un diccionario del siguiente formato:
-                                {
-                                    'persona':Persona,
-                                    'usuario':Usuario,
-                                    'id_departamento':1,
-                                    'id_perfil':12,
-                                    'id_rol':5
-                                }
-        '''
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
         try:
             persona:Persona = datos.get('persona')
+            listaTel = datos.get('listaTelefonos')
             usuario:Usuario = datos.get('usuario')
           
             id_dep:int = datos.get('id_departamento') if datos.get('id_departamento') else None
@@ -49,6 +46,15 @@ class EmpleadoData:
                 conexion.rollback()
                 return result
             id_persona = result['id_persona'] #optenemos el id
+            
+            #registrando el o los telefonos
+            if listaTel:
+                for telefono in listaTel:
+                    telefono.id_persona = id_persona
+                    result = self.telefonoData.create_telefono(telefono,conexion)
+                    if not result['success']:
+                        conexion.rollback()
+                        return result
 
             #registrando empleado
             result = self.registrar_empleado(id_persona,id_dep,conexion)
@@ -94,12 +100,9 @@ class EmpleadoData:
     Creando registro empleado
     '''
     def registrar_empleado(self, id_persona:int, id_departamento:int, conexionEx = None)->Dict[str,Any]:
-        if conexionEx is None:
-            conexion, resultado = conection()
-            if not resultado["success"]:
-                return resultado
-        else:
-            conexion = conexionEx
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
         
         try:
             with conexion.cursor() as cursor:
@@ -114,10 +117,7 @@ class EmpleadoData:
                 if conexionEx is None:
                     conexion.commit()
 
-                return {'success':True, 
-                        'message':'Empleado registrado exitosamente',
-                        'id_empleado':id_empleado 
-                        }
+                return {'success':True, 'message':'Empleado registrado exitosamente','id_empleado':id_empleado}
         except Exception as e:
             logger.error(f'{e}')
             return {'success':False, 'message':'Ocurrio un error al registrar al empleado'}
@@ -125,3 +125,8 @@ class EmpleadoData:
             if conexion and conexionEx is None:
                 conexion.close()
     
+    def update_Empleado(self,datos:Dict[str,Any]):
+        pass
+
+    def delete_Empleado(self, id_empleado):
+        pass

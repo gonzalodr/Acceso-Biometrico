@@ -1,0 +1,1 @@
+2025-02-03 19:50:14,651 - ERROR - 1062 (23000): Duplicate entry '605310603' for key 'Cedula' - personaData.py:109

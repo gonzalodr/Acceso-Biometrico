@@ -136,7 +136,6 @@ class RolData:
                 
                 if data:
                     rol = Rol(nombre=data[0], descripcion=data[1], id=data[2] )
-
                     return{'success':True,'exists':True, 'message':'Se encontro el rol buscado.','data':rol}
                 else:
                     return {'success':True,'exists':False, 'message':'No se encontro el rol.'}
