@@ -16,12 +16,9 @@ from mysql.connector import Error   #controlador de errores
 '''
 class UsuarioPerfilData:
     def create_usuario_perfil(self, id_usuario:int, id_perfil:int, conexionEx = None):
-        if conexionEx is None:
-            conexion, resultado = conection()
-            if not resultado["success"]:
-                return resultado
-        else:
-            conexion = conexionEx
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
         
         try:
             with conexion.cursor() as cursor:
@@ -44,12 +41,10 @@ class UsuarioPerfilData:
                 conexion.close()
   
     def update_usuario_perfil(self, id_usuarioPerfil:int, id_usuario:int, id_perfil:int,  conexionEx = None):
-        if conexionEx is None:
-            conexion, resultado = conection()
-            if not resultado["success"]:
-                return resultado
-        else:
-            conexion = conexionEx
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
+        
         try:
             with conexion.cursor() as cursor:
                 query = f''' UPDATE {TBUSUARIOPERFIL} SET
@@ -68,12 +63,9 @@ class UsuarioPerfilData:
                 conexion.close()
     
     def delete_usuario_perfil(self,id_usuarioPerfil:int, conexionEx = None):
-        if conexionEx is None:
-            conexion, resultado = conection()
-            if not resultado["success"]:
-                return resultado
-        else:
-            conexion = conexionEx
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
         try:
             with conexion.cursor() as cursor:
                 query = f'''DELETE FROM {TBUSUARIOPERFIL} WHERE {TBUSUARIOPERFIL_ID} = %s'''
@@ -107,6 +99,7 @@ class UsuarioPerfilData:
                 if data:
                     return {
                         'success':True,
+                        'exists':True,
                         'message':'Se obtuvo los datos del perfil usuario.',
                         'data':{
                             'id':data[0],
@@ -115,7 +108,7 @@ class UsuarioPerfilData:
                         }
                     }
                 else:
-                    raise
+                    return {'success':True,'exists':False,'message':'No se obtuvo los datos del perfil usuario.'}
         except Error as e:
             logger.error(f'{e}')
             return {'success':False,'message':'Ocurrio un error al obtener el perfil asignado al usuario'}

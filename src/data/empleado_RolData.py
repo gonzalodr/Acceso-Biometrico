@@ -15,13 +15,12 @@ from mysql.connector import Error   #controlador de errores
     TBROLEMPLEADO_ID_ROL        = 'Id_Rol'
 '''
 class EmpleadoRolData:
+    
     def create_rol_empleado(self, id_empleado:int, id_rol:int, conexionEx = None):
-        if conexionEx is None:
-            conexion, resultado = conection()
-            if not resultado["success"]:
-                return resultado
-        else:
-            conexion = conexionEx
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
+        
         try:
             with conexion.cursor() as cursor:
                 query=f''' INSERT INTO {TBROLEMPLEADO} (
@@ -43,12 +42,9 @@ class EmpleadoRolData:
                 conexion.close()
 
     def update_rol_empleado(self, id_rolEmpleado:int, id_empleado:int, id_rol:int, conexionEx = None):
-        if conexionEx is None:
-            conexion, resultado = conection()
-            if not resultado["success"]:
-                return resultado
-        else:
-            conexion = conexionEx
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
 
         try:
             with conexion.cursor() as cursor:
@@ -72,12 +68,10 @@ class EmpleadoRolData:
                 conexion.close()
 
     def delete_rol_empleado(self, id_rolempleado:int, conexionEx = None):
-        if conexionEx is None:
-            conexion, resultado = conection()
-            if not resultado["success"]:
-                return resultado
-        else:
-            conexion = conexionEx
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
+        
         try:
             with conexion.cursor() as cursor:
                 query = f'''DELETE FROM {TBROLEMPLEADO} WHERE {TBROLEMPLEADO_ID} = %s'''
