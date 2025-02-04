@@ -174,9 +174,9 @@ class formPermiso(QDialog):
         if result["success"]:
             listaPerfiles = result["data"]["listaPerfiles"]
             if len(listaPerfiles) > 0:
-                for rol in listaPerfiles:
-                    self.inputPerfil.addItem(rol.nombre)
-                    self.listaPerfilesID[rol.nombre] = rol.id
+                for perfil in listaPerfiles:
+                    self.inputPerfil.addItem(perfil.nombre)
+                    self.listaPerfilesID[perfil.nombre] = perfil.id
             else:
                 dialEmergente = DialogoEmergente("","No existen perfiles.","Warning")
                 if dialEmergente.exec() == QDialog.Accepted:
@@ -208,14 +208,14 @@ class formPermiso(QDialog):
                 permiso:Permiso_Perfil = result["data"]
                 
                 dato = self.perfilServices.obtenerPerfilPorId(permiso.perfil_id)
-                rol = dato["data"]
+                perfil = dato["data"]
                 acceso_a = [key for key, value in ACCESO_TABLE.items() if value == permiso.tabla]
                 
                 
-                self.inputPerfil.setCurrentText(rol.nombre)
-                self.inputPerfil.setDisabled(True)
+                self.inputPerfil.setCurrentText(perfil.nombre)
+                self.inputPerfil.setDisabled(False)
                 self.inputTabla.setCurrentText(str(acceso_a[0]))
-                self.inputTabla.setDisabled(True)
+                self.inputTabla.setDisabled(False)
                 self.checkVer.setChecked(permiso.ver)
                 self.checkCrear.setChecked(permiso.crear)
                 self.checkEditar.setChecked(permiso.editar)
