@@ -8,6 +8,7 @@ from UI.AdministraDepartamento.adminDepartamento import *  # Importa la clase Ad
 from UI.AdministrarRol.adminRol import *
 from UI.AdministrarPermisosRol.AdminPermisosRol import *
 from UI.AdministrarPermisosPerfil.AdminPermisosPerfil import *
+from UI.AdministrarEmpleado.administrarEmpleado import *
 from models.usuario import *
 import sys
 
@@ -123,6 +124,10 @@ class vistaPrincipal(QWidget):
 
     def _llenar_stack_vista(self):
         self.stackVistas.addWidget(self._widget_presentacion())
+
+        '''
+        al agregar a la lista se asigna el index, el titulo, y el png para el icono.
+        '''
         
         # if True:
         #     adminpersona = AdminPersona(parent=self)
@@ -137,16 +142,22 @@ class vistaPrincipal(QWidget):
         #     self.listaOpciones.append((index, "Administrar Horarios",'weekly.png'))
 
         if True:
+            adminempleado = AdminEmpleado(parent=self)
+            adminempleado.cerrar_adminEmpleado.connect(self._salir_crud)
+            index =self.stackVistas.addWidget(adminempleado)
+            self.listaOpciones.append((index,'Admin. Empleados','employees.png'))
+
+        if True:
             AdminDepart = AdminDepartament(parent=self)
             AdminDepart.cerrar_adminD.connect(self._salir_crud)
             index = self.stackVistas.addWidget(AdminDepart)
             self.listaOpciones.append((index, "Admin. Departamento",'company-department.png'))
 
-        if True:
-            adminrol = AdminRol()
-            adminrol.cerrar_adminR.connect(self._salir_crud)
-            index = self.stackVistas.addWidget(adminrol)
-            self.listaOpciones.append((index,"Administrar rol",'workforce.png'))
+        # if True:
+        #     adminrol = AdminRol()
+        #     adminrol.cerrar_adminR.connect(self._salir_crud)
+        #     index = self.stackVistas.addWidget(adminrol)
+        #     self.listaOpciones.append((index,"Administrar rol",'workforce.png'))
         
         # if True:
         #     adminpermisos = AdminPermisosRol()

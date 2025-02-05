@@ -116,3 +116,23 @@ def cargar_icono(Qpushbutton:QPushButton,icono:str,Size:QSize = None):
             Qpushbutton.setIconSize(QSize(altura, altura))
     except Exception as e:
         print(f'Error: {e}')
+
+
+def format_Fecha(fecha:str):
+        año, mes, dia = fecha.split("-")
+        meses = {
+            '01': 'enero',
+            '02': 'febrero',
+            '03': 'marzo',
+            '04': 'abril',
+            '05': 'mayo',
+            '06': 'junio',
+            '07': 'julio',
+            '08': 'agosto',
+            '09': 'septiembre',
+            '10': 'octubre',
+            '11': 'noviembre',
+            '12': 'diciembre'
+        }
+        mes_nombre = meses[mes]
+        return f"{int(dia)} de {mes_nombre} del {año}"
