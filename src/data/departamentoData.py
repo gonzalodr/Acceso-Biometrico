@@ -69,9 +69,9 @@ class DepartamentoData:
                 query = f"DELETE FROM {TBDEPARTAMENTO} WHERE {TBDEPARTAMENTO_ID} = %s "
                 cursor.execute(query, (departamento_id,))
                 conexion.commit()
-                return {'success':True, 'message':'El departamento se actualizó correctamente.'}
+                return {'success':True, 'message':'El departamento se elimino correctamente.'}
         except Error as e:
-            return {'success':False, 'message':'Ocurrio un error al actualizar el departamento.'}
+            return {'success':False, 'message':'Ocurrio un error al eliminar el departamento.'}
         finally:
             if conexion:
                 conexion.close()

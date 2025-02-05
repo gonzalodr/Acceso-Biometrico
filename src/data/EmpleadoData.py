@@ -1,7 +1,7 @@
 from data.data import conection     #obtener la conexion
 from settings.tablas import *       #obtener los nombres de tablas
 from settings.logger import logger  #recolectar los errores 
-
+from mysql.connector import Error
 
 #importando clases
 from typing import Dict, Any        #clase diccionario
@@ -130,3 +130,100 @@ class EmpleadoData:
 
     def delete_Empleado(self, id_empleado):
         pass
+
+    def list_Empleados(self, pagina=1, tam_pagina=10, ordenar_por=TBPERSONA_ID, tipo_orden="ASC", busqueda=None):
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+
+        listaPersonas = []
+        try:
+            with conexion.cursor(dictionary=True) as cursor:
+                # Mapeo de columnas para ordenar
+                columnas_validas = {
+                    "cedula": TBPERSONA_CEDULA,
+                    "fechaNacimiento": TBPERSONA_NACIMIENTO,
+                    "apellido": TBPERSONA_APELLIDOS,
+                    "nombre": TBPERSONA_NOMBRE
+                }
+                
+                # Validar columna de ordenamiento
+                ordenar_por = columnas_validas.get(ordenar_por, TBPERSONA_ID)
+                tipo_orden = "DESC" if tipo_orden.upper() != "ASC" else "ASC"
+
+                # Construcción de la consulta base
+                query_base = f"""
+                    SELECT 
+                        EMP.{TBEMPLEADO_ID} AS EMPLEADO_ID,
+                        P.{TBPERSONA_ID} AS PERSONA_ID,
+                        P.{TBPERSONA_NOMBRE}, 
+                        P.{TBPERSONA_APELLIDOS}, 
+                        P.{TBPERSONA_NACIMIENTO}, 
+                        P.{TBPERSONA_CEDULA}, 
+                        P.{TBPERSONA_ESTADO_CIVIL}, 
+                        P.{TBPERSONA_CORREO}, 
+                        P.{TBPERSONA_DIRECCION}
+                    FROM {TBPERSONA} P
+                    INNER JOIN {TBEMPLEADO} EMP ON EMP.{TBEMPLEADO_PERSONA} = P.{TBPERSONA_ID}
+                """
+
+                # Construcción de la condición de búsqueda
+                valores = []
+                condicion = ""
+                if busqueda:
+                    condicion = " WHERE (P.{0} LIKE %s OR P.{1} LIKE %s OR P.{2} LIKE %s OR P.{3} LIKE %s)".format(
+                        TBPERSONA_NOMBRE, TBPERSONA_APELLIDOS, TBPERSONA_CEDULA, TBPERSONA_CORREO
+                    )
+                    valores.extend([f"%{busqueda}%"] * 4)
+
+                # Obtener el total de registros que cumplen la condición
+                query_count = f"""
+                    SELECT COUNT(*) as total FROM {TBPERSONA} P
+                    INNER JOIN {TBEMPLEADO} EMP ON EMP.{TBEMPLEADO_PERSONA} = P.{TBPERSONA_ID}
+                    {condicion}
+                """
+                cursor.execute(query_count, valores)
+                total_registros = cursor.fetchone()["total"]
+                total_paginas = (total_registros + tam_pagina - 1) // tam_pagina
+
+                # Agregar orden y paginación
+                query_final = f"""
+                    {query_base} {condicion} 
+                    ORDER BY P.{ordenar_por} {tipo_orden} 
+                    LIMIT %s OFFSET %s
+                """
+                valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
+                cursor.execute(query_final, valores)
+                registros = cursor.fetchall()
+
+                # Procesar resultados
+                for data in registros:
+                    persona:Persona = Persona(
+                        nombre      = data[TBPERSONA_NOMBRE],
+                        apellidos   = data[TBPERSONA_APELLIDOS],
+                        cedula      = data[TBPERSONA_CEDULA],
+                        fecha_nacimiento= data[TBPERSONA_NACIMIENTO],
+                        estado_civil= data[TBPERSONA_ESTADO_CIVIL],
+                        correo      = data[TBPERSONA_CORREO],
+                        direccion   = data[TBPERSONA_DIRECCION],
+                        id          = data['PERSONA_ID']
+                    )
+                    listaPersonas.append({ 'id_empleado': data['EMPLEADO_ID'],'persona': persona })
+
+                return {
+                    "data": {
+                        "listaPersonas": listaPersonas,
+                        "pagina_actual": pagina,
+                        "tam_pagina": tam_pagina,
+                        "total_paginas": total_paginas,
+                        "total_registros": total_registros
+                    },
+                    "success": True,
+                    "message": "Personas listadas exitosamente."
+                }
+        except Error as e:
+            logger.error(f"Error al listar empleados: {e}")
+            return {"success": False, "message": "Ocurrió un error al listar los empleados."}
+        finally:
+            if conexion:
+                conexion.close()

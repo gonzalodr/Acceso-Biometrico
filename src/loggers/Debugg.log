@@ -1,1 +1,6 @@
-2025-02-03 19:50:14,651 - ERROR - 1062 (23000): Duplicate entry '605310603' for key 'Cedula' - personaData.py:109
+2025-02-04 17:37:59,044 - ERROR - 1052 (23000): Column 'Id' in order clause is ambiguous - EmpleadoData.py:210
+2025-02-04 17:40:31,187 - ERROR - 1054 (42S22): Unknown column 'P.Id' in 'order clause' - EmpleadoData.py:210
+2025-02-04 17:43:05,082 - ERROR - 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM persona P
+                                INNER JOIN empleado EMP ON EMP...' at line 2 - EmpleadoData.py:213
+2025-02-04 17:44:49,555 - ERROR - 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM persona P
+                                INNER JOIN empleado EMP ON EMP...' at line 2 - EmpleadoData.py:219
