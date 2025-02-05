@@ -79,14 +79,14 @@ class IniciarSesion(QWidget):
         self.inputUser.setPlaceholderText("Ingrese su usuario o correo")
         self.inputUser.setMaximumHeight(40)
         self.inputUser.setAlignment(Qt.AlignCenter)
-        Sombrear(self.inputUser,15,0,5)
+        # Sombrear(self.inputUser,15,0,5)
 
         self.inputPass = QLineEdit()
         self.inputPass.setPlaceholderText("Ingrese su contraseña")
         self.inputPass.setMaximumHeight(40)
         self.inputPass.setAlignment(Qt.AlignCenter)
         self.inputPass.setEchoMode(QLineEdit.Password)
-        Sombrear(self.inputPass,15,0,5)
+        # Sombrear(self.inputPass,15,0,5)
 
         self.btnIniciarSesion = QPushButton(text="Iniciar sesión")
         self.btnIniciarSesion.setMaximumHeight(50)
@@ -119,30 +119,32 @@ class IniciarSesion(QWidget):
     def __evento_IniciarSesion(self):
         usuario = self.inputUser.text()
         password = self.inputPass.text()
+
+        self.inputUser.setProperty('error', 'false')
+        self.inputPass.setProperty('error', 'false')
+
         if not usuario.strip() or not password.strip():
             self.lblError.setText("Complete los campos para iniciar sesión.")
             if not usuario.strip():
-                Sombrear(self.inputUser,15,0,5,"red")
-            else:
-                Sombrear(self.inputUser,15,0,5)
+                self.inputUser.setProperty('error', 'true')
             if not password.strip():
-                Sombrear(self.inputPass,15,0,5,"red")
+                self.inputPass.setProperty('error', 'true')
+
+            self.inputUser.style().polish(self.inputUser)  
+            self.inputPass.style().polish(self.inputPass)
+            return
+
+        result = self.Uservices.iniciar_sesion(usuario, password)
+        if result["success"]:
+            if result["login"]:
+                usuario = result["usuario"]
+                self.inputUser.setText("")
+                self.inputPass.setText("")
+                self.autenticacion.emit(usuario)
             else:
-                Sombrear(self.inputPass,15,0,5)
+                self.lblError.setText(result["message"])
         else:
-            Sombrear(self.inputUser,15,0,5)
-            Sombrear(self.inputPass,15,0,5)
-            result = self.Uservices.iniciar_sesion(usuario,password)
-            if result["success"]:
-                if result["login"]:
-                    usuario = result["usuario"]
-                    self.inputUser.setText("")
-                    self.inputPass.setText("")
-                    self.autenticacion.emit(usuario)
-                else:
-                    self.lblError.setText(result["message"])
-            else:
-                self.lblError.setText("Error de conexión")
+            self.lblError.setText("Error de conexión")
 
     def __accion_checkbox(self):
         if self.checkVerContrasena.isChecked():

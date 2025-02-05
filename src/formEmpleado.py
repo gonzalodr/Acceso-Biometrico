@@ -34,7 +34,7 @@ class formEmpleado(QDialog):
         ## layoutContent
         self.layoutContent = QHBoxLayout()
 
-        self._llenar_layoutConten()
+        self.llenarLayoutConten()
 
         layoutFrame.addLayout(self.layoutContent)
 
@@ -55,7 +55,7 @@ class formEmpleado(QDialog):
     '''
     LLenado de layoutContent
     '''
-    def _llenar_layoutConten(self): 
+    def llenarLayoutConten(self): 
         #creando widgets para el scrol
         self.widgetIzq = QWidget()
         self.widgetCent = QWidget()
@@ -79,9 +79,9 @@ class formEmpleado(QDialog):
         scroll_areaDer = QScrollArea()
         scroll_areaDer.setWidgetResizable(True)
 
-        self._llenar_layoutIzq()
-        self._llenar_layoutCent()
-        self._llenar_layoutDer()
+        self.llenarLayoutIzquierda()
+        self.llenarLayoutCentral()
+        self.llenarLayoutDerecho()
         
         # Crear los scroll areas
         self.scrollIzq = QScrollArea()
@@ -119,13 +119,13 @@ class formEmpleado(QDialog):
     '''
     Llenado de layoutIzq
     '''
-    def _llenar_layoutIzq(self):
+    def llenarLayoutIzquierda(self):
         tituloIzq = QLabel('Datos Personales')
         tituloIzq.setObjectName('lblsubtitulos')
         tituloIzq.setAlignment(Qt.AlignCenter)
 
         self.layoutFoto = QVBoxLayout()
-        self._llenar_LayoutFoto()
+        self.llenarLayoutFoto()
         #Creando Label, Input y label de error
         #Nombre
         self.lblNombre = QLabel('Nombre')
@@ -163,17 +163,17 @@ class formEmpleado(QDialog):
         #asignando al layoutIzq
         self.layoutIzq.addWidget(tituloIzq)
         self.layoutIzq.addLayout(self.layoutFoto)
-        self.layoutIzq.addLayout(self._contenedor(self.lblNombre,self.inNombre,self.errNombre))
-        self.layoutIzq.addLayout(self._contenedor(self.lblApellidos,self.inApellidos,self.errApellidos))
-        self.layoutIzq.addLayout(self._contenedor(self.lblCedula,self.inCedula,self.errCedula))
-        self.layoutIzq.addLayout(self._contenedor(self.lblNacimiento,self.inNacimiento,self.errNacimiento))
-        self.layoutIzq.addLayout(self._contenedor(self.lblCorreo,self.inCorreo,self.errCorreo))
-        self.layoutIzq.addLayout(self._contenedor(self.lblEstCivil,self.inEstCivil,self.errEstCivil))
-        self.layoutIzq.addLayout(self._contenedor(self.lblDireccion,self.inDireccion,self.errDireccion))
+        self.layoutIzq.addLayout(self.contenedor(self.lblNombre,self.inNombre,self.errNombre))
+        self.layoutIzq.addLayout(self.contenedor(self.lblApellidos,self.inApellidos,self.errApellidos))
+        self.layoutIzq.addLayout(self.contenedor(self.lblCedula,self.inCedula,self.errCedula))
+        self.layoutIzq.addLayout(self.contenedor(self.lblNacimiento,self.inNacimiento,self.errNacimiento))
+        self.layoutIzq.addLayout(self.contenedor(self.lblCorreo,self.inCorreo,self.errCorreo))
+        self.layoutIzq.addLayout(self.contenedor(self.lblEstCivil,self.inEstCivil,self.errEstCivil))
+        self.layoutIzq.addLayout(self.contenedor(self.lblDireccion,self.inDireccion,self.errDireccion))
     '''
     Llenado de layoutCent
     '''
-    def _llenar_layoutCent(self):
+    def llenarLayoutCentral(self):
         tituloCent = QLabel('Departamento y Rol')
         tituloCent.setObjectName('lblsubtitulos')
         tituloCent.setAlignment(Qt.AlignCenter)
@@ -188,13 +188,13 @@ class formEmpleado(QDialog):
         self.errRol = QLabel('Error Rol')
 
         self.layoutCent.addWidget(tituloCent)
-        self.layoutCent.addLayout(self._contenedor(self.lblDep,self.inDep,self.errDep))
-        self.layoutCent.addLayout(self._contenedor(self.lblRol,self.inRol,self.errRol))
+        self.layoutCent.addLayout(self.contenedor(self.lblDep,self.inDep,self.errDep))
+        self.layoutCent.addLayout(self.contenedor(self.lblRol,self.inRol,self.errRol))
         self.layoutCent.setAlignment(Qt.AlignTop) ##Alinea los widgets arriba
     '''
     Llenado de layoutDer
     '''
-    def _llenar_layoutDer(self):
+    def llenarLayoutDerecho(self):
         tituloDer = QLabel('Usuarios')
         tituloDer.setObjectName('lblsubtitulos')
         tituloDer.setAlignment(Qt.AlignCenter)
@@ -203,7 +203,7 @@ class formEmpleado(QDialog):
     '''
     Llenado de layoutFoto
     '''
-    def _llenar_LayoutFoto(self):
+    def llenarLayoutFoto(self):
         self.foto = QLabel()
         self.foto.setObjectName('foto')
         self.foto.setFixedSize(250,250)
@@ -214,7 +214,7 @@ class formEmpleado(QDialog):
         self.btnFoto = QPushButton(text='Seleccionar foto')
         self.btnFoto.setObjectName('select_foto')
         self.btnFoto.setFixedHeight(40)
-        self.btnFoto.clicked.connect(self._seleccionar_foto)
+        self.btnFoto.clicked.connect(self.seleccionarFoto)
 
         self.layoutFoto.setAlignment(Qt.AlignCenter)
         self.layoutFoto.addWidget(self.foto)
@@ -222,7 +222,7 @@ class formEmpleado(QDialog):
     '''
     Contenedor independiente para cada input
     '''
-    def _contenedor(self,label:QLabel,input,label_error:QLabel)->QVBoxLayout:
+    def contenedor(self,label:QLabel,input,label_error:QLabel)->QVBoxLayout:
         layout = QVBoxLayout()
         layout.setContentsMargins(10,5,10,0)
         layout.setSpacing(0)
@@ -241,7 +241,7 @@ class formEmpleado(QDialog):
     Logica
     '''
     #Seleccion de foto
-    def _seleccionar_foto(self):
+    def seleccionarFoto(self):
         if self.fotografia is None: 
             dir_defecto = QStandardPaths.writableLocation(QStandardPaths.PicturesLocation)
             file_path, _ = QFileDialog.getOpenFileName(self,"Seleccionar Imagen",dir_defecto,"Imágenes (*.png *.jpg *.jpeg)")

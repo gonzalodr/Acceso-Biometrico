@@ -292,10 +292,10 @@ class AdminEmpleado(QWidget):
     def verMasInformacion(self, id_empleado:int):
         pass
 
-    def eliminarEmpleado(self, idx):
+    def eliminarEmpleado(self, idx:int):
         pass
 
-    def editarEmpleado(self,id):
+    def editarEmpleado(self,id:int):
         blur_effect = QGraphicsBlurEffect(self)
         blur_effect.setBlurRadius(10)  # Ajusta el radio de desenfoque según sea necesario
         self.setGraphicsEffect(blur_effect)
