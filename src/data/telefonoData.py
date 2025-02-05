@@ -1,4 +1,4 @@
-from data.data import conection     #obtener la conexion
+from data.data import conection     #obtener la conexión
 from mysql.connector import Error
 from settings.tablas import ( TBTELEFONO,TBTELEFONO_ID,TBTELEFONO_TIPO_CONTACTO,
                              TBTELEFONO_ID_PERSONA,TBTELEFONO_NUMERO)       #obtener los nombres de tablas
@@ -29,7 +29,7 @@ class TelefonoData:
                 return {'success':True, 'message':'Se guardo el numero de telefono correctamente.'}
         except Error as e:
             logger.error(f'{e}')
-            return {'success':False,'message':'Ocurrio un error al registrar el numero de telefono.'}
+            return {'success':False,'message':'Ocurrió un error al registrar el numero de telefono.'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -57,7 +57,7 @@ class TelefonoData:
                 return {'success':True,'message':'Se actualizo el telefono correctamente.'}
         except Error as e:
             logger.error(f'{e}')
-            return {'success':False, 'message':'Ocurrio un error al actualizar el telefono.'}
+            return {'success':False, 'message':'Ocurrió un error al actualizar el telefono.'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -76,7 +76,7 @@ class TelefonoData:
                 return {'success':True, 'message':'Se elimino el numero de telefono correctamente.'}
         except Error as e:
             logger.error(f'{e}')
-            return {'success':False, 'message':'Ocurrio un error al eliminar el telefono.'}
+            return {'success':False, 'message':'Ocurrió un error al eliminar el telefono.'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -104,12 +104,12 @@ class TelefonoData:
                                         data[TBTELEFONO_NUMERO],
                                         data[TBTELEFONO_TIPO_CONTACTO],
                                         data[TBTELEFONO_ID])
-                    return{'data':telefono,'success':True,'exists':True,'message':'Se encontro el numero de telefono.'}
+                    return{'data':telefono,'success':True,'exists':True,'message':'Se encontró el numero de telefono.'}
                 else:
-                    return{'success':True,'exists':False,'message':'No se encontro el numero de telefono.'}
+                    return{'success':True,'exists':False,'message':'No se encontró el numero de telefono.'}
         except Error as e:
             logger.error(f'{e}')
-            return {'success':False,'message':'Ocurrio un error al obtener el telefono.'}
+            return {'success':False,'message':'Ocurrió un error al obtener el telefono.'}
         finally:
             if conexion:
                 conexion.close()

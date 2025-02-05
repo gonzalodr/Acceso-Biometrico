@@ -1,10 +1,10 @@
-from data.data import conection     #obtener la conexion
+from data.data import conection     #obtener la conexión
 from settings.tablas import (TBUSUARIOPERFIL,TBUSUARIOPERFIL_ID,
                              TBUSUARIOPERFIL_ID_USER,TBUSUARIOPERFIL_ID_PERF)      #obtener los nombres de tablas
 from settings.logger import logger  #recolectar los errores 
 from mysql.connector import Error   #controlador de errores
 '''
-    Conexion a la tabla de la relacion 
+    Conexión a la tabla de la relación 
     de usuario y perfil.
 
     CONSTANTES DE NOMBRE DE LA COLUMNA DE LA TABLA:
@@ -35,7 +35,7 @@ class UsuarioPerfilData:
                 return {'success':True, 'message':'Se asigno el perfil al usuario correctamente.','id_usuarioPerfil':id_userPerfil}
         except Error as e:
             logger.error(f'{e}')
-            return {'success':False, 'message':'Ocurrio un error al asignar el perfil al usuario.'}
+            return {'success':False, 'message':'Ocurrió un error al asignar el perfil al usuario.'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -57,7 +57,7 @@ class UsuarioPerfilData:
                 return {'success':True, 'message':'Se actualizo el perfil asignado correctamente.'}
         except Error as e:
             logger.error(f'{e}')
-            return {'success':False, 'message':'Ocurrio un error al actualizar el perfil del usuario.'}
+            return {'success':False, 'message':'Ocurrió un error al actualizar el perfil del usuario.'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -75,7 +75,7 @@ class UsuarioPerfilData:
                 return {'success':True, 'message':'Se elimino correctamente el perfil asignado al usuario.'}
         except Error as e:
             logger.error(f'{e}')
-            return{'success':False, 'message':'Ocurrio un error al eliminar el perfil asignado al usuario.'}
+            return{'success':False, 'message':'Ocurrió un error al eliminar el perfil asignado al usuario.'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -111,7 +111,7 @@ class UsuarioPerfilData:
                     return {'success':True,'exists':False,'message':'No se obtuvo los datos del perfil usuario.'}
         except Error as e:
             logger.error(f'{e}')
-            return {'success':False,'message':'Ocurrio un error al obtener el perfil asignado al usuario'}
+            return {'success':False,'message':'Ocurrió un error al obtener el perfil asignado al usuario'}
         finally:
             if conexion:
                 conexion.close()

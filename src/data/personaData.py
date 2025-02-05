@@ -107,7 +107,7 @@ class PersonaData:
                 return {'success':True, 'message': 'Persona guardada exitosamente', 'id_persona':id_persona}
         except Exception as e:
             logger.error(f'{e}')
-            return{'success':False, 'message':'Ocurrio un error al registrar a la persona'}
+            return{'success':False, 'message':'Ocurrió un error al registrar a la persona'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -152,7 +152,7 @@ class PersonaData:
                 return {'success':True, 'message':'Persona actualizada exitosamente'}
         except Exception as e:
             logger.error(f'{e}')
-            return {'success':False, 'message':'Ocurrio un error al actualizar la persona'}
+            return {'success':False, 'message':'Ocurrió un error al actualizar la persona'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -179,7 +179,7 @@ class PersonaData:
                 return {'success':True, 'message':'Persona eliminada exitosamente'}
         except Exception as e:
             logger.error(f'{e}')
-            return {'success':False,'message':'Ocurrio un error al eliminar esta persona'}
+            return {'success':False,'message':'Ocurrió un error al eliminar esta persona'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -320,9 +320,4 @@ class PersonaData:
             if conexion:
                 conexion.close()
         return resultado
-# sql
-# SELECT * 
-# FROM persona 
-# WHERE columna1 LIKE '%tu_texto_a_buscar%' 
-#    OR columna2 LIKE '%tu_texto_a_buscar%' 
-#    OR columna3 LIKE '%tu_texto_a_buscar%';
+

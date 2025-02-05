@@ -1,10 +1,10 @@
-from data.data import conection     #obtener la conexion
+from data.data import conection     #obtener la conexión
 from settings.tablas import (TBROLEMPLEADO,TBROLEMPLEADO_ID,
                             TBROLEMPLEADO_ID_EMPLEADO,TBROLEMPLEADO_ID_ROL)     #obtener los nombres de tablas
 from settings.logger import logger  #recolectar los errores 
 from mysql.connector import Error   #controlador de errores
 '''
-    Conexion a la tabla de la relacion 
+    Conexión a la tabla de la relación 
     de empleado y rol.
 
     CONSTANTES DE NOMBRE DE LA COLUMNA DE LA TABLA:
@@ -36,7 +36,7 @@ class EmpleadoRolData:
                 return {'success':True, 'message':'Se asigno el rol al empleado correctamente','id_rolempleado':id_rolempleado}
         except Error as e:
             logger.error(f'{e}')
-            return {'success':False, 'message':'Ocurio un error al asignar el rol al empleado'}
+            return {'success':False, 'message':'Ocurrió un error al asignar el rol al empleado'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -62,7 +62,7 @@ class EmpleadoRolData:
 
         except Error as e:
             logger.error(f'{e}')
-            return {'success':False,'message':'Ocurrio un error al actualizar el rol del empleado.'}
+            return {'success':False,'message':'Ocurrió un error al actualizar el rol del empleado.'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -82,7 +82,7 @@ class EmpleadoRolData:
                 return {'success':True, 'message':'Se elimino el rol asignado al empleado correctamente.'}                
         except Error as e:
             logger.error(f'{e}')
-            return {'success':False, 'message':'Ocurrio un error al eliminar el rol asignado al empleado.'}
+            return {'success':False, 'message':'Ocurrió un error al eliminar el rol asignado al empleado.'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -116,7 +116,7 @@ class EmpleadoRolData:
                     raise
         except Error as e:
             logger.error(f'{e}')
-            return {'success':False,'message':'Ocurrio un error al obtener el rol asignado del empleado'}
+            return {'success':False,'message':'Ocurrió un error al obtener el rol asignado del empleado'}
         finally:
             if conexion:
                 conexion.close()

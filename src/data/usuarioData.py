@@ -8,7 +8,7 @@ import bcrypt
 class UsuarioData:
     
     def create_usuario(self, usuario: Usuario, conexionEx = None):
-        #manejando la conexion exterior
+        #manejando la conexión exterior
         if conexionEx is None:
             conexion, resultado = conection()
             if not resultado["success"]:
@@ -33,12 +33,12 @@ class UsuarioData:
                 id_usuario = cursor.lastrowid
 
                 if conexionEx is None:
-                    conexion.commit() #confirma la inserccion solo si no se recive conexion externa
+                    conexion.commit() #confirma la inserción solo si no se recibe conexión externa
 
                 return{'success':True, 'message':'Usuario creado exitosamente', 'id_usuario':id_usuario}
         except Exception as e:
             logger.error(f'{e}')
-            return {'success':False, 'message':'Ocurrio un error al crear el usuario'}
+            return {'success':False, 'message':'Ocurrió un error al crear el usuario'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -67,7 +67,7 @@ class UsuarioData:
                 return {'success':True, 'message':'Usuario actualizado exitosamente'}
         except Exception as e:
             logger.error(f'{e}')
-            return {'success':False,'message':'Ocurrio un error al actualizar el usuario.'}
+            return {'success':False,'message':'Ocurrió un error al actualizar el usuario.'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -90,7 +90,7 @@ class UsuarioData:
                 return {'success':True, 'message':'Usuario eliminado exitosamente.'}
         except Error as e:
             logger.error(f'{e}')
-            return {'success':False, 'message':'Ocurrio un error al eliminar el usuario.'}
+            return {'success':False, 'message':'Ocurrió un error al eliminar el usuario.'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -177,8 +177,8 @@ class UsuarioData:
                         WHERE
                             P.{TBPERSONA_CORREO} = %s OR U.{TBUSUARIO_USUARIO} = %s 
                         """
-                cursor.execute(query,[identificador,identificador])# ingresa los parametros
-                usuarioPass = cursor.fetchone()#obtiene la unica contraseña
+                cursor.execute(query,[identificador,identificador])# ingresa los parámetros
+                usuarioPass = cursor.fetchone()#obtiene la única contraseña
                 
                 if usuarioPass:
                     usuario = Usuario(usuario=usuarioPass[0],id_persona=usuarioPass[2])
@@ -187,7 +187,7 @@ class UsuarioData:
                     return {"success":True,"message":"Usuario o contraseña incorrecta"}
         except Exception as e:
             logger.error(f'{e}')
-            return {'success':False, 'message': 'Ocurrio un error de verificación'}
+            return {'success':False, 'message': 'Ocurrió un error de verificación'}
         finally:
             if conexion:
                 conexion.close()

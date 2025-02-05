@@ -6,7 +6,7 @@ class PerfilData:
     
     def create_perfil(self, perfil: Perfil):
         conexion, resultado = conection()
-        if not resultado["succes"]:
+        if not resultado["success"]:
             return resultado
         
         try:

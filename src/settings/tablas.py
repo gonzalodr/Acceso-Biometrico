@@ -16,7 +16,7 @@ TBPERSONA_ESTADO_CIVIL  = "Estado_Civil"
 TBPERSONA_CORREO        = "Correo"
 TBPERSONA_DIRECCION     = "Direccion"
 
-#Tabla Empleado y rol relacion
+#Tabla Empleado y rol relación
 TBROLEMPLEADO           = 'empleado_rol'
 TBROLEMPLEADO_ID        = 'Id'
 TBROLEMPLEADO_ID_EMPLEADO  = 'Id_Empleado'
@@ -42,7 +42,7 @@ TBROL_ID = "Id"
 TBROL_NOMBRE = "Nombre"
 TBROL_DESCRIPCION = "Descripcion"
 
-#Tabla telefono
+#Tabla teléfono
 TBTELEFONO = 'telefono'
 TBTELEFONO_ID = 'Id'
 TBTELEFONO_ID_PERSONA = 'Id_Persona'

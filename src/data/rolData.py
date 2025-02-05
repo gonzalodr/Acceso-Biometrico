@@ -18,7 +18,7 @@ class RolData:
                 return {'success':True, 'message':'Se guardo el rol correctamente.'}
         except Exception as e:
             logger.error(f'{e}')
-            return {'success':False, 'message':'Ocurrio un error al registrar el rol.'}
+            return {'success':False, 'message':'Ocurrió un error al registrar el rol.'}
         finally:
             if conexion:
                 conexion.close()
@@ -38,7 +38,7 @@ class RolData:
                 return {'success':True, 'message':'Se actualizo correctamente el rol.'}
         except Exception as e:
             logger.error(f'{e}')
-            return {'success':True, 'message':'Ocurrio un error al actualizar el rol.'}
+            return {'success':True, 'message':'Ocurrió un error al actualizar el rol.'}
         finally:
             if conexion:
                 conexion.close()
@@ -58,7 +58,7 @@ class RolData:
                 return {'success':True, 'message':'Se elimino correctamente el rol.'}
         except Exception as e:
             logger.error(f'{e}')
-            return {'success':False, 'message':'Ocurrio un error al actualizar el rol.'}
+            return {'success':False, 'message':'Ocurrió un error al actualizar el rol.'}
         finally:
             if conexion:
                 conexion.close()
@@ -136,12 +136,12 @@ class RolData:
                 
                 if data:
                     rol = Rol(nombre=data[0], descripcion=data[1], id=data[2] )
-                    return{'success':True,'exists':True, 'message':'Se encontro el rol buscado.','data':rol}
+                    return{'success':True,'exists':True, 'message':'Se encontró el rol buscado.','data':rol}
                 else:
-                    return {'success':True,'exists':False, 'message':'No se encontro el rol.'}
+                    return {'success':True,'exists':False, 'message':'No se encontró el rol.'}
         except Exception as e:
             logger.error(f'{e}')
-            return {'success':False, 'message':'No se encontro el rol.'}
+            return {'success':False, 'message':'No se encontró el rol.'}
         finally:
             if conexion:
                 conexion.close()
@@ -170,7 +170,7 @@ class RolData:
 
         except Exception as e:
             logger.error(f'{e}')
-            return {'success':True, 'message':'Ocurrio un error al listar todos los roless'}
+            return {'success':True, 'message':'Ocurrió un error al listar todos los roles'}
         finally:
             if conexion:
                 conexion.close()

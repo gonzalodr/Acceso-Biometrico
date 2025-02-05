@@ -1,4 +1,4 @@
-from data.data import conection     #obtener la conexion
+from data.data import conection     #obtener la conexión
 from settings.tablas import *       #obtener los nombres de tablas
 from settings.logger import logger  #recolectar los errores 
 from mysql.connector import Error
@@ -7,7 +7,7 @@ from mysql.connector import Error
 from typing import Dict, Any        #clase diccionario
 from models.persona import Persona  #clase persona
 from models.usuario import Usuario  #clase usuario
-from models.telefono import Telefono#clase telefono
+from models.telefono import Telefono#clase teléfono
 
 #importando la clases data de usuarioData, personaData, usuarioPerfilData y empleadoRolData
 from data.personaData import PersonaData
@@ -25,7 +25,7 @@ class EmpleadoData:
         self.telefonoData = TelefonoData()
 
     '''
-    Registra los datos del empleado, persona, creacion de usuarios, asignacion de rol y de departamento
+    Registra los datos del empleado, persona, creación de usuarios, asignación de rol y de departamento
     '''
     def create_Empleado(self, datos: Dict[str, Any])->Dict[str,Any]:
         conexion, resultado = conection()
@@ -38,16 +38,16 @@ class EmpleadoData:
           
             id_dep:int = datos.get('id_departamento') if datos.get('id_departamento') else None
             id_rol:int = datos.get('id_rol') if datos.get('id_rol') else None
-            id_per:int = datos.get('id_perfil') if datos.get('id_perfil') else None #perfils
+            id_per:int = datos.get('id_perfil') if datos.get('id_perfil') else None #perfiles
 
             #registrando la persona
             result = self.personadata.create_persona(persona,conexion)
             if not result['success']:
                 conexion.rollback()
                 return result
-            id_persona = result['id_persona'] #optenemos el id
+            id_persona = result['id_persona'] #obtenemos el id
             
-            #registrando el o los telefonos
+            #registrando el o los teléfonos
             if listaTel:
                 for telefono in listaTel:
                     telefono.id_persona = id_persona
@@ -92,7 +92,7 @@ class EmpleadoData:
         except Exception as e:
             conexion.rollback()
             logger.error(f'{e}') 
-            return {'success':False, 'message':f'Ocurrio un error al registrar el empleado'}
+            return {'success':False, 'message':f'Ocurrió un error al registrar el empleado'}
         finally:
             if conexion:
                 conexion.close()
@@ -120,7 +120,7 @@ class EmpleadoData:
                 return {'success':True, 'message':'Empleado registrado exitosamente','id_empleado':id_empleado}
         except Exception as e:
             logger.error(f'{e}')
-            return {'success':False, 'message':'Ocurrio un error al registrar al empleado'}
+            return {'success':False, 'message':'Ocurrió un error al registrar al empleado'}
         finally:
             if conexion and conexionEx is None:
                 conexion.close()

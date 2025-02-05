@@ -5,7 +5,6 @@ from data.data import conection
 from settings.config import *
 from settings.logger import logger
 
-
 class DepartamentoData:
     
     def create_departamento(self, departamento: Departamento):
@@ -28,7 +27,7 @@ class DepartamentoData:
                 return {'success':True, 'message':'El departamento se guardo correctamente.'}
         except Error as e:
             logger.error(f'Error: {e}')
-            return {'success':False, 'message':'Ocurrio un error al guardar el departamento.'}
+            return {'success':False, 'message':'Ocurrió un error al guardar el departamento.'}
         finally:
             if conexion:
                 conexion.close()
@@ -50,11 +49,12 @@ class DepartamentoData:
                     departamento.descripcion,
                     departamento.id
                 ))
+
                 conexion.commit()
                 return{'success':True, 'message':'Departamento actualizado exitosamente.'}
         except Error as e:
             logger.error(f'Erro: {e}')
-            return {'success':False, 'message': 'Ocurrio un error al actualizar el departamento.'}
+            return {'success':False, 'message': 'Ocurrió un error al actualizar el departamento.'}
         finally:
             if conexion:
                 conexion.close()
@@ -71,7 +71,7 @@ class DepartamentoData:
                 conexion.commit()
                 return {'success':True, 'message':'El departamento se elimino correctamente.'}
         except Error as e:
-            return {'success':False, 'message':'Ocurrio un error al eliminar el departamento.'}
+            return {'success':False, 'message':'Ocurrió un error al eliminar el departamento.'}
         finally:
             if conexion:
                 conexion.close()
@@ -88,7 +88,7 @@ class DepartamentoData:
                 #validacion de por que columna ordenar
                 columna_orden = { 
                     "nombre":TBDEPARTAMENTO_NOMBRE, 
-                    "descripcion":TBDEPARTAMENTO_DESCRIPCION, 
+                    "descripción":TBDEPARTAMENTO_DESCRIPCION, 
                 }
                 ## asigna sobre que tabla realizar el orden
                 ordenar_por = columna_orden[ordenar_por] if ordenar_por in columna_orden else TBDEPARTAMENTO_ID
@@ -143,7 +143,7 @@ class DepartamentoData:
                 return resultado
         except Error as e:
             logger.error(f'Error: {e}')
-            return {'success':False, 'message':'Ocurrio un error al cargar la lista de departamentos.'}
+            return {'success':False, 'message':'Ocurrió un error al cargar la lista de departamentos.'}
         finally:
             if conexion:
                 conexion.close()
@@ -173,10 +173,10 @@ class DepartamentoData:
                     )
                     return {'success':True, 'data':departamento}
                 else:
-                    raise ValueError("No se encontró ningun departamento con el ID proporcionado.")
+                    raise ValueError("No se encontró ningún departamento con el ID proporcionado.")
         except Error as e:
             logger.error(f'{e}')
-            return {'success':False,'message':'Ocurrio un error al obtener el departamento'}
+            return {'success':False,'message':'Ocurrió un error al obtener el departamento'}
         finally:
             if conexion:
                 conexion.close()
