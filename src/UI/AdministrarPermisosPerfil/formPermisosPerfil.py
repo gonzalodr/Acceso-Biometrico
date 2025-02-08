@@ -36,6 +36,20 @@ class formPermiso(QDialog):
         layoutForm.setContentsMargins(20,10,20,20)
         layoutForm.setHorizontalSpacing(45)
         layoutForm.setVerticalSpacing(5)
+        
+        
+            # Agregar checkbox y botón para crear perfil
+        self.checkCrearPerfil = QCheckBox("Crear perfil")
+        self.botonCrearPerfil = QPushButton("Nuevo perfil")
+        self.botonCrearPerfil.setEnabled(False)  # Deshabilitado por defecto
+
+
+
+# Agregar al formulario
+        layoutForm.addWidget(self.checkCrearPerfil, 0, 1)
+        layoutForm.addWidget(self.botonCrearPerfil, 1, 1)
+
+
 
         """ 
             Aqui cargar el combo box de registros
