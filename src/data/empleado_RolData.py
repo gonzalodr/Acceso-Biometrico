@@ -3,6 +3,10 @@ from settings.tablas import (TBROLEMPLEADO,TBROLEMPLEADO_ID,
                             TBROLEMPLEADO_ID_EMPLEADO,TBROLEMPLEADO_ID_ROL)     #obtener los nombres de tablas
 from settings.logger import logger  #recolectar los errores 
 from mysql.connector import Error   #controlador de errores
+
+from data.rolData import RolData
+
+from models.rol import Rol
 '''
     Conexión a la tabla de la relación 
     de empleado y rol.
@@ -15,7 +19,9 @@ from mysql.connector import Error   #controlador de errores
     TBROLEMPLEADO_ID_ROL        = 'Id_Rol'
 '''
 class EmpleadoRolData:
-    
+    def __init__(self):
+        self.roldata = RolData()
+
     def create_rol_empleado(self, id_empleado:int, id_rol:int, conexionEx = None):
         conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
         if not resultado["success"]:
@@ -92,8 +98,8 @@ class EmpleadoRolData:
         if not resultado["success"]:
             return resultado
         try:
-            with conexion.cursor() as cursor:
-                query=f'''SELECT 
+            with conexion.cursor(dictionary = True) as cursor:
+                query = f'''SELECT 
                         {TBROLEMPLEADO_ID},
                         {TBROLEMPLEADO_ID_ROL},
                         {TBROLEMPLEADO_ID_EMPLEADO}
@@ -102,18 +108,31 @@ class EmpleadoRolData:
                 cursor.execute(query,(id_rolempleado,))
                 data = cursor.fetchone()
 
+                result = self.roldata.get_rol_by_id(data[TBROLEMPLEADO_ID_ROL])
+                if not result['success']:
+                    return result
+                
+                if not result['exists']:
+                    return result
+                
+                rol:Rol = result['data']
+
                 if data:
                     return {
                         'success':True,
+                        'exists':True,
                         'message':'Se obtuvo los datos del rol empleado.',
                         'data':{
-                            'id': data[0],
-                            'id_rol':data[1],
-                            'id_empleado':data[2]
+                            'rolEmpleado':{
+                                'id': data[0],
+                                'id_rol':data[1],
+                                'id_empleado':data[2]
+                            },
+                            'rol':rol
                         }
                     }
                 else:
-                    raise
+                    return {'success':True,'exists':True,'message':'No se obtuvo los datos del rol empleado.'}
         except Error as e:
             logger.error(f'{e}')
             return {'success':False,'message':'Ocurrió un error al obtener el rol asignado del empleado'}

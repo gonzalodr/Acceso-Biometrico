@@ -80,8 +80,8 @@ class UsuarioPerfilData:
             if conexion and conexionEx is None:
                 conexion.close()
         
-    def get_usuario_perfil_by_id(self, id_usuarioPerfil:int):
-        conexion, resultado = conection()
+    def get_usuario_perfil_by_id(self, id_usuarioPerfil:int, conexionEx = None):
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
         if not resultado["success"]:
             return resultado
         try:
@@ -113,5 +113,5 @@ class UsuarioPerfilData:
             logger.error(f'{e}')
             return {'success':False,'message':'Ocurrió un error al obtener el perfil asignado al usuario'}
         finally:
-            if conexion:
+            if conexion and conexionEx is None:
                 conexion.close()

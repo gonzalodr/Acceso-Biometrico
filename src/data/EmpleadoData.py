@@ -227,3 +227,22 @@ class EmpleadoData:
         finally:
             if conexion:
                 conexion.close()
+
+    def getAll_info_empleado_by_id(self, id_empleado:int, conexionEx ):
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
+        try:
+            with conexion.cursor(dictionary=True) as cursor:
+                query =f'''
+                        SELECT 
+
+
+                        FROM {TBEMPLEADO}
+                        '''
+        except Error as e:
+            logger.error(f'{e}')
+            return {'success':False,'message':'Ocurrio un problema al obtener la informacion del empleado.'}
+        finally:
+            if conexion and conexionEx:
+                conexion.close()

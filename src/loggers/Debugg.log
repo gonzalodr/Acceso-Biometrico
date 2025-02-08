@@ -1,6 +1,5 @@
-2025-02-04 17:37:59,044 - ERROR - 1052 (23000): Column 'Id' in order clause is ambiguous - EmpleadoData.py:210
-2025-02-04 17:40:31,187 - ERROR - 1054 (42S22): Unknown column 'P.Id' in 'order clause' - EmpleadoData.py:210
-2025-02-04 17:43:05,082 - ERROR - 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM persona P
-                                INNER JOIN empleado EMP ON EMP...' at line 2 - EmpleadoData.py:213
-2025-02-04 17:44:49,555 - ERROR - 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'FROM persona P
-                                INNER JOIN empleado EMP ON EMP...' at line 2 - EmpleadoData.py:219
+2025-02-07 17:02:30,293 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
+2025-02-07 17:02:34,380 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
+2025-02-07 17:03:00,963 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
+2025-02-07 17:03:07,346 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
+2025-02-07 17:03:23,658 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17

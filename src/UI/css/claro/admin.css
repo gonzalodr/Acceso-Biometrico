@@ -106,3 +106,29 @@ QTableWidget #btnInfo::hover{
     background-color:#a89700;
     color:white;
 }
+
+QScrollBar:vertical {
+    border: none;
+    background: #f0f0f0; /* Color de fondo de la barra */
+    width: 15px; /* Ancho de la barra */
+    margin: 22px 0 22px 0; /* Margen para centrar la barra */
+}
+
+QScrollBar::handle:vertical {
+    background: #126398; /* Color del "handle" (parte que se mueve) */
+    min-height: 20px; /* Altura mínima del "handle" */
+}
+
+QScrollBar::add-line:vertical, 
+QScrollBar::sub-line:vertical {
+    background: none; /* Sin fondo para las flechas */
+}
+
+QScrollBar::up-arrow:vertical, 
+QScrollBar::down-arrow:vertical {
+    background: none; /* Sin flechas */
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #115d7b; /* Color del "handle" al pasar el mouse */
+}
