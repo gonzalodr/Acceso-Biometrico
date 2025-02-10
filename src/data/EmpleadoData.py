@@ -236,10 +236,18 @@ class EmpleadoData:
             with conexion.cursor(dictionary=True) as cursor:
                 query =f'''
                         SELECT 
-
-
-                        FROM {TBEMPLEADO}
+                            {TBEMPLEADO_ID},
+                            {TBEMPLEADO_PERSONA},
+                            {TBEMPLEADO_DEPARTAMENTO}
+                        FROM {TBEMPLEADO} 
+                        WHERE {TBEMPLEADO_ID} = %s
                         '''
+                cursor.execute(query,(id_empleado,))
+                data = cursor.fetchone()
+                if data:
+                    pass
+                else:
+                    return{'success':True, 'exists':False, 'message':'No se encontro el empleado.'}
         except Error as e:
             logger.error(f'{e}')
             return {'success':False,'message':'Ocurrio un problema al obtener la informacion del empleado.'}

@@ -7,6 +7,30 @@ from settings.logger import logger  #recolectar los errores
 from models.telefono import Telefono
 
 class TelefonoData:
+
+    def verificarExistenciaTelefono(self, telefono, persona_id:int = None, conexionEx = None):
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
+        try:
+            with conexion.cursor() as cursor:
+                query = f"SELECT COUNT(*) FROM {TBTELEFONO} WHERE {TBTELEFONO_NUMERO} = %s "
+                if persona_id is not None and persona_id > 0:
+                    query += f" AND {TBTELEFONO_ID_PERSONA} != %s"
+                    cursor.execute(query, (telefono, persona_id))
+                else:
+                    cursor.execute(query, (telefono,))
+                
+                count = cursor.fetchone()[0]
+                return count > 0
+
+        except Error as e:
+            logger.error(f'{e}')
+            return False
+        finally:
+            if conexion and conexionEx is None:
+                conexion.close()
+
     def create_telefono(self,telefono:Telefono, conexionEx):
         conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
         if not resultado["success"]:

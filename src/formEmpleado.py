@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
+from PySide6.QtGui import QIntValidator
 from Utils.Utils import *
 # from UI.DialogoEmergente import *
 import sys
@@ -126,19 +127,22 @@ class formEmpleado(QDialog):
 
         self.layoutFoto = QVBoxLayout()
         self.llenarLayoutFoto()
-        #Creando Label, Input y label de error
+        #Creando lblTelefono, Input y lblTelefono de error
         #Nombre
         self.lblNombre = QLabel('Nombre')
         self.inNombre = QLineEdit()
         self.errNombre = QLabel('Error nombre')
+
         #Apellidos
         self.lblApellidos = QLabel('Apellidos')
         self.inApellidos = QLineEdit()
         self.errApellidos = QLabel('Error apellidos')
+
         #Cedula
         self.lblCedula = QLabel('Cedula')
         self.inCedula = QLineEdit()
         self.errCedula = QLabel('Error cedula')
+
         #Fecha de nacimiento
         self.lblNacimiento = QLabel('Nacimiento')
         self.inNacimiento = QDateEdit()
@@ -146,10 +150,18 @@ class formEmpleado(QDialog):
         self.inNacimiento.setDisplayFormat('yyyy-MM-dd')
         self.inNacimiento.setMaximumDate(QDate.currentDate())
         self.errNacimiento = QLabel('Error nacimiento')
+
         #Correo
         self.lblCorreo = QLabel('Correo')
         self.inCorreo = QLineEdit()
         self.errCorreo = QLabel('Error correo')
+
+        #cargar layout de telefonos
+        self.lblTelefonos = QLabel(text='Telefonos')
+        self.layoutTelPrinc = QVBoxLayout()
+        self.errTelefono = QLabel(text='Error')
+        self.llenarLayoutTelefono()
+
         #Estado civil
         self.lblEstCivil = QLabel('Estado civil')
         self.inEstCivil = QComboBox()
@@ -168,6 +180,7 @@ class formEmpleado(QDialog):
         self.layoutIzq.addLayout(self.contenedor(self.lblCedula,self.inCedula,self.errCedula))
         self.layoutIzq.addLayout(self.contenedor(self.lblNacimiento,self.inNacimiento,self.errNacimiento))
         self.layoutIzq.addLayout(self.contenedor(self.lblCorreo,self.inCorreo,self.errCorreo))
+        self.layoutIzq.addLayout(self.contenedor(self.lblTelefonos,self.layoutTelPrinc,self.errTelefono))
         self.layoutIzq.addLayout(self.contenedor(self.lblEstCivil,self.inEstCivil,self.errEstCivil))
         self.layoutIzq.addLayout(self.contenedor(self.lblDireccion,self.inDireccion,self.errDireccion))
     '''
@@ -222,7 +235,7 @@ class formEmpleado(QDialog):
     '''
     Contenedor independiente para cada input
     '''
-    def contenedor(self,label:QLabel,input,label_error:QLabel)->QVBoxLayout:
+    def contenedor(self,lblTelefono:QLabel,input,label_error:QLabel)->QVBoxLayout:
         layout = QVBoxLayout()
         layout.setContentsMargins(10,5,10,0)
         layout.setSpacing(0)
@@ -232,11 +245,114 @@ class formEmpleado(QDialog):
         label_error.setMinimumHeight(25)
         label_error.setWordWrap(True)
         
-        layout.addWidget(label)
+        layout.addWidget(lblTelefono)
         layout.addSpacing(5)
-        layout.addWidget(input)
+        layout.addLayout(input) if isinstance(input,QVBoxLayout) else layout.addWidget(input)
         layout.addWidget(label_error)
         return layout
+    '''
+    llenado de layoutTelefono
+    '''
+    def llenarLayoutTelefono(self):
+        #boton para agregar telefono
+        btnAgregarTel = QPushButton(text='Agregar telefono.')
+        btnAgregarTel.setObjectName('btn_AgregarTel')
+        btnAgregarTel.setMinimumHeight(40)
+        btnAgregarTel.clicked.connect(self.agregar_nuevo_telefono)
+
+        self.layoutInputTel = QVBoxLayout()
+        #asignando los valores alos layouts
+        self.layoutTelPrinc.addWidget(btnAgregarTel)
+        self.layoutTelPrinc.addLayout(self.layoutInputTel)
+    '''
+    llenado dinamico de inputs para telefonos
+    '''  
+    def agregar_nuevo_telefono(self):
+        #lblTelefono para cada input telefono
+        lblTelefono = QLabel(text='Numero de telefono')
+
+        #input para ingresar el telefono
+        inputTelefono = QLineEdit()
+        inputTelefono.setPlaceholderText('Ej. 11111111')
+        inputTelefono.setValidator(QIntValidator())
+        inputTelefono.textChanged.connect(lambda : self.verificar_numero(inputTelefono))
+
+        #input para tipo de contacto
+        lblTipo = QLabel(text='Tipo de contacto')
+
+        #input para ingresar el tipo de telefono
+        inputTipo = QLineEdit()
+        inputTipo.setPlaceholderText('Ej. Telefono fijo')
+
+        #boton para eliminar el telefono
+        btnEliminar = QPushButton("Eliminar")
+        btnEliminar.setObjectName('eliminar_telefono')
+        btnEliminar.setMinimumHeight(30)
+
+        #lblTelefono de error
+        lblError = QLabel(text='Error:')
+        lblError.setObjectName("lblerror")
+        lblError.setMaximumHeight(25)
+        lblError.setMinimumHeight(25)
+        lblError.setWordWrap(True)
+
+        GLInpTelefonos = QVBoxLayout()
+        GLInpTelefonos.setContentsMargins(10,20,10,20)
+        GLInpTelefonos.setSpacing(10)
+        GLInpTelefonos.addWidget(lblTelefono,0)
+        GLInpTelefonos.addWidget(inputTelefono,1)
+        GLInpTelefonos.addWidget(lblTipo,2,)
+        GLInpTelefonos.addWidget(inputTipo,3)
+        GLInpTelefonos.addWidget(lblError,4)
+        GLInpTelefonos.addWidget(btnEliminar,5)
+       
+        btnEliminar.clicked.connect(lambda: self.eliminar_telefono(GLInpTelefonos))
+        self.layoutInputTel.addLayout(GLInpTelefonos)
+    '''
+    eliminado de los inputs dinamicos para los telefonos
+    '''
+    def eliminar_telefono(self, GLInpTelefonos:QVBoxLayout):
+        listWidget = []
+        #obtiene la lista de los widgets en el layout a eliminar
+        for i in range(6):
+            listWidget.append(GLInpTelefonos.itemAt(i).widget())
+        #los eliminar uno por uno
+        for widget in listWidget:
+            GLInpTelefonos.removeWidget(widget)
+            if isinstance(widget,QPushButton):
+                widget.clicked.disconnect()
+            widget.deleteLater()
+        #elimina el layout
+        self.layoutInputTel.removeItem(GLInpTelefonos)
+        GLInpTelefonos.deleteLater()
+
+    def verificar_numero(self,input:QLineEdit):
+        self.obtenerTelefonosInputs()
+        pass
+
+    def obtenerTelefonosInputs(self):
+        lista =[]
+        
+        #obtengo los valores de cada numero ingresado junto con su tipo
+        for i in range(self.layoutInputTel.count()):
+            item = self.layoutInputTel.itemAt(i).layout()
+            if isinstance(item,QVBoxLayout):
+                pass
+                # numero = item.itemAt(1).widget().text()
+                # tipoCont = item.itemAt(3).widget().text()
+                # lblError:QLabel = item.itemAt(4).widget()
+                # if not numero and not tipoCont:
+                #     print('El numero y tipo de contacto esta vacio.')
+                #     lblError.setText('El numero y tipo de contacto estan vacios')
+                # elif not numero:
+                #     print('El numero esta vacio')
+                #     lblError.setText('El numero esta vacio')
+                # elif not tipoCont:
+                #     print('El tipo de contacto esta vacio')
+                #     lblError.setText('El tipo de contacto esta vacio')
+                
+                # print(f'Tel.: {numero}  Tipo: {tipoCont}')
+
     '''
     Logica
     '''
