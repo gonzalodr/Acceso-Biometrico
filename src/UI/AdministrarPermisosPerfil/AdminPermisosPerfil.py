@@ -1,7 +1,9 @@
+from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from Utils.Utils import *
 from UI.AdministrarPermisosPerfil.formPermisosPerfil import *
+from UI.AdministrarPerfil.formPerfil import *
 from services.permisosPerfilServices import *
 from services.perfilService import *
 from services.perfilService import *
@@ -310,7 +312,7 @@ class AdminPermisosPerfil(QWidget):
         self._cargar_tabla()
         self.setGraphicsEffect(None)
 
-    def _crear_permisos(self):
+    def _crear_permiso(self):
         blur_effect = QGraphicsBlurEffect(self)
         blur_effect.setBlurRadius(10)
         self.setGraphicsEffect(blur_effect)
@@ -319,3 +321,90 @@ class AdminPermisosPerfil(QWidget):
         self._cargar_tabla() 
         self.setGraphicsEffect(None)
         
+    def _crear_perfil(self):
+    # Lógica para crear un perfil
+        blur_effect = QGraphicsBlurEffect(self)
+        blur_effect.setBlurRadius(10)
+        self.setGraphicsEffect(blur_effect)
+        form = formPerfil()
+        form.exec()
+        self.setGraphicsEffect(None)
+        
+        
+    def _crear_permisos(self):
+     # Crear un QMessageBox personalizado
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("Crear")
+        msg_box.setText("¿Qué desea crear?")
+    # Agregar botones personalizados
+        btn_perfil = msg_box.addButton("Crear perfil", QMessageBox.ActionRole)
+        btn_permiso = msg_box.addButton("Crear permiso", QMessageBox.ActionRole)
+        btn_cancelar = msg_box.addButton("Cancelar", QMessageBox.RejectRole)
+        # Estilos para el QMessageBox
+        
+        estilo_msg_box = """
+            QMessageBox {
+                background-color: #f0f0f0; /* Color de fondo */
+                border: 2px solid #4CAF50; /* Borde */
+                border-radius: 10px; /* Bordes redondeados */
+                padding: 20px; /* Espaciado interno */
+            }
+            QMessageBox QLabel {
+                color: #333333; /* Color del texto */
+                font-size: 16px; /* Tamaño de la fuente */
+                font-weight: bold; /* Negrita */
+            }
+        """
+   # Aplicar estilos a los botones
+        estilo_botones = """
+            QPushButton {
+                background-color: #4CAF50; /* Color de fondo */
+                color: white; /* Color del texto */
+                border-radius: 5px; /* Bordes redondeados */
+                padding: 10px 20px; /* Espaciado interno */
+                font-size: 14px; /* Tamaño de la fuente */
+                font-weight: bold; /* Negrita */
+            }
+            QPushButton:hover {
+                background-color: #45a049; /* Color de fondo al pasar el mouse */
+            }
+            QPushButton:pressed {
+                background-color: #3d8b40; /* Color de fondo al hacer clic */
+            }
+        """
+    
+    # Estilo específico para el botón de cancelar
+        estilo_cancelar = """
+            QPushButton {
+                background-color: #f44336; /* Color de fondo */
+                color: white; /* Color del texto */
+                border-radius: 5px; /* Bordes redondeados */
+                padding: 10px 20px; /* Espaciado interno */
+                font-size: 14px; /* Tamaño de la fuente */
+                font-weight: bold; /* Negrita */
+            }
+            QPushButton:hover {
+                background-color: #e53935; /* Color de fondo al pasar el mouse */
+            }
+            QPushButton:pressed {
+                background-color: #c62828; /* Color de fondo al hacer clic */
+            }
+        """
+    
+    # Aplicar estilos a los botones
+        msg_box.setStyleSheet(estilo_msg_box)
+        btn_perfil.setStyleSheet(estilo_botones)
+        btn_permiso.setStyleSheet(estilo_botones)
+        btn_cancelar.setStyleSheet(estilo_cancelar)
+    # Mostrar el cuadro de diálogo
+        msg_box.exec()
+    
+    # Verificar qué botón se presionó
+        if msg_box.clickedButton() == btn_perfil:
+            self._crear_perfil()  # Método para crear un perfil
+        elif msg_box.clickedButton() == btn_permiso:
+                self._crear_permiso()  # Método para crear un permiso
+        elif msg_box.clickedButton() == btn_cancelar:
+            return  # No hacer nada si se cancela
+         
+   
