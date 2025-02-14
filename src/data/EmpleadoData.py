@@ -97,7 +97,7 @@ class EmpleadoData:
             if conexion:
                 conexion.close()
     '''
-    Creando registro empleado
+    Creando registro empleado_persona
     '''
     def registrar_empleado(self, id_persona:int, id_departamento:int, conexionEx = None)->Dict[str,Any]:
         conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
@@ -126,10 +126,44 @@ class EmpleadoData:
                 conexion.close()
     
     def update_Empleado(self,datos:Dict[str,Any]):
-        pass
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+        try:
+            persona:Persona = datos.get('persona')
+            listaTel = datos.get('listaTelefonos')
+            usuario:Usuario = datos.get('usuario')
+
+            id_dep:int = datos.get('id_departamento') if datos.get('id_departamento') else None
+            id_rol:int = datos.get('id_rol') if datos.get('id_rol') else None
+            id_per:int = datos.get('id_perfil') if datos.get('id_perfil') else None #perfiles
+             
+            with conexion.cursor() as cursor:
+                pass
+
+
+
+        except Error as e:
+            logger.error(f"{e}")
+            return {"success": False, "message": "Ocurrió un error al actualizar el empleado."}
+        finally:
+            if conexion:
+                conexion.close()
+        
 
     def delete_Empleado(self, id_empleado):
-        pass
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+        try:
+            with conexion.cursor() as cursor:
+                pass
+        except Error as e:
+            logger.error(f"{e}")
+            return {"success": False, "message": "Ocurrió un error al eliminar al empleado."}
+        finally:
+            if conexion:
+                conexion.close()
 
     def list_Empleados(self, pagina=1, tam_pagina=10, ordenar_por=TBPERSONA_ID, tipo_orden="ASC", busqueda=None):
         conexion, resultado = conection()

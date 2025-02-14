@@ -1,8 +1,9 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
-from Utils.Utils import *
-from UI.AdministraPersona.formPersona import *
+from Utils.Utils import cargar_estilos, Sombrear, format_Fecha
+from UI.AdministrarEmpleado.formEmpleado import formEmpleado
 from services.empleadoServices import EmpleadoServices
+from models.persona import Persona
 from datetime import datetime
 
 class AdminEmpleado(QWidget):
@@ -44,7 +45,7 @@ class AdminEmpleado(QWidget):
         self.btnCerrar = QPushButton(text="Cerrar");
         self.btnCerrar.setFixedSize(minimoTamBtn)
         self.btnCerrar.setCursor(Qt.PointingHandCursor)
-        self.btnCerrar.clicked.connect(self._cerrar)
+        self.btnCerrar.clicked.connect(self.cerrarAdminEmpleado)
         Sombrear(self.btnCerrar,20,0,0)
 
         self.inputBuscar = QLineEdit()
@@ -160,22 +161,18 @@ class AdminEmpleado(QWidget):
         Sombrear(self,30,0,0)
         self.cargarTabla() 
 
-    def _cerrar(self):
+    def cerrarAdminEmpleado(self):
         self.cerrar_adminEmpleado.emit()
 
     def mensajeEstadoTabla(self,mensaje:str):
         self.tbPersona.setRowCount(0)
-        if self.tbPersona.rowCount() == 0:
-            # Si la tabla está vacía, agregar una fila con el mensaje
-            self.tbPersona.setRowCount(1)  # Establecer una fila
-            self.addItem_a_tabla(0,0,mensaje)
-            # Fusionar la celda con el mensaje "Sin datos" en el número de columnas
-            if self.tbPersona.columnCount() > 0:
-                self.tbPersona.setSpan(0, 0, 1, self.tbPersona.columnCount())
+        self.tbPersona.setRowCount(1) 
+        self.addItem_a_tabla(0,0,mensaje)
+        # if self.tbPersona.columnCount() > 0:
+        self.tbPersona.setSpan(0, 0, 1, self.tbPersona.columnCount())
 
     def cargarTabla(self):
         result = self.EmpServices.listar_empleados(pagina=self.paginaActual,tam_pagina=10,tipo_orden="DESC",busqueda=self.busqueda)
-        
         if result["success"]:
             listaPersona = result["data"]["listaPersonas"]
             if len(listaPersona) >0:
@@ -240,7 +237,7 @@ class AdminEmpleado(QWidget):
     
                     self.tbPersona.setCellWidget(index, 6, button_widget) 
             else:
-                self.mensajeEstadoTabla("No hay registros.")
+                self.mensajeEstadoTabla("No hay registros." if self.busqueda is None else "No se encontraron registros que coincidan con la busqueda.")
         else:
             self.mensajeEstadoTabla("Error de conexión.")
 
@@ -249,7 +246,7 @@ class AdminEmpleado(QWidget):
         dato_item.setTextAlignment(Qt.AlignCenter)
         dato_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # No editable
         self.tbPersona.setItem(row, colum, dato_item)
-##resto del codigo..
+
     def actualizarLabelPagina(self,numPagina, totalPagina):
         self.lblNumPagina.setText(f"Pagina {numPagina} de {totalPagina} ")
 
@@ -307,6 +304,9 @@ class AdminEmpleado(QWidget):
         blur_effect = QGraphicsBlurEffect(self)
         blur_effect.setBlurRadius(10)  # Ajusta el radio de desenfoque según sea necesario
         
+        form = formEmpleado()
+        form.exec()
+
         self.cargarTabla() ##se recarga la tabla despues de terminar
         self.setGraphicsEffect(None)
         

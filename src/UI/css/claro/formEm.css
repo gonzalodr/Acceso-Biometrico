@@ -1,6 +1,11 @@
 #form{
     background-color: #ffffff;
 }
+#form #formFrame{
+    background-color:#ffffff;
+    border: 1px solid #007286;
+    border-radius: 10px;
+}
 #form #contenedor{
     background-color: #eeeeee;
     border-radius: 5px;
@@ -23,9 +28,24 @@
     background-color:transparent;
     font-size:15px;
     border:none;
-    border-bottom:1px solid #000000;
+    border-bottom:2px solid #000000;
     color: #000000; /* Texto en negro para campos de entrada */
 }
+#form QWidget QLineEdit[telValido="true"]{
+    background-color:transparent;
+    font-size:15px;
+    border:none;
+    border-bottom:2px solid #00cb00;
+    color: #000000; /* Texto en negro para campos de entrada */
+}
+#form QWidget QLineEdit[telValido="false"]{
+    background-color:transparent;
+    font-size:15px;
+    border:none;
+    border-bottom:2px solid #cb0000;
+    color: #000000; /* Texto en negro para campos de entrada */
+}
+
 #form QWidget QDateEdit{
     background-color:transparent;
     font-size:15px;
@@ -69,33 +89,17 @@
     color: black;
     font: 1000 14pt "Cooper Black";
 }
-#form #foto{
+#foto{
     border-radius:0%;
     border-color: #000000;
-}QScrollArea {
-    background: transparent; /* Fondo transparente del área de scroll */
-    border: none; /* Sin bordes */
+}
+QScrollArea {
+    background: transparent;
+    border: none; 
 }
 
 QScrollArea > QWidget {
-    background: transparent; /* Asegura que el contenido también sea transparente */
-}
-
-QScrollBar:vertical, QScrollBar:horizontal {
-    background: transparent; /* Fondo transparente del scroll */
-    border: none; /* Sin bordes en el scroll */
-    width: 10px; /* Ajusta el ancho de la barra (vertical) */
-    height: 10px; /* Ajusta el alto de la barra (horizontal) */
-}
-
-QScrollBar::handle {
-    background: #00bcd4; /* Color del "control deslizante" */
-    border-radius: 5px; /* Esquinas redondeadas */
-}
-
-QScrollBar::add-line, QScrollBar::sub-line {
-    background: none; /* Sin botones adicionales */
-    border: none;
+    background: #ffffff; 
 }
 
 #form #btncancelar{

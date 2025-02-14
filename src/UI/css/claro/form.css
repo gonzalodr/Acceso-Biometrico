@@ -8,27 +8,30 @@
     border: 1px solid #007286;
     border-radius: 10px;
 }
+
 #form QCheckBox{
     font: 1 10pt "Arial";
     color:#000000;
 }
-
 
 #form QCheckBox{
     font: 1 10pt "Arial";
     color:#000000;
     background-color: transparent;
 }
+
 #form QCheckBox::indicator {
     width: 15px; /* Tamaño del cuadro */
     height: 15px;
     border-radius: 5px;
     background-color: #ffffff;
 }
+
 #form QCheckBox::indicator:unchecked {
     background-color: #ffffff; /* Color cuando está desmarcado */
     border: 2px solid #000000;
 }
+
 #form QCheckBox::indicator:checked {
     background-color: lightgreen; /* Color cuando está marcado */
     border: 2px solid green;
@@ -56,6 +59,7 @@
     border-radius: 5px;
     border: 1px solid #818181;
 }
+
 #form QTimeEdit {
     background-color: transparent;
     font-size: 15px;
@@ -64,6 +68,7 @@
     color: #000000;
     /* Texto en negro para campos de tiempo */
 }
+
 #form QLineEdit{
     background-color:transparent;
     font-size:15px;border:none;
@@ -71,18 +76,21 @@
     color: #000000; /* Texto en negro para campos de entrada */
     
 }
+
 #form QDateEdit{
     background-color:transparent;
     font-size:15px;border:none;
     border-bottom:1px solid #000000;
     color: #000000; /* Texto en negro para campos de fecha */
 }
+
 #form QComboBox{
     background-color:transparent;
     font-size:15px;border:none;
     border-bottom:1px solid #000000;
     color: #000000; /* Texto en negro para combo boxes */
 }
+
 #form QTextEdit{
     background-color:transparent;
     font-size:15px;border:none;
@@ -109,3 +117,62 @@
     background-color:#00627d;
 }
 
+#form #contenedor{
+    background-color: #eeeeee;
+    border-radius: 5px;
+}
+
+#foto{
+    border-radius:0%;
+    border-color: #000000;
+}
+#form  QWidget QLabel{
+    background-color: transparent;
+    color: black;
+    font: 1 12pt "Cooper Black";
+    text-align: center;
+}
+#form QWidget QLineEdit{
+    background-color:transparent;
+    font-size:15px;
+    border:none;
+    border-bottom:2px solid #000000;
+    color: #000000; /* Texto en negro para campos de entrada */
+}
+#form QWidget QLineEdit[telValido="true"]{
+    background-color:transparent;
+    font-size:15px;
+    border:none;
+    border-bottom:2px solid #00cb00;
+    color: #000000; /* Texto en negro para campos de entrada */
+}
+#form QWidget QLineEdit[telValido="false"]{
+    background-color:transparent;
+    font-size:15px;
+    border:none;
+    border-bottom:2px solid #cb0000;
+    color: #000000; /* Texto en negro para campos de entrada */
+}
+
+#form QWidget QDateEdit{
+    background-color:transparent;
+    font-size:15px;
+    border:none;
+    border-bottom:1px solid #000000;
+    color: #000000;
+}
+
+#form #select_foto{
+    background-color: #d5d5d5;
+    border-radius: 5px;
+    color:#000000;
+    font: 10 13pt "Cooper Black";
+}
+#form #select_foto::hover{
+    background-color:#979797;
+}
+
+#form #select_foto::Pressed{
+    background-color: #00a5cf;
+    color:#FFFFFF;
+}

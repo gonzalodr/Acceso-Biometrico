@@ -2,14 +2,18 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import QIntValidator
 from Utils.Utils import *
-# from UI.DialogoEmergente import *
-import sys
+from services.empleadoServices import EmpleadoServices
+from services.usuarioService import UsuarioServices
+import re
 
 class formEmpleado(QDialog):
     idEmpleado = None
     fotografia = None
     idUsuario = None
     idPersona = None
+
+    emplServices = EmpleadoServices()
+    userServices = UsuarioServices()
 
     def __init__(self, parent = None, titulo = 'Registrar empleado', id_empleado = None):
         super().__init__(parent)
@@ -19,6 +23,7 @@ class formEmpleado(QDialog):
         cargar_estilos('claro','formEm.css',self)
         
         layoutPrin =QVBoxLayout()
+        layoutPrin.setContentsMargins(0,0,0,0)
         frame = QFrame()
         frame.setObjectName('formFrame')
         #asignando el frame al layout principal
@@ -26,6 +31,8 @@ class formEmpleado(QDialog):
 
         ## layoutFrame
         layoutFrame = QVBoxLayout()
+        layoutFrame.setContentsMargins(10,10,10,10)
+
         lbltitulo = QLabel(titulo)
         lbltitulo.setObjectName('lbltitulo')
         lbltitulo.setAlignment(Qt.AlignCenter)
@@ -325,10 +332,20 @@ class formEmpleado(QDialog):
         #elimina el layout
         self.layoutInputTel.removeItem(GLInpTelefonos)
         GLInpTelefonos.deleteLater()
+    '''
+    Verificar si el numero es valido
+    '''
+    def verificar_numero(self, input: QLineEdit):
+        numero = input.text()
+        if self.es_numero_valido(numero):
+            input.setProperty('telValido',True)
+        else:
+            input.setProperty('telValido',False)
+        input.style().polish(input)  
 
-    def verificar_numero(self,input:QLineEdit):
-        self.obtenerTelefonosInputs()
-        pass
+    def es_numero_valido(self, numero: str) -> bool:
+        patron = re.compile(r'^[2456789]\d{7}$')
+        return bool(patron.match(numero))
 
     def obtenerTelefonosInputs(self):
         lista =[]
@@ -358,26 +375,41 @@ class formEmpleado(QDialog):
     '''
     #Seleccion de foto
     def seleccionarFoto(self):
-        if self.fotografia is None: 
-            dir_defecto = QStandardPaths.writableLocation(QStandardPaths.PicturesLocation)
-            file_path, _ = QFileDialog.getOpenFileName(self,"Seleccionar Imagen",dir_defecto,"Imágenes (*.png *.jpg *.jpeg)")
-            if file_path:
-                self.foto.setPixmap(QPixmap(file_path).scaled(self.foto.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
-                self.btnFoto.setText("Eliminar foto")
-                try:
-                    with open(file_path, "rb") as file:
-                        self.fotografia = file.read()
-                except Exception as e:
-                    cargar_Icono(self.foto,'userPerson.png')
-                    self.btnFoto.setText("Seleccionar foto")
-                    self.fotografia = None
+        if self.fotografia is None:
+            self.abrir_seleccion_imagen()
         else:
-            cargar_Icono(self.foto,'userPerson.png')
-            self.btnFoto.setText("Seleccionar foto")
-            self.fotografia = None
+            self.eliminar_foto()
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    dialogo = formEmpleado()
-    dialogo.show()
-    sys.exit(app.exec())
+    def abrir_seleccion_imagen(self):
+        dir_defecto = QStandardPaths.writableLocation(QStandardPaths.PicturesLocation)
+        file_path, _ = QFileDialog.getOpenFileName(self, "Seleccionar Imagen", dir_defecto, "Imágenes (*.png *.jpg *.jpeg)")
+        if file_path:
+            self.mostrar_foto(file_path)
+            self.btnFoto.setText("Eliminar foto")
+            try:
+                with open(file_path, "rb") as file:
+                    self.fotografia = file.read()
+            except Exception as e:
+                self.resetear_foto()
+
+    def mostrar_foto(self, file_path):
+        self.foto.setPixmap(QPixmap(file_path).scaled(self.foto.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
+    def eliminar_foto(self):
+        self.resetear_foto()
+
+    def resetear_foto(self):
+        cargar_Icono(self.foto, 'userPerson.png')
+        self.btnFoto.setText("Seleccionar foto")
+        self.fotografia = None
+
+    
+    
+    
+    
+#
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+#     dialogo = formEmpleado()
+#     dialogo.show()
+#     sys.exit(app.exec())
