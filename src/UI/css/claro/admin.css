@@ -32,6 +32,7 @@
 #admin QLabel{
     background-color:transparent;
     font: 10 10pt "Cooper Black";
+    color: #000000;
 }
 #admin #titulo{
     background-color:transparent;

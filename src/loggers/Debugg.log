@@ -7,3 +7,10 @@
 2025-02-10 14:19:06,904 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
 2025-02-10 14:19:23,642 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
 2025-02-10 14:19:29,776 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
+2025-02-13 19:22:23,420 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
+2025-02-13 19:22:35,451 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
+2025-02-13 19:22:39,506 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
+2025-02-13 19:22:54,279 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
+2025-02-13 19:32:35,763 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
+2025-02-13 19:32:39,792 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
+2025-02-13 19:32:53,468 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17

@@ -168,84 +168,86 @@ class AdminEmpleado(QWidget):
         self.tbPersona.setRowCount(0)
         self.tbPersona.setRowCount(1) 
         self.addItem_a_tabla(0,0,mensaje)
-        # if self.tbPersona.columnCount() > 0:
         self.tbPersona.setSpan(0, 0, 1, self.tbPersona.columnCount())
 
     def cargarTabla(self):
         result = self.EmpServices.listar_empleados(pagina=self.paginaActual,tam_pagina=10,tipo_orden="DESC",busqueda=self.busqueda)
-        if result["success"]:
-            listaPersona = result["data"]["listaPersonas"]
-            if len(listaPersona) >0:
-                paginaActual    = result["data"]["pagina_actual"]
-                tamPagina       = result["data"]["tam_pagina"]
-                totalPaginas    = result["data"]["total_paginas"]
-                totalRegistros  = result["data"]["total_registros"]
-
-                #carga los valores de la pagina.
-                self.actualizarLabelPagina(paginaActual,totalPaginas)
-                self.actualizarBtnPagina(paginaActual,totalPaginas)
-
-                #Limpiamos filas para cada ocasion que se recarga la tabla
-                self.tbPersona.setRowCount(0)
-
-                for index, data in enumerate(listaPersona):
-                    self.tbPersona.insertRow(index)  # Crea una fila por registro
-                    self.tbPersona.setRowHeight(index,45)
-                    #obteniendo el id empleado y el id empleado
-                    id_empleado = data['id_empleado']
-                    persona:Persona = data['persona']
-
-                    self.addItem_a_tabla(index,0,f'{persona.nombre} {persona.apellidos}')
-                    self.addItem_a_tabla(index,1,persona.cedula)
-                    self.addItem_a_tabla(index,2,persona.correo)
-                    self.addItem_a_tabla(index,3,format_Fecha(str(persona.fecha_nacimiento)))
-                    self.addItem_a_tabla(index,4,persona.estado_civil)
-                    self.addItem_a_tabla(index,5,persona.direccion)
-
-                    #Agregando los botones de las acciones que se pueden realizar
-                    #boton mas informacion, boton editar, boton eliminar.
-                    btnInfo = QPushButton(text="Más Info.",parent=self.tbPersona)
-                    btnInfo.setObjectName('btnInfo')
-                    btnInfo.setMinimumSize(QSize(80,35))
-                    btnInfo.setMaximumWidth(100)
-                    btnInfo.clicked.connect(lambda checked, idx=persona.id: self.eliminarEmpleado(idx))
-                           
-                    btnEliminar = QPushButton(text="Eliminar",parent=self.tbPersona)
-                    btnEliminar.setObjectName('btneliminar')
-                    btnEliminar.setMinimumSize(QSize(80,35))
-                    btnEliminar.setMaximumWidth(100)
-                    btnEliminar.clicked.connect(lambda checked, idx=persona.id: self.eliminarEmpleado(idx))
-
-                    btnEditar = QPushButton("Editar",parent=self.tbPersona)
-                    btnEditar.setObjectName('btneditar')
-                    btnEditar.setMinimumSize(QSize(80,35))
-                    btnEditar.setMaximumWidth(100)
-                    btnEditar.clicked.connect(lambda checked, idx = persona.id: self.editarEmpleado(idx))
-                    
-                    #contenedor de los botones.
-                    layout = QHBoxLayout()
-                    layout.addWidget(btnInfo)
-                    layout.addSpacing(15)
-                    layout.addWidget(btnEditar)
-                    layout.addSpacing(15)
-                    layout.addWidget(btnEliminar)
-                    layout.setContentsMargins(10, 0, 10,0)
-                    #widget para el layout de los botones.
-                    button_widget = QWidget()
-                    button_widget.setFixedWidth(300)
-                    button_widget.setLayout(layout)
-    
-                    self.tbPersona.setCellWidget(index, 6, button_widget) 
-            else:
-                self.mensajeEstadoTabla("No hay registros." if self.busqueda is None else "No se encontraron registros que coincidan con la busqueda.")
-        else:
+        if not result["success"]:
             self.mensajeEstadoTabla("Error de conexión.")
+        
+        listaPersona = result["data"]["listaPersonas"]
+        if len(listaPersona) == 0:
+            self.mensajeEstadoTabla("No hay registros." if self.busqueda is None else "No se encontraron registros que coincidan con la busqueda.")   
 
+        paginaActual    = result["data"]["pagina_actual"]
+        tamPagina       = result["data"]["tam_pagina"]
+        totalPaginas    = result["data"]["total_paginas"]
+        totalRegistros  = result["data"]["total_registros"]
+
+        #carga los valores de la pagina.
+        self.actualizarLabelPagina(paginaActual,totalPaginas)
+        self.actualizarBtnPagina(paginaActual,totalPaginas)
+
+        #Limpiamos filas para cada ocasion que se recarga la tabla
+        self.tbPersona.setRowCount(0)
+
+        for index, data in enumerate(listaPersona):
+            self.tbPersona.insertRow(index)  # Crea una fila por registro
+            self.tbPersona.setRowHeight(index,45)
+            #obteniendo el id empleado y el objeto persona
+            id_empleado     = data['id_empleado']
+            persona:Persona = data['persona']
+
+            self.addItem_a_tabla(index,0,f'{persona.nombre} {persona.apellidos}')
+            self.addItem_a_tabla(index,1,persona.cedula)
+            self.addItem_a_tabla(index,2,persona.correo)
+            self.addItem_a_tabla(index,3,format_Fecha(str(persona.fecha_nacimiento)))
+            self.addItem_a_tabla(index,4,persona.estado_civil)
+            self.addItem_a_tabla(index,5,persona.direccion)
+
+            #Agregando los botones de las acciones que se pueden realizar
+            #boton mas informacion, boton editar, boton eliminar.
+            btnInfo = QPushButton(text="Más Info.",parent=self.tbPersona)
+            btnInfo.setObjectName('btnInfo')
+            btnInfo.setMinimumSize(QSize(80,35))
+            btnInfo.setMaximumWidth(100)
+            btnInfo.clicked.connect(lambda checked, idx=persona.id: self.eliminarEmpleado(idx))
+                    
+            btnEliminar = QPushButton(text="Eliminar",parent=self.tbPersona)
+            btnEliminar.setObjectName('btneliminar')
+            btnEliminar.setMinimumSize(QSize(80,35))
+            btnEliminar.setMaximumWidth(100)
+            btnEliminar.clicked.connect(lambda checked, idx=persona.id: self.eliminarEmpleado(idx))
+
+            btnEditar = QPushButton("Editar",parent=self.tbPersona)
+            btnEditar.setObjectName('btneditar')
+            btnEditar.setMinimumSize(QSize(80,35))
+            btnEditar.setMaximumWidth(100)
+            btnEditar.clicked.connect(lambda checked, idx = persona.id: self.editarEmpleado(idx))
+            
+            #contenedor de los botones.
+            layout = QHBoxLayout()
+            layout.addWidget(btnInfo)
+            layout.addSpacing(15)
+            layout.addWidget(btnEditar)
+            layout.addSpacing(15)
+            layout.addWidget(btnEliminar)
+            layout.setContentsMargins(10, 0, 10,0)
+            #widget para el layout de los botones.
+            button_widget = QWidget()
+            button_widget.setFixedWidth(300)
+            button_widget.setLayout(layout)
+
+            self.tbPersona.setCellWidget(index, 6, button_widget) 
+    
     def addItem_a_tabla(self,row, colum,dato):
         dato_item = QTableWidgetItem(dato)
         dato_item.setTextAlignment(Qt.AlignCenter)
         dato_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # No editable
         self.tbPersona.setItem(row, colum, dato_item)
+
+    def botonAcciones():
+        pass
 
     def actualizarLabelPagina(self,numPagina, totalPagina):
         self.lblNumPagina.setText(f"Pagina {numPagina} de {totalPagina} ")

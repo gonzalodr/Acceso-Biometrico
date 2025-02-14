@@ -6,14 +6,6 @@ import os
 import inspect
 
 def Sombrear(QObjeto,shadow:int=0,xOffset:int=0,yOffset:int=0, color:str=None):
-    """
-    Aplica un estilo de sombra a un objeto Qt.
-    
-    :param shadow: Valor que indica la intencidad del blur.
-    :param xOffset: Desplazamiento de la sombra en el eje x.
-    :param yOffset: Desplazamiento de la sombra en el eje y.
-    :return: No se retorna ningun dato.
-    """
     sombra = QGraphicsDropShadowEffect(QObjeto)
     sombra.setBlurRadius(shadow)
     sombra.setXOffset(xOffset)
