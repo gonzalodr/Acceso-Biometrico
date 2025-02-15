@@ -36,6 +36,20 @@ class formPermiso(QDialog):
         layoutForm.setContentsMargins(20,10,20,20)
         layoutForm.setHorizontalSpacing(45)
         layoutForm.setVerticalSpacing(5)
+        
+        
+            # Agregar checkbox y botón para crear perfil
+        self.checkCrearPerfil = QCheckBox("Crear perfil")
+        self.botonCrearPerfil = QPushButton("Nuevo perfil")
+        self.botonCrearPerfil.setEnabled(False)  # Deshabilitado por defecto
+
+
+
+# Agregar al formulario
+        layoutForm.addWidget(self.checkCrearPerfil, 0, 1)
+        layoutForm.addWidget(self.botonCrearPerfil, 1, 1)
+
+
 
         """ 
             Aqui cargar el combo box de registros
@@ -171,23 +185,18 @@ class formPermiso(QDialog):
              self.reject()##cerrar la ventana
 
     def _cargar_perfiles(self):
-        try:
-            result = self.perfilServices.obtener_todo_perfiles()
-            if result["success"]:
-                listaPerfiles = result["data"]["listaPerfiles"]
-                if len(listaPerfiles) > 0:
-                    for rol in listaPerfiles:
-                        self.inputPerfil.addItem(rol.nombre)
-                        self.listaPerfilesID[rol.nombre] = rol.id
-                else:
-                    dialEmergente = DialogoEmergente("","No existen perfiles.","Warning")
-                    if dialEmergente.exec() == QDialog.Accepted:
-                        self.reject()
+        result = self.perfilServices.obtener_todo_perfiles()
+        if result["success"]:
+            listaPerfiles = result["data"]["listaPerfiles"]
+            if len(listaPerfiles) > 0:
+                for perfil in listaPerfiles:
+                    self.inputPerfil.addItem(perfil.nombre)
+                    self.listaPerfilesID[perfil.nombre] = perfil.id
             else:
                 dialEmergente = DialogoEmergente("","Ocurrio un error","Error")
                 if dialEmergente.exec() == QDialog.Accepted:
                     self.reject()
-        except Exception as e:
+        else:
             print(f'\nError:\n{e}\n----------------------\n')
             self.reject()
                       
@@ -213,14 +222,14 @@ class formPermiso(QDialog):
                 permiso:Permiso_Perfil = result["data"]
                 
                 dato = self.perfilServices.obtenerPerfilPorId(permiso.perfil_id)
-                rol = dato["data"]
+                perfil = dato["data"]
                 acceso_a = [key for key, value in ACCESO_TABLE.items() if value == permiso.tabla]
                 
                 
-                self.inputPerfil.setCurrentText(rol.nombre)
-                self.inputPerfil.setDisabled(True)
+                self.inputPerfil.setCurrentText(perfil.nombre)
+                self.inputPerfil.setDisabled(False)
                 self.inputTabla.setCurrentText(str(acceso_a[0]))
-                self.inputTabla.setDisabled(True)
+                self.inputTabla.setDisabled(False)
                 self.checkVer.setChecked(permiso.ver)
                 self.checkCrear.setChecked(permiso.crear)
                 self.checkEditar.setChecked(permiso.editar)
