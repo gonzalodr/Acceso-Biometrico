@@ -201,10 +201,12 @@ class formEmpleado(QDialog):
         #Departamento
         self.lblDep = QLabel('Departamento')
         self.inDep = QComboBox()
+        self.inDep.addItem('Seleccione el departamento', None)
         self.errDep = QLabel('Error Departamento')
         #Departamento
         self.lblRol = QLabel('Rol')
         self.inRol = QComboBox()
+        self.inRol.addItem('Seleccione el rol', None)
         self.errRol = QLabel('Error Rol')
 
         self.layoutCent.addWidget(tituloCent)
@@ -349,7 +351,6 @@ class formEmpleado(QDialog):
 
     def obtenerTelefonosInputs(self):
         lista =[]
-        
         #obtengo los valores de cada numero ingresado junto con su tipo
         for i in range(self.layoutInputTel.count()):
             item = self.layoutInputTel.itemAt(i).layout()

@@ -143,7 +143,7 @@ class vistaPrincipal(QWidget):
 
         if True:
             adminempleado = AdminEmpleado(parent=self)
-            adminempleado.cerrar_adminEmpleado.connect(self._salir_crud)
+            adminempleado.signalCerrar.connect(self._salir_crud)
             index =self.stackVistas.addWidget(adminempleado)
             self.listaOpciones.append((index,'Admin. Empleados','employees.png'))
 

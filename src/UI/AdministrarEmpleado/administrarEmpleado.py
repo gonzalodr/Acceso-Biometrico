@@ -2,12 +2,13 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from Utils.Utils import cargar_estilos, Sombrear, format_Fecha
 from UI.AdministrarEmpleado.formEmpleado import formEmpleado
+from UI.DialogoEmergente import DialogoEmergente
 from services.empleadoServices import EmpleadoServices
 from models.persona import Persona
 from datetime import datetime
 
 class AdminEmpleado(QWidget):
-    cerrar_adminEmpleado = Signal()
+    signalCerrar = Signal()
     paginaActual = 1
     ultimaPagina = 1
     busqueda = None
@@ -17,7 +18,6 @@ class AdminEmpleado(QWidget):
     def __init__(self, parent= None) -> None:
         super().__init__(parent)
         self.setObjectName("admin")
-
         cargar_estilos('claro','admin.css',self)
 
         layout = QVBoxLayout()
@@ -39,44 +39,25 @@ class AdminEmpleado(QWidget):
         layoutTop.setContentsMargins(30,30,30,30)
         layoutTop.setSpacing(5)
         layoutTop.setAlignment(Qt.AlignCenter)
-        minimoTamBtn = QSize(120,40)
 
-        ##botones de arriba
-        self.btnCerrar = QPushButton(text="Cerrar");
-        self.btnCerrar.setFixedSize(minimoTamBtn)
-        self.btnCerrar.setCursor(Qt.PointingHandCursor)
-        self.btnCerrar.clicked.connect(self.cerrarAdminEmpleado)
-        Sombrear(self.btnCerrar,20,0,0)
-
+       
         self.inputBuscar = QLineEdit()
         self.inputBuscar.setClearButtonEnabled(True)
         self.inputBuscar.setPlaceholderText("Buscar persona por nombre, apellidos, cedula o correo.")
         self.inputBuscar.setFixedSize(QSize(500,30))
         self.inputBuscar.textChanged.connect(self.cargarTabla)
         Sombrear(self.inputBuscar,20,0,0)
-
-        self.btnBuscar = QPushButton(text="Buscar")
-        self.btnBuscar.setCursor(Qt.PointingHandCursor)
-        self.btnBuscar.setFixedSize(minimoTamBtn)
-        self.btnBuscar.clicked.connect(self.buscarPersona) 
-        Sombrear(self.btnBuscar,20,0,0)
-
-        self.btnCrear = QPushButton(text="Crear")
-        self.btnCrear.setCursor(Qt.PointingHandCursor)
-        self.btnCrear.setFixedSize(minimoTamBtn)
-        self.btnCrear.setObjectName("crear")
-        self.btnCrear.clicked.connect(self.crearEmpleado) ##esto no se mueve
-        Sombrear(self.btnCrear,20,0,0)
-
+        
+        minimoTamBtn = QSize(120,40)
         ##acomodando botones de arriba en el layout
         layoutTop.addSpacing(25)
-        layoutTop.addWidget(self.btnCerrar,1)
+        layoutTop.addWidget(self.crearBoton("Cerrar",minimoTamBtn,self.cerrarAdminEmpleado))
         layoutTop.addStretch(1)
         layoutTop.addWidget(self.inputBuscar,2)
         layoutTop.addSpacing(10)
-        layoutTop.addWidget(self.btnBuscar,2)
+        layoutTop.addWidget(self.crearBoton("Buscar",minimoTamBtn,self.buscarPersona))
         layoutTop.addStretch(1)
-        layoutTop.addWidget(self.btnCrear,2)
+        layoutTop.addWidget(self.crearBoton("Crear",minimoTamBtn,self.crearEmpleado))
         layoutTop.addStretch(5)
         self.layoutFrame.addLayout(layoutTop)
         
@@ -91,9 +72,7 @@ class AdminEmpleado(QWidget):
         self.tbPersona.verticalHeader().setVisible(False)
         self.tbPersona.horizontalHeader().setStretchLastSection(True)
         self.tbPersona.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
-        # self.tbPersona.setColumnWidth(8, 220)
-        self.tbPersona.setColumnWidth(6, 305)  # La columna 3 tendrá un ancho fijo de 150 píxeles
-
+        self.tbPersona.setColumnWidth(6, 305)  # La columna 6 tendrá un ancho fijo de 150 píxeles
         self.tbPersona.horizontalHeader().setSectionsMovable(False)
         self.tbPersona.horizontalHeader().setMinimumSectionSize(50)
         self.tbPersona.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
@@ -111,39 +90,18 @@ class AdminEmpleado(QWidget):
         layoutButtom.setContentsMargins(10,10,10,40)
         layoutButtom.setSpacing(5)
 
-        self.btnPrimerPagina = QPushButton(text="Primera Pagina.")
-        self.btnPrimerPagina.setFixedSize(minimoTamBtn)
-        self.btnPrimerPagina.setCursor(Qt.PointingHandCursor)
-        self.btnPrimerPagina.setEnabled(False)
-        self.btnPrimerPagina.clicked.connect(self._irPrimeraPagina)
-        Sombrear(self.btnPrimerPagina,20,0,0)
-
-        self.btnAnterior = QPushButton(text="Anterior")
-        self.btnAnterior.setEnabled(False)
-        self.btnAnterior.setCursor(Qt.PointingHandCursor)
-        self.btnAnterior.setFixedSize(minimoTamBtn)
-        self.btnAnterior.clicked.connect(self._irAnteriorPagina)
-        Sombrear(self.btnAnterior,20,0,0)
-
+        #label para mostrar la cantidad y el numero de pagina en el que se ubica
         self.lblNumPagina = QLabel(text="Pagina 0 de 0 paginas")
         self.lblNumPagina.setFixedSize(QSize(170,40))
         self.lblNumPagina.setAlignment(Qt.AlignCenter)
 
-
-        self.btnSiguiente = QPushButton(text="Siguiente")
-        self.btnSiguiente.setCursor(Qt.PointingHandCursor)
-        self.btnSiguiente.setEnabled(False)
-        self.btnSiguiente.setFixedSize(minimoTamBtn)
-        self.btnSiguiente.clicked.connect(self._irSiguientePagina)
-        Sombrear(self.btnSiguiente,20,0,0)
-
-        self.btnUltimaPagina = QPushButton(text="Ultima Pagina")
-        self.btnUltimaPagina.setCursor(Qt.PointingHandCursor)
-        self.btnUltimaPagina.setEnabled(False)
-        self.btnUltimaPagina.setFixedSize(minimoTamBtn)
-        self.btnUltimaPagina.clicked.connect(self._irUltimaPagina)
-        Sombrear(self.btnUltimaPagina,20,0,0)
-
+        #crear Botones de navegacion
+        self.btnPrimerPagina= self.crearBoton("Primer pagina",minimoTamBtn,self._irPrimeraPagina,False)
+        self.btnAnterior    = self.crearBoton("Anterior",minimoTamBtn,self._irAnteriorPagina,False)
+        self.btnSiguiente   = self.crearBoton("Siguiente",minimoTamBtn,self._irSiguientePagina,False)
+        self.btnUltimaPagina= self.crearBoton("Ultima pagina",minimoTamBtn,self._irUltimaPagina,False)
+        
+        #acomoda los botones del layout
         layoutButtom.addWidget(self.btnPrimerPagina)
         layoutButtom.addSpacing(10)
         layoutButtom.addWidget(self.btnAnterior)
@@ -161,23 +119,34 @@ class AdminEmpleado(QWidget):
         Sombrear(self,30,0,0)
         self.cargarTabla() 
 
+    def crearBoton(self,text:str,fixedSize:QSize, functionConnect,enable:bool = True,cursorType=Qt.PointingHandCursor)->QPushButton:
+        boton = QPushButton(text)
+        boton.setEnabled(enable)
+        boton.setFixedSize(fixedSize)
+        boton.setCursor(cursorType)
+        boton.clicked.connect(functionConnect)
+        Sombrear(boton,20,0,0)
+        return boton
+
     def cerrarAdminEmpleado(self):
-        self.cerrar_adminEmpleado.emit()
+        self.signalCerrar.emit()
 
     def mensajeEstadoTabla(self,mensaje:str):
         self.tbPersona.setRowCount(0)
         self.tbPersona.setRowCount(1) 
-        self.addItem_a_tabla(0,0,mensaje)
+        self.addItemTable(0,0,mensaje)
         self.tbPersona.setSpan(0, 0, 1, self.tbPersona.columnCount())
 
-    def cargarTabla(self):
+    def cargarTabla(self): 
         result = self.EmpServices.listar_empleados(pagina=self.paginaActual,tam_pagina=10,tipo_orden="DESC",busqueda=self.busqueda)
         if not result["success"]:
             self.mensajeEstadoTabla("Error de conexión.")
+            return
         
         listaPersona = result["data"]["listaPersonas"]
         if len(listaPersona) == 0:
-            self.mensajeEstadoTabla("No hay registros." if self.busqueda is None else "No se encontraron registros que coincidan con la busqueda.")   
+            self.mensajeEstadoTabla("No hay registros." if self.busqueda is None else "No se encontraron registros que coincidan con la busqueda.")  
+            return 
 
         paginaActual    = result["data"]["pagina_actual"]
         tamPagina       = result["data"]["tam_pagina"]
@@ -192,62 +161,46 @@ class AdminEmpleado(QWidget):
         self.tbPersona.setRowCount(0)
 
         for index, data in enumerate(listaPersona):
-            self.tbPersona.insertRow(index)  # Crea una fila por registro
+            self.tbPersona.insertRow(index)
             self.tbPersona.setRowHeight(index,45)
-            #obteniendo el id empleado y el objeto persona
+
             id_empleado     = data['id_empleado']
             persona:Persona = data['persona']
 
-            self.addItem_a_tabla(index,0,f'{persona.nombre} {persona.apellidos}')
-            self.addItem_a_tabla(index,1,persona.cedula)
-            self.addItem_a_tabla(index,2,persona.correo)
-            self.addItem_a_tabla(index,3,format_Fecha(str(persona.fecha_nacimiento)))
-            self.addItem_a_tabla(index,4,persona.estado_civil)
-            self.addItem_a_tabla(index,5,persona.direccion)
+            self.addItemTable(index,0,f'{persona.nombre} {persona.apellidos}')
+            self.addItemTable(index,1,persona.cedula)
+            self.addItemTable(index,2,persona.correo)
+            self.addItemTable(index,3,format_Fecha(str(persona.fecha_nacimiento)))
+            self.addItemTable(index,4,persona.estado_civil)
+            self.addItemTable(index,5,persona.direccion)
 
-            #Agregando los botones de las acciones que se pueden realizar
-            #boton mas informacion, boton editar, boton eliminar.
-            btnInfo = QPushButton(text="Más Info.",parent=self.tbPersona)
-            btnInfo.setObjectName('btnInfo')
-            btnInfo.setMinimumSize(QSize(80,35))
-            btnInfo.setMaximumWidth(100)
-            btnInfo.clicked.connect(lambda checked, idx=persona.id: self.eliminarEmpleado(idx))
-                    
-            btnEliminar = QPushButton(text="Eliminar",parent=self.tbPersona)
-            btnEliminar.setObjectName('btneliminar')
-            btnEliminar.setMinimumSize(QSize(80,35))
-            btnEliminar.setMaximumWidth(100)
-            btnEliminar.clicked.connect(lambda checked, idx=persona.id: self.eliminarEmpleado(idx))
-
-            btnEditar = QPushButton("Editar",parent=self.tbPersona)
-            btnEditar.setObjectName('btneditar')
-            btnEditar.setMinimumSize(QSize(80,35))
-            btnEditar.setMaximumWidth(100)
-            btnEditar.clicked.connect(lambda checked, idx = persona.id: self.editarEmpleado(idx))
-            
             #contenedor de los botones.
             layout = QHBoxLayout()
-            layout.addWidget(btnInfo)
+            layout.addWidget(self.crearBtnAccion('Mas info','btnInfo',id_empleado,self.verMasInformacion))
             layout.addSpacing(15)
-            layout.addWidget(btnEditar)
+            layout.addWidget(self.crearBtnAccion('Editar','btneditar',id_empleado,self.editarEmpleado))
             layout.addSpacing(15)
-            layout.addWidget(btnEliminar)
+            layout.addWidget(self.crearBtnAccion('Eliminar','btneliminar',id_empleado,self.eliminarEmpleado))
             layout.setContentsMargins(10, 0, 10,0)
             #widget para el layout de los botones.
             button_widget = QWidget()
             button_widget.setFixedWidth(300)
             button_widget.setLayout(layout)
-
             self.tbPersona.setCellWidget(index, 6, button_widget) 
     
-    def addItem_a_tabla(self,row, colum,dato):
+    def addItemTable(self,row, colum,dato):
         dato_item = QTableWidgetItem(dato)
         dato_item.setTextAlignment(Qt.AlignCenter)
         dato_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # No editable
         self.tbPersona.setItem(row, colum, dato_item)
 
-    def botonAcciones():
-        pass
+    def crearBtnAccion(self,text:str,objectName:str,id_empleado:int,functionAction):
+        boton = QPushButton(text,parent=self.tbPersona)
+        boton.setObjectName(objectName)
+        boton.setMinimumSize(QSize(80,35))
+        boton.setMaximumWidth(100)
+        boton.clicked.connect(lambda: functionAction(id_empleado))
+        return boton
 
     def actualizarLabelPagina(self,numPagina, totalPagina):
         self.lblNumPagina.setText(f"Pagina {numPagina} de {totalPagina} ")
@@ -289,26 +242,21 @@ class AdminEmpleado(QWidget):
             self.cargarTabla()
 
     def verMasInformacion(self, id_empleado:int):
+        print(f'\n\neliminar id {id_empleado}\n\n')
         pass
 
-    def eliminarEmpleado(self, idx:int):
-        pass
+    def eliminarEmpleado(self, id_empleado:int):
+        texto = "Se eliminaran todos los datos asociados a este empleado."
+        texto += "\n¿Quieres eliminar este empleado?"
 
-    def editarEmpleado(self,id:int):
-        blur_effect = QGraphicsBlurEffect(self)
-        blur_effect.setBlurRadius(10)  # Ajusta el radio de desenfoque según sea necesario
-        self.setGraphicsEffect(blur_effect)
-
-        self.cargarTabla()#luego de terminar se recarga la tabla
-        self.setGraphicsEffect(None)
+        dial = DialogoEmergente("¡Advertencia!",texto,"Warning",True,True)
+        if dial.exec() == QDialog.Accepted:
+            print("Eliminando")
+        
+    def editarEmpleado(self,id_empleado:int):
+        print(f'\n\neliminar id {id_empleado}\n\n')
 
     def crearEmpleado(self):
-        blur_effect = QGraphicsBlurEffect(self)
-        blur_effect.setBlurRadius(10)  # Ajusta el radio de desenfoque según sea necesario
-        
         form = formEmpleado()
+        form.finished.connect(form.deleteLater)
         form.exec()
-
-        self.cargarTabla() ##se recarga la tabla despues de terminar
-        self.setGraphicsEffect(None)
-        
