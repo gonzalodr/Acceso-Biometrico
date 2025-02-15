@@ -1,19 +1,5 @@
-2025-02-07 17:02:30,293 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-07 17:02:34,380 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-07 17:03:00,963 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-07 17:03:07,346 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-07 17:03:23,658 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-10 14:19:02,807 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-10 14:19:06,904 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-10 14:19:23,642 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-10 14:19:29,776 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-13 19:22:23,420 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-13 19:22:35,451 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-13 19:22:39,506 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-13 19:22:54,279 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-13 19:32:35,763 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-13 19:32:39,792 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-13 19:32:53,468 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-14 13:56:41,299 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-14 13:56:49,938 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-14 13:56:54,006 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
+2025-02-15 10:20:10,636 - ERROR - 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '* FROM departamento' at line 1 - departamentoData.py:200
+2025-02-15 10:20:29,427 - ERROR - 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '* FROM departamento' at line 1 - departamentoData.py:200
+2025-02-15 10:22:33,665 - ERROR - 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '* FROM departamento' at line 1 - departamentoData.py:200
+2025-02-15 10:22:56,013 - ERROR - 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '* FROM departamento' at line 1 - departamentoData.py:200
+2025-02-15 10:23:17,321 - ERROR - 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '* FROM departamento' at line 1 - departamentoData.py:200

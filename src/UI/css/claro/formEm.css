@@ -4,7 +4,7 @@
 #form #formFrame{
     background-color:#ffffff;
     border: 1px solid #007286;
-    border-radius: 10px;
+    /* border-radius: 10px; */
 }
 #form #contenedor{
     background-color: #eeeeee;
@@ -60,6 +60,22 @@
     border-bottom:1px solid #000000;
     color: #000000; 
 }
+#form QComboBox QAbstractItemView {
+    color: #000000;
+    border: none;
+    border-left: 2px solid #325fc6;
+    border-right: 2px solid #325fc6;
+    background-color: #ffffff;
+}
+
+#form QComboBox QAbstractItemView::item:hover {
+    color: #000000;
+    border: none;
+    border-left: 4px solid #325fc6;
+    border-right: 4px solid #325fc6;
+    background-color: #dddddd;
+}
+
 #form QTextEdit{
     background-color:transparent;
     font-size:15px;
@@ -134,3 +150,5 @@ QScrollArea > QWidget {
     background-color: #00a5cf;
     color:#FFFFFF;
 }
+
+

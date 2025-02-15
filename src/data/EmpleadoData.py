@@ -150,7 +150,6 @@ class EmpleadoData:
             if conexion:
                 conexion.close()
         
-
     def delete_Empleado(self, id_empleado):
         conexion, resultado = conection()
         if not resultado["success"]:

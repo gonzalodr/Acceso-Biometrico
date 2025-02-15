@@ -180,3 +180,27 @@ class DepartamentoData:
         finally:
             if conexion:
                 conexion.close()
+
+    def obtener_todo_departamentos(self):
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+        try:
+            with conexion.cursor(dictionary=True) as cursor:
+                query=f"SELECT * FROM {TBDEPARTAMENTO}"
+                cursor.execute(query)
+                data = cursor.fetchall()
+                listaDepa = []
+                for depa in data:
+                    departamento = Departamento(depa[TBDEPARTAMENTO_NOMBRE], depa[TBDEPARTAMENTO_DESCRIPCION],depa[TBDEPARTAMENTO_ID])
+                    listaDepa.append(departamento)
+
+                return {'success':True, 'listaDepa':listaDepa,'message':'Se obtuvieron todos los departamentos registrados.'}
+        except Error as e:
+            logger.error(f'{e}')
+            return{'success':False,'message':'Ocurrio un error al listar todos los departamentos.'}
+        finally:
+            if conexion:
+                conexion.close()
+
+                    

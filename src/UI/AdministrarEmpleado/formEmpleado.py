@@ -4,6 +4,9 @@ from PySide6.QtGui import QIntValidator
 from Utils.Utils import *
 from services.empleadoServices import EmpleadoServices
 from services.usuarioService import UsuarioServices
+from services.rolService import RolServices
+from services.departamentoService import DepartamentoServices
+from services.rolService import RolServices
 import re
 
 class formEmpleado(QDialog):
@@ -14,10 +17,13 @@ class formEmpleado(QDialog):
 
     emplServices = EmpleadoServices()
     userServices = UsuarioServices()
+    depaServices = DepartamentoServices()
+    rolServices  = RolServices()
 
     def __init__(self, parent = None, titulo = 'Registrar empleado', id_empleado = None):
         super().__init__(parent)
         self.setObjectName('form')
+        self.setWindowFlags(Qt.FramelessWindowHint)
         self.setMinimumSize(QSize(1050,700))
         
         cargar_estilos('claro','formEm.css',self)
@@ -201,13 +207,17 @@ class formEmpleado(QDialog):
         #Departamento
         self.lblDep = QLabel('Departamento')
         self.inDep = QComboBox()
-        self.inDep.addItem('Seleccione el departamento', None)
+        self.inDep.addItem('Ninguno', None)
+        self.inDep.setMaxVisibleItems(10)
         self.errDep = QLabel('Error Departamento')
+        self.llenarComboboxDepa()
         #Departamento
         self.lblRol = QLabel('Rol')
         self.inRol = QComboBox()
-        self.inRol.addItem('Seleccione el rol', None)
+        self.inRol.addItem('Ninguno', None)
+        self.inRol.setMaxVisibleItems(10)
         self.errRol = QLabel('Error Rol')
+        self.llenarComboboxRol()
 
         self.layoutCent.addWidget(tituloCent)
         self.layoutCent.addLayout(self.contenedor(self.lblDep,self.inDep,self.errDep))
@@ -370,7 +380,37 @@ class formEmpleado(QDialog):
                 #     lblError.setText('El tipo de contacto esta vacio')
                 
                 # print(f'Tel.: {numero}  Tipo: {tipoCont}')
+    '''
+        Llenado de combobox Rol y departamento
+    '''
+    def llenarComboboxDepa(self):
+        result = self.depaServices.obtenerTodoDepartamento()
+        print(result)
+        if not result['success']:
+            self.reject()
+            return
+        
+        if len(result['listaDepa']) == 0:
+            self.inDep.setItemText(0,'No hay departamentos registrados.')
+            return
 
+        for depa in result['listaDepa']:
+            self.inDep.addItem(depa.nombre,depa.id)
+            
+    def llenarComboboxRol(self):
+        result = self.rolServices.obtener_todo_roles()
+        print(result)
+        if not result['success']:
+            self.reject()
+            return
+        
+        if len(result['data']['listaRoles']) == 0:
+            self.inDep.setItemText(0,'No hay roles registrados.')
+            return
+
+        for rol in result['data']['listaRoles']:
+            self.inRol.addItem(rol.nombre, rol.id)
+            
     '''
     Logica
     '''

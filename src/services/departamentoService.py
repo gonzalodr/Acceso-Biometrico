@@ -65,3 +65,6 @@ class DepartamentoServices:
 
     def obtenerDepartamentoPorId(self, id):
         return self.departamentoData.get_departamento_by_id(id)
+    
+    def obtenerTodoDepartamento(self):
+        return self.departamentoData.obtener_todo_departamentos()
