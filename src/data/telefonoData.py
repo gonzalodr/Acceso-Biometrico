@@ -8,7 +8,7 @@ from models.telefono import Telefono
 
 class TelefonoData:
 
-    def verificarExistenciaTelefono(self, telefono, persona_id:int = None, conexionEx = None):
+    def verificarExistenciaTelefono(self, telefono:str, persona_id:int = None, conexionEx = None):
         conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
         if not resultado["success"]:
             return resultado
@@ -20,7 +20,6 @@ class TelefonoData:
                     cursor.execute(query, (telefono, persona_id))
                 else:
                     cursor.execute(query, (telefono,))
-                
                 count = cursor.fetchone()[0]
                 return count > 0
 

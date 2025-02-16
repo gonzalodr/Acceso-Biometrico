@@ -7,6 +7,7 @@ from services.empleadoServices import EmpleadoServices
 from services.usuarioService import UsuarioServices
 from services.rolService import RolServices
 from services.departamentoService import DepartamentoServices
+from services.personaService import PersonaServices
 from services.rolService import RolServices
 
 from UI.DialogoEmergente import DialogoEmergente
@@ -23,6 +24,7 @@ class formEmpleado(QDialog):
     userServices = UsuarioServices()
     depaServices = DepartamentoServices()
     rolServices  = RolServices()
+    perServices  = PersonaServices()
 
     def __init__(self, parent = None, titulo = 'Registrar empleado', id_empleado = None):
         super().__init__(parent)
@@ -415,6 +417,11 @@ class formEmpleado(QDialog):
         for rol in result['data']['listaRoles']:
             self.inRol.addItem(rol.nombre, rol.id)
 
+    def cerrarForm(self):
+        dialogo = DialogoEmergente('','¿Estas seguro que quieres cancelar?','Question',True,True)
+        if dialogo.exec() == QDialog.Accepted:
+            self.reject()
+
     '''
     Logica
     '''
@@ -442,7 +449,3 @@ class formEmpleado(QDialog):
         self.btnFoto.setText("Seleccionar foto")
         self.fotografia = None
     
-    def cerrarForm(self):
-        dialogo = DialogoEmergente('','¿Estas seguro que quieres cancelar?','Question',True,True)
-        if dialogo.exec() == QDialog.Accepted:
-            self.reject()
