@@ -2,11 +2,15 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import QIntValidator
 from Utils.Utils import *
+
 from services.empleadoServices import EmpleadoServices
 from services.usuarioService import UsuarioServices
 from services.rolService import RolServices
 from services.departamentoService import DepartamentoServices
 from services.rolService import RolServices
+
+from UI.DialogoEmergente import DialogoEmergente
+
 import re
 
 class formEmpleado(QDialog):
@@ -56,6 +60,7 @@ class formEmpleado(QDialog):
         boton_box.button(QDialogButtonBox.Cancel).setText("Cancelar")
         boton_box.button(QDialogButtonBox.Cancel).setObjectName("btncancelar")
         boton_box.button(QDialogButtonBox.Cancel).setMinimumSize(QSize(100,30))
+        boton_box.button(QDialogButtonBox.Cancel).clicked.connect(self.cerrarForm)
         
         boton_box.button(QDialogButtonBox.Ok).setText("Registrar" if id == None else "Actualizar")
         boton_box.button(QDialogButtonBox.Ok).setObjectName("btnregistrar")
@@ -315,35 +320,35 @@ class formEmpleado(QDialog):
         lblError.setMinimumHeight(25)
         lblError.setWordWrap(True)
 
-        GLInpTelefonos = QVBoxLayout()
-        GLInpTelefonos.setContentsMargins(10,20,10,20)
-        GLInpTelefonos.setSpacing(10)
-        GLInpTelefonos.addWidget(lblTelefono,0)
-        GLInpTelefonos.addWidget(inputTelefono,1)
-        GLInpTelefonos.addWidget(lblTipo,2,)
-        GLInpTelefonos.addWidget(inputTipo,3)
-        GLInpTelefonos.addWidget(lblError,4)
-        GLInpTelefonos.addWidget(btnEliminar,5)
+        VLInpTelefonos = QVBoxLayout()
+        VLInpTelefonos.setContentsMargins(10,20,10,20)
+        VLInpTelefonos.setSpacing(10)
+        VLInpTelefonos.addWidget(lblTelefono,0)
+        VLInpTelefonos.addWidget(inputTelefono,1)
+        VLInpTelefonos.addWidget(lblTipo,2,)
+        VLInpTelefonos.addWidget(inputTipo,3)
+        VLInpTelefonos.addWidget(lblError,4)
+        VLInpTelefonos.addWidget(btnEliminar,5)
        
-        btnEliminar.clicked.connect(lambda: self.eliminar_telefono(GLInpTelefonos))
-        self.layoutInputTel.addLayout(GLInpTelefonos)
+        btnEliminar.clicked.connect(lambda: self.eliminar_telefono(VLInpTelefonos))
+        self.layoutInputTel.addLayout(VLInpTelefonos)
     '''
     eliminado de los inputs dinamicos para los telefonos
     '''
-    def eliminar_telefono(self, GLInpTelefonos:QVBoxLayout):
+    def eliminar_telefono(self, VLInpTelefonos:QVBoxLayout):
         listWidget = []
         #obtiene la lista de los widgets en el layout a eliminar
         for i in range(6):
-            listWidget.append(GLInpTelefonos.itemAt(i).widget())
+            listWidget.append(VLInpTelefonos.itemAt(i).widget())
         #los eliminar uno por uno
         for widget in listWidget:
-            GLInpTelefonos.removeWidget(widget)
+            VLInpTelefonos.removeWidget(widget)
             if isinstance(widget,QPushButton):
                 widget.clicked.disconnect()
             widget.deleteLater()
         #elimina el layout
-        self.layoutInputTel.removeItem(GLInpTelefonos)
-        GLInpTelefonos.deleteLater()
+        self.layoutInputTel.removeItem(VLInpTelefonos)
+        VLInpTelefonos.deleteLater()
     '''
     Verificar si el numero es valido
     '''
@@ -385,7 +390,7 @@ class formEmpleado(QDialog):
     '''
     def llenarComboboxDepa(self):
         result = self.depaServices.obtenerTodoDepartamento()
-        print(result)
+
         if not result['success']:
             self.reject()
             return
@@ -399,7 +404,6 @@ class formEmpleado(QDialog):
             
     def llenarComboboxRol(self):
         result = self.rolServices.obtener_todo_roles()
-        print(result)
         if not result['success']:
             self.reject()
             return
@@ -410,47 +414,35 @@ class formEmpleado(QDialog):
 
         for rol in result['data']['listaRoles']:
             self.inRol.addItem(rol.nombre, rol.id)
-            
+
     '''
     Logica
     '''
     #Seleccion de foto
     def seleccionarFoto(self):
-        if self.fotografia is None:
-            self.abrir_seleccion_imagen()
+        if self.fotografia:
+            self.resetear_foto()
         else:
-            self.eliminar_foto()
-
-    def abrir_seleccion_imagen(self):
-        dir_defecto = QStandardPaths.writableLocation(QStandardPaths.PicturesLocation)
-        file_path, _ = QFileDialog.getOpenFileName(self, "Seleccionar Imagen", dir_defecto, "Imágenes (*.png *.jpg *.jpeg)")
-        if file_path:
-            self.mostrar_foto(file_path)
-            self.btnFoto.setText("Eliminar foto")
-            try:
-                with open(file_path, "rb") as file:
-                    self.fotografia = file.read()
-            except Exception as e:
-                self.resetear_foto()
+            dir_defecto = QStandardPaths.writableLocation(QStandardPaths.PicturesLocation)
+            file_path, _ = QFileDialog.getOpenFileName(self, "Seleccionar Imagen", dir_defecto, "Imágenes (*.png *.jpg *.jpeg)")
+            if file_path:
+                self.mostrar_foto(file_path)
+                self.btnFoto.setText("Eliminar foto")
+                try:
+                    with open(file_path, "rb") as file:
+                        self.fotografia = file.read()
+                except Exception:
+                    self.resetear_foto()
 
     def mostrar_foto(self, file_path):
         self.foto.setPixmap(QPixmap(file_path).scaled(self.foto.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
-
-    def eliminar_foto(self):
-        self.resetear_foto()
 
     def resetear_foto(self):
         cargar_Icono(self.foto, 'userPerson.png')
         self.btnFoto.setText("Seleccionar foto")
         self.fotografia = None
-
     
-    
-    
-    
-#
-# if __name__ == '__main__':
-#     app = QApplication(sys.argv)
-#     dialogo = formEmpleado()
-#     dialogo.show()
-#     sys.exit(app.exec())
+    def cerrarForm(self):
+        dialogo = DialogoEmergente('','¿Estas seguro que quieres cancelar?','Question',True,True)
+        if dialogo.exec() == QDialog.Accepted:
+            self.reject()
