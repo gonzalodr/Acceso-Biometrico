@@ -4,26 +4,26 @@ from settings.config import *
 
 class PerfilData:
     
-    def create_perfil(self, perfil: Perfil):
-        conexion, resultado = conection()
-        if not resultado["success"]:
+    def create_perfil(self, perfil: Perfil): #metodo para crear el perfil en la base de datos
+        conexion, resultado = conection() 
+        if not resultado["success"]: # si falla la conexion retorna error
             return resultado
         
         try:
-            cursor = conexion.cursor()
+            cursor = conexion.cursor() #se utiliza el cursor para las consultas a la base de datos
             query = f"""INSERT INTO {TBPERFIL}(
             {TBPERFIL_NOMBRE},
             {TBPERFIL_DESCRIPCION})
-            VALUES (%s, %s)"""
+            VALUES (%s, %s)""" #campos o posciones 
             
             cursor.execute(query,(
                 perfil.nombre,
                 perfil.descripcion
             ))
-            conexion.commit()
+            conexion.commit() #uarda los cambios
             resultado["success"] = True
             resultado["message"] = "Perfil creado exitosamente"
-        except Exception as e:
+        except Exception as e: #captura errores
             resultado["success"] = False
             resultado["message"] = f"Error al crear perfil: {e}"
         finally:
@@ -31,9 +31,9 @@ class PerfilData:
                 conexion.close()
         return resultado
     
-    def update_perfil(self, perfil: Perfil):
-        conexion, resultado = conection()
-        if not resultado["success"]:
+    def update_perfil(self, perfil: Perfil): #metodo para actualizar perfil
+        conexion, resultado = conection() # obtiene el estado de la conexion
+        if not resultado["success"]: # error
             return resultado
         
         try:
@@ -86,18 +86,22 @@ class PerfilData:
         if not resultado["success"]:
             return resultado
         
-        listaPerfiles = []
+        listaPerfiles = [] #lista donde se almacenan los perfiles
         try:
-            cursor = conexion.cursor(dictionary=True)
+            cursor = conexion.cursor(dictionary=True) #cursor para ejecutar las consultas
+            #diccionario para  mapear los nombres de las columnas
             columna_orden = {
                 "nombre": TBPERFIL_NOMBRE,
                 "descripcion": TBPERFIL_DESCRIPCION
             }
+            # si la columna esta desordenada se ordena por id
             ordenar_por = columna_orden.get(ordenar_por, TBROL_ID)
+            #se ajusta
             tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
             
             query = f"SELECT * FROM {TBPERFIL}"
             valores = []
+            
             if busqueda:
                 query += f" WHERE {TBPERFIL_NOMBRE} LIKE %s OR {TBPERFIL_DESCRIPCION} LIKE %s"
                 valores = [f"%{busqueda}%", f"%{busqueda}%"]
@@ -105,18 +109,18 @@ class PerfilData:
             query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
             valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
             
-            cursor.execute(query, valores)
-            registros = cursor.fetchall()
-            for registro in registros:
+            cursor.execute(query, valores) # Ejecuta la consulta SQL
+            registros = cursor.fetchall()# Obtiene todos los registros
+            for registro in registros:        # Se iteran los registros obtenidos y se convierten en objetos de tipo Perfil
                 perfil = Perfil(
                     nombre=registro[TBPERFIL_NOMBRE],
                     descripcion=registro[TBPERFIL_DESCRIPCION],
                     id=registro[TBPERFIL_ID]
                 )
-                listaPerfiles.append(perfil)
+                listaPerfiles.append(perfil)# Se añade el perfil a la lista
             
-            cursor.execute(f"SELECT COUNT(*) as total FROM {TBROL}")
-            total_registros = cursor.fetchone()["total"]
+            cursor.execute(f"SELECT COUNT(*) as total FROM {TBPERFIL}") #TBROL
+            total_registros = cursor.fetchone()["total"]  # Se obtiene el número total de registros
             total_paginas = (total_registros + tam_pagina - 1) // tam_pagina
             
             resultado["data"] = {
@@ -145,6 +149,7 @@ class PerfilData:
 
         try:
             cursor = conexion.cursor()
+              # Consulta SQL para obtener el perfil por su ID
             query = f"""SELECT
                             {TBPERFIL_NOMBRE}, 
                             {TBPERFIL_DESCRIPCION}, 
@@ -152,10 +157,10 @@ class PerfilData:
                         FROM {TBPERFIL} 
                         WHERE {TBPERFIL_ID} = %s"""
             
-            cursor.execute(query, (perfil_id,))
-            data = cursor.fetchone()
+            cursor.execute(query, (perfil_id,)) #busca segun el id
+            data = cursor.fetchone() # se obtiene el resultado
             
-            if data:
+            if data: #si se encuentra el perfil
                 perfil = Perfil(
                     nombre=data[0],
                     descripcion=data[1],
@@ -179,12 +184,14 @@ class PerfilData:
         if not resultado["success"]:
             return resultado
         
-        listaPerfiles = []
+        listaPerfiles = []  # Lista donde se almacenarán los perfiles ob
         try:
             with conexion.cursor(dictionary=True) as cursor:
                 query = f"SELECT * FROM {TBPERFIL}"
                 cursor.execute(query)
                 registros = cursor.fetchall()
+                
+                 # Se convierten los registros en objetos de tipo Perfil y se almacenan en la lista
                 for registro in registros:
                     perfil = Perfil(
                         nombre=registro[TBPERFIL_NOMBRE],
@@ -203,7 +210,8 @@ class PerfilData:
             resultado["message"] = f"Error al listar perfiles: {e}"
         finally:
             if cursor:
-                cursor.close()
+                cursor.close()# Se cierra el cursor
             if conexion:
-                conexion.close()
+                conexion.close()# Se cierra la conexión a la base de datos
+
         return resultado
