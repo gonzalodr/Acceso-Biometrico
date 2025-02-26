@@ -14,7 +14,9 @@ from data.personaData import PersonaData
 from data.usuarioData import UsuarioData
 from data.telefonoData import TelefonoData
 from data.empleado_RolData import EmpleadoRolData
+from data.departamentoData import DepartamentoData
 from data.usuario_PerfilData import UsuarioPerfilData
+from data.rolData import RolData
 
 class EmpleadoData:
     def __init__(self):
@@ -23,6 +25,8 @@ class EmpleadoData:
         self.emplRolData = EmpleadoRolData()
         self.userPerfilData = UsuarioPerfilData()
         self.telefonoData = TelefonoData()
+        self.depaData   = DepartamentoData()
+        self.rolData    = RolData()
 
     '''
     Registra los datos del empleado, persona, creación de usuarios, asignación de rol y de departamento
@@ -32,13 +36,18 @@ class EmpleadoData:
         if not resultado["success"]:
             return resultado
         try:
+            #obteniendo persona, telefonos, usuarios
             persona:Persona = datos.get('persona')
-            listaTel = datos.get('listaTelefonos')
+            listaTel:list   = datos.get('listaTelefonos')
             usuario:Usuario = datos.get('usuario')
           
-            id_dep:int = datos.get('id_departamento') if datos.get('id_departamento') else None
-            id_rol:int = datos.get('id_rol') if datos.get('id_rol') else None
-            id_per:int = datos.get('id_perfil') if datos.get('id_perfil') else None #perfiles
+            #recibiendo perfil, departamento, rol
+            id_dep:int = datos.get('id_departamento')
+            id_rol:int = datos.get('id_rol')
+            id_per:int = datos.get('id_perfil')
+            
+            #iniciando transaccion
+            conexion.start_transaction()
 
             #registrando la persona
             result = self.personadata.create_persona(persona,conexion)
@@ -56,7 +65,7 @@ class EmpleadoData:
                         conexion.rollback()
                         return result
 
-            #registrando empleado
+            #registrando empleado, (Asociacion de tb persona, tb departamento en tb empleado)
             result = self.registrar_empleado(id_persona,id_dep,conexion)
             if not result['success']:
                 conexion.rollback()
@@ -70,7 +79,7 @@ class EmpleadoData:
                     conexion.rollback()
                     return result
             
-            #ingresando el usuario
+            #ingresando el usuario y su perfil
             if usuario:
                 usuario.id_persona = id_persona
                 result = self.usuariodata.create_usuario(usuario,conexion)
@@ -125,6 +134,9 @@ class EmpleadoData:
             if conexion and conexionEx is None:
                 conexion.close()
     
+    '''
+    Actualizacion de los datos del empleado, persona, creación de usuarios, asignación de rol y de departamento
+    '''
     def update_Empleado(self,datos:Dict[str,Any]):
         conexion, resultado = conection()
         if not resultado["success"]:
@@ -141,15 +153,16 @@ class EmpleadoData:
             with conexion.cursor() as cursor:
                 pass
 
-
-
         except Error as e:
             logger.error(f"{e}")
             return {"success": False, "message": "Ocurrió un error al actualizar el empleado."}
         finally:
             if conexion:
                 conexion.close()
-        
+
+    '''
+    Eliminación de los datos del empleado, persona, creación de usuarios, asignación de rol y de departamento
+    '''  
     def delete_Empleado(self, id_empleado):
         conexion, resultado = conection()
         if not resultado["success"]:
@@ -163,7 +176,9 @@ class EmpleadoData:
         finally:
             if conexion:
                 conexion.close()
-
+    '''
+    Listado de los datos del empleado, los datos personales
+    '''
     def list_Empleados(self, pagina=1, tam_pagina=10, ordenar_por=TBPERSONA_ID, tipo_orden="ASC", busqueda=None):
         conexion, resultado = conection()
         if not resultado["success"]:
@@ -259,6 +274,84 @@ class EmpleadoData:
             return {"success": False, "message": "Ocurrió un error al listar los empleados."}
         finally:
             if conexion:
+                conexion.close()
+    '''
+    Obtener la información de un empleado por su ID
+    Datos personales
+    Usuario->perfil asignado
+    Departamento
+    Rol asignado
+    '''
+    def getEmpleadoById(self,id_empleado:int,conexionEx=None):
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
+        try:
+            with conexion.cursor(dictionary=True) as cursor:
+                query = f"""SELECT 
+                                {TBEMPLEADO_ID},
+                                {TBEMPLEADO_PERSONA},
+                                {TBEMPLEADO_DEPARTAMENTO}
+                            FROM {TBEMPLEADO}
+                            WHERE {TBEMPLEADO_ID} = %s
+                """
+                cursor.execute(query, (id_empleado,))
+                data = cursor.fetchone()
+                if data:
+                    #departamento
+                    departamento = data[TBEMPLEADO_DEPARTAMENTO]
+                    
+                    #extraer la persona
+                    result = self.personadata.get_persona_by_id(data[TBEMPLEADO_PERSONA],conexion)
+                    if not result['success']:
+                        return result
+                    if not result['exists']:
+                        return result
+                    persona = result['persona']
+
+
+                    #extraer el usuario si es que existe alguno
+                    result = self.usuariodata.get_usuario_by_id(data[TBEMPLEADO_PERSONA],conexion)
+                    if not result['success']:
+                        return result
+                    usuario = result.get('usuario')
+
+                    #extraer relacion perfil usuario si existe usuario existe perfil asociado
+                    perfilUsuario = None
+                    if usuario:
+                        result = self.userPerfilData.get_usuario_by_id_usurio(usuario.id,conexion)
+                        if not result['success']:
+                            return result
+                        if not result['exists']:
+                            return result
+                        perfilUsuario = result['usuarioPerfil']
+
+
+                    #extraer relacion rolEmpleado
+                    result = self.emplRolData.get_rol_empleado_by_id(data[TBEMPLEADO_ID],conexion)
+                    if not result['success']:
+                        return result
+                    rolEmpleado =  result.get('rolEmpleado')
+                    
+                    return {
+                        'empleado':{
+                            'persona':persona,
+                            'usuario':usuario,
+                            'pefilUsuario':perfilUsuario,
+                            'rolEmpleado':rolEmpleado,
+                            'departamento':departamento
+                        },
+                        'success':True,
+                        'exists':True,
+                        'message':'Se obtuvo los datos del empleado correctamente.'
+                    }
+                else:
+                    return {'success':True,'exists':False, 'message':'No existe el empleado.'}
+        except Error as e:
+            logger.error(f'{e}')
+            return {'success':False, 'message':'Ocurrio un problema al obtener el empleado.'}
+        finally:
+            if conexion and conexionEx is None:
                 conexion.close()
 
     def getAll_info_empleado_by_id(self, id_empleado:int, conexionEx ):

@@ -115,3 +115,39 @@ class UsuarioPerfilData:
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
+
+    def get_usuario_by_id_usurio(self, id_usuario:int, conexionEx = None):
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
+        try:
+            with conexion.cursor() as cursor:
+                query=f'''SELECT 
+                        {TBUSUARIOPERFIL_ID},
+                        {TBUSUARIOPERFIL_ID_PERF},
+                        {TBUSUARIOPERFIL_ID_USER}
+                        FROM {TBUSUARIOPERFIL}
+                        WHERE {TBUSUARIOPERFIL_ID_USER} = %s'''
+                
+                cursor.execute(query,(id_usuario,))
+                data = cursor.fetchone()
+
+                if data:
+                    return {
+                        'success':True,
+                        'exists':True,
+                        'message':'Se obtuvo los datos del perfil usuario.',
+                        'usuarioPerfil':{
+                            'id':data[0],
+                            'id_perfil':data[1],
+                            'id_usuario':data[2]
+                        }
+                    }
+                else:
+                    return {'success':True,'exists':False,'message':'No se obtuvo los datos del perfil usuario.'}
+        except Error as e:
+            logger.error(f'{e}')
+            return {'success':False,'message':'Ocurrió un error al obtener el perfil asignado al usuario'}
+        finally:
+            if conexion and conexionEx is None:
+                conexion.close()  

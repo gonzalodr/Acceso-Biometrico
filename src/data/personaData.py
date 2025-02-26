@@ -299,7 +299,7 @@ class PersonaData:
                         direccion       = data[7],
                         id              = data[8]
                     )
-                    return {'success':True,'exists':True, 'message':'Se encontro a la persona.','data':persona}
+                    return {'success':True,'exists':True, 'message':'Se encontro a la persona.','persona':persona}
                 else:
                     return {'success':True,'exists':False, 'message':'No se encontro a la persona.'}
         except Exception as e:

@@ -10,3 +10,5 @@ prueba*.*
 Vistas.asciidoc
 *.log
 .vscode/
+
+*.log

@@ -9,6 +9,11 @@
     border-radius: 10px;
 }
 
+#form #contenedor{
+    background-color: #eeeeee;
+    border-radius: 5px;
+}
+
 #form QCheckBox{
     font: 1 10pt "Arial";
     color:#000000;

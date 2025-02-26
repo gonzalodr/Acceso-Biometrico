@@ -160,7 +160,36 @@ class UsuarioData:
             if conexion:
                 conexion.close()
         return resultado
-
+   
+    def get_usuario_by_id(self, persona_id:int, conexionEx = None):
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
+        try:
+            with conexion.cursor(dictionary=True) as cursor:
+                query = f"""SELECT
+                                {TBUSUARIO_ID},
+                                {TBUSUARIO_ID_PERSONA},
+                                {TBUSUARIO_USUARIO}
+                            FROM {TBUSUARIO} WHERE {TBUSUARIO_ID_PERSONA} = %s"""
+                cursor.execute(query, (persona_id,))
+                data = cursor.fetchone()
+                if data:
+                    usuario = Usuario(
+                        usuario = data[TBUSUARIO_USUARIO],
+                        id      = data[TBUSUARIO_ID],
+                        id_persona = data[TBUSUARIO_ID_PERSONA]
+                    )
+                    return {"success":True,"exists":True, "message":"Usuario obtenido exitosamente", "usuario":usuario}
+                else:
+                    return {"success":True,"exists":False,"message":"Usuario no encontrado"}
+        except Error as error:
+            logger.error(f'{error}')
+            return {'success':False, 'message':'Ocurrió un error al obtener el usuario.'}
+        finally:
+            if conexion and conexionEx is None:
+                conexion.close()
+   
     def get_usuario_by_correo_o_usuario(self, identificador):
         conexion, resultado = conection()
         if not resultado["success"]:

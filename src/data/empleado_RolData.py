@@ -93,10 +93,11 @@ class EmpleadoRolData:
             if conexion and conexionEx is None:
                 conexion.close()
 
-    def get_rol_empleado_by_id(self,id_rolempleado:int):
-        conexion, resultado = conection()
+    def get_rol_empleado_by_id(self,id_rolempleado:int, conexionEx = None):
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
         if not resultado["success"]:
             return resultado
+
         try:
             with conexion.cursor(dictionary = True) as cursor:
                 query = f'''SELECT 
@@ -107,35 +108,22 @@ class EmpleadoRolData:
                         WHERE {TBROLEMPLEADO_ID} = %s'''
                 cursor.execute(query,(id_rolempleado,))
                 data = cursor.fetchone()
-
-                result = self.roldata.get_rol_by_id(data[TBROLEMPLEADO_ID_ROL])
-                if not result['success']:
-                    return result
-                
-                if not result['exists']:
-                    return result
-                
-                rol:Rol = result['data']
-
                 if data:
                     return {
                         'success':True,
                         'exists':True,
                         'message':'Se obtuvo los datos del rol empleado.',
-                        'data':{
-                            'rolEmpleado':{
-                                'id': data[0],
-                                'id_rol':data[1],
-                                'id_empleado':data[2]
-                            },
-                            'rol':rol
+                        'rolEmpleado':{
+                            'id': data[0],
+                            'id_rol':data[1],
+                            'id_empleado':data[2]
                         }
                     }
                 else:
-                    return {'success':True,'exists':True,'message':'No se obtuvo los datos del rol empleado.'}
+                    return {'success':True,'exists':False,'message':'No se obtuvo los datos del rol empleado.'}
         except Error as e:
             logger.error(f'{e}')
             return {'success':False,'message':'Ocurrió un error al obtener el rol asignado del empleado'}
         finally:
-            if conexion:
+            if conexion and conexionEx is None:
                 conexion.close()

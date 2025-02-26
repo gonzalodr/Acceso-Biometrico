@@ -9,6 +9,7 @@ from services.rolService import RolServices
 from services.departamentoService import DepartamentoServices
 from services.personaService import PersonaServices
 from services.rolService import RolServices
+from services.perfilService import PerfilServices
 
 from UI.DialogoEmergente import DialogoEmergente
 
@@ -25,6 +26,7 @@ class formEmpleado(QDialog):
     depaServices = DepartamentoServices()
     rolServices  = RolServices()
     perServices  = PersonaServices()
+    perfilServices = PerfilServices()
 
     def __init__(self, parent = None, titulo = 'Registrar empleado', id_empleado = None):
         super().__init__(parent)
@@ -71,8 +73,7 @@ class formEmpleado(QDialog):
 
         layoutFrame.addWidget(boton_box)
         frame.setLayout(layoutFrame)
-        self.setLayout(layoutPrin)
-        
+        self.setLayout(layoutPrin)    
     '''
     LLenado de layoutContent
     '''
@@ -203,45 +204,7 @@ class formEmpleado(QDialog):
         self.layoutIzq.addLayout(self.contenedor(self.lblTelefonos,self.layoutTelPrinc,self.errTelefono))
         self.layoutIzq.addLayout(self.contenedor(self.lblEstCivil,self.inEstCivil,self.errEstCivil))
         self.layoutIzq.addLayout(self.contenedor(self.lblDireccion,self.inDireccion,self.errDireccion))
-    '''
-    Llenado de layoutCent
-    '''
-    def llenarLayoutCentral(self):
-        tituloCent = QLabel('Departamento y Rol')
-        tituloCent.setObjectName('lblsubtitulos')
-        tituloCent.setAlignment(Qt.AlignCenter)
-
-        #Departamento
-        self.lblDep = QLabel('Departamento')
-        self.inDep = QComboBox()
-        self.inDep.addItem('Ninguno', None)
-        self.inDep.setMaxVisibleItems(10)
-        self.errDep = QLabel('Error Departamento')
-        self.llenarComboboxDepa()
-        #Departamento
-        self.lblRol = QLabel('Rol')
-        self.inRol = QComboBox()
-        self.inRol.addItem('Ninguno', None)
-        self.inRol.setMaxVisibleItems(10)
-        self.errRol = QLabel('Error Rol')
-        self.llenarComboboxRol()
-
-        self.layoutCent.addWidget(tituloCent)
-        self.layoutCent.addLayout(self.contenedor(self.lblDep,self.inDep,self.errDep))
-        self.layoutCent.addLayout(self.contenedor(self.lblRol,self.inRol,self.errRol))
-        self.layoutCent.setAlignment(Qt.AlignTop) ##Alinea los widgets arriba
-    '''
-    Llenado de layoutDer
-    '''
-    def llenarLayoutDerecho(self):
-        tituloDer = QLabel('Usuarios')
-        tituloDer.setObjectName('lblsubtitulos')
-        tituloDer.setAlignment(Qt.AlignCenter)
-        self.layoutDer.addWidget(tituloDer)
-        self.layoutDer.setAlignment(Qt.AlignTop)
-    '''
-    Llenado de layoutFoto
-    '''
+    #layout para la foto
     def llenarLayoutFoto(self):
         self.foto = QLabel()
         self.foto.setObjectName('foto')
@@ -258,9 +221,7 @@ class formEmpleado(QDialog):
         self.layoutFoto.setAlignment(Qt.AlignCenter)
         self.layoutFoto.addWidget(self.foto)
         self.layoutFoto.addWidget(self.btnFoto)
-    '''
-    Contenedor independiente para cada input
-    '''
+    #contenedor para cada input
     def contenedor(self,lblTelefono:QLabel,input,label_error:QLabel)->QVBoxLayout:
         layout = QVBoxLayout()
         layout.setContentsMargins(10,5,10,0)
@@ -276,9 +237,7 @@ class formEmpleado(QDialog):
         layout.addLayout(input) if isinstance(input,QVBoxLayout) else layout.addWidget(input)
         layout.addWidget(label_error)
         return layout
-    '''
-    llenado de layoutTelefono
-    '''
+    #layout donde se maneja los telefonos
     def llenarLayoutTelefono(self):
         #boton para agregar telefono
         btnAgregarTel = QPushButton(text='Agregar telefono.')
@@ -290,9 +249,7 @@ class formEmpleado(QDialog):
         #asignando los valores alos layouts
         self.layoutTelPrinc.addWidget(btnAgregarTel)
         self.layoutTelPrinc.addLayout(self.layoutInputTel)
-    '''
-    llenado dinamico de inputs para telefonos
-    '''  
+    #agregado de telefono
     def agregar_nuevo_telefono(self):
         #lblTelefono para cada input telefono
         lblTelefono = QLabel(text='Numero de telefono')
@@ -334,9 +291,7 @@ class formEmpleado(QDialog):
        
         btnEliminar.clicked.connect(lambda: self.eliminar_telefono(VLInpTelefonos))
         self.layoutInputTel.addLayout(VLInpTelefonos)
-    '''
-    eliminado de los inputs dinamicos para los telefonos
-    '''
+    #eliminado de telefono
     def eliminar_telefono(self, VLInpTelefonos:QVBoxLayout):
         listWidget = []
         #obtiene la lista de los widgets en el layout a eliminar
@@ -351,9 +306,7 @@ class formEmpleado(QDialog):
         #elimina el layout
         self.layoutInputTel.removeItem(VLInpTelefonos)
         VLInpTelefonos.deleteLater()
-    '''
-    Verificar si el numero es valido
-    '''
+    #verificacion del telefono
     def verificar_numero(self, input: QLineEdit):
         numero = input.text()
         if self.es_numero_valido(numero):
@@ -361,11 +314,11 @@ class formEmpleado(QDialog):
         else:
             input.setProperty('telValido',False)
         input.style().polish(input)  
-
+    #verificacion del telefono
     def es_numero_valido(self, numero: str) -> bool:
         patron = re.compile(r'^[2456789]\d{7}$')
         return bool(patron.match(numero))
-
+    #obtencion de telefonos, todos
     def obtenerTelefonosInputs(self):
         lista =[]
         #obtengo los valores de cada numero ingresado junto con su tipo
@@ -388,8 +341,33 @@ class formEmpleado(QDialog):
                 
                 # print(f'Tel.: {numero}  Tipo: {tipoCont}')
     '''
-        Llenado de combobox Rol y departamento
+    Llenado de layoutCent
     '''
+    def llenarLayoutCentral(self):
+        tituloCent = QLabel('Departamento y Rol')
+        tituloCent.setObjectName('lblsubtitulos')
+        tituloCent.setAlignment(Qt.AlignCenter)
+
+        #Departamento
+        self.lblDep = QLabel('Departamento')
+        self.inDep = QComboBox()
+        self.inDep.addItem('Ninguno', None)
+        self.inDep.setMaxVisibleItems(10)
+        self.errDep = QLabel('Error Departamento')
+        self.llenarComboboxDepa()
+        #Departamento
+        self.lblRol = QLabel('Rol')
+        self.inRol = QComboBox()
+        self.inRol.addItem('Ninguno', None)
+        self.inRol.setMaxVisibleItems(10)
+        self.errRol = QLabel('Error Rol')
+        self.llenarComboboxRol()
+
+        self.layoutCent.addWidget(tituloCent)
+        self.layoutCent.addLayout(self.contenedor(self.lblDep,self.inDep,self.errDep))
+        self.layoutCent.addLayout(self.contenedor(self.lblRol,self.inRol,self.errRol))
+        self.layoutCent.setAlignment(Qt.AlignTop) ##Alinea los widgets arriba
+    #llenado de opciones de los combobox de rol y departamento
     def llenarComboboxDepa(self):
         result = self.depaServices.obtenerTodoDepartamento()
 
@@ -416,7 +394,109 @@ class formEmpleado(QDialog):
 
         for rol in result['data']['listaRoles']:
             self.inRol.addItem(rol.nombre, rol.id)
+    '''
+    Llenado de layoutDer
+    '''
+    def llenarLayoutDerecho(self):
+        tituloDer = QLabel('Usuarios')
+        tituloDer.setObjectName('lblsubtitulos')
+        tituloDer.setAlignment(Qt.AlignCenter)
 
+        self.btnCrearUsuario = QPushButton('Crear usuario')
+        self.btnCrearUsuario.setObjectName('nuevo_usuario')
+        
+        self.btnCrearUsuario.setProperty("crear",True)
+        self.btnCrearUsuario.style().polish(self.btnCrearUsuario)
+
+        self.btnCrearUsuario.setFixedHeight(40)
+        self.btnCrearUsuario.clicked.connect(self.crearlayoutUsuario)
+
+        self.layoutPrinUsuario = QVBoxLayout()
+        self.layoutPrinUsuario.addWidget(self.btnCrearUsuario)
+
+        self.layoutDer.addWidget(tituloDer)
+        self.layoutDer.setAlignment(Qt.AlignTop)
+        self.layoutDer.addLayout(self.layoutPrinUsuario)
+    
+    def crearlayoutUsuario(self):
+        lblUsuario = QLabel('Usuario')
+
+        inputUser = QLineEdit()
+        inputUser.setPlaceholderText('Ingrese el nombre de usuario.')
+
+        lblContrasena = QLabel('Contraseña')
+
+        inputCont = QLineEdit()
+        inputCont.setPlaceholderText('Ingrese la contraseña')
+        
+        lblError = QLabel(text='Error:')
+        lblError.setObjectName("lblerror")
+        lblError.setMaximumHeight(25)
+        lblError.setMinimumHeight(25)
+        lblError.setWordWrap(True)
+
+        cmbPerfiles = QComboBox()
+        cmbPerfiles.addItem('Ninguno',None)
+
+        result = self.perfilServices.obtener_todo_perfiles()
+        if not result:
+            dial = DialogoEmergente('Ocurrio un problema','No se cargaron los perfiles','Error',True,False)
+            dial.exec()
+            self.reject()
+            return
+        
+        if len(result['data']['listaPerfiles']) != 0:
+            for perfil in result['data']['listaPerfiles']:
+                cmbPerfiles.addItem(perfil.nombre,perfil.id)
+
+        layout = QVBoxLayout()
+
+        layout.addWidget(lblUsuario)
+        layout.addWidget(inputUser)
+        layout.addWidget(lblContrasena)
+        layout.addWidget(inputCont)
+        layout.addWidget(lblError)
+        layout.addSpacing(15)
+        layout.addWidget(cmbPerfiles)
+
+        self.layoutPrinUsuario.addLayout(layout)
+
+        self.btnCrearUsuario.clicked.disconnect(self.crearlayoutUsuario)
+        self.btnCrearUsuario.clicked.connect(self.eliminacionUsuario)
+        self.btnCrearUsuario.setText('Eliminar usuario')
+        self.btnCrearUsuario.setProperty("crear",False)
+        self.btnCrearUsuario.style().polish(self.btnCrearUsuario)
+
+
+    def eliminacionUsuario(self):
+        layout= self.layoutPrinUsuario.itemAt(1).layout()
+        listaW = []
+
+        for i in range(layout.count()):
+            listaW.append(layout.itemAt(i))
+
+        for objeto in listaW:
+            if objeto.widget():
+                widget = objeto.widget()
+                print(type(widget))
+                layout.removeWidget(widget)
+                widget.deleteLater()
+            elif objeto.spacerItem():
+                spacing = objeto.spacerItem()
+                print(type(spacing))
+                layout.removeItem(spacing)
+                
+
+        self.layoutPrinUsuario.removeItem(layout)
+        layout.deleteLater()
+        #actualizar el evento para el btncrear 
+        self.btnCrearUsuario.clicked.disconnect(self.eliminacionUsuario)
+        self.btnCrearUsuario.clicked.connect(self.crearlayoutUsuario)
+        self.btnCrearUsuario.setText('Crear usuario')
+        self.btnCrearUsuario.setProperty("crear",True)
+        self.btnCrearUsuario.style().polish(self.btnCrearUsuario)
+
+    #cerrado de telefono
     def cerrarForm(self):
         dialogo = DialogoEmergente('','¿Estas seguro que quieres cancelar?','Question',True,True)
         if dialogo.exec() == QDialog.Accepted:
@@ -448,4 +528,3 @@ class formEmpleado(QDialog):
         cargar_Icono(self.foto, 'userPerson.png')
         self.btnFoto.setText("Seleccionar foto")
         self.fotografia = None
-    

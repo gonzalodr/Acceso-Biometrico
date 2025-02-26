@@ -171,9 +171,9 @@ class DepartamentoData:
                         descripcion=data[1],
                         id=data[2]
                     )
-                    return {'success':True, 'data':departamento}
+                    return {'success':True, 'exists':False, 'departamento':departamento}
                 else:
-                    raise ValueError("No se encontró ningún departamento con el ID proporcionado.")
+                    return {'success':True, 'exists':False, 'message':'No se encontró el departamento.'}
         except Error as e:
             logger.error(f'{e}')
             return {'success':False,'message':'Ocurrió un error al obtener el departamento'}
