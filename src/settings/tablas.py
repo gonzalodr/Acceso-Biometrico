@@ -37,14 +37,14 @@ TBUSUARIOPERFIL_ID_PERF = 'Id_Perfil'
 
 
 # Tabla rol
-TBROL = "rol"
-TBROL_ID = "Id"
-TBROL_NOMBRE = "Nombre"
-TBROL_DESCRIPCION = "Descripcion"
+TBROL                   = "rol"
+TBROL_ID                = "Id"
+TBROL_NOMBRE            = "Nombre"
+TBROL_DESCRIPCION       = "Descripcion"
 
 #Tabla teléfono
-TBTELEFONO = 'telefono'
-TBTELEFONO_ID = 'Id'
-TBTELEFONO_ID_PERSONA = 'Id_Persona'
-TBTELEFONO_NUMERO = 'Numero'
+TBTELEFONO              = 'telefono'
+TBTELEFONO_ID           = 'Id'
+TBTELEFONO_ID_PERSONA   = 'Id_Persona'
+TBTELEFONO_NUMERO       = 'Numero'
 TBTELEFONO_TIPO_CONTACTO = 'Tipo_Contacto'

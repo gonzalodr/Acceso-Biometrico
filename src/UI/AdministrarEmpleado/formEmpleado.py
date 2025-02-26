@@ -293,19 +293,10 @@ class formEmpleado(QDialog):
         self.layoutInputTel.addLayout(VLInpTelefonos)
     #eliminado de telefono
     def eliminar_telefono(self, VLInpTelefonos:QVBoxLayout):
-        listWidget = []
-        #obtiene la lista de los widgets en el layout a eliminar
-        for i in range(6):
-            listWidget.append(VLInpTelefonos.itemAt(i).widget())
-        #los eliminar uno por uno
-        for widget in listWidget:
-            VLInpTelefonos.removeWidget(widget)
-            if isinstance(widget,QPushButton):
-                widget.clicked.disconnect()
-            widget.deleteLater()
-        #elimina el layout
+        self.eliminacionLayout(VLInpTelefonos)
         self.layoutInputTel.removeItem(VLInpTelefonos)
         VLInpTelefonos.deleteLater()
+
     #verificacion del telefono
     def verificar_numero(self, input: QLineEdit):
         numero = input.text()
@@ -467,25 +458,10 @@ class formEmpleado(QDialog):
         self.btnCrearUsuario.setProperty("crear",False)
         self.btnCrearUsuario.style().polish(self.btnCrearUsuario)
 
-
     def eliminacionUsuario(self):
-        layout= self.layoutPrinUsuario.itemAt(1).layout()
-        listaW = []
+        layout = self.layoutPrinUsuario.itemAt(1).layout()
 
-        for i in range(layout.count()):
-            listaW.append(layout.itemAt(i))
-
-        for objeto in listaW:
-            if objeto.widget():
-                widget = objeto.widget()
-                print(type(widget))
-                layout.removeWidget(widget)
-                widget.deleteLater()
-            elif objeto.spacerItem():
-                spacing = objeto.spacerItem()
-                print(type(spacing))
-                layout.removeItem(spacing)
-                
+        self.eliminacionLayout(layout)
 
         self.layoutPrinUsuario.removeItem(layout)
         layout.deleteLater()
@@ -495,6 +471,23 @@ class formEmpleado(QDialog):
         self.btnCrearUsuario.setText('Crear usuario')
         self.btnCrearUsuario.setProperty("crear",True)
         self.btnCrearUsuario.style().polish(self.btnCrearUsuario)
+
+    #eliminacion de layout y sus elementos
+    def eliminacionLayout(self,layout:QVBoxLayout | QHBoxLayout):
+        while layout.count():
+            item = layout.takeAt(0)  # Tomar el primer item del layout
+            if item.widget():                   #eliminacion de widgets
+                widget = item.widget()
+                layout.removeWidget(widget)
+                widget.deleteLater()
+            elif item.layout():                 #eliminacion de layout
+                sub_layout = item.layout()
+                self.eliminacionLayout(sub_layout)
+                layout.removeItem(item)
+                sub_layout.deleteLater()
+            elif item.spacerItem():             #eliminacion de spacing
+                spacer = item.spacerItem()
+                layout.removeItem(item) 
 
     #cerrado de telefono
     def cerrarForm(self):
