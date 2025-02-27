@@ -1,0 +1,22 @@
+{
+    "cSpell.languageSettings": [
+      "es-ES"
+    ],
+    
+    "cSpell.ignoreRegExpList": [
+      "#.*",                      // Ignorar comentarios de Python
+      "\"\"\"[\\s\\S]*?\"\"\"",   // Ignorar docstrings con comillas dobles
+      "'''[\\s\\S]*?'''"          // Ignorar docstrings con comillas simples
+    ],
+    "cSpell.includeRegExpList": [
+      "\"[^\"]*\"",               // Revisar strings entre comillas dobles
+      "'[^']*'"                   // Revisar strings entre comillas simples
+    ],
+    "cSpell.enabledLanguageIds": [
+      "python"
+    ],
+    "cSpell.enableFiletypes": [
+      "python"
+    ],
+    "cSpell.language": "es-ES"
+  }

@@ -84,7 +84,7 @@ class AdminDepartament(QWidget):
         self.tbDepartamento = QTableWidget()
         if (self.tbDepartamento.columnCount() < 3):
             self.tbDepartamento.setColumnCount(3)
-        header_labels = ["Nombre", "Descripcion", "Accciones"]
+        header_labels = ["Nombre", "Descripcion", "Acciones"]
         self.tbDepartamento.setHorizontalHeaderLabels(header_labels)
         
         self.tbDepartamento.horizontalHeader().setFixedHeight(40)
@@ -185,7 +185,7 @@ class AdminDepartament(QWidget):
                 tamPagina = result["data"]["tam_pagina"]
                 totalPaginas = result["data"]["total_paginas"]
                 totalRegistros = result["data"]["total_registros"]
-                 #carga los valores de la pagina en teoria quedan igual
+                 #carga los valores de la pagina en teoría quedan igual
                 self._actualizar_lblPagina(paginaActual,totalPaginas)
                 self._actualizarValoresPaginado(paginaActual,totalPaginas)
                 
