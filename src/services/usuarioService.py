@@ -14,15 +14,15 @@ class UsuarioServices:
         if result:
             return {"success":True, "message":"¡Correo Valido!"}
         else:
-            return {"success":False,"message":"Asegúrese que el correo sea válido,\nque no tenga mayúsculas y que el dominio este correcto.\nEjemplo:\n\templeado@example.com"}
+            return {"success":False,"message":"Asegúrese que el correo sea válido,\nque no tenga mayusculas y que el dominio este correcto.\nEjemplo:\n\templeado@example.com"}
     
     def verificarContraseña(self,contraseña):
         contrasena = str(contrasena)
         if len(contrasena) < 8 :
-            return {"success":False,"message":f"¡La contraseña debe ser mínimo de 8 caracteres!"}
+            return {"success":False,"message":f"¡La contraseña debe ser minimo de 8 caracteres!"}
         elif not contrasena.strip() or contrasena.find(' ') != -1:
             return {"success":False,"message":"¡La contraseña no debe llevar espacios!"}
-        return {"success":True,"message":"La contraseña cumple con los caracteres mínimos"}
+        return {"success":True,"message":"La contraseña cumple con los caracteres minimos"}
     
     def _contrasenaHash(self,contrasena):
         contrasena = str(contrasena).encode("utf-8")

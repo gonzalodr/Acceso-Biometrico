@@ -72,28 +72,28 @@ class PermisosPerfilData:
         return resultado
     
     def save_permisos_perfil(self,listparmisos):
-        ##realiza la conexión
+        ##realiza la conexion
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
         
-        ##comienza las consultas de inserción
+        ##comienza las consultas de inserccion
         try:
-            ##comienza la transacción para asegurar los datos
+            ##comienza la transaccion para asegurar los datos
             conexion.start_transaction()
-            ##guarda la lista de permiso
+            ##guarda la lista de permismo
             for permisos in listparmisos:
                 resultado = self.create_permiso_perfil(permisos,conexion_externa = conexion)
                 if not resultado["success"]:
-                    conexion.rollback() ##revierte la transacción
+                    conexion.rollback() ##revierte la transaccion
                     return resultado
-            ## hace comit de la transacción
+            ## hace comit de la transaccion
             conexion.commit()
             
             resultado["success"] = True
             resultado["message"] = f"Permisos guardados correctamente"
         except Exception as e:
-            conexion.rollback() ##revierte la transacción
+            conexion.rollback() ##revierte la transaccion
             resultado["success"] = False
             resultado["message"] = f"Error al crear los permiso perfil: {e}"
         finally:
@@ -159,7 +159,8 @@ class PermisosPerfilData:
                 conexion.close()
 
         return resultado
-
+    
+    
     def lista_permisos_perfil(self,pagina=1, tam_pagina=10, ordenar_por = TBPERMISOPERFIL_ID, tipo_orden="ASC", busqueda = None):
         conexion, resultado = conection()
         cursor = None
@@ -272,7 +273,7 @@ class PermisosPerfilData:
                     resultado["success"] = True
                     resultado["data"] = permiso
                 else:
-                    raise ValueError("No se encontró ningún permiso con el ID proporcionado.")
+                    raise ValueError("No se encontró ningun permiso con el ID proporcionado.")
         except Exception as e:
             resultado["success"] = False
             resultado["message"] = f"Error al obtener permiso: {e}"

@@ -10,10 +10,10 @@ class SlideBar(QWidget):
     
     def __init__(self,parent= None, listaOpciones=[]):
         """
-            Sidecar permite tener un menú de opciones al lado izquierdo de la ventana
-            :param parent: Este recibe el pariente del objeto
+            Sidebar permite tener un menu de opciones al lado izquierdo de la ventan
+            :param parent: Este resive el pariente del objeto
             :param listaBotones: Esta recibe el nombre del btn como el valor numerico
-            del la opción. También debe recibir la ruta del icono o se agregara uno por defecto a cada boton.
+            del la opcion. Tambien debe recibir la ruta del icono o se agregara uno por defecto a cada boton.
         """
         super().__init__(parent=parent)
         self.setObjectName("sidebarWidget")
@@ -121,7 +121,10 @@ class SlideBar(QWidget):
         self.senal_abrirConfig.emit()
 
     def _cerrar_App(self):
-        QApplication.quit()
+        dial = DialogoEmergente("¿?","¿Quieres cerrar la aplicación?","Question",True,True)
+        resul = dial.exec()
+        if resul == QDialog.Accepted:
+            QApplication.quit()
 
     def deseleccionar(self):
         for btn in self.grupoOpciones.buttons():

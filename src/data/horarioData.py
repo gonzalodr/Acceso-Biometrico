@@ -19,9 +19,9 @@ class HorarioData:
         Valida los datos del horario antes de la inserción.
         """
         if not dias_semanales:
-            return False, "El campo 'Días Semanales' es requerido."
+            return False, "El campo 'Dias Semanales' es requerido."
         if len(dias_semanales) > 50:
-            return False, "El campo 'Días Semanales' no debe exceder 50 caracteres."
+            return False, "El campo 'Dias Semanales' no debe exceder 50 caracteres."
 
         if not tipo_jornada:
             return False, "El campo 'Tipo Jornada' es requerido."

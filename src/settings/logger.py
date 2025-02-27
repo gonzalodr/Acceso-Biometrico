@@ -2,21 +2,25 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
+# Crear el directorio loggers si no existe
+log_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'loggers')
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
 # Creando el logger
 logger = logging.getLogger(__name__)
 
-#creando el manejador de archivos logs
-#máximo de tamaño por archivo 10 mb, 
-# tiempo máximo de existencia de archivos 
-# completos solo los 5 últimos 
-file_handler = RotatingFileHandler('src/loggers/Debugg.log', maxBytes=2*1024*1024, backupCount=5)
+# Creando el manejador de archivos logs
+# Máximo de tamaño por archivo: 2 MB, se mantienen los 5 archivos más recientes
+log_file = os.path.join(log_dir, 'Debugg.log')
+file_handler = RotatingFileHandler(log_file, maxBytes=2*1024*1024, backupCount=5)
 
 # Estableciendo un formato de escritura
-formato = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s - %(filename)s:%(lineno)d')
+formato = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 file_handler.setFormatter(formato)
 
-# añadiendo los manejadores al logger
+# Añadiendo los manejadores al logger
 logger.addHandler(file_handler)
 
-#exportando nada mas el logger
-__all__ = ['logger']
+# Establecer el nivel de registro (opcional, dependiendo de tus necesidades)
+logger.setLevel(logging.DEBUG)

@@ -137,7 +137,6 @@ class formPermiso(QDialog):
         return layout
 
     def _verificar_permiso(self):
-            print(self.listaPerfilesID)
             perfilid = self.listaPerfilesID[self.inputPerfil.currentText()]
             tabla = ACCESO_TABLE[self.inputTabla.currentText()]
             result = self.permisosServices.verificar_permiso_perfil_tabla(perfil_id=perfilid, tabla=tabla, id=self.idP)
@@ -179,12 +178,13 @@ class formPermiso(QDialog):
                     self.inputPerfil.addItem(perfil.nombre)
                     self.listaPerfilesID[perfil.nombre] = perfil.id
             else:
-                dialEmergente = DialogoEmergente("","Ocurrio un error","Error")
+                dialEmergente = DialogoEmergente("","No existen perfiles.","Warning")
                 if dialEmergente.exec() == QDialog.Accepted:
                     self.reject()
         else:
-            print(f'\nError:\n{e}\n----------------------\n')
-            self.reject()
+            dialEmergente = DialogoEmergente("","Ocurrio un error","Error")
+            if dialEmergente.exec() == QDialog.Accepted:
+                self.reject()
                       
     def _validar_campos(self):
         if self._validar_inputs_vacios():

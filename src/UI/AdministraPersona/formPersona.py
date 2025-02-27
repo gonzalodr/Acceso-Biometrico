@@ -409,6 +409,6 @@ class formPersona(QDialog):
                     dial.exec()
                     self.reject()
                 else:
-                    dial = DialogoEmergente("Error","Error al registrar a la persona","Error")
+                    dial = DialogoEmergente("Erro","Error al registrar a la persona","Error")
                     dial.exec()
         

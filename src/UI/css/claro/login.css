@@ -23,13 +23,6 @@
     border-bottom:1px solid #000000;
     color: #000000; /* Hace el texto ingresado negro */
 }
-#frameLogin QLineEdit[error="true"] {
-    background-color:transparent;
-    font-size:15px;
-    border:none;
-    border-bottom:1px solid red;
-    color:red;
-}
 #frameLogin QPushButton{
     border-radius:10px;
     background-color:#FFFFFF;

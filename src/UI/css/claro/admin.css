@@ -32,7 +32,6 @@
 #admin QLabel{
     background-color:transparent;
     font: 10 10pt "Cooper Black";
-    color: #000000;
 }
 #admin #titulo{
     background-color:transparent;
@@ -99,15 +98,6 @@ QTableWidget #btneditar::hover{
     color:white;
 }
 
-QTableWidget #btnInfo{
-    background-color:#d2e100;
-    color:white;
-}
-QTableWidget #btnInfo::hover{
-    background-color:#a89700;
-    color:white;
-}
-
 QScrollBar:vertical {
     border: none;
     background: #f0f0f0; /* Color de fondo de la barra */
@@ -133,3 +123,18 @@ QScrollBar::down-arrow:vertical {
 QScrollBar::handle:vertical:hover {
     background: #115d7b; /* Color del "handle" al pasar el mouse */
 }
+
+/* Estilo para la barra de desplazamiento horizontal */
+QScrollBar:horizontal {
+    border: none;
+    background: #D4D4D4; /* Color de fondo de la barra horizontal */
+    height: 16px; /* Altura de la barra horizontal */
+    margin: 0 22px 0 22px; /* Margen para centrar la barra horizontal */
+    border-radius:2px
+}
+
+QScrollBar::handle:hover {
+    background: #115d7b; /* Color del "handle" horizontal al pasar el mouse */
+}
+
+

@@ -8,7 +8,6 @@ from UI.AdministraDepartamento.adminDepartamento import *  # Importa la clase Ad
 from UI.AdministrarRol.adminRol import *
 from UI.AdministrarPermisosRol.AdminPermisosRol import *
 from UI.AdministrarPermisosPerfil.AdminPermisosPerfil import *
-from UI.AdministrarEmpleado.administrarEmpleado import *
 from models.usuario import *
 import sys
 
@@ -78,6 +77,7 @@ class vistaPrincipal(QWidget):
         self.lblIconoUser.setMaximumSize(QSize(50, 50))
         self.lblIconoUser.setMinimumSize(QSize(50, 50))
         cargar_Icono(self.lblIconoUser, archivoImg='user.png')
+        # self.cargar_imagen_usuario(self.lblIconoUser)
         Sombrear(self.lblIconoUser, 30, 0, 5)
 
         """
@@ -124,46 +124,35 @@ class vistaPrincipal(QWidget):
 
     def _llenar_stack_vista(self):
         self.stackVistas.addWidget(self._widget_presentacion())
-
-        '''
-        al agregar a la lista se asigna el index, el titulo, y el png para el icono.
-        '''
         
-        # if True:
-        #     adminpersona = AdminPersona(parent=self)
-        #     adminpersona.cerrar_adminP.connect(self._salir_crud)
-        #     index = self.stackVistas.addWidget(adminpersona)
-        #     self.listaOpciones.append((index, "Administrar Persona",'employees.png'))
-
-        # if True:
-        #     adminHorario = AdminHorario(parent=self)
-        #     adminHorario.cerrar_adminH.connect(self._salir_crud)
-        #     index = self.stackVistas.addWidget(adminHorario)
-        #     self.listaOpciones.append((index, "Administrar Horarios",'weekly.png'))
+        if True:
+            adminpersona = AdminPersona(parent=self)
+            adminpersona.cerrar_adminP.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(adminpersona)
+            self.listaOpciones.append((index, "Administrar Persona",'employees.png'))
 
         if True:
-            adminempleado = AdminEmpleado(parent=self)
-            adminempleado.signalCerrar.connect(self._salir_crud)
-            index =self.stackVistas.addWidget(adminempleado)
-            self.listaOpciones.append((index,'Admin. Empleados','employees.png'))
+            adminHorario = AdminHorario(parent=self)
+            adminHorario.cerrar_adminH.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(adminHorario)
+            self.listaOpciones.append((index, "Administrar Horarios",'weekly.png'))
 
         if True:
             AdminDepart = AdminDepartament(parent=self)
             AdminDepart.cerrar_adminD.connect(self._salir_crud)
             index = self.stackVistas.addWidget(AdminDepart)
             self.listaOpciones.append((index, "Admin. Departamento",'company-department.png'))
-
-        # if True:
-        #     adminrol = AdminRol()
-        #     adminrol.cerrar_adminR.connect(self._salir_crud)
-        #     index = self.stackVistas.addWidget(adminrol)
-        #     self.listaOpciones.append((index,"Administrar rol",'workforce.png'))
+        if True:
+            adminrol = AdminRol()
+            adminrol.cerrar_adminR.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(adminrol)
+            self.listaOpciones.append((index,"Administrar rol",'workforce.png'))
         
-        # if True:
-        #     adminpermisos = AdminPermisosRol()
-        #     adminpermisos.cerrar_adminP.connect(self._salir_crud)
-        #     index = self.stackVistas.addWidget(adminpermisos)
-        #     self.listaOpciones.append((index,"Admin. permisos rol",'access-control-list.png'))
+        if True:
+            adminpermisos = AdminPermisosRol()
+            adminpermisos.cerrar_adminP.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(adminpermisos)
+            self.listaOpciones.append((index,"Admin. permisos rol",'access-control-list.png'))
             
         if True:
             adminpermisosperfil = AdminPermisosPerfil()

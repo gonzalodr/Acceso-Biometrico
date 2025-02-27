@@ -1,11 +1,6 @@
 #form{
     background-color: #ffffff;
 }
-#form #formFrame{
-    background-color:#ffffff;
-    border: 1px solid #007286;
-    /* border-radius: 10px; */
-}
 #form #contenedor{
     background-color: #eeeeee;
     border-radius: 5px;
@@ -28,24 +23,9 @@
     background-color:transparent;
     font-size:15px;
     border:none;
-    border-bottom:2px solid #000000;
+    border-bottom:1px solid #000000;
     color: #000000; /* Texto en negro para campos de entrada */
 }
-#form QWidget QLineEdit[telValido="true"]{
-    background-color:transparent;
-    font-size:15px;
-    border:none;
-    border-bottom:2px solid #00cb00;
-    color: #000000; /* Texto en negro para campos de entrada */
-}
-#form QWidget QLineEdit[telValido="false"]{
-    background-color:transparent;
-    font-size:15px;
-    border:none;
-    border-bottom:2px solid #cb0000;
-    color: #000000; /* Texto en negro para campos de entrada */
-}
-
 #form QWidget QDateEdit{
     background-color:transparent;
     font-size:15px;
@@ -60,22 +40,6 @@
     border-bottom:1px solid #000000;
     color: #000000; 
 }
-#form QComboBox QAbstractItemView {
-    color: #000000;
-    border: none;
-    border-left: 2px solid #325fc6;
-    border-right: 2px solid #325fc6;
-    background-color: #ffffff;
-}
-
-#form QComboBox QAbstractItemView::item:hover {
-    color: #000000;
-    border: none;
-    border-left: 4px solid #325fc6;
-    border-right: 4px solid #325fc6;
-    background-color: #dddddd;
-}
-
 #form QTextEdit{
     background-color:transparent;
     font-size:15px;
@@ -105,17 +69,33 @@
     color: black;
     font: 1000 14pt "Cooper Black";
 }
-#foto{
+#form #foto{
     border-radius:0%;
     border-color: #000000;
-}
-QScrollArea {
-    background: transparent;
-    border: none; 
+}QScrollArea {
+    background: transparent; /* Fondo transparente del área de scroll */
+    border: none; /* Sin bordes */
 }
 
 QScrollArea > QWidget {
-    background: #ffffff; 
+    background: transparent; /* Asegura que el contenido también sea transparente */
+}
+
+QScrollBar:vertical, QScrollBar:horizontal {
+    background: transparent; /* Fondo transparente del scroll */
+    border: none; /* Sin bordes en el scroll */
+    width: 10px; /* Ajusta el ancho de la barra (vertical) */
+    height: 10px; /* Ajusta el alto de la barra (horizontal) */
+}
+
+QScrollBar::handle {
+    background: #00bcd4; /* Color del "control deslizante" */
+    border-radius: 5px; /* Esquinas redondeadas */
+}
+
+QScrollBar::add-line, QScrollBar::sub-line {
+    background: none; /* Sin botones adicionales */
+    border: none;
 }
 
 #form #btncancelar{
@@ -136,7 +116,6 @@ QScrollArea > QWidget {
 #form #btnregistrar::hover{
     background-color:#00627d;
 }
-
 #form #select_foto{
     background-color: #d5d5d5;
     border-radius: 5px;
@@ -151,40 +130,3 @@ QScrollArea > QWidget {
     background-color: #00a5cf;
     color:#FFFFFF;
 }
-
-
-
-#form #nuevo_usuario[crear="true"]{
-    background-color: #7fdec2;
-    border-radius: 5px;
-    color:#000000;
-    font: 10 13pt "Cooper Black";
-}
-
-#form #nuevo_usuario[crear="true"]::hover{
-    background-color:#00a473;
-    color: #ffffff;
-}
-
-#form #nuevo_usuario[crear="true"]::Pressed{
-    background-color: #00a5cf;
-    color:#FFFFFF;
-}
-
-#form #nuevo_usuario[crear="false"]{
-    background-color: #ff8888;
-    border-radius: 5px;
-    color:#000000;
-    font: 10 13pt "Cooper Black";
-}
-#form #nuevo_usuario[crear="false"]::hover{
-    background-color:#ff5555;
-}
-
-#form #nuevo_usuario[crear="false"]::Pressed{
-    background-color: #bb0000;
-    color:#FFFFFF;
-}
-
-
-
