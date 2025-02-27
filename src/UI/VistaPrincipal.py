@@ -159,7 +159,14 @@ class vistaPrincipal(QWidget):
             adminpermisosperfil.cerrar_adminP.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminpermisosperfil)
             self.listaOpciones.append((index,"Admin. permisos perfil",'access-control-list.png'))
-
+            
+                 
+        """  if True:
+            adminreporte = AdminReporte()
+            adminreporte.cerrar_adminRe.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(adminreporte)
+            self.listaOpciones.append((index,"Admin. reportes",'access-control-list.png'))
+        """
         self.stackVistas.setCurrentIndex(0)
         
     def _widget_presentacion(self):
