@@ -107,7 +107,7 @@ class DialogoEmergente(QDialog):
         """Ejecutar la animación de apertura con rebote cuando se muestra el diálogo."""
         start_rect = QRect(self.x() + self.final_width // 2, self.y() + self.final_height // 2, 1, 1)
         bounce_rect = QRect(self.x() - 15, self.y() - 15, self.final_width + 30, self.final_height + 30)
-        end_rect = QRect(self.x(), self.y(), self.final_width, self.final_height)
+        end_rect = QRect(self.x(), self.y(), self.final_width-1, self.final_height-1)
         self.animation.setKeyValueAt(0, start_rect)
         self.animation.setKeyValueAt(0.7, bounce_rect)
         self.animation.setKeyValueAt(1, end_rect)

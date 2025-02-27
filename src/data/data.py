@@ -14,5 +14,5 @@ def conection():
         )
         return conexion, {'success':True}
     except Error as e:
-        logger.error(f'Error de conexion : {e}')
+        logger.error(f'{e}')
         return conexion, {'success':False,'message':'Ocurrió un error de conexión.'}
