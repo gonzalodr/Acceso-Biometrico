@@ -152,8 +152,6 @@ QScrollArea > QWidget {
     color:#FFFFFF;
 }
 
-
-
 #form #nuevo_usuario[crear="true"]{
     background-color: #7fdec2;
     border-radius: 5px;
@@ -186,5 +184,35 @@ QScrollArea > QWidget {
     color:#FFFFFF;
 }
 
+#form QTreeView{
+    background-color: #eeeeee;
+    color: #000000;
+}
+
+#form QHeaderView::section {
+    background-color: #eeeeee; 
+    color: #00564d;   
+    padding: 1px;
+    font-size: 14px;
+    font:1 12pt "Cooper Black";
+}
 
 
+ /* Estilo para las ramas del QTreeView */
+ #form QTreeView::item {
+    color: #00564d;
+    background-color: #eeeeee; 
+    padding: 5px; 
+    font:1 10pt "Cooper Black";
+}
+
+/* Estilo para las ramas seleccionadas */
+#form QTreeView::item:selected {
+    background-color: #b2b2b2; 
+    color: #000000; 
+}
+
+/* Estilo para las ramas al pasar el mouse */
+#form QTreeView::item:hover {
+    background-color: #d2d2d2; 
+}

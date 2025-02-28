@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
-from PySide6.QtGui import QIntValidator
+from PySide6.QtGui import QIntValidator,QStandardItemModel
 from Utils.Utils import *
 
 from services.empleadoServices import EmpleadoServices
@@ -426,6 +426,8 @@ class formEmpleado(QDialog):
         lblError.setMinimumHeight(25)
         lblError.setWordWrap(True)
 
+
+        lblPerfil   = QLabel('Seleccionar perfil (obligatorio)') 
         cmbPerfiles = QComboBox()
         cmbPerfiles.addItem('Ninguno',None)
 
@@ -440,15 +442,23 @@ class formEmpleado(QDialog):
             for perfil in result['data']['listaPerfiles']:
                 cmbPerfiles.addItem(perfil.nombre,perfil.id)
 
-        layout = QVBoxLayout()
+        
+        arbolAccesos = QTreeView()
+        model = QStandardItemModel()
+        model.setHorizontalHeaderLabels(["Permisos"])
 
+        cmbPerfiles.currentIndexChanged.connect(lambda idperfil = cmbPerfiles.currentData(), model = model: self.actualizacionArbolPerfil(idperfil,model))
+        arbolAccesos.setModel(model)
+        layout = QVBoxLayout()
         layout.addWidget(lblUsuario)
         layout.addWidget(inputUser)
         layout.addWidget(lblContrasena)
         layout.addWidget(inputCont)
         layout.addWidget(lblError)
-        layout.addSpacing(15)
+        layout.addSpacing(10)
+        layout.addWidget(lblPerfil)
         layout.addWidget(cmbPerfiles)
+        layout.addWidget(arbolAccesos)
 
         self.layoutPrinUsuario.addLayout(layout)
 
@@ -489,6 +499,9 @@ class formEmpleado(QDialog):
                 spacer = item.spacerItem()
                 layout.removeItem(item) 
 
+    def actualizacionArbolPerfil(self,idperfil,model):
+        print(type(idperfil))
+        print(type(model))
     #cerrado de telefono
     def cerrarForm(self):
         dialogo = DialogoEmergente('','¿Estas seguro que quieres cancelar?','Question',True,True)
