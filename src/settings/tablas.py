@@ -16,21 +16,35 @@ TBPERSONA_ESTADO_CIVIL  = "Estado_Civil"
 TBPERSONA_CORREO        = "Correo"
 TBPERSONA_DIRECCION     = "Direccion"
 
-#Empleado y rol relacion
+#Tabla Empleado y rol relación
 TBROLEMPLEADO           = 'empleado_rol'
 TBROLEMPLEADO_ID        = 'Id'
 TBROLEMPLEADO_ID_EMPLEADO  = 'Id_Empleado'
 TBROLEMPLEADO_ID_ROL    = 'Id_Rol'
 
-#Usuario
+#Tabla Usuario
 TBUSUARIO               = 'usuario'
 TBUSUARIO_ID            = "Id"
 TBUSUARIO_ID_PERSONA    = "Id_Persona"
 TBUSUARIO_USUARIO       = "Usuario"
 TBUSUARIO_CONTRASENA    = "Contrasena"
 
-#Usuario perfil
+#Tabla Usuario perfil
 TBUSUARIOPERFIL         = 'usuario_perfil'
 TBUSUARIOPERFIL_ID      = 'Id'
 TBUSUARIOPERFIL_ID_USER = 'Id_Usuario'
 TBUSUARIOPERFIL_ID_PERF = 'Id_Perfil'
+
+
+# Tabla rol
+TBROL                   = "rol"
+TBROL_ID                = "Id"
+TBROL_NOMBRE            = "Nombre"
+TBROL_DESCRIPCION       = "Descripcion"
+
+#Tabla teléfono
+TBTELEFONO              = 'telefono'
+TBTELEFONO_ID           = 'Id'
+TBTELEFONO_ID_PERSONA   = 'Id_Persona'
+TBTELEFONO_NUMERO       = 'Numero'
+TBTELEFONO_TIPO_CONTACTO = 'Tipo_Contacto'

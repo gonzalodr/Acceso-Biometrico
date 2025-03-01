@@ -179,7 +179,6 @@ class AdminPersona(QWidget):
 
     def _cargar_tabla(self):
         result = self.Pservices.obtenerListaPersonas(pagina=self.paginaActual,tam_pagina=10,tipo_orden="DESC",busqueda=self.busqueda)
-        print(result)
         if result["success"]: ##si se hizo la consulta a la bd correctamete de lo contrario se salta el llenado
             listaPersona = result["data"]["listaPersonas"]
             if len(listaPersona) >0:

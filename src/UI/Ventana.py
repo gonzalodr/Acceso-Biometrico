@@ -48,7 +48,7 @@ class Ventana(QMainWindow):
     #     return super().event(event)
     
     def closeEvent(self, event):
-        dial = DialogoEmergente("¿?","¿Estas seguro que quieres cerrar la aplicación?","Question",True,True)
+        dial = DialogoEmergente("","¿Estas seguro que quieres cerrar la aplicación?","Question",True,True)
         if dial.exec() == QDialog.Accepted:
             event.accept()  # Aceptar el cierre de la ventana
         else:
