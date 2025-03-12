@@ -5,3 +5,6 @@ class Telefono:
         self.id_persona = id_persona
         self.numero = numero
         self.tipo = tipo_contacto
+    
+    def __str__(self):
+        return f'{self.numero} - {self.tipo} - {self.id_persona} - {self.id}'

@@ -66,13 +66,14 @@ class EmpleadoData:
                         return result
 
             #registrando empleado, (Asociacion de tb persona, tb departamento en tb empleado)
+            #departamento es opcional
             result = self.registrar_empleado(id_persona,id_dep,conexion)
             if not result['success']:
                 conexion.rollback()
                 return result
             id_empleado = result['id_empleado']
 
-            #registrando rol empleado
+            #registrando rol empleado opcional
             if id_rol:
                 result = self.emplRolData.create_rol_empleado(id_empleado, id_rol, conexion)
                 if not result['success']:
@@ -137,24 +138,62 @@ class EmpleadoData:
     '''
     Actualizacion de los datos del empleado, persona, creación de usuarios, asignación de rol y de departamento
     '''
-    def update_Empleado(self,datos:Dict[str,Any]):
+    def update_Empleado(self,id_empledo:int,datos:Dict[str,Any]):
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
         try:
             persona:Persona = datos.get('persona')
-            listaTel = datos.get('listaTelefonos')
+            listaTel        = datos.get('listaTelefonos')
             usuario:Usuario = datos.get('usuario')
 
-            id_dep:int = datos.get('id_departamento') if datos.get('id_departamento') else None
-            id_rol:int = datos.get('id_rol') if datos.get('id_rol') else None
-            id_per:int = datos.get('id_perfil') if datos.get('id_perfil') else None #perfiles
-             
+            id_dep:int = datos.get('id_departamento')
+            id_rol:int = datos.get('id_rol')            #obtener por empleado    
+            id_per:int = datos.get('id_perfil')         #obtener por por usuario para la relacion usuario perfil
+
+            conexion.start_transaction()
             with conexion.cursor() as cursor:
+                #actualizar empleado (persona, departamento)
+                queryEmpleado = f'''UPDATE {TBEMPLEADO} SET
+                    {TBEMPLEADO_DEPARTAMENTO} = %s
+                    WHERE {TBEMPLEADO_ID} = %s
+                '''
+                cursor.execute(queryEmpleado,(id_dep,id_empledo))
+
+                #actualizar persona Objeto Persona
+                result = self.personadata.update_persona(persona,conexion)
+                if not result['success']:
+                    conexion.rollback()
+                    return result
+                #actualizar telefonos o crear telefonos Objeto Telefono
+                if listaTel:
+                    for telefono in listaTel:
+                        telefono.id_persona = persona.id
+                        if telefono.id: #actualiza
+                            result = self.telefonoData.update_telefono(telefono,conexion)
+                            if not result['success']:
+                                conexion.rollback()
+                                return result
+                        else:           #crea
+                            result = self.telefonoData.create_telefono(telefono,conexion)
+                            if not result['success']:
+                                conexion.rollback()
+                                return result
+                            
+                #actualizar rolEmpleado id_rol id_empleado si existe rolEmpleado crear rolEmpleado
+                        #buscar en rolEmpleado si existe rolEmpleado
+                        #si existe rolEmpleado actualizar rolEmpleado
+                        #si no existe rolEmpleado crear rolEmpleado
+
+                #actualizar usuario o crear usuario Objeto Usuario
+                        #actualizar perfilusuario id_perfil id_relacion_perfil_usuario
+                        #se busca perfilUsuario por id_usuario
+
                 pass
 
         except Error as e:
             logger.error(f"{e}")
+            conexion.rollback()
             return {"success": False, "message": "Ocurrió un error al actualizar el empleado."}
         finally:
             if conexion:
