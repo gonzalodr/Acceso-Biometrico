@@ -266,7 +266,7 @@ class formEmpleado(QDialog):
         inputTelefono = QLineEdit()
         inputTelefono.setPlaceholderText('Ej. 11111111')
         inputTelefono.setValidator(QIntValidator())
-        inputTelefono.textChanged.connect(lambda : self.verificar_numero(inputTelefono))
+        inputTelefono.textChanged.connect(lambda : self.verificarNumero(inputTelefono))
 
         #input para tipo de contacto
         lblTipo = QLabel(text='Tipo de contacto')
@@ -306,21 +306,7 @@ class formEmpleado(QDialog):
         self.eliminacionLayout(layoutInputsTelefonos)
         self.layoutInputTel.removeItem(layoutInputsTelefonos)
         layoutInputsTelefonos.deleteLater()
-    
-    #verificacion del telefono
-    def verificar_numero(self, input: QLineEdit):
-        numero = input.text()
-        if self.es_numero_valido(numero):
-            input.setProperty('telValido',True)
-        else:
-            input.setProperty('telValido',False)
-        input.style().polish(input)  
-    
-    #verificacion del telefono
-    def es_numero_valido(self, numero: str) -> bool:
-        patron = re.compile(r'^[2456789]\d{7}$')
-        return bool(patron.match(numero))
-    
+
     #obtencion de telefonos, todos
     def obtenerTelefonosInputs(self):
         lista =[]
@@ -515,6 +501,27 @@ class formEmpleado(QDialog):
     def actualizacionArbolPerfil(self,idperfil,model):
         print(type(idperfil))
         print(type(model))
+    
+    """
+    Metodos de validaciones de datos e inputs.
+    """
+    #verificacion del telefono
+    def verificarNumero(self, input: QLineEdit):
+        numero = input.text()
+        if self.numeroTelefonoValido(numero):
+            input.setProperty('telValido',True)
+        else:
+            input.setProperty('telValido',False)
+        input.style().polish(input)  
+    
+    #verificacion del telefono sea 8 digitos y empiece con 2,4,5,6,7,8,9
+    def numeroTelefonoValido(self, numero: str) -> bool:
+        patron = re.compile(r'^[2456789]\d{7}$')
+        return bool(patron.match(numero))
+    
+    """
+    Fin metodos de validaciones de datos e inputs
+    """
     #cerrado de telefono
     def cerrarForm(self):
         dialogo = DialogoEmergente('','¿Estas seguro que quieres cancelar?','Question',True,True)

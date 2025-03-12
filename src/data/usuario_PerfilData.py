@@ -116,7 +116,7 @@ class UsuarioPerfilData:
             if conexion and conexionEx is None:
                 conexion.close()
 
-    def get_usuario_by_id_usurio(self, id_usuario:int, conexionEx = None):
+    def get_usuario_perfil_by_id_usurio(self, id_usuario:int, conexionEx = None):
         conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
         if not resultado["success"]:
             return resultado

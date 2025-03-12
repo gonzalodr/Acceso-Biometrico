@@ -160,11 +160,13 @@ class EmpleadoData:
                 '''
                 cursor.execute(queryEmpleado,(id_dep,id_empledo))
 
+
                 #actualizar persona Objeto Persona
                 result = self.personadata.update_persona(persona,conexion)
                 if not result['success']:
                     conexion.rollback()
                     return result
+
                 #actualizar telefonos o crear telefonos Objeto Telefono
                 if listaTel:
                     for telefono in listaTel:
@@ -181,16 +183,71 @@ class EmpleadoData:
                                 return result
                             
                 #actualizar rolEmpleado id_rol id_empleado si existe rolEmpleado crear rolEmpleado
-                        #buscar en rolEmpleado si existe rolEmpleado
-                        #si existe rolEmpleado actualizar rolEmpleado
-                        #si no existe rolEmpleado crear rolEmpleado
+                #buscando rolEmpleado
+                result = self.emplRolData.get_roles_empleado_by_id_empleado(id_empledo,conexion)
+                if not result['success']:
+                    conexion.rollback()
+                    return result
+                #comprobando si existe rolEmpleado y si id_rol es None eliminar rolEmpleado
+                #Explicacion sin en frond paso de de algun rol a ningun rol se elimina el rolEmpleado
+                if result['exists'] and id_rol is None:
+                    #eliminar rolEmpleado
+                    result = self.emplRolData.delete_rol_empleado(result['rolEmpleado']['id'].id,conexion)
+                    if not result['success']:
+                        conexion.rollback()
+                        return result                
+                #si existe rolEmpleado y id_rol no es None se procede a actualizar
+                elif result['exists'] and id_rol:
+                    #actualizar rolEmpleado
+                    result = self.emplRolData.update_rol_empleado(result['rolEmpleado']['id'],id_empledo,id_rol,conexion)
+                    if not result['success']:
+                        conexion.rollback()
+                        return result
+                #si no existe rolEmpleado y id_rol no es None se procede a crear
+                elif result['exists'] is False and id_rol:
+                    #crear rolEmpleado
+                    result = self.emplRolData.create_rol_empleado(id_empledo,id_rol,conexion)
+                    if not result['success']:
+                        conexion.rollback()
+                        return result
 
                 #actualizar usuario o crear usuario Objeto Usuario
-                        #actualizar perfilusuario id_perfil id_relacion_perfil_usuario
-                        #se busca perfilUsuario por id_usuario
+                if usuario:
+                    usuario.id_persona = persona.id
+                    if usuario.id:  #si el usuario tiene id actualiza
+                        result = self.usuariodata.update_usuario(usuario,conexion)
+                        if not result['success']: 
+                            conexion.rollback()
+                            return result
+                        
+                        result = self.userPerfilData.get_usuario_perfil_by_id_usurio(usuario.id,conexion)
+                        if not result['success']:
+                            conexion.rollback()
+                            return result
+                        
+                        #actualizar id_perfil en la tabla usuarioPerfil
+                        result = self.userPerfilData.update_usuario_perfil(result['usuarioPerfil']['id'],usuario.id,id_per,conexion)
+                        if not result['success']:
+                            conexion.rollback()
+                            return result
+                        
+                    else:          #si el usuario no tiene id lo crea crea
+                        result = self.usuariodata.create_usuario(usuario,conexion)
+                        if not result['success']:
+                            conexion.rollback()
+                            return result
+                        id_usuario = result['id_usuario']
 
-                pass
-
+                        #registrando el perfil
+                        if id_per:
+                            result = self.userPerfilData.create_usuario_perfil(id_usuario,id_per,conexion)
+                            if not result['success']:
+                                conexion.rollback()
+                                return result
+                        
+                #confirmar los cambios
+                conexion.commit()
+                return {'success':True, 'message':'Se actualizo el empleado correctamente.'}
         except Error as e:
             logger.error(f"{e}")
             conexion.rollback()

@@ -127,3 +127,38 @@ class EmpleadoRolData:
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
+
+    def get_roles_empleado_by_id_empleado(self,id_empleado:int, conexionEx = None):
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
+        try:
+            with conexion.cursor(dictionary = True) as cursor:
+                query = f'''SELECT 
+                        {TBROLEMPLEADO_ID},
+                        {TBROLEMPLEADO_ID_ROL},
+                        {TBROLEMPLEADO_ID_EMPLEADO}
+                        FROM {TBROLEMPLEADO}
+                        WHERE {TBROLEMPLEADO_ID_EMPLEADO} = %s'''
+                cursor.execute(query,(id_empleado,))
+                data = cursor.fetchone()
+                if data:
+                    rolEmpleado = {
+                            'id': data['Id'],
+                            'id_rol':data['Id_Rol'],
+                            'id_empleado':data['Id_Empleado']
+                    }
+                    return {
+                        'success':True,
+                        'exists':True,
+                        'message':'Se obtuvo el asignado al empleado.',
+                        'rolesEmpleado':rolEmpleado
+                    }
+                else:
+                    return {'success':True,'exists':False,'message':'No se obtuvo el rol asignado al empleado.'}
+        except Error as e:
+            logger.error(f'{e}')
+            return {'success':False,'message':'Ocurrió un error al obtener el rol asignado al empleado'}
+        finally:
+            if conexion and conexionEx is None:
+                conexion.close()
