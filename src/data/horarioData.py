@@ -8,6 +8,48 @@ class HorarioData:
     def __init__(self):
         self.conn, self.resultado = conection()
 
+    def obtener_conexion(self):
+
+        try:
+            # Verifica si la conexión está activa
+            if not self.conn or not self.conn.is_connected():
+                # Intenta reconectar
+                self.conn, resultado = conection()
+                if not resultado["success"]:
+                    return (
+                        None,
+                        False,
+                        "No se pudo establecer conexión a la Base de Datos.",
+                    )
+
+            return self.conn, True, "Conexión establecida correctamente."
+
+        except Exception as e:
+            # Maneja cualquier excepción durante la verificación o reconexión
+            return None, False, f"Error al verificar la conexión: {e}"
+
+    def validar_id_rol(self, id_rol):
+
+        self.conn, success, message = self.obtener_conexion()
+        if not success:
+            return False, message
+
+        try:
+            with self.conn.cursor() as cursor:
+                consulta = f"SELECT COUNT(*) FROM {TBROL} WHERE {TBROL_ID} = %s;"
+                cursor.execute(consulta, (id_rol,))
+                resultado = cursor.fetchone()
+
+                # Verificar si el Id_Rol existe
+                if resultado and resultado[0] > 0:
+                    return True, None  # El Id_Rol existe
+                else:
+                    return False, f"El Id_Rol {id_rol} no existe."
+
+        except Exception as e:
+            # Manejo de errores si algo falla en la consulta
+            return False, f"Error al verificar si existe el Id_Rol: {e}"
+
     def validar_datos_horario(self, horario):
 
         # Convertir los valores a cadenas en caso de que sean None o de otro tipo
@@ -15,13 +57,19 @@ class HorarioData:
             str(horario.dias_semanales).strip() if horario.dias_semanales else ""
         )
         tipo_jornada = str(horario.tipo_jornada).strip() if horario.tipo_jornada else ""
-        """
-        Valida los datos del horario antes de la inserción.
-        """
+
+        nombre_horario = (
+            str(horario.nombre_horario).strip() if horario.nombre_horario else ""
+        )
+
+        # Valida los datos del horario antes de la inserción.
+
+        if not nombre_horario:
+            return False, "El nombre de horario es requerido"
         if not dias_semanales:
             return False, "El campo 'Dias Semanales' es requerido."
-        if len(dias_semanales) > 50:
-            return False, "El campo 'Dias Semanales' no debe exceder 50 caracteres."
+        if len(dias_semanales) > 30:
+            return False, "El campo 'Dias Semanales' no debe exceder 30 caracteres."
 
         if not tipo_jornada:
             return False, "El campo 'Tipo Jornada' es requerido."
@@ -43,28 +91,33 @@ class HorarioData:
 
         return True, "Datos válidos."
 
-    def validar_unicidad_jornada(self, dias_semanales, tipo_jornada, id=None):
+    def validar_unicidad_jornada(
+        self, nombre_horario, dias_semanales, tipo_jornada, id=None
+    ):
         """
-        Verifica que no exista el mismo Tipo Jornada en el mismo rango de Dias_Semanales,
+        Verifica que no exista el mismo horario con el mismo Tipo de Jornada en el mismo rango de Dias Semanales,
         ignorando el registro actual si se está actualizando.
         """
         # Verificar la conexión
-        if not self.conn:
-            self.conn, resultado = conection()
-            if not resultado["success"]:
-                return False, "No se pudo establecer conexión con la base de datos."
+        self.conn, success, message = self.obtener_conexion()
+        if not success:
+            return (
+                False,
+                message,
+            )  # Usar el mensaje de error devuelto por obtener_conexion()
 
         try:
             with self.conn.cursor() as cursor:
                 # Construcción de la consulta base
                 consulta = f"""
                 SELECT COUNT(*) FROM {TBHORARIO}
-                WHERE {TBHORARIO_DIAS_SEMANALES} = %s 
+                WHERE {TBHORARIO_NOMBRE_HORARIO} = %s
+                AND {TBHORARIO_DIAS_SEMANALES} = %s 
                 AND {TBHORARIO_TIPO_JORNADA} = %s
             """
-                valores = [dias_semanales, tipo_jornada]
+                valores = [nombre_horario, dias_semanales, tipo_jornada]
 
-                # Si estamos actualizando (hay un id), añadimos la condición para ignorarlo
+                # Si estamos actualizando añadimos la condición para ignorarlo
                 if id is not None:
                     consulta += f" AND {TBHORARIO_ID} != %s"
                     valores.append(id)
@@ -77,14 +130,14 @@ class HorarioData:
                     # Mensaje de error si ya existe un registro duplicado
                     return (
                         False,
-                        "Ya existe un registro con el mismo tipo de jornada para el mismo rango de días.",
+                        "Ya existe un horario con el mismo nombre, días semanales y tipo de jornada.",
                     )
                 # Todo está bien, no se encontró duplicado
-                return True, "El tipo de jornada es único para el rango de días."
+                return True, "El horario es único"
 
         except Exception as e:
             # Manejo de errores si algo falla en la consulta
-            return False, f"Error al verificar unicidad: {e}"
+            return False, f"Error al verificar unicidad:del horario {e}"
 
     def update_horario(self, horario: Horario):
         """
@@ -164,7 +217,7 @@ class HorarioData:
             # Obtener el ID del último registro insertado
             id_horario = cursor.lastrowid
 
-            # Cerrar el cursor
+            # Cierra el cursor
             cursor.close()
 
             return {

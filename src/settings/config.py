@@ -48,7 +48,7 @@ TBUSUARIOUSUARIO = "Usuario"
 TBUSUARIOCONTRASENA = "Contrasena"
 
 ##
-#    Tabla de permisos de rol  
+#    Tabla de permisos de rol
 #
 
 
@@ -63,8 +63,15 @@ TBPERMISOROL_ELIMINAR = "Eliminar"
 # Tabla horario y sus campos
 TBHORARIO = "horario"
 TBHORARIO_ID = "Id"
-TBHORARIO_DIAS_SEMANALES = "Dias_Semanales"
+TBHORARIO_NOMBRE_HORARIO = "Nombre_Horario"
+TBHORARIO_DIAS_SEMANALES = "Dia_Semanal"
 TBHORARIO_TIPO_JORNADA = "Tipo_Jornada"
 TBHORARIO_HORA_INICIO = "Hora_Inicio"
 TBHORARIO_HORA_FIN = "Hora_Fin"
 TBHORARIO_DESCRIPCION = "Descripcion"
+
+# Tabla Rol_Horario
+TBROLHORARIO = "rol_horario"
+TBROLHORARIO_ID = "Id"
+TBROLHORARIO_ID_ROL = "Id_Rol"
+TBROLHORARIO_ID_HORARIO = "Id_Horario"
