@@ -48,7 +48,7 @@ TBUSUARIOUSUARIO = "Usuario"
 TBUSUARIOCONTRASENA = "Contrasena"
 
 ##
-#    Tabla de permisos de rol  
+#    Tabla de permisos de rol
 #
 
 
@@ -63,33 +63,15 @@ TBPERMISOROL_ELIMINAR = "Eliminar"
 # Tabla horario y sus campos
 TBHORARIO = "horario"
 TBHORARIO_ID = "Id"
-TBHORARIO_DIAS_SEMANALES = "Dias_Semanales"
+TBHORARIO_NOMBRE_HORARIO = "Nombre_Horario"
+TBHORARIO_DIAS_SEMANALES = "Dia_Semanal"
 TBHORARIO_TIPO_JORNADA = "Tipo_Jornada"
 TBHORARIO_HORA_INICIO = "Hora_Inicio"
 TBHORARIO_HORA_FIN = "Hora_Fin"
 TBHORARIO_DESCRIPCION = "Descripcion"
 
-#PERMISO PERFIL
-TBPERMISOPERFIL = "permiso_perfil"
-TBPERMISOPERFIL_ID = "Id"
-TBPERMISOPERFIL_PERFIL_ID = "Id_Perfil"
-TBPERMISOPERFIL_TABLA = "nombre_tabla"
-TBPERMISOPERFIL_VER = "Ver"
-TBPERMISOPERFIL_INSERTAR = "Insertar"
-TBPERMISOPERFIL_EDITAR = "Editar"
-TBPERMISOPERFIL_ELIMINAR = "Eliminar"
-
-#PERFIL
-TBPERFIL = "perfil"
-TBPERFIL_ID = "Id"
-TBPERFIL_NOMBRE = "Nombre"
-TBPERFIL_DESCRIPCION = "Descripcion"
-
-#Tabla justificacion y sus campos
-TBJUSTIFICACION = "justificacion"
-TBJUSTIFICACION_ID = "Id"
-TBJUSTIFICACION_ID_EMPLEADO = "Id_Empleado"
-TBJUSTIFICACION_ID_ASISTENCIA = "Id_Asistencia"
-TBJUSTIFICACION_FECHA = "Fecha"
-TBJUSTIFICACION_MOTIVO = "Motivo"
-TBJUSTIFICACION_DESCRIPCION = "Descripcion"
+# Tabla Rol_Horario
+TBROLHORARIO = "rol_horario"
+TBROLHORARIO_ID = "Id"
+TBROLHORARIO_ID_ROL = "Id_Rol"
+TBROLHORARIO_ID_HORARIO = "Id_Horario"
