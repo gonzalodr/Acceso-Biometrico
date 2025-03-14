@@ -114,9 +114,9 @@ class EmpleadoRolData:
                         'exists':True,
                         'message':'Se obtuvo los datos del rol empleado.',
                         'rolEmpleado':{
-                            'id': data[0],
-                            'id_rol':data[1],
-                            'id_empleado':data[2]
+                            'id': data[TBROLEMPLEADO_ID],
+                            'id_rol':data[TBROLEMPLEADO_ID_ROL],
+                            'id_empleado':data[TBROLEMPLEADO_ID_EMPLEADO]
                         }
                     }
                 else:

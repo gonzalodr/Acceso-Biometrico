@@ -23,7 +23,7 @@ class UsuarioPerfilData:
         try:
             with conexion.cursor() as cursor:
                 query = f''' INSERT INTO {TBUSUARIOPERFIL} (
-                            {TBUSUARIOPERFIL_ID_PERF}
+                            {TBUSUARIOPERFIL_ID_PERF},
                             {TBUSUARIOPERFIL_ID_USER}
                             ) VALUES ( %s , %s )
                         '''

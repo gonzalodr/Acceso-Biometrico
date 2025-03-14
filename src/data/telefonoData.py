@@ -136,3 +136,6 @@ class TelefonoData:
         finally:
             if conexion:
                 conexion.close()
+    
+    def get_Telefono_by_id_persona(self, id_persona:int,conexionEx):
+        pass

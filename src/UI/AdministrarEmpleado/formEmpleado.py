@@ -1,7 +1,7 @@
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import QIntValidator,QStandardItemModel
-from Utils.Utils import *
+from PySide6.QtWidgets  import *
+from PySide6.QtCore     import *
+from PySide6.QtGui      import QIntValidator,QStandardItemModel
+from Utils.Utils        import *
 
 from services.empleadoServices  import EmpleadoServices
 from services.usuarioService    import UsuarioServices
@@ -76,12 +76,19 @@ class formEmpleado(QDialog):
         boton_box.button(QDialogButtonBox.Ok).setText("Registrar" if id_empleado == None else "Actualizar")
         boton_box.button(QDialogButtonBox.Ok).setObjectName("btnregistrar")
         boton_box.button(QDialogButtonBox.Ok).setMinimumSize(QSize(100,30))
-        boton_box.button(QDialogButtonBox.Ok).clicked.connect(self.extraerDatosEmpleados)
+        boton_box.button(QDialogButtonBox.Ok).clicked.connect(self.registrarDatos)
         Sombrear(boton_box,20,0,5)
+
+        print(f'id_empleado {id_empleado}')
+        if id_empleado:
+            self.idEmpleado = id_empleado
+            self.precargarFormulario() 
 
         layoutFrame.addWidget(boton_box)
         frame.setLayout(layoutFrame)
-        self.setLayout(layoutPrin)    
+        self.setLayout(layoutPrin)   
+        
+        
     '''
     LLenado de layoutContent
     '''
@@ -160,17 +167,17 @@ class formEmpleado(QDialog):
         #Nombre
         self.lblNombre = QLabel('Nombre')
         self.inNombre = QLineEdit()
-        self.errNombre = QLabel('Error nombre')
+        self.errNombre = QLabel()
 
         #Apellidos
         self.lblApellidos = QLabel('Apellidos')
         self.inApellidos = QLineEdit()
-        self.errApellidos = QLabel('Error apellidos')
+        self.errApellidos = QLabel()
 
         #Cedula
         self.lblCedula = QLabel('Cedula')
         self.inCedula = QLineEdit()
-        self.errCedula = QLabel('Error cedula')
+        self.errCedula = QLabel()
 
         #Fecha de nacimiento
         self.lblNacimiento = QLabel('Nacimiento')
@@ -178,12 +185,12 @@ class formEmpleado(QDialog):
         self.inNacimiento.setCalendarPopup(True)
         self.inNacimiento.setDisplayFormat('yyyy-MM-dd')
         self.inNacimiento.setMaximumDate(QDate.currentDate())
-        self.errNacimiento = QLabel('Error nacimiento')
+        self.errNacimiento = QLabel()
 
         #Correo
         self.lblCorreo = QLabel('Correo')
         self.inCorreo = QLineEdit()
-        self.errCorreo = QLabel('Error correo')
+        self.errCorreo = QLabel()
 
         #cargar layout de telefonos
         self.lblTelefonos = QLabel(text='Telefonos')
@@ -194,12 +201,13 @@ class formEmpleado(QDialog):
         #Estado civil
         self.lblEstCivil = QLabel('Estado civil')
         self.inEstCivil = QComboBox()
+        self.inEstCivil.addItems(["Soltero/a", "Casado/a", "Divorciado/a", "Viudo/a"])
         self.errEstCivil = QLabel('Error estado civil')
         #Direccion
         self.lblDireccion = QLabel('Direccion')
         self.inDireccion = QTextEdit()
         self.inDireccion.setMaximumHeight(30)
-        self.errDireccion = QLabel('Error Direccion')
+        self.errDireccion = QLabel()
         
         #asignando al layoutIzq
         self.layoutIzq.addWidget(tituloIzq)
@@ -257,11 +265,11 @@ class formEmpleado(QDialog):
         #asignando los valores alos layouts
         self.layoutTelPrinc.addWidget(btnAgregarTel)
         self.layoutTelPrinc.addLayout(self.layoutInputTel)
+    
     #agregado de telefono
-    def agregar_nuevo_telefono(self, id_telefono:int = None):
+    def agregar_nuevo_telefono(self, telefono:Telefono=None):
         #lblTelefono para cada input telefono
         lblTelefono = QLabel(text='Numero de telefono')
-
         #input para ingresar el telefono
         inputTelefono = QLineEdit()
         inputTelefono.setPlaceholderText('Ej. 11111111')
@@ -279,6 +287,7 @@ class formEmpleado(QDialog):
         btnEliminar = QPushButton("Eliminar")
         btnEliminar.setObjectName('eliminar_telefono')
         btnEliminar.setMinimumHeight(30)
+        btnEliminar.clicked.connect(lambda: self.eliminar_telefono(layoutInputsTelefonos))
 
         #lblTelefono de error
         lblError = QLabel(text='Error:')
@@ -288,7 +297,14 @@ class formEmpleado(QDialog):
         lblError.setWordWrap(True)
 
         layoutInputsTelefonos = QVBoxLayout()
-        layoutInputsTelefonos.setProperty('id_telefono',33)
+
+        if telefono:##cargar datos de los telefonos
+            inputTelefono.setText(telefono.numero)
+            inputTipo.setText(telefono.tipo)
+            layoutInputsTelefonos.setProperty('id_telefono',telefono.id)
+            btnEliminar.clicked.disconnect(lambda: self.eliminar_telefono(layoutInputsTelefonos))
+            btnEliminar.clicked.connect(lambda id_telefono = telefono.id: self.eliminar_telefono(layoutInputsTelefonos, id_telefono))
+
         layoutInputsTelefonos.setContentsMargins(10,20,10,20)
         layoutInputsTelefonos.setSpacing(10)
         layoutInputsTelefonos.addWidget(lblTelefono,0)
@@ -297,39 +313,42 @@ class formEmpleado(QDialog):
         layoutInputsTelefonos.addWidget(inputTipo,3)
         layoutInputsTelefonos.addWidget(lblError,4)
         layoutInputsTelefonos.addWidget(btnEliminar,5)
-       
-        btnEliminar.clicked.connect(lambda: self.eliminar_telefono(layoutInputsTelefonos,1))
         self.layoutInputTel.addLayout(layoutInputsTelefonos)
     
     #eliminado de telefono
-    def eliminar_telefono(self, layoutInputsTelefonos:QVBoxLayout, id_telefono:int):
-        self.eliminacionLayout(layoutInputsTelefonos)
-        self.layoutInputTel.removeItem(layoutInputsTelefonos)
-        layoutInputsTelefonos.deleteLater()
+    def eliminar_telefono(self, layoutInputsTelefonos:QVBoxLayout, id_telefono:int =0):
+        if id_telefono:
+            text = "Este numero de telefono ya se encuentrar registrado en la base de datos.\n"
+            text+= "¿Quieres eliminarlo?"
+            dial = DialogoEmergente("",text,'Warning',True,True)
+            if dial.exec() == QDialog.Accepted:
+                self.eliminacionLayout(layoutInputsTelefonos)
+                self.layoutInputTel.removeItem(layoutInputsTelefonos)
+                layoutInputsTelefonos.deleteLater()
+        else:
+            self.eliminacionLayout(layoutInputsTelefonos)
+            self.layoutInputTel.removeItem(layoutInputsTelefonos)
+            layoutInputsTelefonos.deleteLater()
 
     #obtencion de telefonos, todos
-    def obtenerTelefonosInputs(self):
-        lista =[]
-        #obtengo los valores de cada numero ingresado junto con su tipo
-        for i in range(self.layoutInputTel.count()):
-            item = self.layoutInputTel.itemAt(i).layout()
-            if isinstance(item,QVBoxLayout):
-                pass
-                # numero = item.itemAt(1).widget().text()
-                # tipoCont = item.itemAt(3).widget().text()
-                # lblError:QLabel = item.itemAt(4).widget()
-                # if not numero and not tipoCont:
-                #     print('El numero y tipo de contacto esta vacio.')
-                #     lblError.setText('El numero y tipo de contacto estan vacios')
-                # elif not numero:
-                #     print('El numero esta vacio')
-                #     lblError.setText('El numero esta vacio')
-                # elif not tipoCont:
-                #     print('El tipo de contacto esta vacio')
-                #     lblError.setText('El tipo de contacto esta vacio')
+    # def obtenerTelefonosInputs(self):
+    #     listaTelefono =[]
+    #     #obtengo los valores de cada numero ingresado junto con su tipo
+    #     for i in range(self.layoutInputTel.count()):
+    #         item = self.layoutInputTel.itemAt(i).layout()
+    #         if isinstance(item,QVBoxLayout):
+    #             id_telefon      = item.property('id_telefono')
+    #             numero          = item.itemAt(1).widget().text()
+    #             tipoCont        = item.itemAt(3).widget().text()
+    #             # lblError:QLabel = item.itemAt(4).widget()
+    #             telefono = Telefono(
+    #                 numero          = numero,
+    #                 tipo_contacto   = tipoCont,
+    #                 id              = id
+    #             )
+    #             listaTelefono.append(telefono)
+    #     return listaTelefono
                 
-                # print(f'Tel.: {numero}  Tipo: {tipoCont}')
-        
     '''
     Llenado de layoutCent
     '''
@@ -408,7 +427,7 @@ class formEmpleado(QDialog):
         self.layoutDer.setAlignment(Qt.AlignTop)
         self.layoutDer.addLayout(self.layoutPrinUsuario)
     
-    def crearlayoutUsuario(self, id_usuario:int = None):
+    def crearlayoutUsuario(self, usuario:Usuario = None, id_perfil:int = 0):
         lblUsuario = QLabel('Usuario')
 
         inputUser = QLineEdit()
@@ -434,12 +453,12 @@ class formEmpleado(QDialog):
         if not result:
             dial = DialogoEmergente('Ocurrio un problema','No se cargaron los perfiles','Error',True,False)
             dial.exec()
-            # self.reject()
-            # return
         
         if len(result['data']['listaPerfiles']) != 0:
             for perfil in result['data']['listaPerfiles']:
                 cmbPerfiles.addItem(perfil.nombre,perfil.id)
+            index = cmbPerfiles.findData(id_perfil)
+            cmbPerfiles.setCurrentIndex(index) if index >= 0 else cmbPerfiles.setCurrentIndex(0)
 
         
         arbolAccesos = QTreeView()
@@ -449,7 +468,13 @@ class formEmpleado(QDialog):
         cmbPerfiles.currentIndexChanged.connect(lambda idperfil = cmbPerfiles.currentData(), model = model: self.actualizacionArbolPerfil(idperfil,model))
         arbolAccesos.setModel(model)
         layout = QVBoxLayout()
-        layout.setProperty('id_usuario',45)
+
+        if usuario:
+            layout.setProperty('id_usuario',usuario.id)
+            inputUser.setText(usuario.usuario)
+            inputCont.setText('contraseña no visible')
+        
+        
         layout.addWidget(lblUsuario)
         layout.addWidget(inputUser) 
         layout.addWidget(lblContrasena)
@@ -468,7 +493,7 @@ class formEmpleado(QDialog):
         self.btnCrearUsuario.setProperty("crear",False)
         self.btnCrearUsuario.style().polish(self.btnCrearUsuario)
 
-    def eliminacionUsuario(self):
+    def eliminacionUsuario(self, id_usuario:int = None):
         layout = self.layoutPrinUsuario.itemAt(1).layout()
         self.eliminacionLayout(layout)
 
@@ -535,29 +560,30 @@ class formEmpleado(QDialog):
     def extraerDatosEmpleados(self):
         #datos de la persona
         persona = Persona(
-            nombre = self.inNombre.text(),
-            apellidos = self.inApellidos.text(),
-            cedula = self.inCedula.text(),
+            nombre          = self.inNombre.text(),
+            apellidos       = self.inApellidos.text(),
+            cedula          = self.inCedula.text(),
             fecha_nacimiento = self.inNacimiento.text(),
-            correo = self.inCorreo.text(),
-            estado_civil = self.inEstCivil.currentText(),
-            direccion = self.inDireccion.toPlainText(),
-            id = self.idPersona,
-            foto=self.fotografia
+            correo          = self.inCorreo.text(),
+            estado_civil    = self.inEstCivil.currentText(),
+            direccion       = self.inDireccion.toPlainText(),
+            id              = self.idPersona,
+            foto            = self.fotografia
         )
 
         listaTelefonos = self.extraerTelefonos()
         dataUsuario= self.extraerUsuarios()
 
         datos = {
-            'persona':persona,
-            'listaTelefonos':listaTelefonos,
-            'usuario':dataUsuario.get('usuario'),
+            'persona'       : persona,
+            'listaTelefonos': listaTelefonos,
+            'usuario'       : dataUsuario.get('usuario'),
             'id_departamento':self.inDep.currentData(),
-            'id_rol':self.inRol.currentData(),
-            'id_perfil':dataUsuario.get('idperfil')
+            'id_rol'        : self.inRol.currentData(),
+            'id_perfil'     : dataUsuario.get('idperfil')
         }
-        print(datos)
+
+        return datos
 
     #extraer los telefonos
     def extraerTelefonos(self):
@@ -575,7 +601,6 @@ class formEmpleado(QDialog):
                     tipo_contacto = tipoCont,
                     id            = id
                 )
-                print(f'Tel.: {numero}  Tipo: {tipoCont} Id: {id}\n')
                 listaTelefonos.append(telefono)
         return listaTelefonos
 
@@ -586,19 +611,65 @@ class formEmpleado(QDialog):
         
         layout = self.layoutPrinUsuario.itemAt(1).layout()
         #obtengo los valores de cada numero ingresado junto con su tipo
-        id          = layout.property('id_usuario')
+        id_user          = layout.property('id_usuario')
         usuario     = layout.itemAt(1).widget().text()
         contrasena  = layout.itemAt(3).widget().text()
         idperfil    = layout.itemAt(7).widget().currentData()
-        usuario = Usuario(usuario= usuario, contrasena=contrasena,id=id)
+        usuario = Usuario(
+                        usuario     = usuario, 
+                        contrasena  = contrasena,
+                        id          = id_user)
         idperfil = idperfil
 
         return {'usuario':usuario,'idperfil':idperfil}
 
     #precargando formulario en caso de que se este actualizando
     def precargarFormulario(self):
-        pass
+        result = self.emplServices.obtener_empleado_por_id(self.idEmpleado)
+        print(result)
+        if not result['success']:
+            dial = DialogoEmergente('','Ocurrio un error al precargar los datos de los empleados.','Error',True,False)
+            dial.exec()
+            self.reject()
+            return
+        # 'persona':persona,
+        # 'usuario':usuario,
+        # 'pefilUsuario':perfilUsuario,
+        # 'rolEmpleado':rolEmpleado,
+        # 'departamento':departamento,
+        # 'listaTelefonos':listaTelefonos
+        datos   = result.get('empleado')
+        persona:Persona = datos.get('persona')  #objeto Persona
+        usuario:Usuario = datos.get('usuario')  #objeto Usuario
+        dictPerfil = datos.get('pefilUsuario')  #diccionario
+        dictRolEmp = datos.get('rolEmpleado')   #diccionario
+        departamen = datos.get('departamento')  #int
+        listaTelef = datos.get('listaTelefonos')#telefonos del usuario
 
+        self.idPersona = persona.id
+        self.fotografia = persona.foto
+        self.inNombre.setText(persona.nombre)
+        self.inApellidos.setText(persona.apellidos)
+        self.inNacimiento.setDate(QDate.fromString(str(persona.fecha_nacimiento), "yyyy-MM-dd"))
+        self.inCedula.setText(persona.cedula)
+        self.inCorreo.setText(persona.correo)
+        self.inDireccion.setPlainText(persona.direccion)
+        self.inEstCivil.setCurrentText(persona.estado_civil)
+
+        for telefono in listaTelef:
+            self.agregar_nuevo_telefono(telefono)
+        
+        ##cargar departamento y rol
+        index = self.inDep.findData(departamen)
+        self.inDep.setCurrentIndex(index if index >= 0 else None)
+
+        if dictRolEmp:
+            index = self.inRol.findData(dictRolEmp.get('id_rol'))
+            self.inRol.setCurrentIndex(index if index >= 0 else None)
+
+        #cargar usuario
+        if usuario:
+            self.crearlayoutUsuario(usuario,dictPerfil.get('id_perfil'))
 
     #Seleccion de foto
     def seleccionarFoto(self):
@@ -623,3 +694,26 @@ class formEmpleado(QDialog):
         cargar_Icono(self.foto, 'userPerson.png')
         self.btnFoto.setText("Seleccionar foto")
         self.fotografia = None
+    
+    def registrarDatos(self):
+        datos = self.extraerDatosEmpleados()
+        if self.idEmpleado:
+            result = self.emplServices.actualizar_empleado(self.idEmpleado,datos)
+            print(result)
+            if not result['success']:
+                dial = DialogoEmergente('','Ocurrio un error al actualizar el empleado.\nError:'+result['message'],'Error',True)
+                dial.exec()
+                return
+            dial = DialogoEmergente('',result['message'],'Check',True)
+            dial.exec()
+            self.reject()
+        else:
+            result = self.emplServices.crear_empleado(datos)
+            if not result['success']:
+                dial = DialogoEmergente('','Ocurrio un error al registrar el empleado.\nError:'+result['message'],'Error',True)
+                dial.exec()
+                return
+            
+            dial = DialogoEmergente('',result['message'],'Check',True)
+            dial.exec()
+            self.reject()

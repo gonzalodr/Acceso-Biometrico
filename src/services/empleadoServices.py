@@ -12,8 +12,11 @@ class EmpleadoServices:
     def eliminar_empleado(self, id_empleado:int):
         return self.empleServ.delete_Empleado(id_empleado)
     
-    def actualizar_empleado(self, datos:Dict[str,Any]):
-        return self.empleServ.update_Empleado(datos)
+    def actualizar_empleado(self,id_empleado:int, datos:Dict[str,Any]):
+        return self.empleServ.update_Empleado(id_empleado,datos)
     
+    def obtener_empleado_por_id(self, id_empleado):
+        return self.empleServ.getEmpleadoById(id_empleado)
+
     def listar_empleados(self,pagina=1, tam_pagina=10, ordenar_por=TBPERSONA_ID, tipo_orden="ASC", busqueda=None):
         return self.empleServ.list_Empleados(pagina, tam_pagina, ordenar_por, tipo_orden, busqueda)

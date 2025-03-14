@@ -60,7 +60,9 @@ class EmpleadoData:
             if listaTel:
                 for telefono in listaTel:
                     telefono.id_persona = id_persona
+                    print(telefono)
                     result = self.telefonoData.create_telefono(telefono,conexion)
+                    print(result)
                     if not result['success']:
                         conexion.rollback()
                         return result
@@ -150,7 +152,7 @@ class EmpleadoData:
             id_dep:int = datos.get('id_departamento')
             id_rol:int = datos.get('id_rol')            #obtener por empleado    
             id_per:int = datos.get('id_perfil')         #obtener por por usuario para la relacion usuario perfil
-
+            print(persona)
             conexion.start_transaction()
             with conexion.cursor() as cursor:
                 #actualizar empleado (persona, departamento)
@@ -159,8 +161,6 @@ class EmpleadoData:
                     WHERE {TBEMPLEADO_ID} = %s
                 '''
                 cursor.execute(queryEmpleado,(id_dep,id_empledo))
-
-
                 #actualizar persona Objeto Persona
                 result = self.personadata.update_persona(persona,conexion)
                 if not result['success']:
@@ -171,6 +171,7 @@ class EmpleadoData:
                 if listaTel:
                     for telefono in listaTel:
                         telefono.id_persona = persona.id
+                        print(telefono)
                         if telefono.id: #actualiza
                             result = self.telefonoData.update_telefono(telefono,conexion)
                             if not result['success']:
@@ -188,28 +189,30 @@ class EmpleadoData:
                 if not result['success']:
                     conexion.rollback()
                     return result
+                
+                print(result)
                 #comprobando si existe rolEmpleado y si id_rol es None eliminar rolEmpleado
                 #Explicacion sin en frond paso de de algun rol a ningun rol se elimina el rolEmpleado
                 if result['exists'] and id_rol is None:
                     #eliminar rolEmpleado
-                    result = self.emplRolData.delete_rol_empleado(result['rolEmpleado']['id'].id,conexion)
-                    if not result['success']:
+                    resultAux = self.emplRolData.delete_rol_empleado(result['rolesEmpleado']['id'],conexion)
+                    if not resultAux['success']:
                         conexion.rollback()
-                        return result                
+                        return resultAux              
                 #si existe rolEmpleado y id_rol no es None se procede a actualizar
                 elif result['exists'] and id_rol:
                     #actualizar rolEmpleado
-                    result = self.emplRolData.update_rol_empleado(result['rolEmpleado']['id'],id_empledo,id_rol,conexion)
-                    if not result['success']:
+                    resultAux = self.emplRolData.update_rol_empleado(result['rolEmpleado']['id'],id_empledo,id_rol,conexion)
+                    if not resultAux['success']:
                         conexion.rollback()
-                        return result
+                        return resultAux
                 #si no existe rolEmpleado y id_rol no es None se procede a crear
                 elif result['exists'] is False and id_rol:
                     #crear rolEmpleado
-                    result = self.emplRolData.create_rol_empleado(id_empledo,id_rol,conexion)
-                    if not result['success']:
+                    resultAux = self.emplRolData.create_rol_empleado(id_empledo,id_rol,conexion)
+                    if not resultAux['success']:
                         conexion.rollback()
-                        return result
+                        return resultAux
 
                 #actualizar usuario o crear usuario Objeto Usuario
                 if usuario:
@@ -224,7 +227,7 @@ class EmpleadoData:
                         if not result['success']:
                             conexion.rollback()
                             return result
-                        
+                        print(result)
                         #actualizar id_perfil en la tabla usuarioPerfil
                         result = self.userPerfilData.update_usuario_perfil(result['usuarioPerfil']['id'],usuario.id,id_per,conexion)
                         if not result['success']:
@@ -237,7 +240,9 @@ class EmpleadoData:
                             conexion.rollback()
                             return result
                         id_usuario = result['id_usuario']
-
+                        print(result)
+                        print(f'{id_per}')
+                        print(usuario.mostrar())
                         #registrando el perfil
                         if id_per:
                             result = self.userPerfilData.create_usuario_perfil(id_usuario,id_per,conexion)
@@ -405,6 +410,8 @@ class EmpleadoData:
                         return result
                     persona = result['persona']
 
+                    #traer telefonos
+                    result = self.telefonoData
 
                     #extraer el usuario si es que existe alguno
                     result = self.usuariodata.get_usuario_by_id(data[TBEMPLEADO_PERSONA],conexion)
@@ -415,7 +422,7 @@ class EmpleadoData:
                     #extraer relacion perfil usuario si existe usuario existe perfil asociado
                     perfilUsuario = None
                     if usuario:
-                        result = self.userPerfilData.get_usuario_by_id_usurio(usuario.id,conexion)
+                        result = self.userPerfilData.get_usuario_perfil_by_id_usurio(usuario.id,conexion)
                         if not result['success']:
                             return result
                         if not result['exists']:

@@ -254,9 +254,14 @@ class AdminEmpleado(QWidget):
             print("Eliminando")
         
     def editarEmpleado(self,id_empleado:int):
-        print(f'\n\neliminar id {id_empleado}\n\n')
+        print(f'\n\nEditar id {id_empleado}\n\n')
+        form = formEmpleado(titulo='Editar empleado',id_empleado = id_empleado)
+        form.finished.connect(form.deleteLater)
+        form.exec()
+        self.cargarTabla()
 
     def crearEmpleado(self):
         form = formEmpleado()
         form.finished.connect(form.deleteLater)
         form.exec()
+        self.cargarTabla()
