@@ -181,7 +181,7 @@ class HorarioData:
         except Exception as e:
             return {"success": False, "message": f"Error al actualizar horario: {e}"}
 
-    def create_horario(self, horario: Horario):
+    def create_horario(self, horario: Horario, id_rol: int):
         """
         Inserta un nuevo horario en la base de datos.
         """
@@ -190,21 +190,28 @@ class HorarioData:
         if not datos_validos:
             return {"success": False, "message": mensaje}
 
+        # Validar que el Id_Rol exista
+        id_rol_valido, mensaje_rol = self.validar_id_rol(id_rol)
+        if not id_rol_valido:
+            return {"success": False, "message": mensaje_rol}
+
         try:
             cursor = self.conn.cursor()
             query = f"""
             INSERT INTO {TBHORARIO} (
+                {TBHORARIO_NOMBRE_HORARIO},
                 {TBHORARIO_DIAS_SEMANALES},
                 {TBHORARIO_TIPO_JORNADA},
                 {TBHORARIO_HORA_INICIO},
                 {TBHORARIO_HORA_FIN},
                 {TBHORARIO_DESCRIPCION}
-            ) VALUES (%s, %s, %s, %s, %s)
+            ) VALUES (%s, %s, %s, %s, %s,%s)
             """
             # Ejecutar la consulta de inserción
             cursor.execute(
                 query,
                 (
+                    horario.nombre_horario,
                     horario.dias_semanales,
                     horario.tipo_jornada,
                     horario.hora_inicio,
@@ -216,6 +223,16 @@ class HorarioData:
 
             # Obtener el ID del último registro insertado
             id_horario = cursor.lastrowid
+
+            # Inserta la relación en la tabla rol_horario
+            query_rol_horario = f"""
+            INSERT INTO {TBROLHORARIO} (
+            {TBROLHORARIO_ID_ROL},
+            {TBROLHORARIO_ID}
+               ) VALUES (%s, %s)"""
+
+            cursor.execute(query_rol_horario, (id_rol, id_horario))
+            self.conn.commit()
 
             # Cierra el cursor
             cursor.close()
@@ -376,7 +393,7 @@ class HorarioData:
         except Exception as e:
             return {"success": False, "message": f"Error al obtener el horario: {e}"}
 
-    def obtenerHorarioPorDiasYTipo(self, dias_semanales, tipo_jornada):
+    def obtenerHorarioPorDiasYTipo(self, nombre_horario, dias_semanales, tipo_jornada):
         """
         Obtiene un horario específico por los días semanales y el tipo de jornada.
         """
@@ -384,16 +401,18 @@ class HorarioData:
             cursor = self.conn.cursor(dictionary=True)
             query = f"""
         SELECT * FROM {TBHORARIO} 
-        WHERE {TBHORARIO_DIAS_SEMANALES} = %s 
+        WHERE {TBHORARIO_NOMBRE_HORARIO} = %s 
+        AND {TBHORARIO_DIAS_SEMANALES} = %s 
         AND {TBHORARIO_TIPO_JORNADA} = %s
         LIMIT 1
         """
-            cursor.execute(query, (dias_semanales, tipo_jornada))
+            cursor.execute(query, (nombre_horario, dias_semanales, tipo_jornada))
             registro = cursor.fetchone()
             cursor.close()
 
             if registro:
                 return Horario(
+                    nombre_horario=registro[TBHORARIO_NOMBRE_HORARIO],
                     dias_semanales=registro[TBHORARIO_DIAS_SEMANALES],
                     tipo_jornada=registro[TBHORARIO_TIPO_JORNADA],
                     hora_inicio=registro[TBHORARIO_HORA_INICIO],
@@ -401,8 +420,8 @@ class HorarioData:
                     descripcion=registro[TBHORARIO_DESCRIPCION],
                     id=registro[TBHORARIO_ID],
                 )
-            return None  # No se encontró ningún horario con los mismos días y tipo
+            return None  # No se encontró ningún horario con el mismo nombre, días y tipo de jornada
 
         except Exception as e:
-            print(f"Error al obtener horario por días y tipo: {e}")
+            print(f"Error al obtener horario por nombre, días y tipo: {e}")
             return None
