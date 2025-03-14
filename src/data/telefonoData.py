@@ -137,5 +137,39 @@ class TelefonoData:
             if conexion:
                 conexion.close()
     
-    def get_Telefono_by_id_persona(self, id_persona:int,conexionEx):
-        pass
+    def get_Telefono_by_id_persona(self, id_persona:int,conexionEx = None):
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
+        try:
+            listaTelefonos = []
+            with conexion.cursor(dictionary=True) as cursor:
+                    query = f'''SELECT 
+                        {TBTELEFONO_ID},
+                        {TBTELEFONO_ID_PERSONA},
+                        {TBTELEFONO_NUMERO},
+                        {TBTELEFONO_TIPO_CONTACTO}
+                        FROM {TBTELEFONO}
+                        WHERE {TBTELEFONO_ID_PERSONA} = %s
+                    '''
+                    cursor.execute(query,(id_persona,))
+                    
+                    registros = cursor.fetchall()
+
+                    if registros:
+                        for data in registros:
+                            telefono = Telefono(data[TBTELEFONO_ID_PERSONA],
+                                                data[TBTELEFONO_NUMERO],
+                                                data[TBTELEFONO_TIPO_CONTACTO],
+                                                data[TBTELEFONO_ID])
+                            listaTelefonos.append(telefono)
+                            
+                        return{'listaTelefonos':listaTelefonos,'success':True,'exists':True,'message':'Se encontró el numero de telefono.'}
+                    else:
+                        return{'success':True,'exists':False,'message':'No se encontró el numero de telefono.'}
+        except Error as e:
+            logger.error(f'{e}')
+            return {'success':False,'message':'Ocurrio un error al buscar los numeros telefonicos.'}
+        finally:
+            if conexion and conexionEx is None:
+                conexion.close()

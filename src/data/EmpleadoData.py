@@ -411,7 +411,10 @@ class EmpleadoData:
                     persona = result['persona']
 
                     #traer telefonos
-                    result = self.telefonoData
+                    result = self.telefonoData.get_Telefono_by_id_persona(persona.id,conexion)
+                    if not result['success']:
+                        return result
+                    listaTelefonos = result.get('listaTelefonos')
 
                     #extraer el usuario si es que existe alguno
                     result = self.usuariodata.get_usuario_by_id(data[TBEMPLEADO_PERSONA],conexion)
@@ -442,7 +445,8 @@ class EmpleadoData:
                             'usuario':usuario,
                             'pefilUsuario':perfilUsuario,
                             'rolEmpleado':rolEmpleado,
-                            'departamento':departamento
+                            'departamento':departamento,
+                            'listaTelefonos':listaTelefonos
                         },
                         'success':True,
                         'exists':True,

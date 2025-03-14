@@ -1,4 +1,0 @@
-2025-03-13 19:36:24,014 - ERROR - 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'Id_Usuario
-                            ) VALUES ( 2 , 3 )' at line 3 - usuario_PerfilData.py:37
-2025-03-13 19:42:32,246 - ERROR - 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'Id_Usuario
-                            ) VALUES ( 2 , 4 )' at line 3 - usuario_PerfilData.py:37

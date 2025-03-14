@@ -50,24 +50,33 @@ class UsuarioData:
                 return resultado
         else:
             conexion = conexionEx
+        
         try:
             with conexion.cursor() as cursor:
-                query = f"""UPDATE {TBUSUARIO} SET 
-                {TBUSUARIO_USUARIO} = %s,
-                {TBUSUARIO_CONTRASENA} = %s
-                WHERE {TBUSUARIO_ID} = %s"""
-            
-                cursor.execute(query, (
-                    usuario.usuario,
-                    usuario.contrasena,
-                    usuario.id
-                ))
+                # Construir la consulta SQL dinámicamente
+                if usuario.contrasena is None:
+                    query = f"""UPDATE {TBUSUARIO} SET 
+                    {TBUSUARIO_USUARIO} = %s
+                    WHERE {TBUSUARIO_ID} = %s"""
+                    params = (usuario.usuario, usuario.id)
+                else:
+                    query = f"""UPDATE {TBUSUARIO} SET 
+                    {TBUSUARIO_USUARIO} = %s,
+                    {TBUSUARIO_CONTRASENA} = %s
+                    WHERE {TBUSUARIO_ID} = %s"""
+                    params = (usuario.usuario, usuario.contrasena, usuario.id)
+                
+                cursor.execute(query, params)
+                
                 if conexionEx is None:
                     conexion.commit()
-                return {'success':True, 'message':'Usuario actualizado exitosamente'}
+                
+                return {'success': True, 'message': 'Usuario actualizado exitosamente'}
+        
         except Exception as e:
             logger.error(f'{e}')
-            return {'success':False,'message':'Ocurrió un error al actualizar el usuario.'}
+            return {'success': False, 'message': 'Ocurrió un error al actualizar el usuario.'}
+        
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
