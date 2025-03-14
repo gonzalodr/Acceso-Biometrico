@@ -95,7 +95,7 @@ class PerfilData:
                 "descripcion": TBPERFIL_DESCRIPCION
             }
             # si la columna esta desordenada se ordena por id
-            ordenar_por = columna_orden.get(ordenar_por, TBROL_ID)
+            ordenar_por = columna_orden.get(ordenar_por, TBPERFIL_ID)
             #se ajusta
             tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
             
