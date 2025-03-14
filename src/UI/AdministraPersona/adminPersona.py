@@ -84,10 +84,10 @@ class AdminPersona(QWidget):
         self.layoutFrame.addLayout(layoutTop)
         
         self.tbPersona = QTableWidget() ##crean el objeto tabla
-        if (self.tbPersona.columnCount() < 9):
-            self.tbPersona.setColumnCount(9) ##indican la cantidad de columnas.
+        if (self.tbPersona.columnCount() < 8):
+            self.tbPersona.setColumnCount(8) ##indican la cantidad de columnas.
         ##crean un array de titulos para cada columna    
-        header_labels = ["Nombre", "1° Apellido", "2° Apellido", "Cedula", "Correo", "Nacimiento", "Estado civil", "Dirección","Acciones"]
+        header_labels = ["Nombre", "Apellidos", "Cedula", "Correo", "Nacimiento", "Estado civil", "Dirección","Acciones"]
         self.tbPersona.setHorizontalHeaderLabels(header_labels) ##ingreasan el array aqui
         self.tbPersona.horizontalHeader().setFixedHeight(40)
         self.tbPersona.verticalHeader().setVisible(False)
@@ -201,13 +201,12 @@ class AdminPersona(QWidget):
                         usa la funcion addItem_a_tabla()
                     """
                     self.addItem_a_tabla(index,0,persona.nombre)
-                    self.addItem_a_tabla(index,1,persona.apellido1)
-                    self.addItem_a_tabla(index,2,persona.apellido2)
-                    self.addItem_a_tabla(index,3,persona.cedula)
-                    self.addItem_a_tabla(index,4,persona.correo)
-                    self.addItem_a_tabla(index,5,self._formatear_fecha(str(persona.fecha_nacimiento)))
-                    self.addItem_a_tabla(index,6,persona.estado_civil)
-                    self.addItem_a_tabla(index,7,persona.direccion)
+                    self.addItem_a_tabla(index,1,persona.apellidos)
+                    self.addItem_a_tabla(index,2,persona.cedula)
+                    self.addItem_a_tabla(index,3,persona.correo)
+                    self.addItem_a_tabla(index,4,self._formatear_fecha(str(persona.fecha_nacimiento)))
+                    self.addItem_a_tabla(index,5,persona.estado_civil)
+                    self.addItem_a_tabla(index,6,persona.direccion)
 
                     """No cambia"""
                     btnEliminar = QPushButton(text="Eliminar")
@@ -236,8 +235,8 @@ class AdminPersona(QWidget):
                     layout.setContentsMargins(10, 0, 10,0)
                     ##el segundo numero indica el numero de columna osea la ultima, varia de acuerdo al bojeto
                     self.tbPersona.horizontalHeader().setSectionResizeMode(8, QHeaderView.Fixed)
-                    self.tbPersona.setColumnWidth(8,210)
-                    self.tbPersona.setCellWidget(index, 8, button_widget) 
+                    self.tbPersona.setColumnWidth(7,210)
+                    self.tbPersona.setCellWidget(index, 7, button_widget) 
             else:
                 self._mostrar_mensaje_sin_datos("No hay registros")
         else:
@@ -308,25 +307,27 @@ class AdminPersona(QWidget):
         return f"{int(dia)} de {mes_nombre} del {año}"
 
     def _eliminarRegistro(self, idx):
-            dial = DialogoEmergente("¿?","¿Seguro que quieres eliminar este registro?","Question",True,True)
-            if dial.exec() == QDialog.Accepted:##se revisa  si aceptro el dialogo emergente
-                result = self.Pservices.eliminarPersona(idx)
-                if result["success"]:
-                    dial = DialogoEmergente("","Se elimino el registro correctamente.","Check")
-                    dial.exec()
-                    self._cargar_tabla()
-                else:
-                    dial = DialogoEmergente("","Hubo un error al eliminar este registro.","Error")
-                    dial.exec()
+        dial = DialogoEmergente("¿?","¿Seguro que quieres eliminar este registro?","Question",True,True)
+        if dial.exec() == QDialog.Accepted:##se revisa  si aceptro el dialogo emergente
+            result = self.Pservices.eliminarPersona(idx)
+            if result["success"]:
+                dial = DialogoEmergente("","Se elimino el registro correctamente.","Check")
+                dial.exec()
+                self._cargar_tabla()
+            else:
+                dial = DialogoEmergente("","Hubo un error al eliminar este registro.","Error")
+                dial.exec()
 
     def _editar_Persona(self,id):
         blur_effect = QGraphicsBlurEffect(self)
         blur_effect.setBlurRadius(10)  # Ajusta el radio de desenfoque según sea necesario
         self.setGraphicsEffect(blur_effect)
-        """Aqui crean un omjeto form pasan el titulo y el id"""
-        form = formPersona(titulo="Actualizar persona",id=id)
-        form.exec()#Levantan la ventana
-        
+        try:
+            form = formPersona(titulo="Actualizar persona",id=id)
+            form.exec()#Levantan la ventana
+        except Exception as e:
+            print(f'Error: {e}')
+
         self._cargar_tabla()#luego de terminar se recarga la tabla
         self.setGraphicsEffect(None)
 
@@ -334,9 +335,11 @@ class AdminPersona(QWidget):
         blur_effect = QGraphicsBlurEffect(self)
         blur_effect.setBlurRadius(10)  # Ajusta el radio de desenfoque según sea necesario
         self.setGraphicsEffect(blur_effect)
-        """Se crean un ombjeto form para crear este no llevara titulo ni id"""
-        form = formPersona()
-        form.exec() ##se ejecuta
+        try:
+            form = formPersona()
+            form.exec() ##se ejecuta
+        except Exception as e:
+            print(f'Error: {e}')
         self._cargar_tabla() ##se recarga la tabla despues de terminar
         self.setGraphicsEffect(None)
         

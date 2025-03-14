@@ -5,7 +5,7 @@
 #frameEmerg{
     background-color: #ffffff;
     border: 1px solid #007286;
-    border-radius: 10px;
+    border-radius: 0px;
 }
 
 QLabel {

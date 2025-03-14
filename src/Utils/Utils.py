@@ -6,14 +6,6 @@ import os
 import inspect
 
 def Sombrear(QObjeto,shadow:int=0,xOffset:int=0,yOffset:int=0, color:str=None):
-    """
-    Aplica un estilo de sombra a un objeto Q.
-    
-    :param shadow: Valor que indica la intencidad del blur.
-    :param xOffset: Desplazamiento de la sombra en el eje x.
-    :param yOffset: Desplazamiento de la sombra en el eje y.
-    :return: No se retorna ningun dato.
-    """
     sombra = QGraphicsDropShadowEffect(QObjeto)
     sombra.setBlurRadius(shadow)
     sombra.setXOffset(xOffset)
@@ -26,10 +18,13 @@ def cargar_Icono(QObjeto,archivoImg:str="",Size:QSize=None):
     try:
         ruta_relativa = os.getcwd()
         ruta = os.path.join(ruta_relativa,'src','UI','iconos',archivoImg)
+
         if not os.path.exists(ruta):
             raise ValueError(f'La ruta \'{ruta}\' no existe')
+        
         if os.path.splitext(ruta)[1] != '.png':
             raise ValueError(f'La extencion del archivo en la ruta \'{ruta}\' no es validad, esta debe ser \'.png\'')
+        
         pixmap = QPixmap(ruta) 
 
         # Qt.SmoothTransformation:
@@ -113,3 +108,23 @@ def cargar_icono(Qpushbutton:QPushButton,icono:str,Size:QSize = None):
             Qpushbutton.setIconSize(QSize(altura, altura))
     except Exception as e:
         print(f'Error: {e}')
+
+
+def format_Fecha(fecha:str):
+        año, mes, dia = fecha.split("-")
+        meses = {
+            '01': 'enero',
+            '02': 'febrero',
+            '03': 'marzo',
+            '04': 'abril',
+            '05': 'mayo',
+            '06': 'junio',
+            '07': 'julio',
+            '08': 'agosto',
+            '09': 'septiembre',
+            '10': 'octubre',
+            '11': 'noviembre',
+            '12': 'diciembre'
+        }
+        mes_nombre = meses[mes]
+        return f"{int(dia)} de {mes_nombre} del {año}"

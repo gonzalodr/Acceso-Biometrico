@@ -10,3 +10,5 @@
 <a href="https://www.flaticon.com/free-icons/setup" title="setup icons">Setup icons created by Freepik - Flaticon</a>
 
 <a href="https://www.flaticon.com/free-icons/exit" title="exit icons">Exit icons created by Freepik - Flaticon</a>
+
+<a href="https://www.flaticon.com/free-icons/user" title="user icons">User icons created by Rahat - Flaticon</a>

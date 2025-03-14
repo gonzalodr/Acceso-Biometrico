@@ -53,7 +53,7 @@ class DialogoEmergente(QDialog):
         if Icono:
             self.icon_label = QLabel()
             path_url = os.path.join(os.path.dirname(__file__), self.path_icono.get(Icono, "iconos/Warning.png"))
-            icon_pixmap = QPixmap(path_url).scaled(128, 128, Qt.KeepAspectRatio)
+            icon_pixmap = QPixmap(path_url).scaled(128, 128, Qt.KeepAspectRatio, Qt.SmoothTransformation)
             self.icon_label.setPixmap(icon_pixmap)
             self.icon_label.setAlignment(Qt.AlignCenter)
             self.frameLayout.addWidget(self.icon_label)  # Añadir el QLabel al layout del frame
@@ -107,10 +107,7 @@ class DialogoEmergente(QDialog):
         """Ejecutar la animación de apertura con rebote cuando se muestra el diálogo."""
         start_rect = QRect(self.x() + self.final_width // 2, self.y() + self.final_height // 2, 1, 1)
         bounce_rect = QRect(self.x() - 15, self.y() - 15, self.final_width + 30, self.final_height + 30)
-        end_rect = QRect(self.x(), self.y(), self.final_width, self.final_height)
-        print(start_rect)
-        print(bounce_rect)
-        print(end_rect)
+        end_rect = QRect(self.x(), self.y(), self.final_width-1, self.final_height-1)
         self.animation.setKeyValueAt(0, start_rect)
         self.animation.setKeyValueAt(0.7, bounce_rect)
         self.animation.setKeyValueAt(1, end_rect)

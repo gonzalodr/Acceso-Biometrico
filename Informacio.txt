@@ -1,5 +1,0 @@
--Perfiles para los usuarios no Rol
--Administracion de perfiles.
--Datos de persona: Apellidos juntos.
--Creacion de empleados->seleccion de depatamento, rol.
--Rol contiene tabla de Horario.
