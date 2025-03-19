@@ -6,6 +6,7 @@ from UI.AdministrarHorario.adminHorario import *
 from UI.AdministraPersona.adminPersona import *
 from UI.AdministraDepartamento.adminDepartamento import *  # Importa la clase AdminDepartamento
 from UI.AdministrarRol.adminRol import *
+from UI.AdministrarReporte.AdminReporte import *
 from UI.AdministrarPermisosRol.AdminPermisosRol import *
 from UI.AdministrarPermisosPerfil.AdminPermisosPerfil import *
 from UI.AdministrarEmpleado.administrarEmpleado import *
@@ -172,12 +173,12 @@ class vistaPrincipal(QWidget):
             self.listaOpciones.append((index,"Admin. permisos perfil",'access-control-list.png'))
             
                  
-        """  if True:
+        if True:
             adminreporte = AdminReporte()
-            adminreporte.cerrar_adminRe.connect(self._salir_crud)
+            adminreporte.cerrar_adminR.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminreporte)
             self.listaOpciones.append((index,"Admin. reportes",'access-control-list.png'))
-        """
+        
         self.stackVistas.setCurrentIndex(0)
         
     def _widget_presentacion(self):
