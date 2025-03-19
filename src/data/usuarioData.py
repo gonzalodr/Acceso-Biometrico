@@ -3,10 +3,10 @@ from models.usuario import Usuario
 from data.data import conection
 from settings.config import *
 from settings.logger import logger
+from settings.tablas import TBUSUARIOPERFIL,TBUSUARIOPERFIL_ID_USER
 import bcrypt
 
 class UsuarioData:
-    
     def create_usuario(self, usuario: Usuario, conexionEx = None):
         #manejando la conexión exterior
         if conexionEx is None:
@@ -90,14 +90,17 @@ class UsuarioData:
             conexion = conexionEx
         try:
             with conexion.cursor() as cursor:
-                query = f"DELETE FROM {TBUSUARIO} WHERE {TBUSUARIO_ID} = %s "
+                cursor.execute(f"DELETE FROM {TBUSUARIOPERFIL} WHERE {TBUSUARIOPERFIL_ID_USER} = %s",(usuario_id,))
+                cursor.execute(f"DELETE FROM {TBUSUARIO} WHERE {TBUSUARIO_ID} = %s ", (usuario_id,))
                 
-                cursor.execute(query, (usuario_id,))
                 if conexionEx is None:
                     conexion.commit()
 
                 return {'success':True, 'message':'Usuario eliminado exitosamente.'}
         except Error as e:
+            if conexionEx is None:
+                conexion.rollback()
+
             logger.error(f'{e}')
             return {'success':False, 'message':'Ocurrió un error al eliminar el usuario.'}
         finally:
