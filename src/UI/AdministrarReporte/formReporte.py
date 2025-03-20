@@ -44,48 +44,39 @@ class formReporte(QDialog):
         lblEmpleado = QLabel(text="Seleccionar Empleado:")   
         self.inputEmpleado = QComboBox()
         self.errorEmpleado = QLabel(text="")
-        layoutForm.addWidget(lblEmpleado, 0, 0)
-        layoutForm.addWidget(self.inputEmpleado, 0, 1)
-        
-         # Empleado
-        #self.inputEmpleado.addItems(["Empleado 1", "Empleado 2", "Empleado 3"])  # Simulación de datos
-        
+        Sombrear(self.inputEmpleado, 20, 0, 0)
         
         # Fecha de creación
         lblFecha = QLabel("Fecha de Creación:")
         self.inputFecha = QDateEdit()
         self.inputFecha.setCalendarPopup(True)
         self.inputFecha.setDate(QDate.currentDate())
+        self.inputFecha.setMinimumDate(QDate.currentDate())  # Bloquear fechas anteriores
+        self.inputFecha.setMaximumDate(QDate.currentDate())  # Bloquear fechas posteriores
+        # Acceder al QCalendarWidget asociado al QDateEdit
+        self.calendar = self.inputFecha.calendarWidget()
+        self.calendar.setMinimumDate(QDate.currentDate())  # Bloquear fechas anteriores
+        self.calendar.setMaximumDate(QDate.currentDate())  # Bloquear fechas posterio
         layoutForm.addWidget(lblFecha, 1, 0)
-        layoutForm.addWidget(self.inputFecha, 1, 1)
+        layoutForm.addWidget(self.inputFecha, 2, 0)
+        Sombrear(self.inputFecha, 20, 0, 0)
 
         # Tipo de reporte
         lblTipo = QLabel(text="Tipo de Reporte:")
         self.inputTipo = QComboBox()
         self.inputTipo.addItems(["Incidencia", "Informe", "Solicitud", "Otro"])  # Tipos de reportes
-        layoutForm.addWidget(lblTipo, 2, 0)
-        layoutForm.addWidget(self.inputTipo, 2, 1)
+        self.errorTipo = QLabel(text="")
+        Sombrear(self.inputTipo, 20, 0, 0)
 
         # Contenido del reporte
         lblContenido = QLabel(text="Contenido del Reporte:")
         self.inputContenido = QTextEdit()
-        layoutForm.addWidget(lblContenido, 3, 0, 1, 2)
-        layoutForm.addWidget(self.inputContenido, 4, 0, 1, 2)
+        layoutForm.addWidget(lblContenido, 4, 0, 1, 2)
+        layoutForm.addWidget(self.inputContenido, 5, 0, 1, 2)
+        Sombrear(self.inputContenido, 20, 0, 0)
 
-        layoutFrame.addLayout(layoutForm)  # Agregar formulario al layout principal
-
-        # Definir layout del QDialog
-        self.setLayout(layoutFrame)
-
-
-        self.error =QLabel(text="")
-        self.error.setObjectName("lblerror")
-        self.error.setMaximumHeight(30)
-        self.error.setMinimumHeight(30)
-        self.error.setWordWrap(True)
-        
-        layoutForm.addLayout(self._contenedor(lblEmpleado,self.inputEmpleado,self.errorEmpleado),0,0)
-        layoutForm.addWidget(self.error,1,0)    
+        layoutForm.addLayout(self._contenedor(lblEmpleado, self.inputEmpleado, self.errorEmpleado), 0, 0)
+        layoutForm.addLayout(self._contenedor(lblTipo, self.inputTipo, self.errorTipo), 3, 0)
         
         boton_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         boton_box.button(QDialogButtonBox.Cancel).setText("Cancelar")
@@ -96,8 +87,8 @@ class formReporte(QDialog):
         boton_box.button(QDialogButtonBox.Ok).setObjectName("btnregistrar")
         boton_box.button(QDialogButtonBox.Ok).setMinimumSize(QSize(100,30))
         Sombrear(boton_box,20,0,5)
-
-         #Centrar los botones
+        
+      #Centrar los botones
         boton_layout = QHBoxLayout()
         boton_layout.addStretch()
         boton_layout.addWidget(boton_box)
@@ -106,24 +97,32 @@ class formReporte(QDialog):
         layoutFrame.addLayout(layoutForm)
         layoutFrame.addLayout(boton_layout)
         
-       # boton_box.accepted.connect(self._accion_permiso)
-        boton_box.rejected.connect(self._cancelar_registro)        
-
+        boton_box.accepted.connect(self._accion_reporte)
+        boton_box.rejected.connect(self._cancelar_registro)
+        
         frame.setLayout(layoutFrame)
         layout = QVBoxLayout()
         layout.setContentsMargins(0,0,0,0)
         layout.addWidget(frame)
         self.setLayout(layout)
-        Sombrear(self,30,0,0,"green")
+        Sombrear(self,30,0,0,"green")  
+        
+        ##if id:
+          #  self._obtener_registroId(id)
+        
+        layoutFrame.addLayout(layoutForm)  # Agregar formulario al layout principal
 
-        if id:
-            self._obtener_registroId(id)
-
+        # Definir layout del QDialog
+        self.setLayout(layoutFrame)
+    
+        layoutForm.addLayout(self._contenedor(lblEmpleado,self.inputEmpleado,self.errorEmpleado),0,0)
+        #layoutForm.addWidget(self.error,1,0)    
+        
         self._cargar_empleados()
         #self._verificar_permiso()
        # self.inputTabla.currentIndexChanged.connect(self._verificar_permiso)
         #self.inputEmpleado.currentIndexChanged.connect(self._verificar_permiso)
-        
+            
     def _contenedor(self,label:QLabel,input,label_error:QLabel):
         layout = QVBoxLayout()
         layout.setContentsMargins(0,0,0,0)
@@ -138,8 +137,16 @@ class formReporte(QDialog):
         layout.addWidget(input)
         layout.addWidget(label_error)
         return layout
-    
-    
+
+    def eventFilter(self, source, event):
+        if event.type() == 10:  # Enter (Mouse Enter)
+            if isinstance(source, QLineEdit):
+                text = source.placeholderText()
+                QToolTip.showText(event.globalPos(), text, source)
+        elif event.type() == 11:  # Leave (Mouse Leave)
+            if isinstance(source, QLineEdit):
+                QToolTip.hideText()
+        return super().eventFilter(source, event)
     
     def _cancelar_registro(self):
         if not self._validar_inputs_vacios():
@@ -159,7 +166,8 @@ class formReporte(QDialog):
             if len(listaEmpleados) > 0:
                 for empleado in listaEmpleados:
                     self.inputEmpleado.addItem(str(empleado.id_persona))
-                    self.listaEmpleadosID[empleado.id_persona] = empleado.id
+                    #self.listaEmpleadosID[empleado.id_persona] = empleado.id
+                    self.listaEmpleadosID[str(empleado.id_persona)] = empleado.id  # Usar id_persona 
             else:
                 dialEmergente = DialogoEmergente("","Ocurrio un error","Error")
                 if dialEmergente.exec() == QDialog.Accepted:
@@ -177,5 +185,53 @@ class formReporte(QDialog):
          if not empleado or not fecha or not tipo or not contenido:
             return True  # Hay campos vacíos
          return False  # Todos los campos están llenos
+     
+     
+    def _obtener_registroId(self, id):
+        result = self.reporteServices.obtenerReportePorId(id)
+        if result["success"]:
+            if result["data"]:
+                perfil = result["data"]
+                self.idP = perfil.id
+                self.inputEmpleado.setText(perfil.nombre)
+                self.inputFecha.setText(perfil.descripcion)
+                self.inputTipo.setText(perfil.nombre)
+                self.inputContenido.setText(perfil.descripcion)
+                
+            else:
+                dial = DialogoEmergente("Error", "Hubo un error de carga.", "Error")
+                dial.exec()
+                QTimer.singleShot(0, self.reject)
+        else:
+            dial = DialogoEmergente("Error", "Hubo un error de carga.", "Error")
+            dial.exec()
+            QTimer.singleShot(0, self.reject)
+            
+    def _accion_reporte(self):       
+        reporte : Reporte = Reporte(
+            #id_empleado=self.listaEmpleadosID[self.inputEmpleado.currentText()],
+            id_empleado=self.listaEmpleadosID[self.inputEmpleado.currentText()],
+            fecha_generacion=self.inputFecha.date().toString("yyyy-MM-dd"),
+            tipo_reporte=self.inputTipo.currentText(),
+            contenido=self.inputContenido.toPlainText(),
+            id=self.idP,
+        )
         
- 
+        if self.idP > 0:
+            result = self.reporteServices.modificarReporte(reporte)
+            if result["success"]:
+                dial = DialogoEmergente("Actualización", result["message"], "Check")
+                dial.exec()
+                self.reject()
+            else:
+                dial = DialogoEmergente("Error", "Error al actualizar el perfil", "Error")
+                dial.exec()
+        else:
+            result = self.reporteServices.insertarReporte(reporte)
+            if result["success"]:
+                dial = DialogoEmergente("Registrar", "Reporte registrado exitosamente", "Check")
+                dial.exec()
+                self.reject()
+            else:
+                dial = DialogoEmergente("Error", "Error al registrar el Reporte", "Error")
+                dial.exec()
