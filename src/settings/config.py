@@ -5,10 +5,7 @@ DATABASE_CONFIG = {
     "database": "accesobiometrico",
 }
 
-ZKTECA_CONFIG ={
-    'host':'192.168.1.201',
-    'port': '4370'
-}
+ZKTECA_CONFIG = {"host": "192.168.1.201", "port": "4370"}
 
 ##
 # declaracion de los nombres de las tablas
@@ -80,3 +77,19 @@ TBROLHORARIO = "rol_horario"
 TBROLHORARIO_ID = "Id"
 TBROLHORARIO_ID_ROL = "Id_Rol"
 TBROLHORARIO_ID_HORARIO = "Id_Horario"
+
+# PERMISO PERFIL
+TBPERMISOPERFIL = "permiso_perfil"
+TBPERMISOPERFIL_ID = "Id"
+TBPERMISOPERFIL_PERFIL_ID = "Id_Perfil"
+TBPERMISOPERFIL_TABLA = "nombre_tabla"
+TBPERMISOPERFIL_VER = "Ver"
+TBPERMISOPERFIL_INSERTAR = "Insertar"
+TBPERMISOPERFIL_EDITAR = "Editar"
+TBPERMISOPERFIL_ELIMINAR = "Eliminar"
+
+# PERFIL
+TBPERFIL = "perfil"
+TBPERFIL_ID = "Id"
+TBPERFIL_NOMBRE = "Nombre"
+TBPERFIL_DESCRIPCION = "Descripcion"

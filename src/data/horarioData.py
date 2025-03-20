@@ -254,16 +254,17 @@ class HorarioData:
         tipo_orden="ASC",
         busqueda=None,
     ):
-        """
-        Lista los horarios con paginación, orden y búsqueda opcional.
-        """
+
         try:
             cursor = self.conn.cursor(
                 dictionary=True
             )  # Para devolver resultados como diccionarios
+
             # Validación de la columna por la cual ordenar
             columnas_validas = {
                 "id": TBHORARIO_ID,
+                "nombre": TBHORARIO_NOMBRE_HORARIO,
+                "rol": TBROL_NOMBRE,  # Permitir ordenar por el nombre del rol
                 "dias": TBHORARIO_DIAS_SEMANALES,
                 "tipo": TBHORARIO_TIPO_JORNADA,
                 "inicio": TBHORARIO_HORA_INICIO,
@@ -274,19 +275,33 @@ class HorarioData:
             if tipo_orden not in ["ASC", "DESC"]:
                 tipo_orden = "DESC"  # Valor por defecto si no es válido
 
-            # Construcción de la consulta base
-            query = f"SELECT * FROM {TBHORARIO}"
+            # Construcción de la consulta base con JOIN
+            query = f"""
+            SELECT 
+                h.{TBHORARIO_ID},
+                h {TBHORARIO_NOMBRE_HORARIO},
+                r.{TBROL_NOMBRE} AS nombre_rol  # Nombre del rol asociado al horario
+                h.{TBHORARIO_DIAS_SEMANALES},
+                h.{TBHORARIO_TIPO_JORNADA},
+                h.{TBHORARIO_HORA_INICIO},
+                h.{TBHORARIO_HORA_FIN},
+                h.{TBHORARIO_DESCRIPCION},
+            FROM {TBHORARIO} h
+            LEFT JOIN {TBROLHORARIO} rh ON h.{TBHORARIO_ID} = rh.{TBROLHORARIO_ID}
+            LEFT JOIN {TBROL} r ON rh.{TBROLHORARIO_ID_ROL} = r.{TBROL_ID}
+            """
 
             # Añadir cláusula de búsqueda si se proporciona
             valores = []
             if busqueda:
                 query += f"""
-                WHERE {TBHORARIO_DIAS_SEMANALES} LIKE %s 
-                OR {TBHORARIO_TIPO_JORNADA} LIKE %s
+                WHERE h.{TBHORARIO_DIAS_SEMANALES} LIKE %s 
+                OR h.{TBHORARIO_TIPO_JORNADA} LIKE %s
+                OR r.{TBROL_NOMBRE} LIKE %s
             """
                 valores = [
                     f"%{busqueda}%"
-                ] * 2  # Para usar el valor de búsqueda en ambas columnas
+                ] * 3  # Para usar el valor de búsqueda en las columnas
 
             # Añadir la cláusula ORDER BY y LIMIT/OFFSET
             query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
@@ -298,14 +313,16 @@ class HorarioData:
             registros = cursor.fetchall()
             lista_horarios = []
             for registro in registros:
-                horario = Horario(
-                    dias_semanales=registro[TBHORARIO_DIAS_SEMANALES],
-                    tipo_jornada=registro[TBHORARIO_TIPO_JORNADA],
-                    hora_inicio=registro[TBHORARIO_HORA_INICIO],
-                    hora_fin=registro[TBHORARIO_HORA_FIN],
-                    descripcion=registro[TBHORARIO_DESCRIPCION],
-                    id=registro[TBHORARIO_ID],
-                )
+                horario = {
+                    "id": registro[TBHORARIO_ID],
+                    "nombre_horario": registro[TBHORARIO_NOMBRE_HORARIO],
+                    "nombre_rol": registro["nombre_rol"],  # Nombre del rol asociado
+                    "dias_semanales": registro[TBHORARIO_DIAS_SEMANALES],
+                    "tipo_jornada": registro[TBHORARIO_TIPO_JORNADA],
+                    "hora_inicio": registro[TBHORARIO_HORA_INICIO],
+                    "hora_fin": registro[TBHORARIO_HORA_FIN],
+                    "descripcion": registro[TBHORARIO_DESCRIPCION],
+                }
                 lista_horarios.append(horario)
 
             # Obtener el total de registros para calcular el número total de páginas

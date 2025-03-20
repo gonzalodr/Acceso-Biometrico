@@ -19,7 +19,7 @@ class HorarioService:
             }
         return {"success": True}
 
-    def insertarHorario(self, horario: Horario):
+    def insertarHorario(self, horario: Horario, id_rol: int):
         """
         Inserta un nuevo horario después de validar los datos.
         """
@@ -29,7 +29,7 @@ class HorarioService:
             return result
 
         # Insertar el horario usando la capa de datos
-        return self.horarioData.create_horario(horario)
+        return self.horarioData.create_horario(horario, id_rol)
 
     def _existe_horario_duplicado(self, horario: Horario):
         """
