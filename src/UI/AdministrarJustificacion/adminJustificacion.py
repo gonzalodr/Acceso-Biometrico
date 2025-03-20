@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from Utils.Utils import *
+from UI.AdministrarJustificacion.formJustificacion import *
 from services.justificacionService import *
 
 class AdminJustificacion(QWidget):
@@ -212,4 +213,90 @@ class AdminJustificacion(QWidget):
         dato_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
         self.tbJustificacion.setItem(row, colum, dato_item)
 
-    
+    def _actualizar_lblPagina(self, numPagina, totalPagina):
+        self.lblNumPagina.setText(f"Página {numPagina} de {totalPagina}")
+
+    def _actualizarValoresPaginado(self, paginaActual, totalPaginas):
+        self.paginaActual = paginaActual
+        self.ultimaPagina = totalPaginas
+        if totalPaginas <= 1:
+            self.btnPrimerPagina.setEnabled(False)
+            self.btnAnterior.setEnabled(False)
+            self.btnSiguiente.setEnabled(False)
+            self.btnUltimaPagina.setEnabled(False)
+        elif paginaActual == 1:
+            self.btnPrimerPagina.setEnabled(False)
+            self.btnAnterior.setEnabled(False)
+            self.btnSiguiente.setEnabled(True)
+            self.btnUltimaPagina.setEnabled(True)
+        elif paginaActual == totalPaginas:
+            self.btnPrimerPagina.setEnabled(True)
+            self.btnAnterior.setEnabled(True)
+            self.btnSiguiente.setEnabled(False)
+            self.btnUltimaPagina.setEnabled(False)
+        else:
+            self.btnPrimerPagina.setEnabled(True)
+            self.btnAnterior.setEnabled(True)
+            self.btnSiguiente.setEnabled(True)
+            self.btnUltimaPagina.setEnabled(True)
+
+    def _irPrimeraPagina(self):
+        self.paginaActual = 1
+        self._cargar_tabla()
+
+    def _irUltimaPagina(self):
+        self.paginaActual = self.ultimaPagina
+        self._cargar_tabla()
+
+    def _irSiguientePagina(self):
+        if (self.paginaActual + 1) <= self.ultimaPagina:
+            self.paginaActual += 1
+            self._cargar_tabla()
+
+    def _irAnteriorPagina(self):
+        if (self.paginaActual - 1) >= 1:
+            self.paginaActual -= 1
+            self._cargar_tabla()
+
+    def _buscarJustificacion(self):
+        input_busqueda = self.inputBuscar.text()
+        if input_busqueda:
+            self.busqueda = input_busqueda
+            self._cargar_tabla()
+            self.busqueda = None
+        else:
+            self.paginaActual = 1
+            self._cargar_tabla()
+
+    def _eliminarRegistro(self, idx):
+        dial = DialogoEmergente("¿?", "¿Seguro que quieres eliminar este registro?", "Question", True, True)
+        if dial.exec() == QDialog.Accepted:
+            result = self.Pservices.eliminarJustificacion(idx)
+            if result["success"]:
+                dial = DialogoEmergente("", "Se eliminó el registro correctamente.", "Check")
+                dial.exec()
+                self._cargar_tabla()
+            else:
+                dial = DialogoEmergente("", "Hubo un error al eliminar este registro.", "Error")
+                dial.exec()
+
+    def _editar_Justificacion(self, id):
+        blur_effect = QGraphicsBlurEffect(self)
+        blur_effect.setBlurRadius(10)
+        self.setGraphicsEffect(blur_effect)
+        
+        form = formJustificacion(titulo="Actualizar justificación", id=id)
+        form.exec()
+        
+        self._cargar_tabla()
+        self.setGraphicsEffect(None)
+
+    def _crear_justificacion(self):
+        blur_effect = QGraphicsBlurEffect(self)
+        blur_effect.setBlurRadius(10)
+        self.setGraphicsEffect(blur_effect)
+        
+        form = formJustificacion()
+        form.exec()
+        self._cargar_tabla()
+        self.setGraphicsEffect(None)
