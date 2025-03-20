@@ -48,3 +48,13 @@ TBTELEFONO_ID           = 'Id'
 TBTELEFONO_ID_PERSONA   = 'Id_Persona'
 TBTELEFONO_NUMERO       = 'Numero'
 TBTELEFONO_TIPO_CONTACTO = 'Tipo_Contacto'
+
+
+#Tabla justificación
+TBJUSTIFICACION            = 'justificacion'
+TBJUSTIFICACION_ID         = "Id"
+TBJUSTIFICACION_ID_EMPLEADO = "Id_Empleado"
+TBJUSTIFICACION_ID_ASISTENCIA = "Id_Asistencia"
+TBJUSTIFICACION_FECHA = "Fecha"
+TBJUSTIFICACION_MOTIVO = "Motivo"
+TBJUSTIFICACION_DESCRIPCION = "Descripcion"

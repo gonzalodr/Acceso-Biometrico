@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 #máximo de tamaño por archivo 10 mb, 
 # tiempo máximo de existencia de archivos 
 # completos solo los 5 últimos 
-file_handler = RotatingFileHandler('src/loggers/Debugg.log', maxBytes=2*1024*1024, backupCount=5)
+file_handler = RotatingFileHandler('src\loggers\Debugg.log', maxBytes=2*1024*1024, backupCount=5)
 
 # Estableciendo un formato de escritura
 formato = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s - %(filename)s:%(lineno)d')
