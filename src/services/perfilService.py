@@ -13,7 +13,7 @@ class PerfilServices:
     
     def _validarNombre(self, nombre):
         # Validar que el nombre no esté vacío y cumpla con un patrón (solo letras y espacios, hasta 100 caracteres)
-        patron = r"^[A-Za-z\s]{1,100}$"
+        patron = r"^[A-Za-z\s]{1,100}$" # Expresión regular que permite solo letras y espacios.
         result = re.match(patron, nombre)
         if result:
             return {"success": True, "message": "Nombre válido."}

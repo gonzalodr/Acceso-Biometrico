@@ -11,3 +11,4 @@ class Permiso_Perfil:
         
     def __repr__(self):
         return f"{self.id}\n{self.perfil_id}\n{self.tabla}\n{self.ver}\n{self.crear}\n{self.editar}\n{self.eliminar}"
+    # cadena con los detalles del permiso
