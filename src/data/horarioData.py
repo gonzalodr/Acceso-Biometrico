@@ -279,13 +279,13 @@ class HorarioData:
             query = f"""
             SELECT 
                 h.{TBHORARIO_ID},
-                h {TBHORARIO_NOMBRE_HORARIO},
-                r.{TBROL_NOMBRE} AS nombre_rol  # Nombre del rol asociado al horario
+                h.{TBHORARIO_NOMBRE_HORARIO},
+                r.{TBROL_NOMBRE} AS nombre_rol,
                 h.{TBHORARIO_DIAS_SEMANALES},
                 h.{TBHORARIO_TIPO_JORNADA},
                 h.{TBHORARIO_HORA_INICIO},
                 h.{TBHORARIO_HORA_FIN},
-                h.{TBHORARIO_DESCRIPCION},
+                h.{TBHORARIO_DESCRIPCION}
             FROM {TBHORARIO} h
             LEFT JOIN {TBROLHORARIO} rh ON h.{TBHORARIO_ID} = rh.{TBROLHORARIO_ID}
             LEFT JOIN {TBROL} r ON rh.{TBROLHORARIO_ID_ROL} = r.{TBROL_ID}

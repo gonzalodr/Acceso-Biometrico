@@ -201,16 +201,15 @@ class AdminHorario(QWidget):
                     hora_inicio_str = str(horario.hora_inicio)
                     hora_fin_str = str(horario.hora_fin)
 
-                    self.addItem_a_tabla(index, 0, horario.dias_semanales)
-                    self.addItem_a_tabla(index, 1, horario.tipo_jornada)
-                    self.addItem_a_tabla(
-                        index, 2, hora_inicio_str
-                    )  # Usando la versión en string
-                    self.addItem_a_tabla(
-                        index, 3, hora_fin_str
-                    )  # Usando la versión en string
-                    self.addItem_a_tabla(index, 4, horario.descripcion)
-                    self._agregar_acciones(index, horario.id)
+                    # Agrega los datos a la tabla
+                self.addItem_a_tabla(index, 0, horario["nombre_horario"])
+                self.addItem_a_tabla(index, 1, horario.get("nombre_rol", "Sin rol"))
+                self.addItem_a_tabla(index, 2, horario["dias_semanales"])
+                self.addItem_a_tabla(index, 3, horario["tipo_jornada"])
+                self.addItem_a_tabla(index, 4, hora_inicio_str)
+                self.addItem_a_tabla(index, 5, hora_fin_str)
+                self.addItem_a_tabla(index, 6, horario["descripcion"])
+                self._agregar_acciones(index, horario["id"])
             else:
                 self._mostrar_mensaje_sin_datos("No hay registros")
         else:
