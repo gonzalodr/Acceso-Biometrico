@@ -107,8 +107,8 @@ class formReporte(QDialog):
         self.setLayout(layout)
         Sombrear(self,30,0,0,"green")  
         
-        ##if id:
-          #  self._obtener_registroId(id)
+        if id:
+            self._obtener_registroId(id)
         
         layoutFrame.addLayout(layoutForm)  # Agregar formulario al layout principal
 
@@ -150,7 +150,7 @@ class formReporte(QDialog):
     
     def _cancelar_registro(self):
         if not self._validar_inputs_vacios():
-            dialEmergente = DialogoEmergente("¿Estas seguro que que quieres cancelar?","Question",True,True)
+            dialEmergente = DialogoEmergente("¿Estas seguro que quieres cancelar?","Question",True,True)
             opcion = dialEmergente.exec()
             if opcion == QDialog.Accepted:
                  self.reject()
@@ -191,12 +191,14 @@ class formReporte(QDialog):
         result = self.reporteServices.obtenerReportePorId(id)
         if result["success"]:
             if result["data"]:
-                perfil = result["data"]
-                self.idP = perfil.id
-                self.inputEmpleado.setText(perfil.nombre)
-                self.inputFecha.setText(perfil.descripcion)
-                self.inputTipo.setText(perfil.nombre)
-                self.inputContenido.setText(perfil.descripcion)
+                reporte : Reporte = result["data"]
+                self.idP = reporte.id
+                self.inputEmpleado.setCurrentText(str(reporte.id_empleado))
+                fecha_qt = QDate(reporte.fecha_generacion.year, reporte.fecha_generacion.month, reporte.fecha_generacion.day)
+                self.inputFecha.setDate(fecha_qt)
+               # self.inputFecha.setText(reporte.fecha_generacion)
+                self.inputTipo.setCurrentText(reporte.tipo_reporte)
+                self.inputContenido.setText(reporte.contenido)
                 
             else:
                 dial = DialogoEmergente("Error", "Hubo un error de carga.", "Error")

@@ -52,7 +52,7 @@ class AdminReporte(QWidget):
         
         self.inputBuscar = QLineEdit()
         self.inputBuscar.setClearButtonEnabled(True)
-        self.inputBuscar.setPlaceholderText("Buscar reporte por persona.")
+        self.inputBuscar.setPlaceholderText("Buscar reporte por empelado.")
         self.inputBuscar.setFixedSize(QSize(500,30))
         self.inputBuscar.textChanged.connect(self._cargar_tabla)
         Sombrear(self.inputBuscar,20,0,0)

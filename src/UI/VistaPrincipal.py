@@ -10,6 +10,7 @@ from UI.AdministrarReporte.AdminReporte import *
 from UI.AdministrarPermisosRol.AdminPermisosRol import *
 from UI.AdministrarPermisosPerfil.AdminPermisosPerfil import *
 from UI.AdministrarEmpleado.administrarEmpleado import *
+from UI.AdministrarAsistencia.AdminAsistencia import *
 from models.usuario import *
 import sys
 
@@ -178,6 +179,15 @@ class vistaPrincipal(QWidget):
             adminreporte.cerrar_adminR.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminreporte)
             self.listaOpciones.append((index,"Admin. reportes",'access-control-list.png'))
+            
+                     
+        if True:
+            adminasistencia = AdminAsistencia()
+            adminasistencia.cerrar_adminA.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(adminasistencia)
+            self.listaOpciones.append((index,"Admin. reportes",'access-control-list.png'))
+            
+            
         
         self.stackVistas.setCurrentIndex(0)
         
