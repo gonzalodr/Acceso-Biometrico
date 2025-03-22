@@ -22,7 +22,7 @@ QWidget{
 }
 QLabel{
     background-color: transparent;
-    font: 10 13pt "Cooper Black";
+    font: 10 10pt "Cooper Black";
     color: #000000; /* Texto en negro para el título */
 }
 QLineEdit:read-only{
@@ -30,7 +30,7 @@ QLineEdit:read-only{
     border-bottom:1px solid #000000;
     padding: 5px;
     color: #000000;
-    font: 1 13pt "Cooper Black";
+    font: 1 10pt "Arial";
 }
 /* QLineEdit:read-only {
     background-color: #e9e9e9;

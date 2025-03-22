@@ -14,8 +14,9 @@ class informacionEmpleado(QDialog):
     def __init__(self,id_empleado:int,parent = None):
         super().__init__(parent)
         self.setWindowTitle("Sistema de Gestión de Empleados")
-        self.setMinimumSize(700, 700)
-
+        self.setMinimumSize(700, 500)
+        self.setMinimumSize(700, 675)
+        
         main_layout = QVBoxLayout()
         # Sección de Datos Personales con Scroll
         self.personal_group = QGroupBox("Datos Personales")
@@ -44,7 +45,7 @@ class informacionEmpleado(QDialog):
         # Establecer los campos como solo lectura
         for field in [self.nombre, self.apellidos, self.cedula, self.nacimiento, self.correo, self.estadoCivil, self.direccion]:
             field.setReadOnly(True)
-            field.setMinimumHeight(30)
+            field.setMinimumHeight(25)
         
         # Agregar los campos al form_layout en el mismo orden que se crearon
         self.form_layout.addRow(QLabel("Nombre:")    , self.nombre)
