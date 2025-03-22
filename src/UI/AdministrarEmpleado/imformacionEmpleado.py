@@ -20,12 +20,13 @@ class informacionEmpleado(QDialog):
         # Sección de Datos Personales con Scroll
         self.personal_group = QGroupBox("Datos Personales")
         personal_layout = QHBoxLayout()  # Cambiamos a QHBoxLayout
+        cargar_estilos('claro','informacionEm.css',self)
         
         # Foto del empleado (lado izquierdo)
         self.foto = QLabel()
         self.foto.setAlignment(Qt.AlignCenter)
         self.foto.setFixedSize(150, 150)  # Tamaño fijo para la foto
-        self.foto.setStyleSheet("border: 2px solid #ccc; border-radius: 75px;")
+        self.foto.setStyleSheet("border: 2px solid #ccc; border-radius: 5px;")
         personal_layout.addWidget(self.foto)
         
         # Campos de datos personales (lado derecho)
