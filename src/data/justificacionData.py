@@ -97,70 +97,84 @@ class JustificacionData:
             with conexion.cursor(dictionary=True) as cursor:
                 # Validación de la columna de ordenamiento
                 columna_orden = {
-                    "motivo": "MOTIVO",
-                    "descripcion": "DESCRIPCION",
-                    "id_empleado": "ID_EMPLEADO",
-                    "id_asistencia": "ID_ASISTENCIA"
+                    "motivo": TBJUSTIFICACION_MOTIVO,
+                    "descripcion": TBJUSTIFICACION_DESCRIPCION,
+                    "id_empleado": TBJUSTIFICACION_ID_EMPLEADO,
+                    "id_asistencia": TBJUSTIFICACION_ID_ASISTENCIA,
+                    "nombre_empleado": TBPERSONA_NOMBRE,  # Para ordenar por nombre del empleado
+                    "fecha": TBJUSTIFICACION_FECHA  # Para ordenar por fecha
                 }
-                ordenar_por = columna_orden.get(ordenar_por, "ID_JUSTIFICACION")
+                ordenar_por = columna_orden.get(ordenar_por, TBJUSTIFICACION_ID)
 
                 # Asigna el tipo de orden ascendente o descendente
                 tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
 
                 # Construcción de la consulta base
-                query = "SELECT * FROM TBJUSTIFICACION"
+                query = f"""
+                    SELECT J.*, P.{TBPERSONA_NOMBRE} AS nombre_empleado
+                    FROM {TBJUSTIFICACION} J
+                    INNER JOIN EMPLEADO E ON J.{TBJUSTIFICACION_ID_EMPLEADO} = E.ID
+                    INNER JOIN {TBPERSONA} P ON E.ID_PERSONA = P.{TBPERSONA_ID}
+                """
 
                 # Añadir cláusula de búsqueda si se proporciona
                 valores = []
                 if busqueda:
-                    query += """
-                        WHERE MOTIVO LIKE %s 
-                        OR DESCRIPCION LIKE %s
-                        OR ID_EMPLEADO LIKE %s
-                        OR ID_ASISTENCIA LIKE %s
+                    query += f"""
+                        WHERE J.{TBJUSTIFICACION_MOTIVO} LIKE %s 
+                        OR J.{TBJUSTIFICACION_DESCRIPCION} LIKE %s
+                        OR J.{TBJUSTIFICACION_ID_EMPLEADO} LIKE %s
+                        OR J.{TBJUSTIFICACION_ID_ASISTENCIA} LIKE %s
+                        OR P.{TBPERSONA_NOMBRE} LIKE %s
                     """
-                    valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
+                    valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
 
-            # Añadir la cláusula ORDER BY y LIMIT/OFFSET
-            query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
-            valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
+                # Añadir la cláusula ORDER BY y LIMIT/OFFSET
+                query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
+                valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
 
-            # Ejecutar la consulta con los parámetros de forma segura
-            cursor.execute(query, valores)
+                # Ejecutar la consulta con los parámetros de forma segura
+                cursor.execute(query, valores)
 
-            # Leer los registros
-            registros = cursor.fetchall()
-            for registro in registros:
-                justificacion = {
-                    "id_justificacion": registro["ID_JUSTIFICACION"],
-                    "motivo": registro["MOTIVO"],
-                    "descripcion": registro["DESCRIPCION"],
-                    "id_empleado": registro["ID_EMPLEADO"],
-                    "id_asistencia": registro["ID_ASISTENCIA"]
+                # Leer los registros
+                registros = cursor.fetchall()
+                for registro in registros:
+                    justificacion = {
+                        "id_justificacion": registro[TBJUSTIFICACION_ID],
+                        "motivo": registro[TBJUSTIFICACION_MOTIVO],
+                        "descripcion": registro[TBJUSTIFICACION_DESCRIPCION],
+                        "id_empleado": registro[TBJUSTIFICACION_ID_EMPLEADO],
+                        "id_asistencia": registro[TBJUSTIFICACION_ID_ASISTENCIA],
+                        "nombre_empleado": registro["nombre_empleado"],  # Agregar el nombre del empleado
+                        "fecha": registro[TBJUSTIFICACION_FECHA]  # Agregar la fecha
+                    }
+                    listaJustificaciones.append(justificacion)
+
+                # Obtener el total de registros para calcular el número total de páginas
+                cursor.execute(f"SELECT COUNT(*) as total FROM {TBJUSTIFICACION}")
+                total_registros = cursor.fetchone()["total"]
+                total_paginas = (total_registros + tam_pagina - 1) // tam_pagina  # Redondear hacia arriba
+
+                resultado["data"] = {
+                    "listaJustificaciones": listaJustificaciones,
+                    "pagina_actual": pagina,
+                    "tam_pagina": tam_pagina,
+                    "total_paginas": total_paginas,
+                    "total_registros": total_registros
                 }
-                listaJustificaciones.append(justificacion)
-
-            # Obtener el total de registros para calcular el número total de páginas
-            cursor.execute("SELECT COUNT(*) as total FROM TBJUSTIFICACION")
-            total_registros = cursor.fetchone()["total"]
-            total_paginas = (total_registros + tam_pagina - 1) // tam_pagina  # Redondear hacia arriba
-
-            resultado["data"] = {
-                "listaJustificaciones": listaJustificaciones,
-                "pagina_actual": pagina,
-                "tam_pagina": tam_pagina,
-                "total_paginas": total_paginas,
-                "total_registros": total_registros
-            }
-            resultado["success"] = True
-            resultado["message"] = "Justificaciones listadas exitosamente."
-            return resultado
+                resultado["success"] = True
+                resultado["message"] = "Justificaciones listadas exitosamente."
+                return resultado
         except Error as e:
-            logger.error(f'Error: {e}')
-            return {'success': False, 'message': 'Ocurrió un error al cargar la lista de justificaciones.'}
+            logger.error(f'Error al cargar la lista de justificaciones: {e}')  # Mensaje de error específico
+            return {'success': False, 'message': f'Ocurrió un error al cargar la lista de justificaciones: {str(e)}'}
+        except Exception as e:
+            logger.error(f'Error inesperado: {e}')  # Captura de errores inesperados
+            return {'success': False, 'message': f'Ocurrió un error inesperado: {str(e)}'}
         finally:
             if conexion:
                 conexion.close()
+
 
 
     

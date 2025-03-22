@@ -4,6 +4,9 @@ from Utils.Utils import *
 from UI.AdministrarJustificacion.formJustificacion import *
 from services.justificacionService import *
 
+from datetime import datetime
+
+
 class AdminJustificacion(QWidget):
     cerrar_adminJ = Signal()
     
@@ -75,11 +78,11 @@ class AdminJustificacion(QWidget):
         layoutTop.addStretch(5)
         self.layoutFrame.addLayout(layoutTop)
         
-        # Tabla Justificaciones
+        # Tabla Justificaciones con las nuevas columnas
         self.tbJustificacion = QTableWidget()
-        if (self.tbJustificacion.columnCount() < 3):
-            self.tbJustificacion.setColumnCount(3)
-        header_labels = ["Motivo", "Descripción", "Acciones"]
+        if (self.tbJustificacion.columnCount() < 5):
+            self.tbJustificacion.setColumnCount(5)  # Se añaden 2 columnas más
+        header_labels = ["Motivo", "Descripción", "Empleado", "Asistencia", "Acciones"]
         self.tbJustificacion.setHorizontalHeaderLabels(header_labels)
         
         self.tbJustificacion.horizontalHeader().setFixedHeight(40)
@@ -147,22 +150,16 @@ class AdminJustificacion(QWidget):
         
     def _cerrar(self):
         self.cerrar_adminJ.emit()
-             
-    def _mostrar_mensaje_sin_datos(self):
-        self.tbJustificacion.setRowCount(0)
-        if self.tbJustificacion.rowCount() == 0:
-            self.tbJustificacion.setRowCount(1)
-            item = QTableWidgetItem("Sin datos")
-            item.setTextAlignment(Qt.AlignCenter)
-            self.tbJustificacion.setItem(0, 0, item)
-            for col in range(1, self.tbJustificacion.columnCount()):
-                self.tbJustificacion.setItem(0, col, QTableWidgetItem(""))
-            self.tbJustificacion.setSpan(0, 0, 1, self.tbJustificacion.columnCount())
-                
+
+    
+    
     def _cargar_tabla(self):
         result = self.Pservices.obtenerListaJustificacion(pagina=self.paginaActual, tam_pagina=10, tipo_orden="DESC", busqueda=self.busqueda)
         if result["success"]:
+            print("Justificaciones obtenidas con éxito.")  # Mensaje de depuración
             listaJustificaciones = result["data"]["listaJustificaciones"]
+            print(f"Total de justificaciones: {len(listaJustificaciones)}")  # Mensaje de depuración
+            
             if len(listaJustificaciones) > 0:
                 paginaActual = result["data"]["pagina_actual"]
                 tamPagina = result["data"]["tam_pagina"]
@@ -176,23 +173,41 @@ class AdminJustificacion(QWidget):
                     self.tbJustificacion.insertRow(index)
                     self.tbJustificacion.setRowHeight(index, 45)
                     
-                    self.addItem_a_tabla(index, 0, justificacion.motivo)
-                    self.addItem_a_tabla(index, 1, justificacion.descripcion)
+                    # Motivo
+                    item_motivo = QTableWidgetItem(justificacion["motivo"])
+                    item_motivo.setTextAlignment(Qt.AlignCenter)  # Centrar el texto
+                    self.tbJustificacion.setItem(index, 0, item_motivo)
+
+                # Descripción
+                    item_descripcion = QTableWidgetItem(justificacion["descripcion"])
+                    item_descripcion.setTextAlignment(Qt.AlignCenter)  # Centrar el texto
+                    self.tbJustificacion.setItem(index, 1, item_descripcion)
+
+                # Nombre del empleado
+                    item_nombre_empleado = QTableWidgetItem(justificacion["nombre_empleado"])
+                    item_nombre_empleado.setTextAlignment(Qt.AlignCenter)  # Centrar el texto
+                    self.tbJustificacion.setItem(index, 2, item_nombre_empleado)
+
+                # Fecha
+                    fecha = justificacion["fecha"]
+                    fecha_str = fecha.strftime("%Y-%m-%d")
+                    item_fecha = QTableWidgetItem(fecha_str)
+                    item_fecha.setTextAlignment(Qt.AlignCenter)  # Centrar el texto
+                    self.tbJustificacion.setItem(index, 3, item_fecha)
 
                     btnEliminar = QPushButton("Eliminar")
-                    btnEliminar.clicked.connect(lambda checked, idx=justificacion.id_justificacion: self._eliminarRegistro(idx))
+                    btnEliminar.clicked.connect(lambda checked, idx=justificacion["id_justificacion"]: self._eliminarRegistro(idx))
                     btnEliminar.setMinimumSize(QSize(80, 35))
                     btnEliminar.setStyleSheet("""   QPushButton{background-color:#ff5151;color:white;}
                                                     QPushButton::hover{background-color:#ff0000;color:white;}
-                                              """)
+                                                """)
                     
                     btnEditar = QPushButton("Editar")
-                    btnEditar.clicked.connect(lambda checked, idx=justificacion.id_justificacion: self._editar_Justificacion(idx))
+                    btnEditar.clicked.connect(lambda checked, idx=justificacion["id_justificacion"]: self._editar_Justificacion(idx))
                     btnEditar.setMinimumSize(QSize(80, 35))
                     btnEditar.setStyleSheet(""" QPushButton{background-color:#00b800;color:white;}
                                                 QPushButton::hover{background-color:#00a800;color:white;}
                                             """)
-
                     button_widget = QWidget()
                     button_widget.setStyleSheet(u"background-color:transparent;")
                     layout = QHBoxLayout()
@@ -202,11 +217,19 @@ class AdminJustificacion(QWidget):
                     button_widget.setLayout(layout)
                     layout.setContentsMargins(10, 0, 10, 0)
 
-                    self.tbJustificacion.setCellWidget(index, 2, button_widget)
+                    self.tbJustificacion.setCellWidget(index, 4, button_widget)  # Columna de acciones
             else:
-                self._mostrar_mensaje_sin_datos()
+                print("No se encontraron justificaciones.")  # Mensaje de depuración
+                self.tbJustificacion.setRowCount(0)
+                self._actualizar_lblPagina(0, 0)
+                self._actualizarValoresPaginado(0, 0)
         else:
-            self._mostrar_mensaje_sin_datos()
+            print("Error al obtener justificaciones.")  # Mensaje de depuración
+            self.tbJustificacion.setRowCount(0)
+            self._actualizar_lblPagina(0, 0)
+            self._actualizarValoresPaginado(0, 0)
+
+    
 
     def addItem_a_tabla(self, row, colum, dato):
         dato_item = QTableWidgetItem(dato)

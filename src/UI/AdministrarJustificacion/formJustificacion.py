@@ -1,14 +1,24 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
+from PySide6.QtGui import QIntValidator
 from Utils.Utils import *
-from UI.DialogoEmergente import *
-from services.justificacionService import *
+
+from models.persona import Persona
 from models.justificacion import Justificacion
+from models.asistencia import Asistencia  # Asegúrate de importar la clase Asistencia
+from services.empleadoServices import EmpleadoServices
+from services.justificacionService import JustificacionServices
+from services.asistenciaService import AsistenciaServices  # Asegúrate de importar el servicio de asistencias
+from UI.DialogoEmergente import DialogoEmergente
 from datetime import date
+
+import re
 
 class formJustificacion(QDialog):
     update: bool = False
     Pservices = JustificacionServices()
+    Pempleado = EmpleadoServices()
+    Pasistencia = AsistenciaServices()  # Instancia del servicio de asistencias
     idJ = 0
 
     def __init__(self, parent=None, titulo="Registrar Justificación", id=None):
@@ -20,7 +30,7 @@ class formJustificacion(QDialog):
 
         frame = QFrame()
         layoutFrame = QVBoxLayout()
-        frame.setObjectName("formFrame")
+        layoutFrame.setObjectName("formFrame")
         layoutFrame.setContentsMargins(10, 20, 10, 20)
         layoutFrame.setSpacing(10)
 
@@ -49,6 +59,28 @@ class formJustificacion(QDialog):
         self.errorDescripcion = QLabel()
         Sombrear(self.inputDescripcion, 20, 0, 0)
 
+        # Crear el ComboBox para seleccionar el empleado
+        lblEmpleado = QLabel(text="Empleado")
+        self.comboEmpleado = QComboBox()
+        self.comboEmpleado.setPlaceholderText("Seleccione un empleado")
+        self.errorEmpleado = QLabel()
+        Sombrear(self.comboEmpleado, 20, 0, 0)
+
+        # Crear el ComboBox oculto para las asistencias
+        lblAsistencia = QLabel(text="Asistencia")
+        self.comboAsistencia = QComboBox()
+        self.comboAsistencia.setPlaceholderText("Seleccione una asistencia")
+        self.comboAsistencia.setVisible(False)  # Ocultar inicialmente
+        self.errorAsistencia = QLabel()
+        Sombrear(self.comboAsistencia, 20, 0, 0)
+
+        # Label para mostrar mensaje si no hay asistencias
+        self.lblNoAsistencias = QLabel("Este empleado no tiene asistencias injustificadas")
+        self.lblNoAsistencias.setVisible(False)  # Ocultar inicialmente
+
+        layoutForm.addLayout(self._contenedor(lblEmpleado, self.comboEmpleado, self.errorEmpleado), 2, 0)
+        layoutForm.addLayout(self._contenedor(lblAsistencia, self.comboAsistencia, self.errorAsistencia), 3, 0)
+        layoutForm.addWidget(self.lblNoAsistencias, 4, 0, 1, 2)  # Añadir el label al layout
         layoutForm.addLayout(self._contenedor(lblMotivo, self.inputMotivo, self.errorMotivo), 0, 0)
         layoutForm.addLayout(self._contenedor(lblDescripcion, self.inputDescripcion, self.errorDescripcion), 1, 0)
 
@@ -80,6 +112,12 @@ class formJustificacion(QDialog):
         layout.addWidget(frame)
         self.setLayout(layout)
 
+        # Cargar empleados después de inicializar todos los widgets
+        self._cargar_empleados()
+
+        # Conectar la señal de cambio del ComboBox de empleados
+        self.comboEmpleado.currentIndexChanged.connect(self._actualizar_asistencias)
+
         # Cargar datos si se proporciona un id
         if id:
             self._obtener_registroId(id)
@@ -98,6 +136,46 @@ class formJustificacion(QDialog):
         layout.addWidget(input)
         layout.addWidget(label_error)
         return layout
+    
+    def _cargar_empleados(self):
+        result = self.Pempleado.listar_empleados()  
+        print(result)  # Para depuración
+        if result["success"]:
+            for empleado in result["data"]["listaPersonas"]:
+                # Asegúrate de que empleado['persona'] sea una instancia de Persona
+                if isinstance(empleado['persona'], Persona):
+                    # Accede a los atributos de la clase Persona
+                    self.comboEmpleado.addItem(f"{empleado['persona'].nombre} {empleado['persona'].apellidos}", empleado['id_empleado'])
+                else:
+                    print("Error: empleado['persona'] no es una instancia de Persona")
+        else:
+            dial = DialogoEmergente("Error", "No se pudieron cargar los empleados.", "Error")
+            dial.exec()
+
+    def _actualizar_asistencias(self):
+        # Limpiar el ComboBox de asistencias
+        self.comboAsistencia.clear()
+        self.comboAsistencia.setVisible(False)  # Ocultar el ComboBox de asistencias inicialmente
+        self.lblNoAsistencias.setVisible(False)  # Ocultar el mensaje de no asistencias
+
+        # Obtener el id del empleado seleccionado
+        id_empleado = self.comboEmpleado.currentData()
+        if id_empleado:
+            # Cargar asistencias no justificadas para el empleado seleccionado
+            result = self.Pasistencia.obtenerAsistenciaPorEmpleado(id_empleado)
+            if result["success"]:
+                asistencias = result["data"]
+                if asistencias:
+                    for asistencia in asistencias:
+                        self.comboAsistencia.addItem(asistencia.fecha.strftime("%Y-%m-%d"), asistencia.id_asistencia)
+                    self.comboAsistencia.setVisible(True)  # Mostrar el ComboBox si hay asistencias
+                else:
+                    # Si no hay asistencias, mostrar el mensaje
+                    self.lblNoAsistencias.setVisible(True)
+                    self.comboAsistencia.setVisible(False)  # Asegurarse de que el ComboBox de asistencias esté oculto
+            else:
+                dial = DialogoEmergente("Error", "No se pudieron cargar las asistencias.", "Error")
+                dial.exec()
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.Enter:  # Mouse Enter
@@ -123,6 +201,9 @@ class formJustificacion(QDialog):
             dialEmergente = DialogoEmergente("Advertencia", "Llene todos los campos.", "Warning")
             dialEmergente.exec()
             return False
+        if not self.comboAsistencia.currentData():  # Verifica si hay una asistencia seleccionada
+            Sombrear(self.comboAsistencia, 20, 0, 0, "red")
+            return False
         return True
 
     def _validar_inputs_vacios(self):
@@ -139,6 +220,18 @@ class formJustificacion(QDialog):
             vacios = True
         else:
             Sombrear(self.inputDescripcion, 20, 0, 0)
+
+        if not self.comboEmpleado.currentData():  # Verifica si no hay empleado seleccionado
+            Sombrear(self.comboEmpleado, 20, 0, 0, "red")
+            vacios = True
+        else:
+            Sombrear(self.comboEmpleado, 20, 0, 0)
+
+        if not self.comboAsistencia.currentData():  # Verifica si no hay empleado seleccionado
+            Sombrear(self.comboEmpleado, 20, 0, 0, "red")
+            vacios = True
+        else:
+            Sombrear(self.comboEmpleado, 20, 0, 0)
 
         return vacios
 
@@ -163,9 +256,10 @@ class formJustificacion(QDialog):
             QTimer.singleShot(0, self.reject)
 
     def _accion_justificacion(self):
+        id_empleado = self.comboEmpleado.currentData()
         justificacion = Justificacion(
-            id_empleado=1,  # Cambia esto según tu lógica
-            id_asistencia=1,  # Cambia esto según tu lógica
+            id_empleado=id_empleado,  # Cambia esto según tu lógica
+            id_asistencia=self.comboAsistencia.currentData(),  # Obtener el id de asistencia seleccionado
             fecha=date.today(),
             motivo=self.inputMotivo.text(),
             descripcion=self.inputDescripcion.text(),
