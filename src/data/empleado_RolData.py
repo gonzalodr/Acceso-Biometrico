@@ -108,6 +108,7 @@ class EmpleadoRolData:
                         WHERE {TBROLEMPLEADO_ID} = %s'''
                 cursor.execute(query,(id_rolempleado,))
                 data = cursor.fetchone()
+                logger.error(f'idempleado:{id_rolempleado}{data}')
                 if data:
                     return {
                         'success':True,

@@ -2,6 +2,7 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from Utils.Utils import cargar_estilos, Sombrear, format_Fecha
 from UI.AdministrarEmpleado.formEmpleado import formEmpleado
+from UI.AdministrarEmpleado.imformacionEmpleado import informacionEmpleado
 from UI.DialogoEmergente import DialogoEmergente
 from services.empleadoServices import EmpleadoServices
 from models.persona import Persona
@@ -243,16 +244,25 @@ class AdminEmpleado(QWidget):
 
     def verMasInformacion(self, id_empleado:int):
         print(f'\n\neliminar id {id_empleado}\n\n')
-        pass
+        inf = informacionEmpleado(id_empleado)
+        inf.exec()
 
     def eliminarEmpleado(self, id_empleado:int):
         texto = "Se eliminaran todos los datos asociados a este empleado."
         texto += "\n¿Quieres eliminar este empleado?"
-
         dial = DialogoEmergente("¡Advertencia!",texto,"Warning",True,True)
+        print(f'id empleado: {id_empleado}')
         if dial.exec() == QDialog.Accepted:
-            print("Eliminando")
-        
+            result = self.EmpServices.eliminar_empleado(id_empleado)
+
+            if not result['success']:
+                dial = DialogoEmergente("",texto,"Error",True)
+                dial.exec()
+                return
+            dial = DialogoEmergente("",result['message'],"Check",True)
+            dial.exec()
+        self.cargarTabla()
+    
     def editarEmpleado(self,id_empleado:int):
         print(f'\n\nEditar id {id_empleado}\n\n')
         form = formEmpleado(titulo='Editar empleado',id_empleado = id_empleado)

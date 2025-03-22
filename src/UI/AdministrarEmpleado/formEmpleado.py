@@ -15,12 +15,11 @@ from services.telefonoServices  import TelefonoServices
 
 from UI.DialogoEmergente import DialogoEmergente
 
-from models.usuario import Usuario
-from models.persona import Persona
-from models.telefono import Telefono
+from models.usuario     import Usuario
+from models.persona     import Persona
+from models.telefono    import Telefono
 
 from datetime import datetime
-
 
 import re
 
@@ -82,7 +81,6 @@ class formEmpleado(QDialog):
         boton_box.button(QDialogButtonBox.Ok).clicked.connect(self.registrarDatos)
         Sombrear(boton_box,20,0,5)
 
-        print(f'id_empleado {id_empleado}')
         if id_empleado:
             self.idEmpleado = id_empleado
             self.precargarFormulario() 
@@ -199,7 +197,7 @@ class formEmpleado(QDialog):
         #cargar layout de telefonos
         self.lblTelefonos = QLabel(text='Telefonos')
         self.layoutTelPrinc = QVBoxLayout()
-        self.errTelefono = QLabel(text='Error')
+        self.errTelefono = QLabel()
         self.llenarLayoutTelefono()
 
         #Estado civil
@@ -224,6 +222,7 @@ class formEmpleado(QDialog):
         self.layoutIzq.addLayout(self.contenedor(self.lblTelefonos,self.layoutTelPrinc,self.errTelefono))
         self.layoutIzq.addLayout(self.contenedor(self.lblEstCivil,self.inEstCivil,self.errEstCivil))
         self.layoutIzq.addLayout(self.contenedor(self.lblDireccion,self.inDireccion,self.errDireccion))
+    
     #layout para la foto
     def llenarLayoutFoto(self):
         self.foto = QLabel()
@@ -238,9 +237,16 @@ class formEmpleado(QDialog):
         self.btnFoto.setFixedHeight(40)
         self.btnFoto.clicked.connect(self.seleccionarFoto)
 
+        self.errFoto = QLabel()
+        self.errFoto.setObjectName("lblerror")
+        self.errFoto.setMaximumHeight(25)
+        self.errFoto.setMinimumHeight(25)
+        self.errFoto.setWordWrap(True)
+
         self.layoutFoto.setAlignment(Qt.AlignCenter)
         self.layoutFoto.addWidget(self.foto)
         self.layoutFoto.addWidget(self.btnFoto)
+        self.layoutFoto.addWidget(self.errFoto)
     #contenedor para cada input
     def contenedor(self,lblTelefono:QLabel,input,label_error:QLabel)->QVBoxLayout:
         layout = QVBoxLayout()
@@ -276,7 +282,7 @@ class formEmpleado(QDialog):
         lblTelefono = QLabel(text='Numero de telefono')
         #input para ingresar el telefono
         inputTelefono = QLineEdit()
-        inputTelefono.setPlaceholderText('Ej. 11111111')
+        inputTelefono.setPlaceholderText('Ejemplo: 11111111')
         inputTelefono.setValidator(QIntValidator())
         inputTelefono.textChanged.connect(lambda : self.verificarNumero(inputTelefono))
 
@@ -285,7 +291,7 @@ class formEmpleado(QDialog):
 
         #input para ingresar el tipo de telefono
         inputTipo = QLineEdit()
-        inputTipo.setPlaceholderText('Ej. Telefono fijo')
+        inputTipo.setPlaceholderText('Ejemplo: Telefono fijo')
 
         #boton para eliminar el telefono
         btnEliminar = QPushButton("Eliminar")
@@ -294,7 +300,7 @@ class formEmpleado(QDialog):
         
 
         #lblTelefono de error
-        lblError = QLabel(text='Error:')
+        lblError = QLabel()
         lblError.setObjectName("lblerror")
         lblError.setMaximumHeight(25)
         lblError.setMinimumHeight(25)
@@ -340,9 +346,9 @@ class formEmpleado(QDialog):
             else:
                 return
 
-            self.eliminacionLayout(layoutInputsTelefonos)
-            self.layoutInputTel.removeItem(layoutInputsTelefonos)
-            layoutInputsTelefonos.deleteLater()
+        self.eliminacionLayout(layoutInputsTelefonos)
+        self.layoutInputTel.removeItem(layoutInputsTelefonos)
+        layoutInputsTelefonos.deleteLater()
 
     '''
     Llenado de layoutCent
@@ -357,14 +363,14 @@ class formEmpleado(QDialog):
         self.inDep = QComboBox()
         self.inDep.addItem('Ninguno', None)
         self.inDep.setMaxVisibleItems(10)
-        self.errDep = QLabel('Error Departamento')
+        self.errDep = QLabel()
         self.llenarComboboxDepa()
         #Departamento
         self.lblRol = QLabel('Rol')
         self.inRol = QComboBox()
         self.inRol.addItem('Ninguno', None)
         self.inRol.setMaxVisibleItems(10)
-        self.errRol = QLabel('Error Rol')
+        self.errRol = QLabel()
         self.llenarComboboxRol()
 
         self.layoutCent.addWidget(tituloCent)
@@ -422,7 +428,7 @@ class formEmpleado(QDialog):
         self.layoutDer.setAlignment(Qt.AlignTop)
         self.layoutDer.addLayout(self.layoutPrinUsuario)
     
-    def crearlayoutUsuario(self, usuario:Usuario = None, id_perfil:int = 0):
+    def crearlayoutUsuario(self, usuario:Usuario = None, id_perfil:int = None):
         lblUsuario = QLabel('Usuario')
 
         inputUser = QLineEdit()
@@ -433,7 +439,7 @@ class formEmpleado(QDialog):
         inputCont = QLineEdit()
         inputCont.setPlaceholderText('Ingrese la contraseña')
         
-        lblError = QLabel(text='Error:')
+        lblError = QLabel()
         lblError.setObjectName("lblerror")
         lblError.setMaximumHeight(25)
         lblError.setMinimumHeight(25)
@@ -465,10 +471,10 @@ class formEmpleado(QDialog):
         layout = QVBoxLayout()
 
         if usuario:
-            print(usuario.mostrar())
+            (usuario.mostrar())
             layout.setProperty('id_usuario',usuario.id)
             inputUser.setText(usuario.usuario)
-            inputCont.setPlaceholderText('Contraseña no visible.')
+            inputCont.setPlaceholderText('La contraseña se puede cambiar.')
         
         
         layout.addWidget(lblUsuario)
@@ -490,14 +496,14 @@ class formEmpleado(QDialog):
         self.btnCrearUsuario.style().polish(self.btnCrearUsuario)
 
     def eliminacionUsuario(self, id_usuario:int = None):
-        print(f'Eliminar usuario {id_usuario}')
+        (f'Eliminar usuario {id_usuario}')
         if id_usuario:
             text = 'Este usuario ya se encuentra registrado a este usuario.\n'
             text+='¿Quieres eliminar este usuario?'
             dial = DialogoEmergente('',text,'Warning',True,True)
             if dial.exec() == QDialog.Accepted:
                 result = self.userServices.eliminarUsuario(id_usuario)
-                print(result)
+                (result)
                 if not result['success']:
                     dial = DialogoEmergente('',result['message'],'Error',True)
                     dial.exec()
@@ -545,11 +551,13 @@ class formEmpleado(QDialog):
         numero = input.text()
         if self.numeroTelefonoValido(numero):
             input.setProperty('telValido',True)
+            input.style().polish(input)  
             return True
         else:
             input.setProperty('telValido',False)
+            input.style().polish(input)  
             return False
-        input.style().polish(input)  
+        
     
     #verificacion del telefono sea 8 digitos y empiece con 2,4,5,6,7,8,9
     def numeroTelefonoValido(self, numero: str) -> bool:
@@ -561,9 +569,12 @@ class formEmpleado(QDialog):
     """
     #cerrado de telefono
     def cerrarForm(self):
-        dialogo = DialogoEmergente('','¿Estas seguro que quieres cancelar?','Question',True,True)
-        if dialogo.exec() == QDialog.Accepted:
-            self.reject()
+        if self.validar_datos_personales():
+            dialogo = DialogoEmergente('','¿Estas seguro que quieres cancelar?','Question',True,True)
+            if dialogo.exec() == QDialog.Accepted:
+                self.reject()
+                return
+        self.reject()
     '''
     Logica
     '''
@@ -582,8 +593,8 @@ class formEmpleado(QDialog):
             foto            = self.fotografia
         )
 
-        listaTelefonos = self.extraerTelefonos()
-        dataUsuario= self.extraerUsuarios()
+        listaTelefonos  = self.extraerTelefonos()
+        dataUsuario     = self.extraerUsuarios()
 
         datos = {
             'persona'       : persona,
@@ -622,26 +633,28 @@ class formEmpleado(QDialog):
         
         layout = self.layoutPrinUsuario.itemAt(1).layout()
         #obtengo los valores de cada numero ingresado junto con su tipo
-        id_user          = layout.property('id_usuario')
+        id_user     = layout.property('id_usuario')
         usuario     = layout.itemAt(1).widget().text()
         contrasena  = layout.itemAt(3).widget().text()
         idperfil    = layout.itemAt(7).widget().currentData()
+        if not usuario and not contrasena:
+            return {'usuario':None,'idperfil':None}
+        
         usuario = Usuario(
-                        usuario     = usuario, 
-                        contrasena  = contrasena if len(contrasena.strip()) > 0 else None,
-                        id          = id_user
-                )
+                usuario     = usuario, 
+                contrasena  = contrasena if len(contrasena.strip()) > 0 else None,
+                id          = id_user
+        )
         return {'usuario':usuario,'idperfil':idperfil}
 
     #precargando formulario en caso de que se este actualizando
     def precargarFormulario(self):
         result = self.emplServices.obtener_empleado_por_id(self.idEmpleado)
         if not result['success']:
-            dial = DialogoEmergente('','Ocurrio un error al precargar los datos de los empleados.\n'+result['message'],'Error',True,False)
+            dial = DialogoEmergente('','Ocurrio un error al precargar los datos de los empleados.\nError: '+result['message'],'Error',True,False)
             dial.exec()
             self.reject()
-            return
-        
+
         datos   = result.get('empleado')
         persona:Persona = datos.get('persona')  #objeto Persona
         usuario:Usuario = datos.get('usuario')  #objeto Usuario
@@ -652,6 +665,18 @@ class formEmpleado(QDialog):
 
         self.idPersona = persona.id
         self.fotografia = persona.foto
+
+        self.btnFoto.setText("Eliminar foto " if self.fotografia is not None else "Seleccionar foto")
+        if self.fotografia:
+            pixmap = QPixmap()
+            pixmap.loadFromData(self.fotografia)
+            # Escalar la imagen manteniendo la relación de aspecto y la calidad
+            scaled_pixmap = pixmap.scaled(self.foto.size(),Qt.KeepAspectRatio,Qt.SmoothTransformation)
+            # Establecer la imagen escalada en el QLabel
+            self.foto.setPixmap(scaled_pixmap)
+            self.foto.setAlignment(Qt.AlignCenter)  # Centrar la imagen en el QLabel
+            self.foto.show()
+
         self.inNombre.setText(persona.nombre)
         self.inApellidos.setText(persona.apellidos)
         self.inNacimiento.setDate(QDate.fromString(str(persona.fecha_nacimiento), "yyyy-MM-dd"))
@@ -674,7 +699,8 @@ class formEmpleado(QDialog):
 
         #cargar usuario
         if usuario:
-            self.crearlayoutUsuario(usuario,dictPerfil.get('id_perfil'))
+            id_perfil = dictPerfil.get('id_perfil') if isinstance(dictPerfil, dict) else None
+            self.crearlayoutUsuario(usuario, id_perfil)
 
     #validar cedula 
     def validar_cedula(self):
@@ -690,13 +716,18 @@ class formEmpleado(QDialog):
     def validar_correo(self):
         correo = self.inCorreo.text()
         self.errCorreo.clear()
-        if correo.strip():
-            result = self.Pservices.verificacionCorreo(correo=correo,id=self.idPersona)
-            if not result["success"]:
-                self.errCorreo.setText(result["message"])
+        if correo:
+            result = self.perServices.verificacionCorreo(correo, self.idPersona)
+          
+            if not result['success']:
+                self.errCorreo.setText(result['message'])
                 return False
             return True
-                
+        else:
+            self.errCorreo.setText("El correo es obligatorio.")
+    
+    def validar_usuario():
+        pass
     #validar numeros de telefonos
     def validar_listaTelefonos(self):
         valido = True
@@ -753,11 +784,12 @@ class formEmpleado(QDialog):
 
         # Limpiar mensaje de error
         lblError.clear()
+        if not usuario and not contrasena:
+            return True
 
         # Validación del nombre de usuario
         if not usuario:
             lblError.setText('Debes agregar el nombre de usuario.')
-            
             return False  # Validación fallida
         else:
             pass #valida si el usuario es valido en bd
@@ -821,7 +853,7 @@ class formEmpleado(QDialog):
             datos_validos = False
 
         # Validar que haya al menos un teléfono agregado
-        if self.layoutTelPrinc.count() > 1:
+        if self.layoutInputTel.count() == 0:
             self.errTelefono.setText("Debes agregar al menos un número de teléfono.")
             datos_validos = False
 
@@ -839,22 +871,32 @@ class formEmpleado(QDialog):
 
     #Seleccion de foto
     def seleccionarFoto(self):
+        self.errFoto.clear()
         if self.fotografia:
             self.resetear_foto()
         else:
             dir_defecto = QStandardPaths.writableLocation(QStandardPaths.PicturesLocation)
             file_path, _ = QFileDialog.getOpenFileName(self, "Seleccionar Imagen", dir_defecto, "Imágenes (*.png *.jpg *.jpeg)")
             if file_path:
-                self.mostrar_foto(file_path)
-                self.btnFoto.setText("Eliminar foto")
-                try:
-                    with open(file_path, "rb") as file:
-                        self.fotografia = file.read()
-                except Exception:
-                    self.resetear_foto()
-
+                max_size_mb = 14  # Tamaño máximo en MB
+                file_info = QFileInfo(file_path)
+                file_size_mb = file_info.size() / (1024 * 1024)  # Convertir bytes a MB
+                if file_size_mb <= max_size_mb:
+                    # Mostrar la foto y leer los datos binarios
+                    self.mostrar_foto(file_path)
+                    self.btnFoto.setText("Eliminar foto")
+                    try:
+                        with open(file_path, "rb") as file:
+                            self.fotografia = file.read()
+                    except Exception as e:
+                        self.errFoto.setText(f"Error al leer el archivo: {e}")
+                        self.resetear_foto()
+                else:
+                    self.errFoto.setText(f"El archivo seleccionado supera el tamaño máximo permitido de {max_size_mb} MB.")
+    
     def mostrar_foto(self, file_path):
         self.foto.setPixmap(QPixmap(file_path).scaled(self.foto.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation))
+
 
     def resetear_foto(self):
         cargar_Icono(self.foto, 'userPerson.png')
@@ -869,6 +911,11 @@ class formEmpleado(QDialog):
 
         if not self.validar_cedula():
             dial = DialogoEmergente('','Asegurece de que la cedula sea correcta.','Error',True)
+            dial.exec()
+            return
+        
+        if not self.validar_correo():
+            dial = DialogoEmergente('','Asegurece de que el correo sea correcto.','Error',True)
             dial.exec()
             return
         
@@ -887,8 +934,7 @@ class formEmpleado(QDialog):
             dial = DialogoEmergente('','Debes añadir minimo un numero telefonico.','Error',True)
             dial.exec()
             return
-
-
+        
         if self.idEmpleado:
             result = self.emplServices.actualizar_empleado(self.idEmpleado,datos)
             if not result['success']:

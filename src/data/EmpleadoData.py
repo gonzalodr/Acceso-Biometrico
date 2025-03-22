@@ -152,7 +152,7 @@ class EmpleadoData:
             id_dep:int = datos.get('id_departamento')
             id_rol:int = datos.get('id_rol')            #obtener por empleado    
             id_per:int = datos.get('id_perfil')         #obtener por por usuario para la relacion usuario perfil
-            print(persona)
+
             conexion.start_transaction()
             with conexion.cursor() as cursor:
                 #actualizar empleado (persona, departamento)
@@ -185,12 +185,12 @@ class EmpleadoData:
                             
                 #actualizar rolEmpleado id_rol id_empleado si existe rolEmpleado crear rolEmpleado
                 #buscando rolEmpleado
+
                 result = self.emplRolData.get_roles_empleado_by_id_empleado(id_empledo,conexion)
                 if not result['success']:
                     conexion.rollback()
                     return result
                 
-                print(result)
                 #comprobando si existe rolEmpleado y si id_rol es None eliminar rolEmpleado
                 #Explicacion sin en frond paso de de algun rol a ningun rol se elimina el rolEmpleado
                 if result['exists'] and id_rol is None:
@@ -198,11 +198,12 @@ class EmpleadoData:
                     resultAux = self.emplRolData.delete_rol_empleado(result['rolesEmpleado']['id'],conexion)
                     if not resultAux['success']:
                         conexion.rollback()
-                        return resultAux              
+                        return resultAux     
+                             
                 #si existe rolEmpleado y id_rol no es None se procede a actualizar
                 elif result['exists'] and id_rol:
                     #actualizar rolEmpleado
-                    resultAux = self.emplRolData.update_rol_empleado(result['rolEmpleado']['id'],id_empledo,id_rol,conexion)
+                    resultAux = self.emplRolData.update_rol_empleado(result['rolesEmpleado']['id'],id_empledo,id_rol,conexion)
                     if not resultAux['success']:
                         conexion.rollback()
                         return resultAux
@@ -227,12 +228,22 @@ class EmpleadoData:
                         if not result['success']:
                             conexion.rollback()
                             return result
-                        print(result)
-                        #actualizar id_perfil en la tabla usuarioPerfil
-                        result = self.userPerfilData.update_usuario_perfil(result['usuarioPerfil']['id'],usuario.id,id_per,conexion)
-                        if not result['success']:
-                            conexion.rollback()
-                            return result
+                        if result['exists'] and id_per:
+                            #actualizar id_perfil en la tabla usuarioPerfil
+                            result = self.userPerfilData.update_usuario_perfil(result['usuarioPerfil']['id'],usuario.id,id_per,conexion)
+                            if not result['success']:
+                                conexion.rollback()
+                                return result
+                        elif result['exists'] and id_per is None:
+                            result = self.userPerfilData.delete_usuario_perfil(result['usuarioPerfil']['id'])
+                            if not result['success']:
+                                conexion.rollback()
+                                return result
+                        elif result['exists'] is False and id_per:
+                            result = self.userPerfilData.create_usuario_perfil(usuario.id,id_per, conexion)
+                            if not result['success']:
+                                conexion.rollback()
+                                return result
                         
                     else:          #si el usuario no tiene id lo crea crea
                         result = self.usuariodata.create_usuario(usuario,conexion)
@@ -240,9 +251,6 @@ class EmpleadoData:
                             conexion.rollback()
                             return result
                         id_usuario = result['id_usuario']
-                        print(result)
-                        print(f'{id_per}')
-                        print(usuario.mostrar())
                         #registrando el perfil
                         if id_per:
                             result = self.userPerfilData.create_usuario_perfil(id_usuario,id_per,conexion)
@@ -264,13 +272,79 @@ class EmpleadoData:
     '''
     Eliminación de los datos del empleado, persona, creación de usuarios, asignación de rol y de departamento
     '''  
-    def delete_Empleado(self, id_empleado):
+    def delete_Empleado(self, id_empleado:int):
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
         try:
             with conexion.cursor() as cursor:
-                pass
+                conexion.start_transaction() #Iniciar transaccion
+
+                # Obtener el Id_Persona del empleado
+                cursor.execute("SELECT Id_Persona FROM Empleado WHERE Id = %s;", (id_empleado,))
+                resultado = cursor.fetchone()
+                if not resultado:
+                    logger.error('No se encontro los datos personales del empleado.')
+                    return {'success':False,'message':'Ocurrio un error al eliminar el empleado.'}
+                id_persona = resultado[0]  # Obtener el valor de Id_Persona
+
+                # Obtener el Id_Usuario relacionado con la persona
+                cursor.execute("SELECT Id FROM Usuario WHERE Id_Persona = %s;", (id_persona,))
+                resultado = cursor.fetchone()
+
+                id_usuario = None
+                if resultado:
+                    id_usuario = resultado[0]  # Obtener el valor de Id_Usuario si existe
+
+                # Si existe un usuario, eliminar registros dependientes
+                if id_usuario:
+                    # Eliminar registros en Mantenimiento
+                    cursor.execute("DELETE FROM Mantenimiento WHERE Id_usuario = %s;", (id_usuario,))
+
+                    # Eliminar registros en Usuario_Perfil
+                    cursor.execute("DELETE FROM Usuario_Perfil WHERE Id_Usuario = %s;", (id_usuario,))
+
+                    # Eliminar registros en Usuario
+                    cursor.execute("DELETE FROM Usuario WHERE Id = %s;", (id_usuario,))
+
+                # Eliminar registros en Telefono
+                cursor.execute("DELETE FROM Telefono WHERE Id_Persona = %s;", (id_persona,))
+
+                # Eliminar registros en Huella
+                cursor.execute("DELETE FROM Huella WHERE Id_Empleado = %s;", (id_empleado,))
+
+                # Eliminar registros en Justificacion
+                cursor.execute("DELETE FROM Justificacion WHERE Id_Empleado = %s;", (id_empleado,))
+
+                # Eliminar registros en Solicitud_Permiso
+                cursor.execute("DELETE FROM Solicitud_Permiso WHERE Id_Empleado = %s;", (id_empleado,))
+
+                # Eliminar registros en Reporte
+                cursor.execute("DELETE FROM Reporte WHERE Id_Empleado = %s;", (id_empleado,))
+
+                # Eliminar registros en Detalle_Asistencia
+                cursor.execute("""
+                    DELETE FROM Detalle_Asistencia 
+                    WHERE Id_Asistencia IN (
+                        SELECT Id FROM Asistencia WHERE Id_Empleado = %s
+                    );
+                """, (id_empleado,))
+
+                # Eliminar registros en Asistencia
+                cursor.execute("DELETE FROM Asistencia WHERE Id_Empleado = %s;", (id_empleado,))
+
+                # Eliminar registros en Empleado_Rol
+                cursor.execute("DELETE FROM Empleado_Rol WHERE Id_Empleado = %s;", (id_empleado,))
+
+                # Eliminar registros en Empleado
+                cursor.execute("DELETE FROM Empleado WHERE Id = %s;", (id_empleado,))
+
+                # Eliminar registros en Persona
+                cursor.execute("DELETE FROM Persona WHERE Id = %s;", (id_persona,))
+
+                # Confirmar la transacción
+                conexion.commit()
+                return {'success':True,'message':'Se elimino el empleado correctamente.'}
         except Error as e:
             logger.error(f"{e}")
             return {"success": False, "message": "Ocurrió un error al eliminar al empleado."}
@@ -407,7 +481,7 @@ class EmpleadoData:
                     if not result['success']:
                         return result
                     if not result['exists']:
-                        return result
+                        return {'success':False, 'message':'No se obtuvieron los datos personales exitosamente'}
                     persona = result['persona']
 
                     #traer telefonos
@@ -428,16 +502,16 @@ class EmpleadoData:
                         result = self.userPerfilData.get_usuario_perfil_by_id_usurio(usuario.id,conexion)
                         if not result['success']:
                             return result
-                        if not result['exists']:
-                            return result
-                        perfilUsuario = result['usuarioPerfil']
+
+                        perfilUsuario = result.get('usuarioPerfil')
 
 
                     #extraer relacion rolEmpleado
-                    result = self.emplRolData.get_rol_empleado_by_id(data[TBEMPLEADO_ID],conexion)
+                    result = self.emplRolData.get_roles_empleado_by_id_empleado(id_empleado,conexion)
                     if not result['success']:
                         return result
-                    rolEmpleado =  result.get('rolEmpleado')
+                    rolEmpleado =  result.get('rolesEmpleado')
+
                     
                     return {
                         'empleado':{
