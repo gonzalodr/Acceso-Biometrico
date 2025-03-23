@@ -39,3 +39,6 @@ class EmpleadoServices:
 
     def listar_empleados(self,pagina=1, tam_pagina=10, ordenar_por=TBPERSONA_ID, tipo_orden="ASC", busqueda=None):
         return self.empleServ.list_Empleados(pagina, tam_pagina, ordenar_por, tipo_orden, busqueda)
+    
+    def obtener_todo_empleados(self):
+        return self.empleServ.obtener_todo_empleados()

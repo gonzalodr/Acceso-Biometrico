@@ -18,8 +18,7 @@ class AdminHorario(QWidget):
         self.setObjectName("admin")
 
         # add_Style(carpeta="css", archivoQSS="adminHorario.css", QObjeto=self)
-        cargar_estilos('claro','admin.css',self)
-
+        cargar_estilos("claro", "admin.css", self)
 
         layout = QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
@@ -40,7 +39,7 @@ class AdminHorario(QWidget):
         layoutTop.setContentsMargins(30, 30, 30, 30)
         layoutTop.setSpacing(5)
         layoutTop.setAlignment(Qt.AlignCenter)
-        minimoTamBtn = QSize(120, 40)
+        minimoTamBtn = QSize(130, 50)
 
         # Botones superiores
         self.btnCerrar = QPushButton(text="Cerrar")
@@ -85,12 +84,14 @@ class AdminHorario(QWidget):
 
         # Tabla de horarios
         self.tbHorario = QTableWidget()
-        if self.tbHorario.columnCount() < 6:
-            self.tbHorario.setColumnCount(6)
+        if self.tbHorario.columnCount() < 8:
+            self.tbHorario.setColumnCount(8)
 
         header_labels = [
-            "Días Semanales",
-            "Tipo de Jornada",
+            "Nombre Horario",
+            "Rol",
+            "Días",
+            "Tipo jornada",
             "Hora Inicio",
             "Hora Fin",
             "Descripción",

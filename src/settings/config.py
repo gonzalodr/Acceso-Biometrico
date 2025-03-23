@@ -5,6 +5,8 @@ DATABASE_CONFIG = {
     "database": "accesobiometrico",
 }
 
+ZKTECA_CONFIG = {"host": "192.168.1.201", "port": "4370"}
+
 ##
 # declaracion de los nombres de las tablas
 ##
@@ -48,7 +50,7 @@ TBUSUARIOUSUARIO = "Usuario"
 TBUSUARIOCONTRASENA = "Contrasena"
 
 ##
-#    Tabla de permisos de rol  
+#    Tabla de permisos de rol
 #
 
 
@@ -63,7 +65,8 @@ TBPERMISOROL_ELIMINAR = "Eliminar"
 # Tabla horario y sus campos
 TBHORARIO = "horario"
 TBHORARIO_ID = "Id"
-TBHORARIO_DIAS_SEMANALES = "Dias_Semanales"
+TBHORARIO_NOMBRE_HORARIO = "Nombre_Horario"
+TBHORARIO_DIAS_SEMANALES = "Dia_Semanal"
 TBHORARIO_TIPO_JORNADA = "Tipo_Jornada"
 TBHORARIO_HORA_INICIO = "Hora_Inicio"
 TBHORARIO_HORA_FIN = "Hora_Fin"
@@ -80,6 +83,35 @@ TBPERMISOPERFIL_EDITAR = "Editar"
 TBPERMISOPERFIL_ELIMINAR = "Eliminar"
 
 #PERFIL
+TBPERFIL = "perfil"
+TBPERFIL_ID = "Id"
+TBPERFIL_NOMBRE = "Nombre"
+TBPERFIL_DESCRIPCION = "Descripcion"
+
+#REPORTE
+TBREPORTE = "reporte"
+TBREPORTE_ID = "Id"
+TBREPORTE_ID_EMPLEADO = "Id_Empleado" 
+TBREPORTE_FECHA_GENERACION = "Fecha_Generacion"
+TBREPORTE_TIPO_REPORTE = "Tipo_Reporte"
+TBREPORTE_CONTENIDO = "Contenido"
+# Tabla Rol_Horario
+TBROLHORARIO = "rol_horario"
+TBROLHORARIO_ID = "Id"
+TBROLHORARIO_ID_ROL = "Id_Rol"
+TBROLHORARIO_ID_HORARIO = "Id_Horario"
+
+# PERMISO PERFIL
+TBPERMISOPERFIL = "permiso_perfil"
+TBPERMISOPERFIL_ID = "Id"
+TBPERMISOPERFIL_PERFIL_ID = "Id_Perfil"
+TBPERMISOPERFIL_TABLA = "nombre_tabla"
+TBPERMISOPERFIL_VER = "Ver"
+TBPERMISOPERFIL_INSERTAR = "Insertar"
+TBPERMISOPERFIL_EDITAR = "Editar"
+TBPERMISOPERFIL_ELIMINAR = "Eliminar"
+
+# PERFIL
 TBPERFIL = "perfil"
 TBPERFIL_ID = "Id"
 TBPERFIL_NOMBRE = "Nombre"

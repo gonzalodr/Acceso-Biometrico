@@ -8,6 +8,7 @@ from typing import Dict, Any        #clase diccionario
 from models.persona import Persona  #clase persona
 from models.usuario import Usuario  #clase usuario
 from models.telefono import Telefono#clase teléfono
+from models.empleado import Empleado
 
 #importando la clases data de usuarioData, personaData, usuarioPerfilData y empleadoRolData
 from data.personaData import PersonaData
@@ -17,6 +18,8 @@ from data.empleado_RolData import EmpleadoRolData
 from data.departamentoData import DepartamentoData
 from data.usuario_PerfilData import UsuarioPerfilData
 from data.rolData import RolData
+
+
 
 class EmpleadoData:
     def __init__(self):
@@ -561,3 +564,41 @@ class EmpleadoData:
         finally:
             if conexion and conexionEx:
                 conexion.close()
+                
+                
+    def obtener_todo_empleados(self):
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+        
+        listaEmpleados = []  # Lista donde se almacenarán los perfiles ob
+        try:
+            with conexion.cursor(dictionary=True) as cursor:
+                query = f"SELECT * FROM {TBEMPLEADO}"
+                cursor.execute(query)
+                registros = cursor.fetchall()
+                
+                 # Se convierten los registros en objetos de tipo Perfil y se almacenan en la lista
+                for registro in registros:
+                    empleado = Empleado(
+                        id_persona=registro[TBEMPLEADO_PERSONA],
+                        id_departamento=registro[TBEMPLEADO_DEPARTAMENTO],
+                        id=registro[TBEMPLEADO_ID]
+                    )
+                    listaEmpleados.append(empleado)
+                
+                resultado["data"] = {
+                    "listaEmpleados": listaEmpleados,
+                }
+                resultado["success"] = True
+                resultado["message"] = "Empleados listados exitosamente."
+        except Exception as e:
+            resultado["success"] = False
+            resultado["message"] = f"Error al listar empleado: {e}"
+        finally:
+            if cursor:
+                cursor.close()# Se cierra el cursor
+            if conexion:
+                conexion.close()# Se cierra la conexión a la base de datos
+
+        return resultado

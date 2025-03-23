@@ -19,7 +19,7 @@ class HorarioService:
             }
         return {"success": True}
 
-    def insertarHorario(self, horario: Horario):
+    def insertarHorario(self, horario: Horario, id_rol: int):
         """
         Inserta un nuevo horario después de validar los datos.
         """
@@ -29,15 +29,15 @@ class HorarioService:
             return result
 
         # Insertar el horario usando la capa de datos
-        return self.horarioData.create_horario(horario)
+        return self.horarioData.create_horario(horario, id_rol)
 
     def _existe_horario_duplicado(self, horario: Horario):
         """
-        Verifica si ya existe un horario con el mismo rango de días y tipo de jornada,
+        Verifica si ya existe un horario con el mismo nombre, rango de días y tipo de jornada,
         excluyendo el ID actual en caso de actualización.
         """
         horario_existente = self.horarioData.obtenerHorarioPorDiasYTipo(
-            horario.dias_semanales, horario.tipo_jornada
+            horario.nombre_horario, horario.dias_semanales, horario.tipo_jornada
         )
         # Si existe un horario duplicado y no es el mismo que se está actualizando
         if horario_existente and horario_existente.id != horario.id:

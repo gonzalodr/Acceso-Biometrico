@@ -5,24 +5,27 @@ from models.permiso_perfil import *
 class PermisosPerfilData:
     
     def verificar_perfil_permiso(self,perfil_id:int, tabla:str, id:int =0):
+        # Método que recibe un id de perfil y el nombre de una tabla para verificar si el perfil tiene permiso.
         conexion, resultado = conection()
         if not resultado["success"]:
             return False
         try:
             with conexion.cursor() as cursor:
                 query = f"SELECT COUNT(*) FROM {TBPERMISOPERFIL} WHERE {TBPERMISOPERFIL_ID} = %s AND {TBPERMISOPERFIL_TABLA} = %s "
+               # Consulta SQL para contar cuántos permisos existen con el perfil y la tabla especificados.
                 if id is not None and id > 0:
                     query += f" AND id != %s"
                     cursor.execute(query, (perfil_id, tabla, id))
                 else:
                     cursor.execute(query, (perfil_id, tabla))
                 count = cursor.fetchone()[0]
-                return count > 0 
+                return count > 0  # Retorna True si existe al menos un permiso, de lo contrario retorna False.
+    
         except Exception as e:
             return False
         finally:
             if conexion:
-                conexion.close()
+                conexion.close() # Cierra la conexión a la base de datos.
                 
     def create_permiso_perfil(self, permiso:Permiso_Perfil,conexion_externa = None):
         resultado = {"success": False,"message":""}
@@ -98,9 +101,9 @@ class PermisosPerfilData:
                 conexion.close()
         return resultado
     
-    def update_permiso_perfil(self,permiso:Permiso_Perfil):
+    def update_permiso_perfil(self,permiso:Permiso_Perfil):  # Método para actualizar los permisos de un perfil en la base de datos.
         conexion, resultado = conection()
-        cursor = None
+        cursor = None   # Inicializa la variable cursor, que se usará más adelante.
         if not resultado["success"]:
             return resultado
         try:
@@ -123,7 +126,7 @@ class PermisosPerfilData:
                     permiso.eliminar,
                     permiso.id
                 )) 
-                conexion.commit()
+                conexion.commit() # Confirma la transacción para que los cambios se apliquen.
                 resultado["success"] = True
                 resultado["message"] = "Permiso del perfil actualizada exitosamente."
         except Exception as e:
@@ -163,9 +166,11 @@ class PermisosPerfilData:
         if not resultado["success"]:
             return resultado
         
-        listaPermisosPerfil = []
+        listaPermisosPerfil = []# Lista donde se almacenarán los permisos de perfil
         try:
             with conexion.cursor(dictionary=True) as cursor: 
+                 # Obtiene un cursor para ejecutar las consultas, con el diccionario activado para obtener resultados como diccionarios.
+            # Diccionario para mapear las columnas de la tabla a los nombres de las columnas para ordenar.
                 #validacion de por que columna ordenar
                 columna_orden = { 
                     "tabla":TBPERMISOPERFIL_TABLA,

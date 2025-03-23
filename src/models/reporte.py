@@ -1,17 +1,16 @@
-from datetime import datetime
+from datetime import datetime  # Importamos datetime para manejar fechas y horas.
 
 class Reporte:
-    def __init__(self, id_empleado: int, fecha_generacion: datetime, tipo_reporte: str, contenido: str, id: int = 0):
-        self.id = id  # PK
-        self.id_empleado = id_empleado  # FK
+    
+    #clase que tiene los atributos
+    def __init__(self, id_empleado:int, fecha_generacion=datetime, tipo_reporte="", contenido="", id = 0):#construstor
+        self.id = id #seteamos
+        self.id_empleado = id_empleado
         self.fecha_generacion = fecha_generacion
         self.tipo_reporte = tipo_reporte
         self.contenido = contenido
-
-    def __str__(self):
-        return (f"ID: {self.id}, ID Empleado: {self.id_empleado}, Fecha Generación: {self.fecha_generacion}, "
-                f"Tipo Reporte: {self.tipo_reporte}, Contenido: {self.contenido}")
-
-    def __repr__(self):
-        return (f"Reporte(id={self.id}, id_empleado={self.id_empleado}, fecha_generacion={self.fecha_generacion}, "
-                f"tipo_reporte='{self.tipo_reporte}', contenido='{self.contenido}')")
+        
+    # Metodo para mostrar la informacion del reporte en formato de cadena
+    def mostrar(self):
+        return f"{self.id}\n{self.id_empleado}\n{self.fecha_generacion}\n{self.tipo_reporte}\n{self.contenido}"
+   # Retorna una cadena con los datos del reporte separados por saltos de linea

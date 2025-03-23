@@ -5,4 +5,4 @@ class Perfil:
         self.id = id
     
     def mostrar(self):
-        return f"{self.nombre} {self.descripcion}"
+        return f"{self.nombre} {self.descripcion}" #Cadena con el nombre y la descripción del perfil.

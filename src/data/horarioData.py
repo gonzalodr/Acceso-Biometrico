@@ -8,6 +8,48 @@ class HorarioData:
     def __init__(self):
         self.conn, self.resultado = conection()
 
+    def obtener_conexion(self):
+
+        try:
+            # Verifica si la conexión está activa
+            if not self.conn or not self.conn.is_connected():
+                # Intenta reconectar
+                self.conn, resultado = conection()
+                if not resultado["success"]:
+                    return (
+                        None,
+                        False,
+                        "No se pudo establecer conexión a la Base de Datos.",
+                    )
+
+            return self.conn, True, "Conexión establecida correctamente."
+
+        except Exception as e:
+            # Maneja cualquier excepción durante la verificación o reconexión
+            return None, False, f"Error al verificar la conexión: {e}"
+
+    def validar_id_rol(self, id_rol):
+
+        self.conn, success, message = self.obtener_conexion()
+        if not success:
+            return False, message
+
+        try:
+            with self.conn.cursor() as cursor:
+                consulta = f"SELECT COUNT(*) FROM {TBROL} WHERE {TBROL_ID} = %s;"
+                cursor.execute(consulta, (id_rol,))
+                resultado = cursor.fetchone()
+
+                # Verificar si el Id_Rol existe
+                if resultado and resultado[0] > 0:
+                    return True, None  # El Id_Rol existe
+                else:
+                    return False, f"El Id_Rol {id_rol} no existe."
+
+        except Exception as e:
+            # Manejo de errores si algo falla en la consulta
+            return False, f"Error al verificar si existe el Id_Rol: {e}"
+
     def validar_datos_horario(self, horario):
 
         # Convertir los valores a cadenas en caso de que sean None o de otro tipo
@@ -15,13 +57,19 @@ class HorarioData:
             str(horario.dias_semanales).strip() if horario.dias_semanales else ""
         )
         tipo_jornada = str(horario.tipo_jornada).strip() if horario.tipo_jornada else ""
-        """
-        Valida los datos del horario antes de la inserción.
-        """
+
+        nombre_horario = (
+            str(horario.nombre_horario).strip() if horario.nombre_horario else ""
+        )
+
+        # Valida los datos del horario antes de la inserción.
+
+        if not nombre_horario:
+            return False, "El nombre de horario es requerido"
         if not dias_semanales:
-            return False, "El campo 'Días Semanales' es requerido."
-        if len(dias_semanales) > 50:
-            return False, "El campo 'Días Semanales' no debe exceder 50 caracteres."
+            return False, "El campo 'Dias Semanales' es requerido."
+        if len(dias_semanales) > 30:
+            return False, "El campo 'Dias Semanales' no debe exceder 30 caracteres."
 
         if not tipo_jornada:
             return False, "El campo 'Tipo Jornada' es requerido."
@@ -43,28 +91,33 @@ class HorarioData:
 
         return True, "Datos válidos."
 
-    def validar_unicidad_jornada(self, dias_semanales, tipo_jornada, id=None):
+    def validar_unicidad_jornada(
+        self, nombre_horario, dias_semanales, tipo_jornada, id=None
+    ):
         """
-        Verifica que no exista el mismo Tipo Jornada en el mismo rango de Dias_Semanales,
+        Verifica que no exista el mismo horario con el mismo Tipo de Jornada en el mismo rango de Dias Semanales,
         ignorando el registro actual si se está actualizando.
         """
         # Verificar la conexión
-        if not self.conn:
-            self.conn, resultado = conection()
-            if not resultado["success"]:
-                return False, "No se pudo establecer conexión con la base de datos."
+        self.conn, success, message = self.obtener_conexion()
+        if not success:
+            return (
+                False,
+                message,
+            )  # Usar el mensaje de error devuelto por obtener_conexion()
 
         try:
             with self.conn.cursor() as cursor:
                 # Construcción de la consulta base
                 consulta = f"""
                 SELECT COUNT(*) FROM {TBHORARIO}
-                WHERE {TBHORARIO_DIAS_SEMANALES} = %s 
+                WHERE {TBHORARIO_NOMBRE_HORARIO} = %s
+                AND {TBHORARIO_DIAS_SEMANALES} = %s 
                 AND {TBHORARIO_TIPO_JORNADA} = %s
             """
-                valores = [dias_semanales, tipo_jornada]
+                valores = [nombre_horario, dias_semanales, tipo_jornada]
 
-                # Si estamos actualizando (hay un id), añadimos la condición para ignorarlo
+                # Si estamos actualizando añadimos la condición para ignorarlo
                 if id is not None:
                     consulta += f" AND {TBHORARIO_ID} != %s"
                     valores.append(id)
@@ -77,14 +130,14 @@ class HorarioData:
                     # Mensaje de error si ya existe un registro duplicado
                     return (
                         False,
-                        "Ya existe un registro con el mismo tipo de jornada para el mismo rango de días.",
+                        "Ya existe un horario con el mismo nombre, días semanales y tipo de jornada.",
                     )
                 # Todo está bien, no se encontró duplicado
-                return True, "El tipo de jornada es único para el rango de días."
+                return True, "El horario es único"
 
         except Exception as e:
             # Manejo de errores si algo falla en la consulta
-            return False, f"Error al verificar unicidad: {e}"
+            return False, f"Error al verificar unicidad:del horario {e}"
 
     def update_horario(self, horario: Horario):
         """
@@ -128,7 +181,7 @@ class HorarioData:
         except Exception as e:
             return {"success": False, "message": f"Error al actualizar horario: {e}"}
 
-    def create_horario(self, horario: Horario):
+    def create_horario(self, horario: Horario, id_rol: int):
         """
         Inserta un nuevo horario en la base de datos.
         """
@@ -137,21 +190,28 @@ class HorarioData:
         if not datos_validos:
             return {"success": False, "message": mensaje}
 
+        # Validar que el Id_Rol exista
+        id_rol_valido, mensaje_rol = self.validar_id_rol(id_rol)
+        if not id_rol_valido:
+            return {"success": False, "message": mensaje_rol}
+
         try:
             cursor = self.conn.cursor()
             query = f"""
             INSERT INTO {TBHORARIO} (
+                {TBHORARIO_NOMBRE_HORARIO},
                 {TBHORARIO_DIAS_SEMANALES},
                 {TBHORARIO_TIPO_JORNADA},
                 {TBHORARIO_HORA_INICIO},
                 {TBHORARIO_HORA_FIN},
                 {TBHORARIO_DESCRIPCION}
-            ) VALUES (%s, %s, %s, %s, %s)
+            ) VALUES (%s, %s, %s, %s, %s,%s)
             """
             # Ejecutar la consulta de inserción
             cursor.execute(
                 query,
                 (
+                    horario.nombre_horario,
                     horario.dias_semanales,
                     horario.tipo_jornada,
                     horario.hora_inicio,
@@ -164,7 +224,17 @@ class HorarioData:
             # Obtener el ID del último registro insertado
             id_horario = cursor.lastrowid
 
-            # Cerrar el cursor
+            # Inserta la relación en la tabla rol_horario
+            query_rol_horario = f"""
+            INSERT INTO {TBROLHORARIO} (
+            {TBROLHORARIO_ID_ROL},
+            {TBROLHORARIO_ID}
+               ) VALUES (%s, %s)"""
+
+            cursor.execute(query_rol_horario, (id_rol, id_horario))
+            self.conn.commit()
+
+            # Cierra el cursor
             cursor.close()
 
             return {
@@ -184,16 +254,17 @@ class HorarioData:
         tipo_orden="ASC",
         busqueda=None,
     ):
-        """
-        Lista los horarios con paginación, orden y búsqueda opcional.
-        """
+
         try:
             cursor = self.conn.cursor(
                 dictionary=True
             )  # Para devolver resultados como diccionarios
+
             # Validación de la columna por la cual ordenar
             columnas_validas = {
                 "id": TBHORARIO_ID,
+                "nombre": TBHORARIO_NOMBRE_HORARIO,
+                "rol": TBROL_NOMBRE,  # Permitir ordenar por el nombre del rol
                 "dias": TBHORARIO_DIAS_SEMANALES,
                 "tipo": TBHORARIO_TIPO_JORNADA,
                 "inicio": TBHORARIO_HORA_INICIO,
@@ -204,19 +275,33 @@ class HorarioData:
             if tipo_orden not in ["ASC", "DESC"]:
                 tipo_orden = "DESC"  # Valor por defecto si no es válido
 
-            # Construcción de la consulta base
-            query = f"SELECT * FROM {TBHORARIO}"
+            # Construcción de la consulta base con JOIN
+            query = f"""
+            SELECT 
+                h.{TBHORARIO_ID},
+                h {TBHORARIO_NOMBRE_HORARIO},
+                r.{TBROL_NOMBRE} AS nombre_rol  # Nombre del rol asociado al horario
+                h.{TBHORARIO_DIAS_SEMANALES},
+                h.{TBHORARIO_TIPO_JORNADA},
+                h.{TBHORARIO_HORA_INICIO},
+                h.{TBHORARIO_HORA_FIN},
+                h.{TBHORARIO_DESCRIPCION},
+            FROM {TBHORARIO} h
+            LEFT JOIN {TBROLHORARIO} rh ON h.{TBHORARIO_ID} = rh.{TBROLHORARIO_ID}
+            LEFT JOIN {TBROL} r ON rh.{TBROLHORARIO_ID_ROL} = r.{TBROL_ID}
+            """
 
             # Añadir cláusula de búsqueda si se proporciona
             valores = []
             if busqueda:
                 query += f"""
-                WHERE {TBHORARIO_DIAS_SEMANALES} LIKE %s 
-                OR {TBHORARIO_TIPO_JORNADA} LIKE %s
+                WHERE h.{TBHORARIO_DIAS_SEMANALES} LIKE %s 
+                OR h.{TBHORARIO_TIPO_JORNADA} LIKE %s
+                OR r.{TBROL_NOMBRE} LIKE %s
             """
                 valores = [
                     f"%{busqueda}%"
-                ] * 2  # Para usar el valor de búsqueda en ambas columnas
+                ] * 3  # Para usar el valor de búsqueda en las columnas
 
             # Añadir la cláusula ORDER BY y LIMIT/OFFSET
             query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
@@ -228,14 +313,16 @@ class HorarioData:
             registros = cursor.fetchall()
             lista_horarios = []
             for registro in registros:
-                horario = Horario(
-                    dias_semanales=registro[TBHORARIO_DIAS_SEMANALES],
-                    tipo_jornada=registro[TBHORARIO_TIPO_JORNADA],
-                    hora_inicio=registro[TBHORARIO_HORA_INICIO],
-                    hora_fin=registro[TBHORARIO_HORA_FIN],
-                    descripcion=registro[TBHORARIO_DESCRIPCION],
-                    id=registro[TBHORARIO_ID],
-                )
+                horario = {
+                    "id": registro[TBHORARIO_ID],
+                    "nombre_horario": registro[TBHORARIO_NOMBRE_HORARIO],
+                    "nombre_rol": registro["nombre_rol"],  # Nombre del rol asociado
+                    "dias_semanales": registro[TBHORARIO_DIAS_SEMANALES],
+                    "tipo_jornada": registro[TBHORARIO_TIPO_JORNADA],
+                    "hora_inicio": registro[TBHORARIO_HORA_INICIO],
+                    "hora_fin": registro[TBHORARIO_HORA_FIN],
+                    "descripcion": registro[TBHORARIO_DESCRIPCION],
+                }
                 lista_horarios.append(horario)
 
             # Obtener el total de registros para calcular el número total de páginas
@@ -323,7 +410,7 @@ class HorarioData:
         except Exception as e:
             return {"success": False, "message": f"Error al obtener el horario: {e}"}
 
-    def obtenerHorarioPorDiasYTipo(self, dias_semanales, tipo_jornada):
+    def obtenerHorarioPorDiasYTipo(self, nombre_horario, dias_semanales, tipo_jornada):
         """
         Obtiene un horario específico por los días semanales y el tipo de jornada.
         """
@@ -331,16 +418,18 @@ class HorarioData:
             cursor = self.conn.cursor(dictionary=True)
             query = f"""
         SELECT * FROM {TBHORARIO} 
-        WHERE {TBHORARIO_DIAS_SEMANALES} = %s 
+        WHERE {TBHORARIO_NOMBRE_HORARIO} = %s 
+        AND {TBHORARIO_DIAS_SEMANALES} = %s 
         AND {TBHORARIO_TIPO_JORNADA} = %s
         LIMIT 1
         """
-            cursor.execute(query, (dias_semanales, tipo_jornada))
+            cursor.execute(query, (nombre_horario, dias_semanales, tipo_jornada))
             registro = cursor.fetchone()
             cursor.close()
 
             if registro:
                 return Horario(
+                    nombre_horario=registro[TBHORARIO_NOMBRE_HORARIO],
                     dias_semanales=registro[TBHORARIO_DIAS_SEMANALES],
                     tipo_jornada=registro[TBHORARIO_TIPO_JORNADA],
                     hora_inicio=registro[TBHORARIO_HORA_INICIO],
@@ -348,8 +437,8 @@ class HorarioData:
                     descripcion=registro[TBHORARIO_DESCRIPCION],
                     id=registro[TBHORARIO_ID],
                 )
-            return None  # No se encontró ningún horario con los mismos días y tipo
+            return None  # No se encontró ningún horario con el mismo nombre, días y tipo de jornada
 
         except Exception as e:
-            print(f"Error al obtener horario por días y tipo: {e}")
+            print(f"Error al obtener horario por nombre, días y tipo: {e}")
             return None
