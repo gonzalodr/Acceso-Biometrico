@@ -84,7 +84,7 @@ class HorarioData:
 
         # Validación de unicidad para Dias_Semanales y Tipo_Jornada
         is_unique, message = self.validar_unicidad_jornada(
-            horario.dias_semanales, horario.tipo_jornada
+            horario.nombre_horario, horario.dias_semanales, horario.tipo_jornada
         )
         if not is_unique:
             return False, message
@@ -183,7 +183,7 @@ class HorarioData:
 
     def create_horario(self, horario: Horario, id_rol: int):
         """
-        Inserta un nuevo horario en la base de datos.
+        Inserta un nuevo horario en la base de datos y su relación con el rol.
         """
         # Validar los datos antes de la inserción
         datos_validos, mensaje = self.validar_datos_horario(horario)
@@ -197,7 +197,9 @@ class HorarioData:
 
         try:
             cursor = self.conn.cursor()
-            query = f"""
+
+            # Insertar el horario en la tabla horario
+            query_horario = f"""
             INSERT INTO {TBHORARIO} (
                 {TBHORARIO_NOMBRE_HORARIO},
                 {TBHORARIO_DIAS_SEMANALES},
@@ -205,11 +207,10 @@ class HorarioData:
                 {TBHORARIO_HORA_INICIO},
                 {TBHORARIO_HORA_FIN},
                 {TBHORARIO_DESCRIPCION}
-            ) VALUES (%s, %s, %s, %s, %s,%s)
-            """
-            # Ejecutar la consulta de inserción
+            ) VALUES (%s, %s, %s, %s, %s, %s)
+        """
             cursor.execute(
-                query,
+                query_horario,
                 (
                     horario.nombre_horario,
                     horario.dias_semanales,
@@ -219,22 +220,21 @@ class HorarioData:
                     horario.descripcion,
                 ),
             )
-            self.conn.commit()  # Confirmar los cambios en la base de datos
+            self.conn.commit()
 
-            # Obtener el ID del último registro insertado
+            # Obtiene el ID del horario recién insertado
             id_horario = cursor.lastrowid
 
             # Inserta la relación en la tabla rol_horario
             query_rol_horario = f"""
             INSERT INTO {TBROLHORARIO} (
-            {TBROLHORARIO_ID_ROL},
-            {TBROLHORARIO_ID}
-               ) VALUES (%s, %s)"""
-
+                {TBROLHORARIO_ID_ROL},
+                {TBROLHORARIO_ID_HORARIO}
+            ) VALUES (%s, %s)
+            """
             cursor.execute(query_rol_horario, (id_rol, id_horario))
             self.conn.commit()
 
-            # Cierra el cursor
             cursor.close()
 
             return {
@@ -244,6 +244,8 @@ class HorarioData:
             }
 
         except Exception as e:
+            # rollback
+            self.conn.rollback()
             return {"success": False, "message": f"Error al crear horario: {e}"}
 
     def list_horarios(
@@ -287,7 +289,7 @@ class HorarioData:
                 h.{TBHORARIO_HORA_FIN},
                 h.{TBHORARIO_DESCRIPCION}
             FROM {TBHORARIO} h
-            LEFT JOIN {TBROLHORARIO} rh ON h.{TBHORARIO_ID} = rh.{TBROLHORARIO_ID}
+            LEFT JOIN {TBROLHORARIO} rh ON h.{TBHORARIO_ID} = rh.{TBROLHORARIO_ID_HORARIO}
             LEFT JOIN {TBROL} r ON rh.{TBROLHORARIO_ID_ROL} = r.{TBROL_ID}
             """
 

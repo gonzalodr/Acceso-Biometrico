@@ -88,10 +88,10 @@ class AdminHorario(QWidget):
             self.tbHorario.setColumnCount(8)
 
         header_labels = [
-            "Nombre Horario",
+            "Horario",
             "Rol",
             "Días",
-            "Tipo jornada",
+            "Joranada",
             "Hora Inicio",
             "Hora Fin",
             "Descripción",
@@ -197,19 +197,19 @@ class AdminHorario(QWidget):
                     self.tbHorario.insertRow(index)
                     self.tbHorario.setRowHeight(index, 45)
 
-                    # Convierte hora_inicio y hora_fin a cadenas de texto
-                    hora_inicio_str = str(horario.hora_inicio)
-                    hora_fin_str = str(horario.hora_fin)
+                    # Convertir hora_inicio y hora_fin a cadenas de texto (si es necesario)
+                    hora_inicio_str = str(horario["hora_inicio"])
+                    hora_fin_str = str(horario["hora_fin"])
 
                     # Agrega los datos a la tabla
-                self.addItem_a_tabla(index, 0, horario["nombre_horario"])
-                self.addItem_a_tabla(index, 1, horario.get("nombre_rol", "Sin rol"))
-                self.addItem_a_tabla(index, 2, horario["dias_semanales"])
-                self.addItem_a_tabla(index, 3, horario["tipo_jornada"])
-                self.addItem_a_tabla(index, 4, hora_inicio_str)
-                self.addItem_a_tabla(index, 5, hora_fin_str)
-                self.addItem_a_tabla(index, 6, horario["descripcion"])
-                self._agregar_acciones(index, horario["id"])
+                    self.addItem_a_tabla(index, 0, horario["nombre_horario"])
+                    self.addItem_a_tabla(index, 1, horario.get("nombre_rol", "Sin rol"))
+                    self.addItem_a_tabla(index, 2, horario["dias_semanales"])
+                    self.addItem_a_tabla(index, 3, horario["tipo_jornada"])
+                    self.addItem_a_tabla(index, 4, hora_inicio_str)
+                    self.addItem_a_tabla(index, 5, hora_fin_str)
+                    self.addItem_a_tabla(index, 6, horario["descripcion"])
+                    self._agregar_acciones(index, horario["id"])
             else:
                 self._mostrar_mensaje_sin_datos("No hay registros")
         else:
@@ -247,7 +247,7 @@ class AdminHorario(QWidget):
         layout.addSpacing(15)
         layout.addWidget(btnEliminar)
         layout.setContentsMargins(10, 0, 10, 0)
-        self.tbHorario.setCellWidget(index, 5, button_widget)
+        self.tbHorario.setCellWidget(index, 7, button_widget)
 
     def _actualizar_lblPagina(self, numPagina, totalPagina):
         self.lblNumPagina.setText(f"Pagina {numPagina} de {totalPagina} ")

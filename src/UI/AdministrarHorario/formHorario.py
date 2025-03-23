@@ -17,7 +17,7 @@ class formHorario(QDialog):
     def __init__(self, parent=None, titulo="Registrar Horario", id=None):
         super().__init__(parent)
         self.setObjectName("form")
-        self.setMinimumSize(QSize(700, 500))
+        self.setMinimumSize(QSize(850, 650))
         self.setWindowFlags(Qt.FramelessWindowHint)
         # add_Style(carpeta="css", archivoQSS="formHorario.css", QObjeto=self)
         cargar_estilos("claro", "form.css", self)
