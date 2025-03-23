@@ -13,24 +13,38 @@ from Utils.Utils import *
 class informacionEmpleado(QDialog):
     def __init__(self,id_empleado:int,parent = None):
         super().__init__(parent)
-        self.setWindowTitle("Sistema de Gestión de Empleados")
-        self.setMinimumSize(700, 500)
+        self.setWindowTitle("Informacion del empleado")
         self.setMinimumSize(700, 675)
         
         main_layout = QVBoxLayout()
-        # Sección de Datos Personales con Scroll
-        self.personal_group = QGroupBox("Datos Personales")
-        personal_layout = QHBoxLayout()  # Cambiamos a QHBoxLayout
+        lbltitulo = QLabel('Informacion del empleado')
+        lbltitulo.setObjectName('lbltitulo')
+        lbltitulo.setAlignment(Qt.AlignCenter)
+        lbltitulo.setMinimumHeight(40)
+        main_layout.addWidget(lbltitulo)
+        
         cargar_estilos('claro','informacionEm.css',self)
         
-        # Foto del empleado (lado izquierdo)
+        # Contenedor principal con scroll
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        
+        scroll_widget = QWidget()
+        content_layout = QVBoxLayout(scroll_widget)
+        
+        # Sección de Datos Personales
+        self.personal_group = QGroupBox("Datos Personales")
+        personal_layout = QHBoxLayout()
+        
+        # Foto del empleado
         self.foto = QLabel()
         self.foto.setAlignment(Qt.AlignCenter)
-        self.foto.setFixedSize(150, 150)  # Tamaño fijo para la foto
-        self.foto.setStyleSheet("border: 2px solid #ccc; border-radius: 5px;")
+        self.foto.setObjectName('foto')
+        self.foto.setFixedSize(150, 150)
+
         personal_layout.addWidget(self.foto)
         
-        # Campos de datos personales (lado derecho)
+        # Campos de datos personales
         self.form_layout = QFormLayout()
         self.form_layout.setSpacing(10)
         
@@ -42,64 +56,56 @@ class informacionEmpleado(QDialog):
         self.estadoCivil= QLineEdit()
         self.direccion  = QLineEdit()
         
-        # Establecer los campos como solo lectura
         for field in [self.nombre, self.apellidos, self.cedula, self.nacimiento, self.correo, self.estadoCivil, self.direccion]:
             field.setReadOnly(True)
             field.setMinimumHeight(25)
         
-        # Agregar los campos al form_layout en el mismo orden que se crearon
-        self.form_layout.addRow(QLabel("Nombre:")    , self.nombre)
-        self.form_layout.addRow(QLabel("Apellidos:") , self.apellidos)
-        self.form_layout.addRow(QLabel("Cédula:")    , self.cedula)
+        self.form_layout.addRow(QLabel("Nombre:"), self.nombre)
+        self.form_layout.addRow(QLabel("Apellidos:"), self.apellidos)
+        self.form_layout.addRow(QLabel("Cédula:"), self.cedula)
         self.form_layout.addRow(QLabel("Nacimiento:"), self.nacimiento)
-        self.form_layout.addRow(QLabel("Correo:")    , self.correo)
+        self.form_layout.addRow(QLabel("Correo:"), self.correo)
         self.form_layout.addRow(QLabel("Estado Civil:"), self.estadoCivil)
-        self.form_layout.addRow(QLabel("Dirección:") , self.direccion)
+        self.form_layout.addRow(QLabel("Dirección:"), self.direccion)
         
-        # Widget contenedor para el formulario
         form_widget = QWidget()
         form_widget.setLayout(self.form_layout)
-        
-        # Scroll Area para el formulario
-        scroll_area_personal = QScrollArea()
-        scroll_area_personal.setWidgetResizable(True)
-        scroll_area_personal.setWidget(form_widget)
-        personal_layout.addWidget(scroll_area_personal)
+        personal_layout.addWidget(form_widget)
         self.personal_group.setLayout(personal_layout)
         
-        # Sección de Teléfonos con Scroll
+        # Sección de Teléfonos
         self.phone_group = QGroupBox("Teléfonos")
         self.phone_layout = QVBoxLayout()
-        
-        # Widget contenedor para los teléfonos
         phone_widget = QWidget()
         phone_widget.setLayout(self.phone_layout)
-        
-        # Scroll Area para los teléfonos
-        scroll_area_phones = QScrollArea()
-        scroll_area_phones.setWidgetResizable(True)
-        scroll_area_phones.setWidget(phone_widget)
-        
         self.phone_group.setLayout(QVBoxLayout())
-        self.phone_group.layout().addWidget(scroll_area_phones)
+        self.phone_group.layout().addWidget(phone_widget)
         
         # Sección de Rol y Departamento
         self.role_group = QGroupBox("Rol y Departamento")
         self.role_layout = QFormLayout()
+        self.role_group.setLayout(self.role_layout)
         
         # Sección de Usuario
         self.user_group = QGroupBox("Cuenta de Usuario")
         self.user_layout = QFormLayout()
+        self.user_group.setLayout(self.user_layout)
         
-        # Agregar secciones al layout principal
-        main_layout.addWidget(self.personal_group)
-        main_layout.addWidget(self.phone_group)
-        main_layout.addWidget(self.role_group)
-        main_layout.addWidget(self.user_group)
+        # Agregar secciones al layout del widget con scroll
+        content_layout.addWidget(self.personal_group)
+        content_layout.addWidget(self.phone_group)
+        content_layout.addWidget(self.role_group)
+        content_layout.addWidget(self.user_group)
+        content_layout.addStretch()
+        
+        scroll_area.setWidget(scroll_widget)
+        main_layout.addWidget(scroll_area)
         
         # Botón de cierre
         btn_close = QPushButton("Cerrar")
+        btn_close.setFixedSize(100,30)
         btn_close.clicked.connect(self.cerrar)
+
         main_layout.addWidget(btn_close, alignment=Qt.AlignRight)
         
         self.setLayout(main_layout)
@@ -163,10 +169,9 @@ class informacionEmpleado(QDialog):
         #Cargar el rol y el departamento
         if dictRolEmp or departamen:
             self.dept_input = QLineEdit(str(departamen))
-            self.role_input = QLineEdit()
-            if dictRolEmp:
-                id_rol = dictRolEmp.get('id_rol')
-                self.role_input.setText(str(id_rol))
+
+            id_rol = dictRolEmp.get('id_rol') if isinstance(dictRolEmp,dict) else 'Sin Rol asignado asignado'
+            self.role_input = QLineEdit(str(id_rol))
             
             self.role_input.setReadOnly(True)
             self.dept_input.setReadOnly(True)
@@ -181,7 +186,7 @@ class informacionEmpleado(QDialog):
         if usuario:
             self.username_input = QLineEdit(usuario.usuario)
 
-            id_perfil = dictPerfil.get('id_perfil') if isinstance(dictPerfil, dict) else None
+            id_perfil = dictPerfil.get('id_perfil') if isinstance(dictPerfil, dict) else 'Sin perfil asignado'
             self.profile_input = QLineEdit(str(id_perfil))
             
             self.username_input.setReadOnly(True)

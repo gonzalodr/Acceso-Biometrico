@@ -7,6 +7,37 @@ from settings.tablas import TBUSUARIOPERFIL,TBUSUARIOPERFIL_ID_USER
 import bcrypt
 
 class UsuarioData:
+    def verificar_usuario(self,usuario:str,id_usuario:int= None):
+        
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return True  
+        
+        try:
+            cursor = conexion.cursor()
+            
+            # Consulta para verificar la existencia de la cédula
+            query = f"SELECT COUNT(*) FROM {TBUSUARIO} WHERE {TBUSUARIO_USUARIO} = %s"
+            
+            # Agregamos una cláusula para ignorar el ID proporcionado
+            if id_usuario is not None and id_usuario > 0:
+                query += f" AND {TBUSUARIO_ID} != %s"
+                cursor.execute(query, (usuario, id_usuario))
+            else:
+                cursor.execute(query, (usuario,))
+            
+            count = cursor.fetchone()[0]
+            return count > 0  # Retorna True si hay al menos una cédula encontrada
+        except Exception as e:
+            print(f"Error al verificar la cédula: {e}")
+            return True  # Retorna True en caso de error para evitar duplicados
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
+
+
     def create_usuario(self, usuario: Usuario, conexionEx = None):
         #manejando la conexión exterior
         if conexionEx is None:

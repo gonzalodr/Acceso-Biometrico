@@ -725,9 +725,17 @@ class formEmpleado(QDialog):
             return True
         else:
             self.errCorreo.setText("El correo es obligatorio.")
+            return False
     
-    def validar_usuario():
-        pass
+    def validar_usuario(self, usuario,id,errorlbl:QLabel):
+        errorlbl.clear()
+        if usuario:
+            result = self.userServices.verificarUsuario(usuario,id)
+            if result:
+                errorlbl.setText('El nombre de usuario ya se encuentra registrado.')
+                return False
+            return True
+        
     #validar numeros de telefonos
     def validar_listaTelefonos(self):
         valido = True
@@ -792,7 +800,10 @@ class formEmpleado(QDialog):
             lblError.setText('Debes agregar el nombre de usuario.')
             return False  # Validación fallida
         else:
-            pass #valida si el usuario es valido en bd
+            result = self.userServices.verificarUsuario(usuario,id_user)
+            if result:
+                lblError.setText('El usuario no es valido, este usuario ya existe.')
+                return False
 
         # Validación de la contraseña
         if id_user is None:

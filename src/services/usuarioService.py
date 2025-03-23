@@ -5,7 +5,10 @@ import re
 
 class UsuarioServices:
     def __init__(self):
-        self.UserData = UsuarioData()    
+        self.UserData = UsuarioData() 
+
+    def verificarUsuario(self,usuario:str,id_usuario:int = None):
+        return self.UserData.verificar_usuario(usuario, id_usuario)
         
     def verificacionCorreo(self,correo):
         correo = str(correo)
