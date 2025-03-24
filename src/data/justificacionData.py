@@ -178,6 +178,7 @@ class JustificacionData:
                 conexion.close()
 
 
+
     
     def get_justificacion_by_id(self, justificacion_id):
         conexion, resultado = conection()
