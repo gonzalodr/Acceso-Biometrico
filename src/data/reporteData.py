@@ -144,8 +144,8 @@ class ReporteData:
             valores = []
             
             if busqueda:
-                query += f" WHERE {TBREPORTE_ID_EMPLEADO} LIKE %s OR {TBREPORTE_FECHA_GENERACION} LIKE %s OR {TBREPORTE_TIPO_REPORTE} LIKE %s"
-                valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
+                query += f" WHERE {TBREPORTE_ID_EMPLEADO} LIKE %s OR {TBREPORTE_FECHA_GENERACION} LIKE %s OR {TBREPORTE_TIPO_REPORTE} LIKE %s OR {TBREPORTE_CONTENIDO} LIKE %"
+                valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
             
             query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
             valores.extend([tam_pagina, (pagina - 1) * tam_pagina])

@@ -269,7 +269,7 @@ class AdminAsistencia(QWidget):
         self.setGraphicsEffect(None)
 
     def _eliminarRegistro(self, id_asistencia):
-        dial = DialogoEmergente("¿?","¿Seguro que quieres eliminar este registro?","Question",True,True)
+        dial = DialogoEmergente("¿Seguro que quieres eliminar este registro?","Question",True,True)
         if dial.exec() == QDialog.Accepted:
                 result = self.asistenciaServices.eliminarAsistencia(id_asistencia)
                 if result["success"]:

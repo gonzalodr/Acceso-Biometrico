@@ -52,7 +52,7 @@ class AdminReporte(QWidget):
         
         self.inputBuscar = QLineEdit()
         self.inputBuscar.setClearButtonEnabled(True)
-        self.inputBuscar.setPlaceholderText("Buscar reporte por empelado.")
+        self.inputBuscar.setPlaceholderText("Buscar reporte.")
         self.inputBuscar.setFixedSize(QSize(500,30))
         self.inputBuscar.textChanged.connect(self._cargar_tabla)
         Sombrear(self.inputBuscar,20,0,0)
@@ -267,7 +267,7 @@ class AdminReporte(QWidget):
         self.setGraphicsEffect(None)
 
     def _eliminarRegistro(self, id_reporte):
-        dial = DialogoEmergente("¿?","¿Seguro que quieres eliminar este registro?","Question",True,True)
+        dial = DialogoEmergente("¿Seguro que quieres eliminar este registro?",True,True)
         if dial.exec() == QDialog.Accepted:
                 result = self.reporteServices.eliminarReporte(id_reporte)
                 if result["success"]:

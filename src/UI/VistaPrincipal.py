@@ -185,7 +185,7 @@ class vistaPrincipal(QWidget):
             adminasistencia = AdminAsistencia()
             adminasistencia.cerrar_adminA.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminasistencia)
-            self.listaOpciones.append((index,"Admin. reportes",'access-control-list.png'))
+            self.listaOpciones.append((index,"Admin. Asistencia",'access-control-list.png'))
             
             
         
