@@ -1,10 +1,12 @@
-from models.asistencia import Asistencia #importa la clase de reportes 
+from models.reporte import Reporte #importa la clase de reportes 
 from data.data import conection # importa la funcion de conection para crear la conexion enla base de datos
 from settings.config import * 
 
-class AsistenciaData:
+class ReporteData:
     
-    def create_asistencia(self, asistencia: Asistencia):
+    #metodo para crear reporte en la base de datos
+    def create_reporte(self, reporte: Reporte):
+        #llama a la funcion conection para tener conexion a la base datos
         conexion, resultado = conection() 
         # verifica si la conexion falló
         if not resultado["success"]:
@@ -13,17 +15,19 @@ class AsistenciaData:
         try:
             #se crea el cursor para ejecutar las consultas SQL
             cursor = conexion.cursor()
-            query = f"""INSERT INTO {TBASISTENCIA}(
-            {TBASISTENCIA_ID_EMPLEADO},
-            {TBASISTENCIA_FECHA},
-            {TBASISTENCIA_ESTADO_ASISTENCIA})
-            VALUES (%s, %s, %s)"""
+            query = f"""INSERT INTO {TBREPORTE}(
+            {TBREPORTE_ID_EMPLEADO},
+            {TBREPORTE_FECHA_GENERACION},
+            {TBREPORTE_TIPO_REPORTE},
+            {TBREPORTE_CONTENIDO})
+            VALUES (%s, %s, %s, %s)"""
             
             #define la consulta SQL pasando los objetos del reporte
             cursor.execute(query,(
-                asistencia.id_empleado,
-                asistencia.fecha,
-                asistencia.estado_asistencia,
+                reporte.id_empleado,
+                reporte.fecha_generacion,
+                reporte.tipo_reporte,
+                reporte.contenido
             ))
             #confirma los cambios en la base de datos
             conexion.commit()
@@ -41,9 +45,8 @@ class AsistenciaData:
                 conexion.close()
         return resultado 
     
-    
     #metodo para actualizar el reporte
-    def update_asistencia(self, asistencia: Asistencia):
+    def update_reporte(self, reporte: Reporte):
         #llama a la funcion conection para tener conexion a la base datos
         conexion, resultado = conection()
         # verifica si la conexion falló
@@ -55,18 +58,20 @@ class AsistenciaData:
             cursor = conexion.cursor()
             
             #consulta SQL para actualizar un reporte en la tabla TBREPORTE
-            query = f"""UPDATE {TBASISTENCIA} SET
-            {TBASISTENCIA_ID_EMPLEADO} = %s,
-            {TBASISTENCIA_FECHA} = %s,
-            {TBASISTENCIA_ESTADO_ASISTENCIA} = %s
+            query = f"""UPDATE {TBREPORTE} SET
+            {TBREPORTE_ID_EMPLEADO} = %s,
+            {TBREPORTE_FECHA_GENERACION} = %s,
+            {TBREPORTE_TIPO_REPORTE} = %s,
+            {TBREPORTE_CONTENIDO} = %s
             WHERE {TBREPORTE_ID} = %s"""
             
             #define la consulta SQL pasando los valores actualizados del  objetos reporte
             cursor.execute(query, (
-                asistencia.id_empleado,
-                asistencia.fecha,
-                asistencia.estado_asistencia,
-                asistencia.id
+                reporte.id_empleado,
+                reporte.fecha_generacion,
+                reporte.tipo_reporte,
+                reporte.contenido,
+                reporte.id
             ))
             #confirma los cambios en la base de datos
             conexion.commit()
@@ -85,7 +90,7 @@ class AsistenciaData:
         return resultado
     
     #metodo de eliminar un reporte
-    def delete_asistencia(self, id):
+    def delete_reporte(self, id):
         #llama a la funcion conection para tener conexion a la base datos
         conexion, resultado = conection()
         # verifica si la conexion falló
@@ -96,7 +101,7 @@ class AsistenciaData:
             #se crea el cursor para ejecutar las consultas SQL
             cursor = conexion.cursor()
             #define la consulta SQL, pasando el ID del reporte a eliminar
-            query = f"DELETE FROM {TBASISTENCIA} WHERE {TBASISTENCIA_ID} = %s"
+            query = f"DELETE FROM {TBREPORTE} WHERE {TBREPORTE_ID} = %s"
             # Ejecuta la consulta SQL pasando el ID del reporte a eliminar
             cursor.execute(query, (id,))
             # Confirma los cambios en la base de datos
@@ -115,31 +120,32 @@ class AsistenciaData:
                 conexion.close()
         return resultado
     
-    def list_asistencias(self, pagina=1, tam_pagina=10, ordenar_por=TBREPORTE_ID, tipo_orden="ASC", busqueda=None):
+    def list_reportes(self, pagina=1, tam_pagina=10, ordenar_por=TBREPORTE_ID, tipo_orden="ASC", busqueda=None):
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
         
-        listaAsistencias = [] #lista donde se almacenan los perfiles
+        listaReportes = [] #lista donde se almacenan los perfiles
         try:
             cursor = conexion.cursor(dictionary=True) #cursor para ejecutar las consultas
             #diccionario para  mapear los nombres de las columnas
             columna_orden = {
-                "id_empleado": TBASISTENCIA_ID_EMPLEADO,
-                "fecha": TBASISTENCIA_FECHA,
-                "estado_asistencia": TBASISTENCIA_ESTADO_ASISTENCIA
+                "id_empleado": TBREPORTE_ID_EMPLEADO,
+                "fecha_generacion": TBREPORTE_FECHA_GENERACION,
+                "tipo_reporte": TBREPORTE_TIPO_REPORTE,
+                "contenido": TBREPORTE_CONTENIDO
             }
             # si la columna esta desordenada se ordena por id
-            ordenar_por = columna_orden.get(ordenar_por, TBASISTENCIA_ID)
+            ordenar_por = columna_orden.get(ordenar_por, TBREPORTE_ID)
             #se ajusta
             tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
             
-            query = f"SELECT * FROM {TBASISTENCIA}"
+            query = f"SELECT * FROM {TBREPORTE}"
             valores = []
             
             if busqueda:
-                query += f" WHERE {TBASISTENCIA_ID_EMPLEADO} LIKE %s OR {TBASISTENCIA_FECHA} LIKE %s OR {TBASISTENCIA_ESTADO_ASISTENCIA} LIKE %s"
-                valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
+                query += f" WHERE {TBREPORTE_ID_EMPLEADO} LIKE %s OR {TBREPORTE_FECHA_GENERACION} LIKE %s OR {TBREPORTE_TIPO_REPORTE} LIKE %s OR {TBREPORTE_CONTENIDO} LIKE %"
+                valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
             
             query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
             valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
@@ -147,30 +153,31 @@ class AsistenciaData:
             cursor.execute(query, valores) # Ejecuta la consulta SQL
             registros = cursor.fetchall()# Obtiene todos los registros
             for registro in registros:        # Se iteran los registros obtenidos y se convierten en objetos de tipo Perfil
-                asistencia = Asistencia(
-                    id_empleado=registro[TBASISTENCIA_ID_EMPLEADO],
-                    fecha=registro[TBASISTENCIA_FECHA],
-                    estado_asistencia=registro[TBASISTENCIA_ESTADO_ASISTENCIA],
-                    id=registro[TBASISTENCIA_ID]
+                reporte = Reporte(
+                    id_empleado=registro[TBREPORTE_ID_EMPLEADO],
+                    fecha_generacion=registro[TBREPORTE_FECHA_GENERACION],
+                    tipo_reporte=registro[TBREPORTE_TIPO_REPORTE],
+                    contenido=registro[TBREPORTE_CONTENIDO],
+                    id=registro[TBREPORTE_ID]
                 )
-                listaAsistencias.append(asistencia)# Se añade el perfil a la lista
+                listaReportes.append(reporte)# Se añade el perfil a la lista
             
-            cursor.execute(f"SELECT COUNT(*) as total FROM {TBASISTENCIA}") #TBROL
+            cursor.execute(f"SELECT COUNT(*) as total FROM {TBREPORTE}") #TBROL
             total_registros = cursor.fetchone()["total"]  # Se obtiene el número total de registros
             total_paginas = (total_registros + tam_pagina - 1) // tam_pagina
             
             resultado["data"] = {
-                "listaAsistencias": listaAsistencias,
+                "listaReportes": listaReportes,
                 "pagina_actual": pagina,
                 "tam_pagina": tam_pagina,
                 "total_paginas": total_paginas,
                 "total_registros": total_registros
             }
             resultado["success"] = True
-            resultado["message"] = "Asistencias listados exitosamente."
+            resultado["message"] = "Reportes listados exitosamente."
         except Exception as e:
             resultado["success"] = False
-            resultado["message"] = f"Error al listar asistencias: {e}"
+            resultado["message"] = f"Error al listar reportes: {e}"
         finally:
             if cursor:
                 cursor.close()
@@ -178,7 +185,7 @@ class AsistenciaData:
                 conexion.close()
         return resultado
     
-    def get_asistencia_by_id(self, asistencia_id):
+    def get_reporte_by_id(self, reporte_id):
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
@@ -187,66 +194,69 @@ class AsistenciaData:
             cursor = conexion.cursor()
               # Consulta SQL para obtener el perfil por su ID
             query = f"""SELECT
-                            {TBASISTENCIA_ID_EMPLEADO}, 
-                            {TBASISTENCIA_FECHA}, 
-                            {TBASISTENCIA_ESTADO_ASISTENCIA}, 
-                            {TBASISTENCIA_ID} 
-                        FROM {TBASISTENCIA} 
-                        WHERE {TBASISTENCIA_ID} = %s"""
+                            {TBREPORTE_ID_EMPLEADO}, 
+                            {TBREPORTE_FECHA_GENERACION}, 
+                            {TBREPORTE_TIPO_REPORTE}, 
+                            {TBREPORTE_CONTENIDO},
+                            {TBREPORTE_ID} 
+                        FROM {TBREPORTE} 
+                        WHERE {TBREPORTE_ID} = %s"""
             
-            cursor.execute(query, (asistencia_id,)) #busca segun el id
+            cursor.execute(query, (reporte_id,)) #busca segun el id
             data = cursor.fetchone() # se obtiene el resultado
             
             if data: #si se encuentra el perfil
-                asistencia = Asistencia(
+                reporte = Reporte(
                     id_empleado=data[0],
-                    fecha=data[1],
-                    estado_asistencia=data[2],
-                    id=data[3]
+                    fecha_generacion=data[1],
+                    tipo_reporte=data[2],
+                    contenido=data[3],
+                    id=data[4]
                 )
                 resultado["success"] = True
-                resultado["data"] = asistencia
+                resultado["data"] = reporte
             else:
                 resultado["success"] = False
-                resultado["message"] = "No se encontró ninguna asistencia con el ID proporcionado."
+                resultado["message"] = "No se encontró ningún reporte con el ID proporcionado."
         except Exception as e:
             resultado["success"] = False
-            resultado["message"] = f"Error al obtener asistencia: {e}"
+            resultado["message"] = f"Error al obtener reporte: {e}"
         finally:
             if conexion:
                 conexion.close()
         return resultado
     
-    def obtener_todo_asistencias(self):
+    def obtener_todo_reportes(self):
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
         
-        listaAsistencias = []  # Lista donde se almacenarán los perfiles ob
+        listaReportes = []  # Lista donde se almacenarán los perfiles ob
         try:
             with conexion.cursor(dictionary=True) as cursor:
-                query = f"SELECT * FROM {TBASISTENCIA}"
+                query = f"SELECT * FROM {TBREPORTE}"
                 cursor.execute(query)
                 registros = cursor.fetchall()
                 
                  # Se convierten los registros en objetos de tipo Perfil y se almacenan en la lista
                 for registro in registros:
-                    asistencia = Asistencia(
-                        id_empleado=registro[TBASISTENCIA_ID_EMPLEADO],
-                        fecha=registro[TBASISTENCIA_FECHA],
-                        estado_asistencia=registro[TBASISTENCIA_ESTADO_ASISTENCIA],
-                        id=registro[TBASISTENCIA_ID]
+                    reporte = Reporte(
+                        id_empleado=registro[TBREPORTE_ID_EMPLEADO],
+                        fecha_generacion=registro[TBREPORTE_FECHA_GENERACION],
+                        tipo_reporte=registro[TBREPORTE_TIPO_REPORTE],
+                        contenido=registro[TBREPORTE_CONTENIDO],
+                        id=registro[TBPERFIL_ID]
                     )
-                    listaAsistencias.append(asistencia)
+                    listaReportes.append(reporte)
                 
                 resultado["data"] = {
-                    "listaAsistencias": listaAsistencias,
+                    "listaReportes": listaReportes,
                 }
                 resultado["success"] = True
-                resultado["message"] = "Asistencias listadas exitosamente."
+                resultado["message"] = "Reportes listados exitosamente."
         except Exception as e:
             resultado["success"] = False
-            resultado["message"] = f"Error al listar asistencias: {e}"
+            resultado["message"] = f"Error al listar reportes: {e}"
         finally:
             if cursor:
                 cursor.close()# Se cierra el cursor
@@ -254,42 +264,3 @@ class AsistenciaData:
                 conexion.close()# Se cierra la conexión a la base de datos
 
         return resultado
-
-
-    def listar_asistencia_por_empleado(self, id_empleado: int):
-        conexion, resultado = conection()
-        if not resultado["success"]:
-            return resultado
-        
-        listaAsistencias = []
-        try:
-            with conexion.cursor(dictionary=True) as cursor:
-                query = f'''
-                    SELECT Id, Id_Empleado, Fecha, Estado_Asistencia 
-                    FROM Asistencia 
-                    WHERE Id_Empleado = %s AND Estado_Asistencia = 'No_Justificada'
-                    ORDER BY Fecha DESC
-                '''
-                cursor.execute(query, (id_empleado,))
-                registros = cursor.fetchall()
-                
-                for data in registros:
-                    asistencia = Asistencia(
-                        id_asistencia=data["Id"],
-                        id_empleado=data["Id_Empleado"],
-                        fecha=data["Fecha"],
-                        estado_asistencia=data["Estado_Asistencia"]
-                    )
-                    listaAsistencias.append(asistencia)
-                
-                return {
-                    "data": listaAsistencias,
-                    "success": True,
-                    "message": "Asistencias listadas exitosamente."
-                }
-        except Error as e:
-            logger.error(f"Error al listar asistencias: {e}")
-            return {"success": False, "message": "Ocurrió un error al listar las asistencias."}
-        finally:
-            if conexion:
-                conexion.close()

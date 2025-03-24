@@ -5,12 +5,14 @@ from UI.DialogoEmergente import *
 from services.horarioService import *
 from datetime import datetime
 from datetime import timedelta
+from services.rolService import *
 
 
 class formHorario(QDialog):
-\
+
     Hservices = HorarioService()  # Instancia del servicio de horarios
     idH = 0  # ID del registro para diferenciar entre creación y actualización
+    RolService = RolServices()
 
     def __init__(self, parent=None, titulo="Registrar Horario", id=None):
         super().__init__(parent)
@@ -18,7 +20,7 @@ class formHorario(QDialog):
         self.setMinimumSize(QSize(700, 500))
         self.setWindowFlags(Qt.FramelessWindowHint)
         # add_Style(carpeta="css", archivoQSS="formHorario.css", QObjeto=self)
-        cargar_estilos('claro','form.css',self)
+        cargar_estilos("claro", "form.css", self)
 
         # Configuración del frame principal
         frame = QFrame()
@@ -40,6 +42,22 @@ class formHorario(QDialog):
         layoutForm.setVerticalSpacing(1)
 
         # Elementos del formulario
+        # Nombre de Horario
+        lblNombreHorario = QLabel(text="Nombre de Horario")
+        self.inputNombreHorario = QLineEdit()
+        self.inputNombreHorario.setPlaceholderText("Ingrese el nombre del horario")
+        self.inputNombreHorario.installEventFilter(self)
+        self.errorNombreHorario = QLabel()
+        Sombrear(self.inputNombreHorario, 20, 0, 0)
+
+        # Rol
+        lblRol = QLabel(text="Rol")
+        self.inputRol = QComboBox()
+        self.inputRol.setPlaceholderText("Seleccione un rol")
+        self.cargar_roles()  # para cargar los roles
+        self.errorRol = QLabel()
+        Sombrear(self.inputRol, 20, 0, 0)
+
         lblDias = QLabel(text="Días Semanales")
         self.inputDias = QLineEdit()
         self.inputDias.setPlaceholderText("Ingrese los días (ej. Lunes-Viernes)")
@@ -77,28 +95,38 @@ class formHorario(QDialog):
 
         # Añadiendo widgets al layout de formulario
         layoutForm.addLayout(
-            self._contenedor(lblDias, self.inputDias, self.errorDias), 0, 0
+            self._contenedor(
+                lblNombreHorario, self.inputNombreHorario, self.errorNombreHorario
+            ),
+            0,
+            0,
+        )
+        layoutForm.addLayout(
+            self._contenedor(lblRol, self.inputRol, self.errorRol), 1, 0
+        )
+        layoutForm.addLayout(
+            self._contenedor(lblDias, self.inputDias, self.errorDias), 2, 0
         )
         layoutForm.addLayout(
             self._contenedor(
                 lblTipoJornada, self.inputTipoJornada, self.errorTipoJornada
             ),
-            1,
+            3,
             0,
         )
         layoutForm.addLayout(
             self._contenedor(lblHoraInicio, self.inputHoraInicio, self.errorHoraInicio),
-            2,
+            4,
             0,
         )
         layoutForm.addLayout(
-            self._contenedor(lblHoraFin, self.inputHoraFin, self.errorHoraFin), 3, 0
+            self._contenedor(lblHoraFin, self.inputHoraFin, self.errorHoraFin), 5, 0
         )
         layoutForm.addLayout(
             self._contenedor(
                 lblDescripcion, self.inputDescripcion, self.errorDescripcion
             ),
-            4,
+            6,
             0,
         )
 
@@ -106,15 +134,17 @@ class formHorario(QDialog):
         boton_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         boton_box.button(QDialogButtonBox.Cancel).setText("Cancelar")
         boton_box.button(QDialogButtonBox.Cancel).setObjectName("btncancelar")
-        boton_box.button(QDialogButtonBox.Cancel).setMinimumSize(QSize(100,30))
-        
-        boton_box.button(QDialogButtonBox.Ok).setText("Registrar" if id == None else "Actualizar")
+        boton_box.button(QDialogButtonBox.Cancel).setMinimumSize(QSize(100, 30))
+
+        boton_box.button(QDialogButtonBox.Ok).setText(
+            "Registrar" if id == None else "Actualizar"
+        )
         boton_box.button(QDialogButtonBox.Ok).setObjectName("btnregistrar")
-        boton_box.button(QDialogButtonBox.Ok).setMinimumSize(QSize(100,30))
+        boton_box.button(QDialogButtonBox.Ok).setMinimumSize(QSize(100, 30))
 
         boton_box.accepted.connect(self._accion_horario)
         boton_box.rejected.connect(self.reject)
-       
+
         # Centrar los botones
         boton_layout = QHBoxLayout()
         boton_layout.addStretch()
@@ -125,7 +155,7 @@ class formHorario(QDialog):
 
         frame.setLayout(layoutFrame)
         layout = QVBoxLayout()
-        layout.setContentsMargins(0,0,0,0)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(frame)
         self.setLayout(layout)
 
@@ -159,7 +189,10 @@ class formHorario(QDialog):
             dialEmergente.exec()
             return
 
+        id_rol = self.inputRol.currentData()
+
         horario = Horario(
+            nombre_horario=self.inputNombreHorario.text(),
             dias_semanales=self.inputDias.text(),
             tipo_jornada=self.inputTipoJornada.text(),
             hora_inicio=self.inputHoraInicio.time().toString("HH:mm"),
@@ -178,7 +211,7 @@ class formHorario(QDialog):
                 dial = DialogoEmergente("Error", result["message"], "Error")
                 dial.exec()
         else:  # De lo contrario, es un nuevo registro
-            result = self.Hservices.insertarHorario(horario)
+            result = self.Hservices.insertarHorario(horario, id_rol)
             if result["success"]:
                 dial = DialogoEmergente("Registro", result["message"], "Check")
                 dial.exec()
@@ -220,6 +253,12 @@ class formHorario(QDialog):
         """
         vacios = False
 
+        if not self.inputNombreHorario.text().strip:
+            Sombrear(self.inputNombreHorario, 20, 0, 0, "red")
+            vacios = True
+        else:
+            Sombrear(self.inputNombreHorario, 20, 0, 0)
+
         if not self.inputDias.text().strip():
             Sombrear(self.inputDias, 20, 0, 0, "red")
             vacios = True
@@ -231,6 +270,13 @@ class formHorario(QDialog):
             vacios = True
         else:
             Sombrear(self.inputTipoJornada, 20, 0, 0)
+
+        # Valida el campo de Rol
+        if self.inputRol.currentIndex() == -1:  # Si no se ha seleccionado ningún rol
+            Sombrear(self.inputRol, 20, 0, 0, "red")
+            vacios = True
+        else:
+            Sombrear(self.inputRol, 20, 0, 0)
 
         if (
             not self.inputHoraInicio.time().isValid()
@@ -259,11 +305,13 @@ class formHorario(QDialog):
         Retorna True si al menos un campo tiene datos, de lo contrario, False.
         """
         if (
-            self.inputDias.text().strip()
+            self.inputNombreHorario.text().strip()
+            or self.inputDias.text().strip()
             or self.inputTipoJornada.text().strip()
             or self.inputHoraInicio.time().isValid()
             or self.inputHoraFin.time().isValid()
             or self.inputDescripcion.toPlainText().strip()
+            or self.inputRol.currentIndex() == -1
         ):
             return True
         else:
@@ -279,6 +327,52 @@ class formHorario(QDialog):
             if opcion == QDialog.Accepted:
                 self.reject()
             elif opcion == QDialog.Rejected:
-                pass 
+                pass
         else:  ##si los inputs estan sin datos entonces se cierra el formulario de manera normal
             self.reject()  ##cerrar la ventana
+
+    def cargar_roles(self):
+        """
+        Método para cargar los roles en el QComboBox.
+        """
+        try:
+            # Limpia el QComboBox antes de agregar nuevos elementos
+            self.inputRol.clear()
+
+            # Obtiene todos los roles
+            resultado = self.RolService.obtener_nombre_rol()
+
+            if resultado["success"]:
+                roles = resultado["data"]
+                if roles:  # Si hay roles
+                    for rol in roles:
+                        self.inputRol.addItem(rol["nombre"], rol["id"])
+                else:  # Si no hay roles
+                    dialEmergente = DialogoEmergente(
+                        "Advertencia",
+                        "No se encontraron roles.",
+                        "Warning",
+                        True,
+                        False,
+                    )
+                    dialEmergente.exec()
+            else:  # Si hubo un error
+                dialEmergente = DialogoEmergente(
+                    "Error",
+                    resultado["message"],
+                    "Error",
+                    True,
+                    False,
+                )
+                dialEmergente.exec()
+
+        except Exception as e:
+            print(f"Error al cargar los roles: {e}")
+            dialEmergente = DialogoEmergente(
+                "Error",
+                "No se pudieron cargar los roles.",
+                "Error",
+                True,
+                False,
+            )
+            dialEmergente.exec()

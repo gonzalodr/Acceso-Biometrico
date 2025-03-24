@@ -2,14 +2,15 @@ import re
 from models.rol import Rol
 from data.rolData import RolData
 
+
 class RolServices:
     def __init__(self):
         self.rolData = RolData()
-        
+
     ##
     # Métodos privados de validación
     ##
-    
+
     def _validarNombre(self, nombre):
         # Validar que el nombre no esté vacío y cumpla con un patrón (solo letras y espacios, hasta 100 caracteres)
         patron = r"^[A-Za-z\s]{1,100}$"
@@ -60,9 +61,13 @@ class RolServices:
         # Eliminar rol por ID
         return self.rolData.delete_rol(id)
 
-    def obtenerListaRol(self, pagina=1, tam_pagina=10, ordenar_por="id", tipo_orden="ASC", busqueda=None):
+    def obtenerListaRol(
+        self, pagina=1, tam_pagina=10, ordenar_por="id", tipo_orden="ASC", busqueda=None
+    ):
         # Obtener lista de roles con paginación y opciones de ordenamiento
-        return self.rolData.list_roles(pagina, tam_pagina, ordenar_por, tipo_orden, busqueda)
+        return self.rolData.list_roles(
+            pagina, tam_pagina, ordenar_por, tipo_orden, busqueda
+        )
 
     def obtenerRolPorId(self, id):
         # Obtener rol por ID
@@ -70,3 +75,7 @@ class RolServices:
 
     def obtener_todo_roles(self):
         return self.rolData.obtener_todo_roles()
+
+    # Trae los nombres y id de los registros en Rol
+    def obtener_nombre_rol(self):
+        return self.rolData.get_all_roles()
