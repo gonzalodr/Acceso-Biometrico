@@ -19,13 +19,17 @@ class vistaPrincipal(QWidget):
     listaOpciones = []  # numero Index en el stack, el nombre o texto, icono
     usuario: Usuario = None
 
-    def __init__(self, usuario: Usuario, parent=None,):
+    def __init__(
+        self,
+        usuario: Usuario,
+        parent=None,
+    ):
         super().__init__(parent)
         self.usuario = usuario
         self.setObjectName("vistaPrincipal")
 
-        cargar_estilos('claro','ventanaPrincipal.css',self)
-        
+        cargar_estilos("claro", "ventanaPrincipal.css", self)
+
         frame = QFrame()
         frame.setObjectName("frameFondoPrincipal")
         frame.setContentsMargins(0, 0, 0, 0)
@@ -58,7 +62,10 @@ class vistaPrincipal(QWidget):
         self.btnAbrir_SideBar = QPushButton(text="")
         self.btnAbrir_SideBar.setCursor(Qt.PointingHandCursor)
         self.btnAbrir_SideBar.setMaximumSize(QSize(45, 45))
-        cargar_icono_svg(QObjeto=self.btnAbrir_SideBar,archivoSVG="arrow-bar-right.svg",Size=QSize(
+        cargar_icono_svg(
+            QObjeto=self.btnAbrir_SideBar,
+            archivoSVG="arrow-bar-right.svg",
+            Size=QSize(
                 self.btnAbrir_SideBar.size().width() - 15,
                 self.btnAbrir_SideBar.size().height() - 15,
             ),
@@ -79,7 +86,7 @@ class vistaPrincipal(QWidget):
         self.lblIconoUser.setObjectName("iconoUser")
         self.lblIconoUser.setMaximumSize(QSize(50, 50))
         self.lblIconoUser.setMinimumSize(QSize(50, 50))
-        cargar_Icono(self.lblIconoUser, archivoImg='user.png')
+        cargar_Icono(self.lblIconoUser, archivoImg="user.png")
         Sombrear(self.lblIconoUser, 30, 0, 5)
 
         """
@@ -104,9 +111,13 @@ class vistaPrincipal(QWidget):
         self._llenar_stack_vista()
 
         self.sidebar = SlideBar(listaOpciones=self.listaOpciones)
-        cargar_Icono(self.sidebar.lblUsuario, archivoImg='user.png')
+        cargar_Icono(self.sidebar.lblUsuario, archivoImg="user.png")
         # self.cargar_imagen_usuario(self.sidebar.lblUsuario)
-        self.btnAbrir_SideBar.clicked.connect(lambda click, btn=self.btnAbrir_SideBar: self.sidebar.accion_anim(btnSidebar=btn))
+        self.btnAbrir_SideBar.clicked.connect(
+            lambda click, btn=self.btnAbrir_SideBar: self.sidebar.accion_anim(
+                btnSidebar=btn
+            )
+        )
 
         """Recibimos una señal la cual nos servira para detectar los btn del sidebar"""
         self.sidebar.index_opcion_selecionada.connect(self.seleccion_sidebar)
@@ -127,46 +138,48 @@ class vistaPrincipal(QWidget):
     def _llenar_stack_vista(self):
         self.stackVistas.addWidget(self._widget_presentacion())
 
-        '''
+        """
         al agregar a la lista se asigna el index, el titulo, y el png para el icono.
-        '''
-        
+        """
+
         # if True:
         #     adminpersona = AdminPersona(parent=self)
         #     adminpersona.cerrar_adminP.connect(self._salir_crud)
         #     index = self.stackVistas.addWidget(adminpersona)
         #     self.listaOpciones.append((index, "Administrar Persona",'employees.png'))
 
-        # if True:
-        #     adminHorario = AdminHorario(parent=self)
-        #     adminHorario.cerrar_adminH.connect(self._salir_crud)
-        #     index = self.stackVistas.addWidget(adminHorario)
-        #     self.listaOpciones.append((index, "Administrar Horarios",'weekly.png'))
+        if True:
+            adminHorario = AdminHorario(parent=self)
+            adminHorario.cerrar_adminH.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(adminHorario)
+            self.listaOpciones.append((index, "Administrar Horarios", "weekly.png"))
 
         if True:
             adminempleado = AdminEmpleado(parent=self)
             adminempleado.signalCerrar.connect(self._salir_crud)
-            index =self.stackVistas.addWidget(adminempleado)
-            self.listaOpciones.append((index,'Admin. Empleados','employees.png'))
+            index = self.stackVistas.addWidget(adminempleado)
+            self.listaOpciones.append((index, "Admin. Empleados", "employees.png"))
 
         if True:
             AdminDepart = AdminDepartament(parent=self)
             AdminDepart.cerrar_adminD.connect(self._salir_crud)
             index = self.stackVistas.addWidget(AdminDepart)
-            self.listaOpciones.append((index, "Admin. Departamento",'company-department.png'))
+            self.listaOpciones.append(
+                (index, "Admin. Departamento", "company-department.png")
+            )
 
         # if True:
         #     adminrol = AdminRol()
         #     adminrol.cerrar_adminR.connect(self._salir_crud)
         #     index = self.stackVistas.addWidget(adminrol)
         #     self.listaOpciones.append((index,"Administrar rol",'workforce.png'))
-        
+
         # if True:
         #     adminpermisos = AdminPermisosRol()
         #     adminpermisos.cerrar_adminP.connect(self._salir_crud)
         #     index = self.stackVistas.addWidget(adminpermisos)
         #     self.listaOpciones.append((index,"Admin. permisos rol",'access-control-list.png'))
-            
+
         if True:
             adminpermisosperfil = AdminPermisosPerfil()
             adminpermisosperfil.cerrar_adminP.connect(self._salir_crud)
@@ -189,8 +202,12 @@ class vistaPrincipal(QWidget):
             
             
         
+            self.listaOpciones.append(
+                (index, "Admin. permisos perfil", "access-control-list.png")
+            )
+
         self.stackVistas.setCurrentIndex(0)
-        
+
     def _widget_presentacion(self):
         widgetP = QWidget()
         widgetP.setObjectName("widgetDefault")
@@ -214,4 +231,3 @@ class vistaPrincipal(QWidget):
 
     def seleccion_sidebar(self, index):
         self.stackVistas.setCurrentIndex(index)
-
