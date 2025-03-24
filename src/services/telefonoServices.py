@@ -3,7 +3,7 @@ from data.telefonoData import TelefonoData
 
 class TelefonoServices:
     def __init__(self):
-        self.teldata = TelefonoData
+        self.teldata = TelefonoData()
     
     def crear_telefono(self,telefono:Telefono):
         return self.teldata.create_telefono(telefono)
@@ -14,5 +14,5 @@ class TelefonoServices:
     def eliminar_telefono(self, id_telefono:int):
         return self.teldata.delete_telefono(id_telefono)
     
-    def verificar_telefono(self,telefono:str,id_persona:int):
-        return self.teldata.verificarExistenciaTelefono(telefono,id_persona)
+    def verificar_telefono(self,telefono:str,telefono_id:int):
+        return self.teldata.verificarExistenciaTelefono(telefono,telefono_id)

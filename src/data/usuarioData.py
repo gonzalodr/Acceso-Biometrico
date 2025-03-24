@@ -3,10 +3,41 @@ from models.usuario import Usuario
 from data.data import conection
 from settings.config import *
 from settings.logger import logger
+from settings.tablas import TBUSUARIOPERFIL,TBUSUARIOPERFIL_ID_USER
 import bcrypt
 
 class UsuarioData:
-    
+    def verificar_usuario(self,usuario:str,id_usuario:int= None):
+        
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return True  
+        
+        try:
+            cursor = conexion.cursor()
+            
+            # Consulta para verificar la existencia de la cédula
+            query = f"SELECT COUNT(*) FROM {TBUSUARIO} WHERE {TBUSUARIO_USUARIO} = %s"
+            
+            # Agregamos una cláusula para ignorar el ID proporcionado
+            if id_usuario is not None and id_usuario > 0:
+                query += f" AND {TBUSUARIO_ID} != %s"
+                cursor.execute(query, (usuario, id_usuario))
+            else:
+                cursor.execute(query, (usuario,))
+            
+            count = cursor.fetchone()[0]
+            return count > 0  # Retorna True si hay al menos una cédula encontrada
+        except Exception as e:
+            print(f"Error al verificar la cédula: {e}")
+            return True  # Retorna True en caso de error para evitar duplicados
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
+
+
     def create_usuario(self, usuario: Usuario, conexionEx = None):
         #manejando la conexión exterior
         if conexionEx is None:
@@ -50,24 +81,33 @@ class UsuarioData:
                 return resultado
         else:
             conexion = conexionEx
+        
         try:
             with conexion.cursor() as cursor:
-                query = f"""UPDATE {TBUSUARIO} SET 
-                {TBUSUARIO_USUARIO} = %s,
-                {TBUSUARIO_CONTRASENA} = %s
-                WHERE {TBUSUARIO_ID} = %s"""
-            
-                cursor.execute(query, (
-                    usuario.usuario,
-                    usuario.contrasena,
-                    usuario.id
-                ))
+                # Construir la consulta SQL dinámicamente
+                if usuario.contrasena is None:
+                    query = f"""UPDATE {TBUSUARIO} SET 
+                    {TBUSUARIO_USUARIO} = %s
+                    WHERE {TBUSUARIO_ID} = %s"""
+                    params = (usuario.usuario, usuario.id)
+                else:
+                    query = f"""UPDATE {TBUSUARIO} SET 
+                    {TBUSUARIO_USUARIO} = %s,
+                    {TBUSUARIO_CONTRASENA} = %s
+                    WHERE {TBUSUARIO_ID} = %s"""
+                    params = (usuario.usuario, usuario.contrasena, usuario.id)
+                
+                cursor.execute(query, params)
+                
                 if conexionEx is None:
                     conexion.commit()
-                return {'success':True, 'message':'Usuario actualizado exitosamente'}
+                
+                return {'success': True, 'message': 'Usuario actualizado exitosamente'}
+        
         except Exception as e:
             logger.error(f'{e}')
-            return {'success':False,'message':'Ocurrió un error al actualizar el usuario.'}
+            return {'success': False, 'message': 'Ocurrió un error al actualizar el usuario.'}
+        
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
@@ -81,14 +121,17 @@ class UsuarioData:
             conexion = conexionEx
         try:
             with conexion.cursor() as cursor:
-                query = f"DELETE FROM {TBUSUARIO} WHERE {TBUSUARIO_ID} = %s "
+                cursor.execute(f"DELETE FROM {TBUSUARIOPERFIL} WHERE {TBUSUARIOPERFIL_ID_USER} = %s",(usuario_id,))
+                cursor.execute(f"DELETE FROM {TBUSUARIO} WHERE {TBUSUARIO_ID} = %s ", (usuario_id,))
                 
-                cursor.execute(query, (usuario_id,))
                 if conexionEx is None:
                     conexion.commit()
 
                 return {'success':True, 'message':'Usuario eliminado exitosamente.'}
         except Error as e:
+            if conexionEx is None:
+                conexion.rollback()
+
             logger.error(f'{e}')
             return {'success':False, 'message':'Ocurrió un error al eliminar el usuario.'}
         finally:
