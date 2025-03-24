@@ -179,6 +179,8 @@ class AdminHorario(QWidget):
                 self.tbHorario.setSpan(0, 0, 1, self.tbHorario.columnCount())
 
     def _cargar_tabla(self):
+
+        self.tbHorario.setRowCount(0)
         result = self.Hservices.obtenerListaHorarios(
             pagina=self.paginaActual,
             tam_pagina=10,
@@ -192,7 +194,9 @@ class AdminHorario(QWidget):
                 totalPaginas = result["data"]["total_paginas"]
                 self._actualizar_lblPagina(paginaActual, totalPaginas)
                 self._actualizarValoresPaginado(paginaActual, totalPaginas)
+
                 self.tbHorario.setRowCount(0)
+
                 for index, horario in enumerate(listaHorarios):
                     self.tbHorario.insertRow(index)
                     self.tbHorario.setRowHeight(index, 45)
@@ -300,20 +304,23 @@ class AdminHorario(QWidget):
             ).exec()
             self._cargar_tabla()
 
+    def _crear_horario(self):
+        blur_effect = QGraphicsBlurEffect(self)
+        blur_effect.setBlurRadius(10)
+        self.setGraphicsEffect(blur_effect)
+
+        form = formHorario()
+        if (
+            form.exec() == QDialog.Accepted
+        ):  # Verifica si el formulario se cerró correctamente
+            self._cargar_tabla()
+        self.setGraphicsEffect(None)
+
     def _editar_horario(self, id):
         blur_effect = QGraphicsBlurEffect(self)
         blur_effect.setBlurRadius(10)
         self.setGraphicsEffect(blur_effect)
         form = formHorario(titulo="Actualizar Horario", id=id)
-        form.exec()
-        self._cargar_tabla()
-        self.setGraphicsEffect(None)
-
-    def _crear_horario(self):
-        blur_effect = QGraphicsBlurEffect(self)
-        blur_effect.setBlurRadius(10)
-        self.setGraphicsEffect(blur_effect)
-        form = formHorario()
         form.exec()
         self._cargar_tabla()
         self.setGraphicsEffect(None)
