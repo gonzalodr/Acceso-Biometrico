@@ -8,6 +8,14 @@ DATABASE_CONFIG = {
 ##
 # declaracion de los nombres de las tablas
 ##
+
+#Tabla de asistencia y sus campos
+TBASISTENCIA = "asistencia"
+TBASISTENCIA_ID = "Id"
+TBASISTENCIA_ID_EMPLEADO = "Id_Empleado"
+TBASISTENCIA_FECHA = "Fecha"
+TBASISTENCIA_ESTADO_ASISTENCIA = "Estado_Asistencia"
+
 # Tabla persona y sus campos
 TBPERSONA = "persona"
 TBPERSONA_ID = "Id"
