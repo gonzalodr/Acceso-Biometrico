@@ -1,6 +1,8 @@
 from models.asistencia import Asistencia #importa la clase de reportes 
 from data.data import conection # importa la funcion de conection para crear la conexion enla base de datos
 from settings.config import * 
+from mysql.connector import Error
+from settings.logger import logger
 
 class AsistenciaData:
     
@@ -254,3 +256,42 @@ class AsistenciaData:
                 conexion.close()# Se cierra la conexión a la base de datos
 
         return resultado
+
+
+    def listar_asistencia_por_empleado(self, id_empleado: int):
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+        
+        listaAsistencias = []
+        try:
+            with conexion.cursor(dictionary=True) as cursor:
+                query = f'''
+                    SELECT Id, Id_Empleado, Fecha, Estado_Asistencia 
+                    FROM Asistencia 
+                    WHERE Id_Empleado = %s AND Estado_Asistencia = 'No_Justificada'
+                    ORDER BY Fecha DESC
+                '''
+                cursor.execute(query, (id_empleado,))
+                registros = cursor.fetchall()
+                
+                for data in registros:
+                    asistencia = Asistencia(
+                        id=data["Id"],
+                        id_empleado=data["Id_Empleado"],
+                        fecha=data["Fecha"],
+                        estado_asistencia=data["Estado_Asistencia"]
+                    )
+                    listaAsistencias.append(asistencia)
+                
+                return {
+                    "data": listaAsistencias,
+                    "success": True,
+                    "message": "Asistencias listadas exitosamente."
+                }
+        except Error as e:
+            logger.error(f"Error al listar asistencias: {e}")
+            return {"success": False, "message": "Ocurrió un error al listar las asistencias."}
+        finally:
+            if conexion:
+                conexion.close()

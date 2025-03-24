@@ -3,6 +3,7 @@ from PySide6.QtCore import *
 from Utils.Utils import *
 from UI.slideBar import *
 from UI.AdministrarHorario.adminHorario import *
+from UI.AdministrarJustificacion.adminJustificacion import *
 from UI.AdministraPersona.adminPersona import *
 from UI.AdministraDepartamento.adminDepartamento import *  # Importa la clase AdminDepartamento
 from UI.AdministrarRol.adminRol import *
@@ -167,6 +168,12 @@ class vistaPrincipal(QWidget):
             self.listaOpciones.append(
                 (index, "Admin. Departamento", "company-department.png")
             )
+
+        if True:
+            adminJusficacion = AdminJustificacion()
+            adminJusficacion.cerrar_adminJ.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(adminJusficacion)
+            self.listaOpciones.append((index,"Admin.Justificacion",'division.png'))
 
         # if True:
         #     adminrol = AdminRol()
