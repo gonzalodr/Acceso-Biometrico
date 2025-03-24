@@ -1,6 +1,8 @@
 from models.asistencia import Asistencia #importa la clase de reportes 
 from data.data import conection # importa la funcion de conection para crear la conexion enla base de datos
 from settings.config import * 
+from mysql.connector import Error
+from settings.logger import logger
 
 class AsistenciaData:
     
@@ -275,7 +277,7 @@ class AsistenciaData:
                 
                 for data in registros:
                     asistencia = Asistencia(
-                        id_asistencia=data["Id"],
+                        id=data["Id"],
                         id_empleado=data["Id_Empleado"],
                         fecha=data["Fecha"],
                         estado_asistencia=data["Estado_Asistencia"]

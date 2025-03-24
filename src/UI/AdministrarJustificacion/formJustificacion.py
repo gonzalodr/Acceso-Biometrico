@@ -166,7 +166,7 @@ class formJustificacion(QDialog):
                 asistencias = result["data"]
                 if asistencias:
                     for asistencia in asistencias:
-                        self.comboAsistencia.addItem(asistencia.fecha.strftime("%Y-%m-%d"), asistencia.id_asistencia)
+                        self.comboAsistencia.addItem(asistencia.fecha.strftime("%Y-%m-%d"), asistencia.id)
                     self.comboAsistencia.setVisible(True)  # Mostrar el ComboBox si hay asistencias
                 else:
                     # Si no hay asistencias, mostrar el mensaje

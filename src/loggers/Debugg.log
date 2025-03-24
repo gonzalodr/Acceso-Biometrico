@@ -2,3 +2,9 @@
 2025-02-28 18:29:51,121 - ERROR - Error: 1062 (23000): Duplicate entry 'hh' for key 'Nombre' - departamentoData.py:29
 2025-02-28 18:29:54,480 - ERROR - Error: 1062 (23000): Duplicate entry 'hh' for key 'Nombre' - departamentoData.py:29
 2025-02-28 18:30:01,884 - ERROR - Error: 1062 (23000): Duplicate entry 'hh' for key 'Nombre' - departamentoData.py:29
+2025-03-23 21:25:29,696 - ERROR - Error inesperado: name 'TBJUSTIFICACION_MOTIVO' is not defined - justificacionData.py:174
+2025-03-23 21:33:27,922 - ERROR - Error inesperado: name 'TBJUSTIFICACION_MOTIVO' is not defined - justificacionData.py:174
+2025-03-23 21:36:54,232 - ERROR - Error inesperado: name 'TBJUSTIFICACION_MOTIVO' is not defined - justificacionData.py:174
+2025-03-23 21:36:59,682 - ERROR - Error inesperado: name 'TBJUSTIFICACION_MOTIVO' is not defined - justificacionData.py:174
+2025-03-23 21:41:34,371 - ERROR - Error inesperado: name 'TBJUSTIFICACION_MOTIVO' is not defined - justificacionData.py:174
+2025-03-23 21:42:19,653 - ERROR - Error inesperado: name 'TBJUSTIFICACION_MOTIVO' is not defined - justificacionData.py:174
