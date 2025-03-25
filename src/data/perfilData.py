@@ -1,9 +1,13 @@
 from models.perfil import Perfil
 from data.data import conection
 from settings.config import *
+from settings.logger import logger
+from data.permisosPerfilData import PermisosPerfilData
+import traceback
 
 class PerfilData:
-    
+    def __init__(self):
+        self.permisoPerfilData = PermisosPerfilData()
     def create_perfil(self, perfil: Perfil): #metodo para crear el perfil en la base de datos
         conexion, resultado = conection() 
         if not resultado["success"]: # si falla la conexion retorna error
@@ -88,59 +92,58 @@ class PerfilData:
         
         listaPerfiles = [] #lista donde se almacenan los perfiles
         try:
-            cursor = conexion.cursor(dictionary=True) #cursor para ejecutar las consultas
-            #diccionario para  mapear los nombres de las columnas
-            columna_orden = {
-                "nombre": TBPERFIL_NOMBRE,
-                "descripcion": TBPERFIL_DESCRIPCION
-            }
-            # si la columna esta desordenada se ordena por id
-            ordenar_por = columna_orden.get(ordenar_por, TBPERFIL_ID)
-            #se ajusta
-            tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
-            
-            query = f"SELECT * FROM {TBPERFIL}"
-            valores = []
-            
-            if busqueda:
-                query += f" WHERE {TBPERFIL_NOMBRE} LIKE %s OR {TBPERFIL_DESCRIPCION} LIKE %s"
-                valores = [f"%{busqueda}%", f"%{busqueda}%"]
-            
-            query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
-            valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
-            
-            cursor.execute(query, valores) # Ejecuta la consulta SQL
-            registros = cursor.fetchall()# Obtiene todos los registros
-            for registro in registros:        # Se iteran los registros obtenidos y se convierten en objetos de tipo Perfil
-                perfil = Perfil(
-                    nombre=registro[TBPERFIL_NOMBRE],
-                    descripcion=registro[TBPERFIL_DESCRIPCION],
-                    id=registro[TBPERFIL_ID]
-                )
-                listaPerfiles.append(perfil)# Se añade el perfil a la lista
-            
-            cursor.execute(f"SELECT COUNT(*) as total FROM {TBPERFIL}") #TBROL
-            total_registros = cursor.fetchone()["total"]  # Se obtiene el número total de registros
-            total_paginas = (total_registros + tam_pagina - 1) // tam_pagina
-            
-            resultado["data"] = {
-                "listaPerfiles": listaPerfiles,
-                "pagina_actual": pagina,
-                "tam_pagina": tam_pagina,
-                "total_paginas": total_paginas,
-                "total_registros": total_registros
-            }
-            resultado["success"] = True
-            resultado["message"] = "Perfiles listados exitosamente."
+            with conexion.cursor(dictionary=True)  as cursor:
+
+                columna_orden = {
+                    "nombre"        : TBPERFIL_NOMBRE,
+                    "descripcion"   : TBPERFIL_DESCRIPCION
+                }
+
+                ordenar_por = columna_orden.get(ordenar_por, TBPERFIL_ID)
+                tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
+                
+                query = f"SELECT * FROM {TBPERFIL}"
+                valores = []
+                
+                if busqueda:
+                    query += f" WHERE {TBPERFIL_NOMBRE} LIKE %s OR {TBPERFIL_DESCRIPCION} LIKE %s"
+                    valores = [f"%{busqueda}%", f"%{busqueda}%"]
+                
+                query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
+                valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
+                
+                cursor.execute(query, valores) 
+                registros = cursor.fetchall()
+                for registro in registros:   
+                    perfil = Perfil(
+                        nombre      =registro[TBPERFIL_NOMBRE],
+                        descripcion =registro[TBPERFIL_DESCRIPCION],
+                        id          =registro[TBPERFIL_ID]
+                    )
+                    result        = self.permisoPerfilData.get_permisos_perfil_ByPerfilId(perfil.id)
+                    if not result['success']:
+                        return result
+                    listaPerfiles.append({'perfil':perfil,'listaPermisos':result['listaPermiso']})
+                    
+                cursor.execute(f"SELECT COUNT(*) as total FROM {TBPERFIL}") 
+                total_registros = cursor.fetchone()["total"] 
+                total_paginas = (total_registros + tam_pagina - 1) // tam_pagina
+                
+                 
+                return {'success':True,'message':'Perfiles listados correctamente.','data':{
+                    "listaPerfiles": listaPerfiles,
+                    "pagina_actual": pagina,
+                    "tam_pagina": tam_pagina,
+                    "total_paginas": total_paginas,
+                    "total_registros": total_registros
+                }}
+    
         except Exception as e:
-            resultado["success"] = False
-            resultado["message"] = f"Error al listar perfiles: {e}"
+            logger.error(f'{e}-Traceback: {traceback.format_exc()}')
+            return {'success':False,'message':'Ocurrio un error al listar los perfiles.'}
         finally:
-            if cursor:
-                cursor.close()
             if conexion:
                 conexion.close()
-        return resultado
     
     def get_perfil_by_id(self, perfil_id):
         conexion, resultado = conection()

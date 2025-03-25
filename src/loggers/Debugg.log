@@ -1,4 +1,1 @@
-2025-02-28 18:16:50,232 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-28 18:29:51,121 - ERROR - Error: 1062 (23000): Duplicate entry 'hh' for key 'Nombre' - departamentoData.py:29
-2025-02-28 18:29:54,480 - ERROR - Error: 1062 (23000): Duplicate entry 'hh' for key 'Nombre' - departamentoData.py:29
-2025-02-28 18:30:01,884 - ERROR - Error: 1062 (23000): Duplicate entry 'hh' for key 'Nombre' - departamentoData.py:29
+2025-03-25 13:54:36,028 - ERROR - cannot access local variable 'permisos' where it is not associated with a value - permisosPerfilData.py:322

@@ -1,6 +1,7 @@
 from data.data import conection  # Importa la función para obtener la conexión
 from settings.config import * 
 from models.permiso_perfil import * 
+from settings.logger import logger
 
 class PermisosPerfilData:
     
@@ -280,3 +281,46 @@ class PermisosPerfilData:
             if conexion:
                 conexion.close()
         return resultado
+    
+    def get_permisos_perfil_ByPerfilId(self, perfil_id: int):
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+
+        try:
+            with conexion.cursor() as cursor:
+                query = f"""SELECT
+                                {TBPERMISOPERFIL_PERFIL_ID}, 
+                                {TBPERMISOPERFIL_TABLA}, 
+                                {TBPERMISOPERFIL_VER},
+                                {TBPERMISOPERFIL_INSERTAR}, 
+                                {TBPERMISOPERFIL_EDITAR}, 
+                                {TBPERMISOPERFIL_ELIMINAR}, 
+                                {TBPERMISOPERFIL_ID} 
+                            FROM {TBPERMISOPERFIL} 
+                            WHERE {TBPERMISOPERFIL_PERFIL_ID} = %s"""
+                
+                cursor.execute(query, (perfil_id,))
+                datos = cursor.fetchall()
+                
+                if datos:
+                    permisos = []
+                    for data in datos:
+                        permiso = Permiso_Perfil(
+                            perfil_id   =data[0],
+                            tabla       =data[1],
+                            ver         =data[2],
+                            crear       =data[3],
+                            editar      =data[4],
+                            eliminar    =data[5],
+                            id          =data[6]                    
+                        )
+                        permisos.append(permiso)
+                    return {'success':True, 'message':'Se obtuvieron los permisos correctamete.','listaPermiso':permisos}
+                return {'success':True, 'message':'El perfil no tiene permisos','listaPermiso':None}
+        except Exception as e:
+            logger.error(f'{e}')
+            return {'success':False, 'message':'Ocurrio un error al obtener los datos del perfil'}
+        finally:
+            if conexion:
+                conexion.close()
