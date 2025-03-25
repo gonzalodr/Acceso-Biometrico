@@ -43,9 +43,9 @@ class formDepartamento(QDialog):
         self.errorNombre =QLabel()
         Sombrear(self.inputNombre,20,0,0)
         
-        lblDescripcion = QLabel(text="Descripcion")
+        lblDescripcion = QLabel(text="Descripción")
         self.inputDescripcion = QLineEdit()
-        self.inputDescripcion.setPlaceholderText("Ingrese la descripcion")
+        self.inputDescripcion.setPlaceholderText("Ingrese la descripción")
         self.inputDescripcion.installEventFilter(self)
         self.errorDescripcion =QLabel()
         Sombrear(self.inputDescripcion,20,0,0)
@@ -110,7 +110,7 @@ class formDepartamento(QDialog):
                 QToolTip.hideText()
         return super().eventFilter(source, event)
     
-    def _cancelar_registro(self):
+    """ def _cancelar_registro(self):
         if self._validar_inputs_sin_con_datos():
             dialEmergente = DialogoEmergente("¿?","¿Estas seguro que que quieres cancelar?","Question",True,True)
             opcion = dialEmergente.exec()
@@ -120,8 +120,17 @@ class formDepartamento(QDialog):
                 pass
         else:##si los inputs estan sin datos entonces cierra el formulario de manera normal
             self.reject()##cerrar la ventana
-               
-    def _validar_campos(self):
+    """     
+    
+    def _cancelar_registro(self):
+        dialEmergente = DialogoEmergente("Confirmación", "¿Estás seguro de que quieres cancelar?", "Question", True, True)
+        opcion = dialEmergente.exec()
+
+        if opcion == QDialog.Accepted:
+            self.reject()  # Cierra la ventana si el usuario acepta
+    # Si el usuario rechaza, simplemente no hace nada y la ventana permanece abierta
+   
+    """def _validar_campos(self):
         # Verifica si los campos requeridos están vacíos entonces muestra una alerta
         if self._validar_inputs_vacios():
             dialEmergente = DialogoEmergente("Advertencia","Llene todos los campos.","Warning")
@@ -145,12 +154,44 @@ class formDepartamento(QDialog):
         else:
             Sombrear(self.inputDescripcion,20,0,0)            
         return vacios
-      
+   
     def _validar_inputs_sin_con_datos(self):
         if self.inputNombre.text().strip() or self.inputDescripcion.text().strip():
             return True
         else:
             return False
+           """
+        
+    def _validar_campos(self):
+        #verifica si los campos estan vacios y muestra el mensaje para cada caso
+        mensaje = self._obtener_mensaje_inputs_vacios()
+        
+        if mensaje:
+            DialEmergente = DialogoEmergente("Advertencia", mensaje, "Warning")
+            DialEmergente.exec()
+            return False
+        return True
+    
+    def _obtener_mensaje_inputs_vacios(self):
+        vacios = []
+        if not self.inputNombre.text().strip():
+            Sombrear(self.inputNombre, 20, 0, 0, "red")
+            vacios.append("Nombre")    
+        else:
+            Sombrear(self.inputNombre, 20, 0, 0)
+            
+        if not self.inputDescripcion.text().strip():
+            Sombrear(self.inputDescripcion, 20, 0, 0, "red")
+            vacios.append("Descripción")
+        else:
+            Sombrear(self.inputDescripcion, 20, 0, 0)
+            
+        if len(vacios) ==2 :
+            return "Nombre y Descripción están vacios."
+        elif len (vacios) == 1 :
+            return f"{vacios[0]} está vacío"
+        
+        return None
         
     def _obtener_registroId(self, id):
         result = self.Pservices.obtenerDepartamentoPorId(id)
@@ -175,12 +216,12 @@ class formDepartamento(QDialog):
             return None
         
     def _accion_departamento(self):
-
         departament:Departamento = Departamento(
             nombre = self.inputNombre.text(),
             descripcion= self.inputDescripcion.text(),
             id=self.idP,
         )
+        
         if self._validar_campos():      
             if self.idP > 0:##si el atributo idP es mayor a 0 quiere decir que se va actualizar 
                     result = self.Pservices.modificarDepartamento(departament)
@@ -199,6 +240,7 @@ class formDepartamento(QDialog):
                         dial.exec()
                         self.reject()
                     else:
-                        dial = DialogoEmergente("Erro","Error al registrar el departamento","Error")
+                        error_message = result.get("message", "Error al registrar el departamento")
+                        dial = DialogoEmergente("Error", error_message, "Error")
                         dial.exec()
         

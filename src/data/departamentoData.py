@@ -14,12 +14,22 @@ class DepartamentoData:
         
         try:
             with conexion.cursor() as cursor:
-                query = f"""INSERT INTO {TBDEPARTAMENTO}(
-                {TBDEPARTAMENTO_NOMBRE},
-                {TBDEPARTAMENTO_DESCRIPCION})
-                VALUES (%s, %s)"""
                 
-                cursor.execute(query, (
+                # Primero verificamos si el departamento ya existe
+                check_query = f"""SELECT COUNT(*) FROM {TBDEPARTAMENTO} 
+                                 WHERE {TBDEPARTAMENTO_NOMBRE} = %s"""
+                cursor.execute(check_query, (departamento.nombre,))
+                count = cursor.fetchone()[0]
+            
+                if count > 0:
+                    return {'success': False, 'message': 'El departamento ya existe y no puede ser creado nuevamente.'}
+                
+                insert_query = f"""INSERT INTO {TBDEPARTAMENTO}(
+                                {TBDEPARTAMENTO_NOMBRE},
+                                {TBDEPARTAMENTO_DESCRIPCION})
+                                VALUES (%s, %s)"""
+                
+                cursor.execute(insert_query, (
                     departamento.nombre,
                     departamento.descripcion
                 ))
