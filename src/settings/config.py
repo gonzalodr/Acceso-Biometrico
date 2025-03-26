@@ -10,6 +10,14 @@ ZKTECA_CONFIG = {"host": "192.168.1.201", "port": "4370"}
 ##
 # declaracion de los nombres de las tablas
 ##
+
+#Tabla de asistencia y sus campos
+TBASISTENCIA = "asistencia"
+TBASISTENCIA_ID = "Id"
+TBASISTENCIA_ID_EMPLEADO = "Id_Empleado"
+TBASISTENCIA_FECHA = "Fecha"
+TBASISTENCIA_ESTADO_ASISTENCIA = "Estado_Asistencia"
+
 # Tabla persona y sus campos
 TBPERSONA = "persona"
 TBPERSONA_ID = "Id"
@@ -121,3 +129,13 @@ TBPERFIL = "perfil"
 TBPERFIL_ID = "Id"
 TBPERFIL_NOMBRE = "Nombre"
 TBPERFIL_DESCRIPCION = "Descripcion"
+
+#Tabla justificacion y sus campos
+TBJUSTIFICACION = "justificacion"
+TBJUSTIFICACION_ID = "Id"
+TBJUSTIFICACION_ID_EMPLEADO = "Id_Empleado"
+TBJUSTIFICACION_ID_ASISTENCIA = "Id_Asistencia"
+TBJUSTIFICACION_FECHA = "Fecha"
+TBJUSTIFICACION_MOTIVO = "Motivo"
+TBJUSTIFICACION_DESCRIPCION = "Descripcion"
+
