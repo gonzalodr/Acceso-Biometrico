@@ -44,7 +44,7 @@ class HorarioService:
             return True
         return False
 
-    def modificarHorario(self, horario: Horario):
+    def modificarHorario(self, horario: Horario, id_rol: int):
         """
         Modifica un horario existente después de validar los datos.
         """
@@ -64,7 +64,7 @@ class HorarioService:
             return {"success": False, "message": message}
 
         # Modificar el horario usando la capa de datos
-        return self.horarioData.update_horario(horario)
+        return self.horarioData.update_horario(horario, id_rol)
 
     def eliminarHorario(self, id):
         """

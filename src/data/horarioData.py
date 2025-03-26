@@ -139,30 +139,41 @@ class HorarioData:
             # Manejo de errores si algo falla en la consulta
             return False, f"Error al verificar unicidad:del horario {e}"
 
-    def update_horario(self, horario: Horario):
+    def update_horario(self, horario: Horario, id_rol: int):
         """
         Actualiza un horario existente en la base de datos.
         """
+        conexion, resultado = self.obtener_conexion()
+        if not resultado["success"]:
+            return resultado
+
         # Validar los datos antes de la actualización
         datos_validos, mensaje = self.validar_datos_horario(horario)
         if not datos_validos:
             return {"success": False, "message": mensaje}
 
+        id_rol_valido, mensaje_rol = self.validar_id_rol(id_rol)
+        if not id_rol_valido:
+            return {"success": False, "message": mensaje_rol}
+
         try:
+            conexion.start_transaction()
             with self.conn.cursor() as cursor:
                 query = f"""
-        UPDATE {TBHORARIO} SET
-            {TBHORARIO_DIAS_SEMANALES} = %s,
-            {TBHORARIO_TIPO_JORNADA} = %s,
-            {TBHORARIO_HORA_INICIO} = %s,
-            {TBHORARIO_HORA_FIN} = %s,
-            {TBHORARIO_DESCRIPCION} = %s
-        WHERE {TBHORARIO_ID} = %s
-        """
+            UPDATE {TBHORARIO} SET
+                {TBHORARIO_NOMBRE_HORARIO} = %s,
+                {TBHORARIO_DIAS_SEMANALES} = %s,
+                {TBHORARIO_TIPO_JORNADA} = %s,
+                {TBHORARIO_HORA_INICIO} = %s,
+                {TBHORARIO_HORA_FIN} = %s,
+                {TBHORARIO_DESCRIPCION} = %s
+            WHERE {TBHORARIO_ID} = %s
+            """
                 # Ejecutar la consulta de actualización
                 cursor.execute(
                     query,
                     (
+                        horario.nombre_horario,
                         horario.dias_semanales,
                         horario.tipo_jornada,
                         horario.hora_inicio,
@@ -171,6 +182,16 @@ class HorarioData:
                         horario.id,  # Condición para identificar el registro a actualizar
                     ),
                 )
+                query_rol_horario = f"""
+                UPDATE {TBROLHORARIO} 
+                SET {TBROLHORARIO_ID_ROL} = %s
+                WHERE {TBROLHORARIO_ID_HORARIO} = %s
+                """
+                cursor.execute(
+                    query_rol_horario,
+                    (id_rol, horario.id),  # Nuevo id_rol y id_horario como condición
+                )
+
                 self.conn.commit()  # Confirmar los cambios en la base de datos
 
                 # Cerrar el cursor
@@ -179,10 +200,13 @@ class HorarioData:
                 return {"success": True, "message": "Horario actualizado exitosamente."}
 
         except Exception as e:
+            conexion.rollback()
             return {"success": False, "message": f"Error al actualizar horario: {e}"}
+        finally:
+            conexion.close()
 
     def create_horario(self, horario: Horario, id_rol: int):
-        conexion, resultado = conection()
+        conexion, resultado = self.obtener_conexion()
         if not resultado["success"]:
             return resultado
         """
