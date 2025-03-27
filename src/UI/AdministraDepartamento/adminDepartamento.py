@@ -51,6 +51,7 @@ class AdminDepartament(QWidget):
         self.inputBuscar.setClearButtonEnabled(True)  # Activamos el botón de limpiar
         self.inputBuscar.setPlaceholderText("Buscar departamento por nombre o descripción.")  # Texto de marcador
         self.inputBuscar.setFixedSize(QSize(500, 30))  # Establecemos tamaño fijo
+        self.inputBuscar.installEventFilter(self)
         self.inputBuscar.textChanged.connect(self._cargar_tabla)
         Sombrear(self.inputBuscar, 20, 0, 0)  # Aplicamos efecto de sombreado
         
@@ -294,11 +295,12 @@ class AdminDepartament(QWidget):
             self._cargar_tabla()
 
     def _eliminarRegistro(self, idx):
-            dial = DialogoEmergente("¿?","¿Seguro que quieres eliminar este registro?","Question",True,True)
+            dial = DialogoEmergente("Confirmación", "¿Seguro que quieres eliminar este registro?","Confirmation",True,True)
+            
             if dial.exec() == QDialog.Accepted:
                 result = self.Pservices.eliminarDepartamento(idx)
                 if result["success"]:
-                    dial = DialogoEmergente("","Se elimino el registro correctamente.","Check")
+                    dial = DialogoEmergente("Éxito","Se elimino el registro correctamente.","Check")
                     dial.exec()
                     self._cargar_tabla()
                 else:

@@ -23,3 +23,5 @@
 2025-03-24 21:00:05,671 - ERROR - Error: 1062 (23000): Duplicate entry 'qw' for key 'Nombre' - departamentoData.py:29
 2025-03-24 21:00:15,476 - ERROR - Error: 1062 (23000): Duplicate entry 'qw' for key 'Nombre' - departamentoData.py:29
 2025-03-25 14:05:33,678 - ERROR - Error: 1062 (23000): Duplicate entry 'q' for key 'Nombre' - departamentoData.py:29
+2025-03-25 23:14:29,426 - ERROR - Erro: 1062 (23000): Duplicate entry 'RRHh' for key 'Nombre' - departamentoData.py:66
+2025-03-25 23:14:37,304 - ERROR - Erro: 1062 (23000): Duplicate entry 'RRHH' for key 'Nombre' - departamentoData.py:66

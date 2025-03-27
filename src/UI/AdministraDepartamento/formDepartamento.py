@@ -100,7 +100,7 @@ class formDepartamento(QDialog):
         layout.addWidget(label_error)
         return layout
         
-    def eventFilter(self, source, event):
+    """def eventFilter(self, source, event):
         if event.type() == 10:  # Enter (Mouse Enter)
             if isinstance(source, QLineEdit): 
                 text = source.placeholderText()
@@ -108,9 +108,11 @@ class formDepartamento(QDialog):
         elif event.type() == 11:  # Leave (Mouse Leave)
             if isinstance(source, QLineEdit):
                 QToolTip.hideText()
-        return super().eventFilter(source, event)
+         return super().eventFilter(source, event)
     
-    """ def _cancelar_registro(self):
+    """ 
+    """
+    def _cancelar_registro(self):
         if self._validar_inputs_sin_con_datos():
             dialEmergente = DialogoEmergente("¿?","¿Estas seguro que que quieres cancelar?","Question",True,True)
             opcion = dialEmergente.exec()
@@ -123,14 +125,15 @@ class formDepartamento(QDialog):
     """     
     
     def _cancelar_registro(self):
-        dialEmergente = DialogoEmergente("Confirmación", "¿Estás seguro de que quieres cancelar?", "Question", True, True)
+        dialEmergente = DialogoEmergente("Confirmación", "¿Estás seguro de que quieres cancelar?", "Confirmation", True, True)
         opcion = dialEmergente.exec()
 
         if opcion == QDialog.Accepted:
             self.reject()  # Cierra la ventana si el usuario acepta
     # Si el usuario rechaza, simplemente no hace nada y la ventana permanece abierta
    
-    """def _validar_campos(self):
+    
+    def _validar_campos(self):
         # Verifica si los campos requeridos están vacíos entonces muestra una alerta
         if self._validar_inputs_vacios():
             dialEmergente = DialogoEmergente("Advertencia","Llene todos los campos.","Warning")
@@ -160,7 +163,7 @@ class formDepartamento(QDialog):
             return True
         else:
             return False
-           """
+    
         
     def _validar_campos(self):
         #verifica si los campos estan vacios y muestra el mensaje para cada caso
@@ -196,8 +199,8 @@ class formDepartamento(QDialog):
     def _obtener_registroId(self, id):
         result = self.Pservices.obtenerDepartamentoPorId(id)
         if result["success"]:
-            if result["data"]:
-                departamento:Departamento = result["data"]
+            if result["departamento"]:
+                departamento:Departamento = result["departamento"]
                 ##guarda ele ide para saber que registro se va a modifcar
                 self.idP = departamento.id
                 ##llena los inputs
@@ -226,11 +229,12 @@ class formDepartamento(QDialog):
             if self.idP > 0:##si el atributo idP es mayor a 0 quiere decir que se va actualizar 
                     result = self.Pservices.modificarDepartamento(departament)
                     if result["success"]:
-                        dial = DialogoEmergente("Actualización",result["message"],"Check")
+                        dial = DialogoEmergente("Actualización","Departamento actualizado exitosamente","Check")
                         dial.exec()
                         self.reject()
                     else:
-                        dial = DialogoEmergente("Erro","Error al actualizar departamento","Error")
+                        error_message = result.get("message", "Error al actualizar el departamento")    
+                        dial = DialogoEmergente("Error", error_message,"Error")
                         dial.exec()
             else:#de lo contrario lo toma como un crear
                     result = self.Pservices.insertarDepartamento(departament)
