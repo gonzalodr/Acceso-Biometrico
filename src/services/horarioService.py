@@ -55,6 +55,7 @@ class HorarioService:
 
         # Validar duplicado ignorando el registro actual
         is_unique, message = self.horarioData.validar_unicidad_jornada(
+            nombre_horario=horario.nombre_horario,
             dias_semanales=horario.dias_semanales,
             tipo_jornada=horario.tipo_jornada,
             id=horario.id,  # Pasar el ID actual para ignorarlo en la validación

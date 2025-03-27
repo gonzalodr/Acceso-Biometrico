@@ -228,6 +228,12 @@ class formHorario(QDialog):
         if result["success"] and result["data"]:
             horario = result["data"]
             self.idH = horario.id
+            self.inputNombreHorario.setText(horario.nombre_horario)
+            # Establecer el rol seleccionado si existe
+            if "rol_id" in horario and horario["rol_id"]:
+                index = self.inputRol.findData(horario["rol_id"])
+            if index >= 0:
+                self.inputRol.setCurrentIndex(index)
             self.inputDias.setText(horario.dias_semanales)
             self.inputTipoJornada.setText(horario.tipo_jornada)
 

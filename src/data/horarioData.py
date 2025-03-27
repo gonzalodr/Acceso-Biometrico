@@ -384,62 +384,91 @@ class HorarioData:
         """
         Elimina un horario existente en la base de datos.
         """
+        conexion, resultado = self.obtener_conexion()
+        if not resultado["success"]:
+            return resultado
         try:
-            cursor = self.conn.cursor()
-            query = f"DELETE FROM {TBHORARIO} WHERE {TBHORARIO_ID} = %s"
+            conexion.start_transaction()
+            with conexion.cursor(dictionary=True) as cursor:
 
-            # Ejecutar la consulta de eliminación
-            cursor.execute(query, (horario_id,))
-            self.conn.commit()  # Confirmar los cambios en la base de datos
+                query = f"DELETE FROM {TBHORARIO} WHERE {TBHORARIO_ID} = %s"
 
-            # Cerrar el cursor
-            cursor.close()
+                # Ejecutar la consulta de eliminación
+                cursor.execute(query, (horario_id,))
+                self.conn.commit()  # Confirmar los cambios en la base de datos
 
-            return {"success": True, "message": "Horario eliminado exitosamente."}
+                # Cerrar el cursor
+                cursor.close()
+
+                return {"success": True, "message": "Horario eliminado exitosamente."}
 
         except Exception as e:
-
+            conexion.rollback()
             return {"success": False, "message": f"Error al eliminar horario: {e}"}
+        finally:
+            conexion.close()
 
     def get_horario_by_id(self, horario_id):
         """
         Obtiene un horario específico por su ID.
         """
+        conexion, resultado = self.obtener_conexion()
+        if not resultado["success"]:
+            return resultado
+
         try:
-            cursor = self.conn.cursor(
+            conexion.start_transaction()
+            with conexion.cursor(
                 dictionary=True
-            )  # Para devolver resultados como diccionario
-            query = f"""
-        SELECT * FROM {TBHORARIO}
-        WHERE {TBHORARIO_ID} = %s
-        """
-            cursor.execute(query, (horario_id,))
-            registro = cursor.fetchone()
+            ) as cursor:  # Para devolver resultados como diccionario
 
-            if registro:
-                horario = Horario(
-                    dias_semanales=registro[TBHORARIO_DIAS_SEMANALES],
-                    tipo_jornada=registro[TBHORARIO_TIPO_JORNADA],
-                    hora_inicio=registro[TBHORARIO_HORA_INICIO],
-                    hora_fin=registro[TBHORARIO_HORA_FIN],
-                    descripcion=registro[TBHORARIO_DESCRIPCION],
-                    id=registro[TBHORARIO_ID],
-                )
-                cursor.close()
+                query = f"""
+                SELECT 
+                    h.{TBHORARIO_ID},
+                    h.{TBHORARIO_NOMBRE_HORARIO},
+                    r.{TBROL_NOMBRE} AS nombre_rol,
+                    h.{TBHORARIO_DIAS_SEMANALES},
+                    h.{TBHORARIO_TIPO_JORNADA},
+                    h.{TBHORARIO_HORA_INICIO},
+                    h.{TBHORARIO_HORA_FIN},
+                    h.{TBHORARIO_DESCRIPCION}
+                FROM {TBHORARIO} h
+                LEFT JOIN {TBROLHORARIO} rh ON h.{TBHORARIO_ID} = rh.{TBROLHORARIO_ID_HORARIO}
+                LEFT JOIN {TBROL} r ON rh.{TBROLHORARIO_ID_ROL} = r.{TBROL_ID}
+                """
+                cursor.execute(query, (horario_id,))
+                registro = cursor.fetchone()
 
-                return {
-                    "success": True,
-                    "data": horario,
-                    "message": "Horario encontrado exitosamente.",
-                }
-            else:
-                return {
-                    "success": False,
-                    "message": "No se encontró un horario con el ID proporcionado.",
-                }
+                if registro:
 
+                    horario = {
+                        "id": registro[TBHORARIO_ID],
+                        "nombre_horario": registro[TBHORARIO_NOMBRE_HORARIO],
+                        "nombre_rol": registro["nombre_rol"],
+                        "dias_semanales": registro[TBHORARIO_DIAS_SEMANALES],
+                        "tipo_jornada": registro[TBHORARIO_TIPO_JORNADA],
+                        "hora_inicio": registro[TBHORARIO_HORA_INICIO],
+                        "hora_fin": registro[TBHORARIO_HORA_FIN],
+                        "descripcion": registro[TBHORARIO_DESCRIPCION],
+                        "rol_id": registro["rol_id"],
+                    }
+                    cursor.close()
+
+                    return {
+                        "success": True,
+                        "data": horario,
+                        "message": "Horario encontrado exitosamente.",
+                    }
+                else:
+                    return {
+                        "success": False,
+                        "message": "No se encontró un horario con el ID proporcionado.",
+                    }
         except Exception as e:
+
             return {"success": False, "message": f"Error al obtener el horario: {e}"}
+        finally:
+            conexion.close()
 
     def obtenerHorarioPorDiasYTipo(self, nombre_horario, dias_semanales, tipo_jornada):
         """
