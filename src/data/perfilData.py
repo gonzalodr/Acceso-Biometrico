@@ -8,6 +8,7 @@ import traceback
 class PerfilData:
     def __init__(self):
         self.permisoPerfilData = PermisosPerfilData()
+    
     def create_perfil(self, perfil: Perfil): #metodo para crear el perfil en la base de datos
         conexion, resultado = conection() 
         if not resultado["success"]: # si falla la conexion retorna error
@@ -151,36 +152,42 @@ class PerfilData:
             return resultado
 
         try:
-            cursor = conexion.cursor()
-              # Consulta SQL para obtener el perfil por su ID
-            query = f"""SELECT
+            with conexion.cursor(dictionary=True) as cursor:
+                # Consulta SQL para obtener el perfil por su ID
+                query = f"""SELECT
                             {TBPERFIL_NOMBRE}, 
                             {TBPERFIL_DESCRIPCION}, 
                             {TBPERFIL_ID} 
                         FROM {TBPERFIL} 
                         WHERE {TBPERFIL_ID} = %s"""
             
-            cursor.execute(query, (perfil_id,)) #busca segun el id
-            data = cursor.fetchone() # se obtiene el resultado
-            
-            if data: #si se encuentra el perfil
-                perfil = Perfil(
-                    nombre=data[0],
-                    descripcion=data[1],
-                    id=data[2]
-                )
-                resultado["success"] = True
-                resultado["data"] = perfil
-            else:
-                resultado["success"] = False
-                resultado["message"] = "No se encontró ningún perfil con el ID proporcionado."
+                cursor.execute(query, (perfil_id,)) #busca segun el id
+                data = cursor.fetchone() # se obtiene el resultado
+                
+                if data: #si se encuentra el perfil
+                    perfil = Perfil(
+                        nombre      = data[TBPERFIL_NOMBRE],
+                        descripcion = data[TBPERFIL_DESCRIPCION],
+                        id          = data[TBPERFIL_ID]
+                    )
+                    result = self.permisoPerfilData.get_permisos_perfil_ByPerfilId(perfil.id)
+                    if not result['success']:
+                        return result
+                    return {"success":True, 
+                            "exists":True,
+                            'data':{
+                                'perfil':perfil,
+                                'listaPermisos':result['listaPermiso']
+                            },
+                            'message':'Se obtuvo el perfil con sus accesos exitosamente.'}
+                else:
+                    return {"success":True,"exists":False,"message":"No se encontro el perfil."}
         except Exception as e:
-            resultado["success"] = False
-            resultado["message"] = f"Error al obtener perfil: {e}"
+            logger.error(f'{e}')
+            return {"success":False,"message":"Ocurrio un error al obtener el perfil."}
         finally:
             if conexion:
                 conexion.close()
-        return resultado
     
     def obtener_todo_perfiles(self):
         conexion, resultado = conection()

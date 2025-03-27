@@ -7,6 +7,17 @@ DATABASE_CONFIG = {
 
 ZKTECA_CONFIG = {"host": "192.168.1.201", "port": "4370"}
 
+MODULOS_ACCESO = [
+    ("Administrar empleados",           "empleado"),
+    ("Administrar usuarios",            "usuario"),
+    ("Administrar asistencias",         "asistencia"),
+    ("Administrar justificaciones",     "justificacion"),
+    ("Administrar reportes",            "reporte"),
+    ("Administrar departamentos",       "departamento"),
+    ("Administrar roles",               "rol"),
+    ("Administrar perfiles", "perfil",  "perfil")
+]
+
 ##
 # declaracion de los nombres de las tablas
 ##

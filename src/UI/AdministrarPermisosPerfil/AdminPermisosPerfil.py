@@ -1,11 +1,10 @@
-from PySide6.QtWidgets import QMessageBox
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from Utils.Utils import *
-from UI.AdministrarPermisosPerfil.formPermisosPerfil import *
-from UI.AdministrarPerfil.formPerfil import *
-from services.permisosPerfilServices import *
-from services.perfilService import *
+from PySide6.QtWidgets  import *
+from PySide6.QtCore     import *
+from Utils.Utils        import *
+from UI.AdministrarPermisosPerfil.formPerfil    import *
+from UI.AdministrarPerfil.formPerfil            import *
+from services.permisosPerfilServices            import *
+from services.perfilService                     import *
 
 from settings.variable import *
 
@@ -271,10 +270,14 @@ class AdminPermisosPerfil(QWidget):
 
     def eliminarPerfil(self, id):
         print(f'eliminando {id}')
+        
     
     def editarPerfil(self,id):
-        print(f'editando {id}')
+        print(f'{id}')
+        form = FormularioPerfilAccesos(id_perfil=id)
+        form.exec()
    
     def crearPerfil(self):
-        print('Creando')
+        form = FormularioPerfilAccesos()
+        form.exec()
    
