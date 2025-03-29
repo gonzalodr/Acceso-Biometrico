@@ -5,3 +5,11 @@
 2025-03-22 00:35:19,598 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
 2025-03-22 00:35:23,703 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
 2025-03-22 00:35:59,518 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
+2025-03-28 14:39:21,126 - ERROR - 'str' object cannot be interpreted as an integer - prueba22.py:85
+2025-03-28 14:40:18,622 - ERROR - 'str' object cannot be interpreted as an integer - prueba22.py:86
+2025-03-28 14:40:36,619 - ERROR - 'str' object cannot be interpreted as an integer - prueba22.py:86
+2025-03-28 14:41:01,705 - ERROR - 'str' object cannot be interpreted as an integer - prueba22.py:86
+2025-03-28 14:41:34,257 - ERROR - 'str' object cannot be interpreted as an integer - prueba22.py:87
+2025-03-28 14:41:45,612 - ERROR - can't reach device (ping 192.168.1.201) - prueba22.py:87
+2025-03-28 14:42:01,088 - ERROR - 'str' object cannot be interpreted as an integer - prueba22.py:88
+2025-03-28 14:43:26,123 - ERROR - can't reach device (ping 192.168.1.201) - prueba22.py:87
