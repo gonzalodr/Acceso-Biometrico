@@ -1,3 +1,0 @@
-2025-03-25 13:54:36,028 - ERROR - cannot access local variable 'permisos' where it is not associated with a value - permisosPerfilData.py:322
-2025-03-26 21:18:12,593 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-03-26 21:18:16,664 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
