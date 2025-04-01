@@ -7,6 +7,5 @@ __pycache__/
 ManejoPermisos.txt
 prueba*.*
 *prueba*.*
-*.log
-*.log
 *.bin
+*.log
