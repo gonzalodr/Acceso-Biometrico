@@ -28,16 +28,10 @@ class PermisosPerfilData:
             if conexion:
                 conexion.close() # Cierra la conexión a la base de datos.
                 
-    def create_permiso_perfil(self, permiso:Permiso_Perfil,conexion_externa = None):
-        resultado = {"success": False,"message":""}
-        
-        if conexion_externa is None:
-            conexion, resultado = conection()
-            if not resultado["success"]:
-                return resultado
-        else:
-            conexion = conexion_externa
-
+    def create_permiso_perfil(self, permiso:Permiso_Perfil,conexionEx = None):
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
         try:
             with conexion.cursor() as cursor:
                 query = f"""INSERT INTO {TBPERMISOPERFIL} (
@@ -56,22 +50,23 @@ class PermisosPerfilData:
                    permiso.editar,
                    permiso.eliminar
                 ))
-                if conexion_externa is None:
+                if conexionEx is None:
                     conexion.commit()    
                 
                 id_permiso_perfil = cursor.lastrowid
                 
-                resultado["success"] = True
-                resultado["message"] = "Permiso perfil creado exitosamente."
-                resultado["id_permiso_perfil"] = id_permiso_perfil
+                return {
+                    "success": True,
+                    "message": "Permiso perfil creado exitosamente.",
+                    "id_permiso_perfil": id_permiso_perfil
+                }
         except Exception as e:
-            resultado["success"] = False
-            resultado["message"] = f"Error al crear el permiso perfil: {e}"
+           logger.error(f'{e}')
+           return {"success":False, "message":'Ocurrrio un error al registrar los accesos.'}
         finally:
-            if conexion_externa is None and conexion:
+            if conexionEx is None and conexion:
                 conexion.close()
-        return resultado
-    
+
     def save_permisos_perfil(self,listparmisos):
         ##realiza la conexión
         conexion, resultado = conection()
@@ -102,9 +97,8 @@ class PermisosPerfilData:
                 conexion.close()
         return resultado
     
-    def update_permiso_perfil(self,permiso:Permiso_Perfil):  # Método para actualizar los permisos de un perfil en la base de datos.
-        conexion, resultado = conection()
-        cursor = None   # Inicializa la variable cursor, que se usará más adelante.
+    def update_permiso_perfil(self,permiso:Permiso_Perfil, conexionEx = None):  # Método para actualizar los permisos de un perfil en la base de datos.
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
         if not resultado["success"]:
             return resultado
         try:
@@ -127,20 +121,18 @@ class PermisosPerfilData:
                     permiso.eliminar,
                     permiso.id
                 )) 
-                conexion.commit() # Confirma la transacción para que los cambios se apliquen.
-                resultado["success"] = True
-                resultado["message"] = "Permiso del perfil actualizada exitosamente."
+                if conexionEx is None:
+                    conexion.commit()
+                return {'success':True, 'message':'Se actualizo el acceso'}
         except Exception as e:
-            resultado["success"] = False
-            resultado["message"] = f"Error al actualizar permisos del perfil: {e}"
+            logger.error(f'{e}')
+            return {'success':False, 'message':'Ocurrio un error al actualizar el acceso'}
         finally:
-            if conexion:
+            if conexion and conexionEx is None:
                 conexion.close()
-        return resultado
     
-    def delete_permiso_perfil(self,permiso_perfil_id:int):
-        conexion, resultado = conection()
-        cursor = None
+    def delete_permiso_perfil(self,permiso_perfil_id:int, conexionEx = None):
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
         if not resultado["success"]:
             return resultado
         try:
@@ -148,18 +140,16 @@ class PermisosPerfilData:
             query = f"DELETE FROM {TBPERMISOPERFIL} WHERE {TBPERMISOPERFIL_ID} = %s "
             
             cursor.execute(query, (permiso_perfil_id,))
-            conexion.commit()
-            
-            resultado["success"] = True
-            resultado["message"] = "Eliminada exitosamente."
+            if conexionEx is None:
+                conexion.commit()
+
+            return {'success':True,'message':'Se elimino el acceso correctamente.'}
         except Exception as e:
-            resultado["success"] = False
-            resultado["message"] = f"Error al eliminar: {e}"
+            logger.error(f'{e}')
+            return {'success':False,'message':'Ocurrio un error al eliminar el acceso'}
         finally:
             if conexion:
                 conexion.close()
-
-        return resultado
 
     def lista_permisos_perfil(self,pagina=1, tam_pagina=10, ordenar_por = TBPERMISOPERFIL_ID, tipo_orden="ASC", busqueda = None):
         conexion, resultado = conection()
@@ -321,6 +311,25 @@ class PermisosPerfilData:
         except Exception as e:
             logger.error(f'{e}')
             return {'success':False, 'message':'Ocurrio un error al obtener los datos del perfil'}
+        finally:
+            if conexion:
+                conexion.close()
+
+    def delete_permiso_perfil_byIdPerfil(self, id_perfil:int, conexionEx = None):
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
+        if not resultado["success"]:
+            return resultado
+        try:
+            cursor = conexion.cursor()
+            query = f"DELETE FROM {TBPERMISOPERFIL} WHERE {TBPERMISOPERFIL_PERFIL_ID} = %s "
+            
+            cursor.execute(query, (id_perfil,))
+            if conexionEx is None:
+                conexion.commit()
+            return {'success':True,'message':'Se elimino el acceso correctamente.'}
+        except Exception as e:
+            logger.error(f'{e}')
+            return {'success':False,'message':'Ocurrio un error al eliminar el acceso'}
         finally:
             if conexion:
                 conexion.close()

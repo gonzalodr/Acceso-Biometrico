@@ -35,6 +35,22 @@ TBUSUARIOPERFIL_ID      = 'Id'
 TBUSUARIOPERFIL_ID_USER = 'Id_Usuario'
 TBUSUARIOPERFIL_ID_PERF = 'Id_Perfil'
 
+#PERMISO PERFIL
+TBPERMISOPERFIL         = "permiso_perfil"
+TBPERMISOPERFIL_ID      = "Id"
+TBPERMISOPERFIL_PERFIL_ID = "Id_Perfil"
+TBPERMISOPERFIL_TABLA   = "nombre_tabla"
+TBPERMISOPERFIL_VER     = "Ver"
+TBPERMISOPERFIL_INSERTAR = "Insertar"
+TBPERMISOPERFIL_EDITAR  = "Editar"
+TBPERMISOPERFIL_ELIMINAR = "Eliminar"
+
+#PERFIL
+TBPERFIL                = "perfil"
+TBPERFIL_ID             = "Id"
+TBPERFIL_NOMBRE         = "Nombre"
+TBPERFIL_DESCRIPCION    = "Descripcion"
+
 
 # Tabla rol
 TBROL                   = "rol"
@@ -48,7 +64,6 @@ TBTELEFONO_ID           = 'Id'
 TBTELEFONO_ID_PERSONA   = 'Id_Persona'
 TBTELEFONO_NUMERO       = 'Numero'
 TBTELEFONO_TIPO_CONTACTO = 'Tipo_Contacto'
-
 
 #Tabla justificación
 TBJUSTIFICACION            = 'justificacion'

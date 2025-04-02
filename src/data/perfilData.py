@@ -1,7 +1,7 @@
-from models.perfil import Perfil
-from data.data import conection
-from settings.config import *
-from settings.logger import logger
+from models.perfil      import Perfil
+from data.data          import conection
+from settings.config    import *
+from settings.logger    import logger
 from data.permisosPerfilData import PermisosPerfilData
 import traceback
 
@@ -9,60 +9,86 @@ class PerfilData:
     def __init__(self):
         self.permisoPerfilData = PermisosPerfilData()
     
-    def create_perfil(self, perfil: Perfil): #metodo para crear el perfil en la base de datos
+    def create_perfil(self, perfil: Perfil,listaPermisos): #metodo para crear el perfil en la base de datos
         conexion, resultado = conection() 
         if not resultado["success"]: # si falla la conexion retorna error
             return resultado
         
         try:
-            cursor = conexion.cursor() #se utiliza el cursor para las consultas a la base de datos
-            query = f"""INSERT INTO {TBPERFIL}(
-            {TBPERFIL_NOMBRE},
-            {TBPERFIL_DESCRIPCION})
-            VALUES (%s, %s)""" #campos o posciones 
-            
-            cursor.execute(query,(
-                perfil.nombre,
-                perfil.descripcion
-            ))
-            conexion.commit() #uarda los cambios
-            resultado["success"] = True
-            resultado["message"] = "Perfil creado exitosamente"
-        except Exception as e: #captura errores
-            resultado["success"] = False
-            resultado["message"] = f"Error al crear perfil: {e}"
+            with conexion.cursor() as cursor: #se utiliza el cursor para las consultas a la base de datos
+                conexion.start_transaction()
+                query = f"""INSERT INTO {TBPERFIL}(
+                {TBPERFIL_NOMBRE},
+                {TBPERFIL_DESCRIPCION})
+                VALUES (%s, %s)""" #campos o posciones 
+                
+                cursor.execute(query,(
+                    perfil.nombre,
+                    perfil.descripcion
+                ))
+                id_perfil = cursor.lastrowid
+
+                self.permisoPerfilData.create_permiso_perfil()
+                
+                ##registrar los accesos
+                if listaPermisos:
+                    for permiso in listaPermisos:
+                        permiso.perfil_id = id_perfil
+                        result = self.permisoPerfilData.create_permiso_perfil(permiso,conexion)
+                        if not result['success']:
+                            conexion.rollback()
+                            return result
+                conexion.commit() 
+                return {'success':True,'message':'El perfil se guardo correctamente.'}
+        except Exception as e:
+            logger.error(f'{e}')
+            conexion.rollback()
+            return {'success':False,'message':'El perfil se guardo correctamente.'}
         finally:
             if conexion:
                 conexion.close()
-        return resultado
     
-    def update_perfil(self, perfil: Perfil): #metodo para actualizar perfil
+    def update_perfil(self, perfil: Perfil, listaPermisos): #metodo para actualizar perfil
         conexion, resultado = conection() # obtiene el estado de la conexion
         if not resultado["success"]: # error
             return resultado
         
         try:
-            cursor = conexion.cursor()
-            query = f"""UPDATE {TBPERFIL} SET 
-            {TBPERFIL_NOMBRE} = %s,
-            {TBPERFIL_DESCRIPCION} = %s
-            WHERE {TBPERFIL_ID} = %s"""
-            
-            cursor.execute(query, (
-                perfil.nombre,
-                perfil.descripcion,
-                perfil.id
-            ))
-            conexion.commit()
-            resultado["success"] = True
-            resultado["message"] = "Perfil actualizado exitosamente."
+            with conexion.cursor() as cursor:
+                conexion.start_transaction()
+                query = f"""UPDATE {TBPERFIL} SET 
+                {TBPERFIL_NOMBRE} = %s,
+                {TBPERFIL_DESCRIPCION} = %s
+                WHERE {TBPERFIL_ID} = %s"""
+                
+                cursor.execute(query, (
+                    perfil.nombre,
+                    perfil.descripcion,
+                    perfil.id
+                ))
+                if listaPermisos:
+                    for permiso in listaPermisos:
+                        permiso.perfil_id = perfil.id
+                        if permiso.id:
+                            result = self.permisoPerfilData.create_permiso_perfil(permiso,conexion)
+                            if not result['success']:
+                                conexion.rollback()
+                                return result
+                        else:
+                            result = self.permisoPerfilData.create_permiso_perfil(permiso,conexion)
+                            if not result['success']:
+                                conexion.rollback()
+                                return result
+
+                conexion.commit()
+                return {'success':True}
         except Exception as e:
-            resultado["success"] = False
-            resultado["message"] = f"Error al actualizar perfil: {e}"
+            logger.error(f'{e}')
+            conexion.rollback()
+            return {'succcess':True, 'message':'Ocurrio un error al actualizar los perfiles.'}
         finally:
             if conexion:
                 conexion.close()
-        return resultado
     
     def delete_perfil(self, perfil_id):
         conexion, resultado = conection()
@@ -70,21 +96,22 @@ class PerfilData:
             return resultado
         
         try:
-            cursor = conexion.cursor()
-            query = f"DELETE FROM {TBPERFIL} WHERE {TBPERFIL_ID} = %s"
-            
-            cursor.execute(query, (perfil_id,))
-            conexion.commit()
-            
-            resultado["success"] = True
-            resultado["message"] = "Perfil eliminado exitosamente."
+            with conexion.cursor() as cursor:
+                conexion.start_transaction()
+                cursor.execute(f'SELECT * FROM {TBPERFIL}')
+
+
+
+                cursor.execute(f"DELETE FROM {TBPERMISOPERFIL} WHERE {TBPERMISOPERFIL_PERFIL_ID} = %s",(perfil_id,) )
+                cursor.execute(f"DELETE FROM {TBPERFIL} WHERE {TBPERFIL_ID} = %s", (perfil_id,))
+                conexion.commit()
+                return {'success':True, 'message': 'El perfil se elimino exitosamente.'}
         except Exception as e:
-            resultado["success"] = False
-            resultado["message"] = f"Error al eliminar perfil: {e}"
+            conexion.rollback()
+            return {'success':True, 'message':'Ocurrio un error al eliminar el perfil'}
         finally:
             if conexion:
                 conexion.close()
-        return resultado
     
     def list_perfiles(self, pagina=1, tam_pagina=10, ordenar_por=TBPERFIL_ID, tipo_orden="ASC", busqueda=None):
         conexion, resultado = conection()

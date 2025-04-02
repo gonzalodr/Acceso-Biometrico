@@ -8,6 +8,4 @@ ManejoPermisos.txt
 prueba*.*
 *prueba*.*
 *.log
-*.log
-*.log
-*.log
+loggers/

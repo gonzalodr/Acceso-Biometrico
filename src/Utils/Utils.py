@@ -109,7 +109,6 @@ def cargar_icono(Qpushbutton:QPushButton,icono:str,Size:QSize = None):
     except Exception as e:
         print(f'Error: {e}')
 
-
 def format_Fecha(fecha:str):
         año, mes, dia = fecha.split("-")
         meses = {
