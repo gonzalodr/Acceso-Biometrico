@@ -1,27 +1,11 @@
-2025-02-28 18:16:50,232 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-02-28 18:29:51,121 - ERROR - Error: 1062 (23000): Duplicate entry 'hh' for key 'Nombre' - departamentoData.py:29
-2025-02-28 18:29:54,480 - ERROR - Error: 1062 (23000): Duplicate entry 'hh' for key 'Nombre' - departamentoData.py:29
-2025-02-28 18:30:01,884 - ERROR - Error: 1062 (23000): Duplicate entry 'hh' for key 'Nombre' - departamentoData.py:29
-2025-03-24 19:41:59,236 - ERROR - Error: 2013 (HY000): Lost connection to MySQL server during query - departamentoData.py:29
-2025-03-24 19:42:15,056 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-03-24 19:42:36,118 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-03-24 19:43:11,145 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-03-24 19:43:32,750 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-03-24 19:43:45,574 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-03-24 19:43:54,919 - ERROR - 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061) - data.py:17
-2025-03-24 19:47:51,868 - ERROR - Error: 1062 (23000): Duplicate entry '0' for key 'PRIMARY' - departamentoData.py:29
-2025-03-24 19:47:53,818 - ERROR - Error: 1062 (23000): Duplicate entry '0' for key 'PRIMARY' - departamentoData.py:29
-2025-03-24 19:47:56,016 - ERROR - Error: 1062 (23000): Duplicate entry '0' for key 'PRIMARY' - departamentoData.py:29
-2025-03-24 19:48:05,066 - ERROR - Error: 1062 (23000): Duplicate entry '0' for key 'PRIMARY' - departamentoData.py:29
-2025-03-24 19:53:14,217 - ERROR - Error: 1062 (23000): Duplicate entry '0' for key 'PRIMARY' - departamentoData.py:29
-2025-03-24 19:53:27,263 - ERROR - Error: 1062 (23000): Duplicate entry '0' for key 'PRIMARY' - departamentoData.py:29
-2025-03-24 20:52:14,724 - ERROR - Error: 1932 (42S02): Table 'accesobiometrico.departamento' doesn't exist in engine - departamentoData.py:145
-2025-03-24 20:52:38,380 - ERROR - Error: 1932 (42S02): Table 'accesobiometrico.departamento' doesn't exist in engine - departamentoData.py:29
-2025-03-24 20:52:42,132 - ERROR - Error: 1932 (42S02): Table 'accesobiometrico.departamento' doesn't exist in engine - departamentoData.py:145
-2025-03-24 20:54:59,263 - ERROR - 1049 (42000): Unknown database 'accesobiometrico' - data.py:17
-2025-03-24 20:55:01,362 - ERROR - 1049 (42000): Unknown database 'accesobiometrico' - data.py:17
-2025-03-24 21:00:05,671 - ERROR - Error: 1062 (23000): Duplicate entry 'qw' for key 'Nombre' - departamentoData.py:29
-2025-03-24 21:00:15,476 - ERROR - Error: 1062 (23000): Duplicate entry 'qw' for key 'Nombre' - departamentoData.py:29
-2025-03-25 14:05:33,678 - ERROR - Error: 1062 (23000): Duplicate entry 'q' for key 'Nombre' - departamentoData.py:29
-2025-03-25 23:14:29,426 - ERROR - Erro: 1062 (23000): Duplicate entry 'RRHh' for key 'Nombre' - departamentoData.py:66
-2025-03-25 23:14:37,304 - ERROR - Erro: 1062 (23000): Duplicate entry 'RRHH' for key 'Nombre' - departamentoData.py:66
+2025-04-02 10:52:48,001 - DEBUG - 🔧 Este es un mensaje de prueba DEBUG - [logger.py:34]
+2025-04-02 10:52:48,003 - INFO - ℹ Este es un mensaje de prueba INFO - [logger.py:35]
+2025-04-02 10:52:48,003 - ERROR - ❌ Este es un mensaje de prueba ERROR - [logger.py:36]
+2025-04-02 10:54:36,733 - DEBUG - 🔧 Este es un mensaje de prueba DEBUG - [logger.py:34]
+2025-04-02 10:54:36,733 - INFO - ℹ Este es un mensaje de prueba INFO - [logger.py:35]
+2025-04-02 10:54:36,733 - ERROR - ❌ Este es un mensaje de prueba ERROR - [logger.py:36]
+2025-04-02 10:54:37,085 - INFO - 🚀 Aplicación iniciada - [main.py:6]
+2025-04-02 10:56:05,284 - DEBUG - 🔧 Este es un mensaje de prueba DEBUG - [logger.py:34]
+2025-04-02 10:56:05,285 - INFO - ℹ Este es un mensaje de prueba INFO - [logger.py:35]
+2025-04-02 10:56:05,286 - ERROR - ❌ Este es un mensaje de prueba ERROR - [logger.py:36]
+2025-04-02 10:56:05,684 - INFO - 🚀 Aplicación iniciada - [reporteData.py:11]

@@ -216,9 +216,9 @@ class formReporte(QDialog):
             listaEmpleados = result["data"]["listaEmpleados"]
             if len(listaEmpleados) > 0:
                 for empleado in listaEmpleados:
-                    self.inputEmpleado.addItem(str(empleado.id_persona))
+                    self.inputEmpleado.addItem(str(empleado.nombre_persona))  # Usar nombre_persona
                     #self.listaEmpleadosID[empleado.id_persona] = empleado.id
-                    self.listaEmpleadosID[str(empleado.id_persona)] = empleado.id  # Usar id_persona 
+                    self.listaEmpleadosID[str(empleado.nombre_persona)] = empleado.id  # Usar id_persona 
             else:
                 dialEmergente = DialogoEmergente("","Ocurrio un error","Error")
                 if dialEmergente.exec() == QDialog.Accepted:

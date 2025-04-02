@@ -5,7 +5,7 @@ from Utils.Utils import *
 from UI.AdministrarReporte.formReporte import *
 from services.reporteService import *
 from services.empleadoServices import *
-
+from settings.logger import logger
 from settings.variable import *
 
 class AdminReporte(QWidget):
@@ -181,9 +181,13 @@ class AdminReporte(QWidget):
             
     def _cargar_tabla(self):
           # Método para cargar los datos en la tabla
+        
+
         result = self.reporteServices.obtenerListaReporte(pagina=self.paginaActual, tam_pagina=10, tipo_orden="DESC", busqueda=self.busqueda)
         if result["success"]:
-            listaReporte = result["data"]["listaReportes"] # Obtener la lista de perfiles
+            listaReporte = result["data"]["listaReportes"] # Obtener la lista de perfiles     
+            logger.debug(f"Datos recibidos para tabla: {[r.__dict__ for r in listaReporte[:2]]}")  # Log primeros 2 reportes
+            
             if len(listaReporte) > 0:
                 paginaActual = result["data"]["pagina_actual"]
                 tamPagina = result["data"]["tam_pagina"]
@@ -194,12 +198,17 @@ class AdminReporte(QWidget):
                 self._actualizarValoresPaginado(paginaActual, totalPaginas)
                 
                 self.tbReporte.setRowCount(0)
+                print("🔍 Datos recibidos en _cargar_tabla:")
+                for reporte in listaReporte:
+                    print(f"- Nombre: {reporte.nombre_persona}, Fecha: {reporte.fecha_generacion}, Tipo: {reporte.tipo_reporte}, Contenido: {reporte.contenido}")#SI PONE reporte.id_empleado carga el id
                 for index, reporte in enumerate(listaReporte):  # Iterar sobre la lista de perfiles
                     self.tbReporte.insertRow(index)# Insertar una nueva fila en la tabla
                     self.tbReporte.setRowHeight(index, 45) # Establecer la altura de la fila
 
  # Agregar los datos del perfil a la tabla
-                    self.addItem_a_tabla(index, 0, str(reporte.id_empleado))
+                    print(f"✅ Insertando en fila {index}: {reporte.nombre_persona}")  # DEPURACIÓN SI PONE reporte.id_empleado carga el id
+                    self.addItem_a_tabla(index, 0, str(reporte.nombre_persona))#SI PONE reporte.id_empleado carga el id
+                   
                     self.addItem_a_tabla(index, 1, reporte.fecha_generacion.strftime("%Y-%m-%d"))  # Formatear fecha
                     self.addItem_a_tabla(index, 2, reporte.tipo_reporte)# Agregar el nombre del perfil a la columna 0
                     self.addItem_a_tabla(index, 3, reporte.contenido)
