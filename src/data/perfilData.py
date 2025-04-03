@@ -16,7 +16,6 @@ class PerfilData:
         
         try:
             with conexion.cursor() as cursor: #se utiliza el cursor para las consultas a la base de datos
-                conexion.start_transaction()
                 query = f"""INSERT INTO {TBPERFIL}(
                 {TBPERFIL_NOMBRE},
                 {TBPERFIL_DESCRIPCION})
@@ -27,9 +26,6 @@ class PerfilData:
                     perfil.descripcion
                 ))
                 id_perfil = cursor.lastrowid
-
-                self.permisoPerfilData.create_permiso_perfil()
-                
                 ##registrar los accesos
                 if listaPermisos:
                     for permiso in listaPermisos:
@@ -41,9 +37,9 @@ class PerfilData:
                 conexion.commit() 
                 return {'success':True,'message':'El perfil se guardo correctamente.'}
         except Exception as e:
-            logger.error(f'{e}')
+            logger.error(f'{e}  - {traceback.format_exc()}')
             conexion.rollback()
-            return {'success':False,'message':'El perfil se guardo correctamente.'}
+            return {'success':False,'message':'Ocurrio un error al guardar el perfil.'}
         finally:
             if conexion:
                 conexion.close()
@@ -70,7 +66,7 @@ class PerfilData:
                     for permiso in listaPermisos:
                         permiso.perfil_id = perfil.id
                         if permiso.id:
-                            result = self.permisoPerfilData.create_permiso_perfil(permiso,conexion)
+                            result = self.permisoPerfilData.update_permiso_perfil(permiso,conexion)
                             if not result['success']:
                                 conexion.rollback()
                                 return result
@@ -81,11 +77,11 @@ class PerfilData:
                                 return result
 
                 conexion.commit()
-                return {'success':True}
+                return {'success':True,'message':'Se actualizo correctamente el perfil'}
         except Exception as e:
-            logger.error(f'{e}')
+            logger.error(f'{e} - {traceback.format_exc()}')
             conexion.rollback()
-            return {'succcess':True, 'message':'Ocurrio un error al actualizar los perfiles.'}
+            return {'succcess':False, 'message':'Ocurrio un error al actualizar los perfiles.'}
         finally:
             if conexion:
                 conexion.close()
@@ -123,7 +119,6 @@ class PerfilData:
             if conexion:
                 conexion.close()
                 
-    
     def list_perfiles(self, pagina=1, tam_pagina=10, ordenar_por=TBPERFIL_ID, tipo_orden="ASC", busqueda=None):
         conexion, resultado = conection()
         if not resultado["success"]:

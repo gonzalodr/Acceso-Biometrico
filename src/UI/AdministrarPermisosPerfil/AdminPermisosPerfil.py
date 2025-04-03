@@ -285,8 +285,10 @@ class AdminPermisosPerfil(QWidget):
     def editarPerfil(self,id):
         form = FormularioPerfilAccesos(id_perfil=id)
         form.exec()
+        self.cargarTablaPerfiles()
    
     def crearPerfil(self):
         form = FormularioPerfilAccesos()
         form.exec()
+        self.cargarTablaPerfiles()
    

@@ -152,7 +152,7 @@ class FormularioPerfilAccesos(QDialog):
         # cargado de accesos y tipoPermisos
         for data in MODULOS_ACCESO:
             comboAcceso.addItem(data[0], data[1])
-        tipoPermisos = [("Ver",False), ("Editar",False), ("Crear",False), ("Eliminar", False)] 
+        tipoPermisos = [("Ver",False), ("Crear",False), ("Editar",False), ("Eliminar", False)] 
         
         self.validarSiRepiteAcceso()
         #si es cargar un registro recibido desde bd
@@ -160,7 +160,7 @@ class FormularioPerfilAccesos(QDialog):
             itemRaiz.setData(objPermiso.id, Qt.UserRole)    #guarda id del permiso
             comboAcceso.setCurrentIndex(comboAcceso.findData(objPermiso.tabla))   #selecciona el acceso que esta registrado
             comboAcceso.setEnabled(False)
-            tipoPermisos = [("Ver",objPermiso.ver), ("Editar",objPermiso.editar), ("Crear",objPermiso.crear),("Eliminar",objPermiso.eliminar)]
+            tipoPermisos = [("Ver",objPermiso.ver), ("Crear",objPermiso.crear), ("Editar",objPermiso.editar),("Eliminar",objPermiso.eliminar)]
 
         self.model.dataChanged.connect(self.onDataChanged)
         for tipo in tipoPermisos:
@@ -238,6 +238,7 @@ class FormularioPerfilAccesos(QDialog):
                     validacionAceptada = False
                     
         ##mostrando mensaje de error
+        print(error)
         self.errAcceso.setText(error)
         return validacionAceptada
    
@@ -323,10 +324,10 @@ class FormularioPerfilAccesos(QDialog):
         nombrePerfil = self.inNombrePerfil.text()
         descripcion  = self.inDescripcion.text()
 
-        perfil   = Perfil(nombrePerfil, descripcion)
+        perfil   = Perfil(nombrePerfil, descripcion,self.idPerfil)
         permisos = self.obtener_permisos_del_arbol()
 
-        return {"perfil": perfil, "permisos": permisos}
+        return perfil, permisos
     
     """ Carga el formulario con los datos de un perfil y sus permisos para el caso de editar"""
     def precargar_datos(self):
@@ -373,8 +374,9 @@ class FormularioPerfilAccesos(QDialog):
         self.inDescripcion.setText(perfil.descripcion)
 
         ##cargar los permisos
-        for permiso in permisos:
-            self.agregarAcceso(permiso)
+        if permisos:
+            for permiso in permisos:
+                self.agregarAcceso(permiso)
     
     def cancelarRegistro(self):
         if self.inNombrePerfil.text().strip() or self.inDescripcion.text().strip() or len(self.obtener_permisos_del_arbol())>0:
@@ -394,8 +396,28 @@ class FormularioPerfilAccesos(QDialog):
             dial = DialogoEmergente("","Asegurese de completar los datos correctamente.","Warning",True, False)
             dial.exec()
             return #evita que se proceda a actualizar o crear perfil
-        
+        perfil, listaPermisos= self.obtenerTodoFormulario()
+
         if self.idPerfil:   ## se procede a actualizar y mostrar mensaje de confirmacion.
-            pass    
+            result = self.perfilServices.modificarPerfil(perfil, listaPermisos)
+            if not result['success']:
+                dial = DialogoEmergente('',result['message'],'Error',True)
+                dial.exec() 
+                return
+            
+            dial = DialogoEmergente('','Se actualizo el perfil correctamente','Check',True)
+            dial.exec()
+            self.reject()
+            return
+   
         else:               ## se procede a crear y mostrar mensaje de confirmacion.
-            pass
+            result = self.perfilServices.insertarPerfil(perfil, listaPermisos)
+            if not result['success']:
+                dial = DialogoEmergente('',result['message'],'Error',True)
+                dial.exec()
+                return
+            
+            dial = DialogoEmergente('','Se creo el nuevo perfil correctamente','Check',True)
+            dial.exec()
+            self.reject()
+            return
