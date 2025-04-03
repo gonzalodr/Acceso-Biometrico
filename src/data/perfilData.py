@@ -1,6 +1,6 @@
 from models.perfil      import Perfil
 from data.data          import conection
-from settings.config    import *
+from settings.tablas    import *
 from settings.logger    import logger
 from data.permisosPerfilData import PermisosPerfilData
 import traceback
@@ -97,21 +97,32 @@ class PerfilData:
         
         try:
             with conexion.cursor() as cursor:
-                conexion.start_transaction()
-                cursor.execute(f'SELECT * FROM {TBPERFIL}')
-
-
-
-                cursor.execute(f"DELETE FROM {TBPERMISOPERFIL} WHERE {TBPERMISOPERFIL_PERFIL_ID} = %s",(perfil_id,) )
+                # Verificar si hay usuarios vinculados
+                cursor.execute(f'''SELECT 1
+                                FROM {TBUSUARIOPERFIL} 
+                                WHERE {TBUSUARIOPERFIL_ID_PERF} = %s''',
+                            (perfil_id,))
+                row = cursor.fetchone()  # Solo llamamos a fetchone() una vez
+                if row is not None:  # Si hay resultados
+                    return {'success': False, 'message': 'Este perfil tiene usuarios vinculados.'}
+                
+                # Eliminar permisos del perfil
+                cursor.execute(f"DELETE FROM {TBPERMISOPERFIL} WHERE {TBPERMISOPERFIL_PERFIL_ID} = %s", (perfil_id,))
+                
+                # Eliminar el perfil
                 cursor.execute(f"DELETE FROM {TBPERFIL} WHERE {TBPERFIL_ID} = %s", (perfil_id,))
+                
                 conexion.commit()
-                return {'success':True, 'message': 'El perfil se elimino exitosamente.'}
+                return {'success': True, 'message': 'El perfil se eliminó exitosamente.'}
+                
         except Exception as e:
             conexion.rollback()
-            return {'success':True, 'message':'Ocurrio un error al eliminar el perfil'}
+            logger.error(f'{e} - {traceback.format_exc()}')
+            return {'success': False, 'message': 'Ocurrió un error al eliminar el perfil'}
         finally:
             if conexion:
                 conexion.close()
+                
     
     def list_perfiles(self, pagina=1, tam_pagina=10, ordenar_por=TBPERFIL_ID, tipo_orden="ASC", busqueda=None):
         conexion, resultado = conection()

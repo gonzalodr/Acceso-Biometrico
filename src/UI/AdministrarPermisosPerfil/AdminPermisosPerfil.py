@@ -157,8 +157,7 @@ class AdminPermisosPerfil(QWidget):
         self.tbPermisosPerfil.setRowCount(0)
         contadorPerfiles = 0
         for index, perfiles in enumerate(listaPerfiles):
-            self.tbPermisosPerfil.insertRow(contadorPerfiles)
-            
+            self.tbPermisosPerfil.insertRow(contadorPerfiles) 
 
             perfil          = perfiles['perfil']
             listPermisos    = perfiles['listaPermisos']
@@ -269,11 +268,21 @@ class AdminPermisosPerfil(QWidget):
             self.cargarTablaPerfiles()
 
     def eliminarPerfil(self, id):
-        print(f'eliminando {id}')
+        dial = DialogoEmergente('','¿Esta seguro que quieres eliminar este registro?','Question',True,True)
+        if dial.exec() == QDialog.Accepted:
+            result = self.perfilServices.eliminarPerfil(id)
+            print(result)
+            if not result['success']:
+                dial = DialogoEmergente('',result['message'],'Error',True)
+                dial.exec()
+                return
+            dial = DialogoEmergente('','Se elimino el perfil correctamente.','Check')
+            dial.exec()
+            self.cargarTablaPerfiles()
+            
         
     
     def editarPerfil(self,id):
-        print(f'{id}')
         form = FormularioPerfilAccesos(id_perfil=id)
         form.exec()
    

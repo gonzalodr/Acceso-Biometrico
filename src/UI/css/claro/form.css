@@ -121,6 +121,15 @@
 #form #btnregistrar::hover{
     background-color:#00627d;
 }
+#form #btneliminar{
+    background-color:#ff5151;
+    color:white;  
+}
+
+#form #btnAgregar{
+    background-color: #00cb00;
+    color: #000000;
+}
 
 #form #contenedor{
     background-color: #eeeeee;
@@ -211,8 +220,8 @@ QTreeView{
 
 /* Estilo para el encabezado del QTreeView */
 QHeaderView::section {
-    background-color: #4cacaf; /* Color de fondo */
-    color: white; /* Color del texto */
+    background-color: #004e64;
+    color: #FFFFFF; 
     font: 1 12pt "Cooper Black";
     padding: 5px; /* Espaciado interno */
     border: none; /* Borde */
@@ -220,16 +229,21 @@ QHeaderView::section {
 
 /* Estilo para las ramas del QTreeView */
 QTreeView::item {
-    color: #000000; /* Color del texto */
-    background-color: #F1F1F1; /* Color de fondo */
-    padding: 5px; /* Espaciado interno */
-    border: 1px solid #DDD; /* Borde */
+    color: #000000; 
+    background-color: #ffffff; 
+    padding: 5px; 
+    border: 1px solid #efefef;
 }
-#btneliminar{
-    background-color:#ff5151;
-    color:white;  
+/* 
+QTreeView::branch {
+    background: palette(base);
+} */
+
+QTreeView::branch:closed:has-children {
+    border:  #000000; /* Flecha derecha (cerrado) */
 }
-#btneliminar::hover{
-    background-color:rgb(255, 0, 0);
-    color:rgb(0, 0, 0);  
+
+QTreeView::branch:open:has-children {
+   border:  #000000;   /* Flecha abajo (abierto) */
 }
+

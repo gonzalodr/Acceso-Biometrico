@@ -13,7 +13,8 @@ from models.perfil          import Perfil
 
 class FormularioPerfilAccesos(QDialog): 
     idPerfil = None
-    perfilServices = PerfilServices()
+    perfilServices  = PerfilServices()
+    permisoServices = PermisosPerfilServices()
     
     def __init__(self, parent=None, id_perfil:int=None):
         super().__init__(parent)
@@ -64,7 +65,9 @@ class FormularioPerfilAccesos(QDialog):
         
         # Botón para agregar accesos
         self.btnAddAccesos = QPushButton("Agregar Acceso")
+        self.btnAddAccesos.setObjectName('btnAgregar')
         self.btnAddAccesos.clicked.connect(self.agregarAcceso)
+        self.btnAddAccesos.setMaximumSize(100,30)
 
         # Agregar los widgets al layout de inputs
         layoutInputs.addLayout(self.contenedor(self.lblNombrePerfil,self.inNombrePerfil,self.inErrorNombrePerfil))
@@ -156,6 +159,7 @@ class FormularioPerfilAccesos(QDialog):
         if objPermiso: 
             itemRaiz.setData(objPermiso.id, Qt.UserRole)    #guarda id del permiso
             comboAcceso.setCurrentIndex(comboAcceso.findData(objPermiso.tabla))   #selecciona el acceso que esta registrado
+            comboAcceso.setEnabled(False)
             tipoPermisos = [("Ver",objPermiso.ver), ("Editar",objPermiso.editar), ("Crear",objPermiso.crear),("Eliminar",objPermiso.eliminar)]
 
         self.model.dataChanged.connect(self.onDataChanged)
@@ -204,7 +208,7 @@ class FormularioPerfilAccesos(QDialog):
             self.inErrorNombrePerfil.setText("Debes ingresar algun nombre al perfil.")
             validacionAceptada = False
 
-        if not  self.validarSiRepiteAcceso():
+        if not self.validarSiRepiteAcceso():
             validacionAceptada = False
         
         return validacionAceptada
@@ -239,9 +243,9 @@ class FormularioPerfilAccesos(QDialog):
    
     """Elimina un acceso del árbol, manda a eliminar en bd si el acceso ya esta registrado(solo se ve al editar)"""
     def eliminarAcceso(self, item):
-        id_perfil = item.data(Qt.UserRole)
-        
-        if id_perfil:
+        id_permiso = item.data(Qt.UserRole)
+
+        if id_permiso:
             ##eliminar el permiso en la base de datos
             ## recuerde mostrar una ventana emergente para que el usuario
             ## confirme si desea eliminar el permiso
@@ -250,13 +254,17 @@ class FormularioPerfilAccesos(QDialog):
             
             dial = DialogoEmergente("","Este acceso ya esta registrado\n¿Estas seguro que quieres eliminar este acceso?","Question",True, True)
             if dial.exec() == QDialog.Accepted:
-                print(f"Eliminado {id_perfil}")
-            #       se manda a eliminar el perfil
-            #       con el perfilServices
-            #       usando id_perfil para eliminar
+                print(f"Eliminado {id_permiso}")
+                result = self.permisoServices.eliminar_permiso_perfil(id_permiso)
 
-            #       self.model.removeRow(item.row())  ##al final remueva el permiso del arbol
-            pass
+                if not result['success']:
+                    dial = DialogoEmergente('','Ocurrio un error al eliminar el perfil.','Error')
+                    dial.exec()
+                    return
+
+                dial = DialogoEmergente('','Se elimino el acceso correctamente','Check')
+                dial.exec()
+                self.model.removeRow(item.row())
         else:
             self.model.removeRow(item.row())    ##eliminar el acceso esto cuando es un acceso no registrado en bd
         self.validarSiRepiteAcceso()            ##realiza validacion, congruencia del errAcceso
@@ -305,7 +313,7 @@ class FormularioPerfilAccesos(QDialog):
                 eliminar    = eliminar
             )
             # Agregar el objeto Permiso a la lista
-            listaPermisos .append(permiso)
+            listaPermisos.append(permiso)
 
         return listaPermisos
     
@@ -374,7 +382,7 @@ class FormularioPerfilAccesos(QDialog):
             dial = DialogoEmergente("","¿Estas seguro que que quieres cancelar?","Error",True, True)
             if dial.exec() == QDialog.Accepted:
                 self.reject()
-            pass
+                return
         else:
             self.reject()
             return
