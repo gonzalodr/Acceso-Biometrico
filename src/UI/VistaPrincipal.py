@@ -162,11 +162,11 @@ class vistaPrincipal(QWidget):
             index = self.stackVistas.addWidget(adminempleado)
             self.listaOpciones.append((index, "Admin. Empleados", "employees.png"))
 
-        #if True:
-        #   adminUsuario = AdminUsuario(parent=self)
-        #   adminUsuario.cerrar_adminU.connect(self._salir_crud)
-        #   index = self.stackVistas.addWidget(adminUsuario)
-        #   self.listaOpciones.append((index, "Administrar Usuarios", "management.png"))
+        if True:
+           adminUsuario = AdminUsuario(parent=self)
+           adminUsuario.cerrar_adminU.connect(self._salir_crud)
+           index = self.stackVistas.addWidget(adminUsuario)
+           self.listaOpciones.append((index, "Administrar Usuarios", "management.png"))
 
         if True:
             AdminDepart = AdminDepartament(parent=self)

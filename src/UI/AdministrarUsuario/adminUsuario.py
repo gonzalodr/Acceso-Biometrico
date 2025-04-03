@@ -146,6 +146,74 @@ class AdminUsuario(QWidget):
     def _cerrar(self):
         self.cerrar_adminU.emit()
 
+    def _cargar_tabla(self):
+        result = self.Uservices.obtenerListaUsuarios(
+            pagina=self.paginaActual, tam_pagina=10, busqueda=self.busqueda
+        )
+
+        if result["success"]:
+            listaUsuarios = result["data"]["listaUsuarios"]
+
+            if listaUsuarios:
+                paginaActual = result["data"]["pagina_actual"]
+                totalPaginas = result["data"]["total_paginas"]
+                self._actualizar_lblPagina(paginaActual, totalPaginas)
+                self._actualizarValoresPaginado(paginaActual, totalPaginas)
+
+                self.tbUsuario.setRowCount(0)
+                for index, usuario in enumerate(listaUsuarios):
+                    self.tbUsuario.insertRow(index)
+                    self.tbUsuario.setRowHeight(index, 45)
+
+                    # Nombre
+                    item_nombre = QTableWidgetItem(usuario["nombre_completo"])
+                    item_nombre.setTextAlignment(Qt.AlignCenter)
+                    self.tbUsuario.setItem(index, 0, item_nombre)
+
+                    # Usuario
+                    item_usuario = QTableWidgetItem(usuario["usuario"])
+                    item_usuario.setTextAlignment(Qt.AlignCenter)
+                    self.tbUsuario.setItem(index, 1, item_usuario)
+
+                    # Creación de un contenedor para los botones de acción
+                    contenedor_botones = QWidget()
+                    layout_botones = QHBoxLayout()
+                    layout_botones.setContentsMargins(0, 0, 0, 0)
+                    layout_botones.setSpacing(5)
+
+                    # Botón Editar
+                    btnEditar = QPushButton("Editar")
+                    btnEditar.setStyleSheet("""
+                        QPushButton{background-color:#28A745;color:white;}
+                        QPushButton::hover{background-color:#218838;color:white;}
+                    """)
+                    btnEditar.setMinimumSize(QSize(80, 35))
+
+                    # Botón Eliminar
+                    btnEliminar = QPushButton("Eliminar")
+                    btnEliminar.setStyleSheet("""
+                        QPushButton{background-color:#DC3545;color:white;}
+                        QPushButton::hover{background-color:#C82333;color:white;}
+                    """)
+                    btnEliminar.setMinimumSize(QSize(80, 35))
+
+                    layout_botones.addWidget(btnEditar)
+                    layout_botones.addWidget(btnEliminar)
+                    contenedor_botones.setLayout(layout_botones)
+
+                    self.tbUsuario.setCellWidget(index, 2, contenedor_botones)
+
+            else:
+                print("No se encontraron usuarios.")  # Mensaje de depuración
+                self.tbUsuario.setRowCount(0)
+                self._actualizar_lblPagina(0, 0)
+                self._actualizarValoresPaginado(0, 0)
+        else:
+            print("Error al obtener usuarios.")  # Mensaje de depuración
+            self.tbUsuario.setRowCount(0)
+            self._actualizar_lblPagina(0, 0)
+            self._actualizarValoresPaginado(0, 0)
+
     def _actualizar_lblPagina(self, numPagina, totalPagina):
         self.lblNumPagina.setText(f"Página {numPagina} de {totalPagina}")
 
