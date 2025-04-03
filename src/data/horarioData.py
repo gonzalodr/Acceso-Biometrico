@@ -99,12 +99,9 @@ class HorarioData:
         ignorando el registro actual si se está actualizando.
         """
         # Verificar la conexión
-        self.conn, success, message = self.obtener_conexion()
-        if not success:
-            return (
-                False,
-                message,
-            )  # Usar el mensaje de error devuelto por obtener_conexion()
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
 
         try:
             with self.conn.cursor() as cursor:
@@ -138,12 +135,14 @@ class HorarioData:
         except Exception as e:
             # Manejo de errores si algo falla en la consulta
             return False, f"Error al verificar unicidad:del horario {e}"
+        finally:
+            conexion.close()
 
     def update_horario(self, horario: Horario, id_rol: int):
         """
         Actualiza un horario existente en la base de datos.
         """
-        conexion, resultado = self.obtener_conexion()
+        conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
 
@@ -412,51 +411,42 @@ class HorarioData:
         """
         Obtiene un horario específico por su ID.
         """
-        conexion, resultado = self.obtener_conexion()
+        conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
 
         try:
-            conexion.start_transaction()
-            with conexion.cursor(
-                dictionary=True
-            ) as cursor:  # Para devolver resultados como diccionario
 
+            with conexion.cursor(dictionary=True) as cursor:
                 query = f"""
                 SELECT 
-                    h.{TBHORARIO_ID},
-                    h.{TBHORARIO_NOMBRE_HORARIO},
-                    r.{TBROL_NOMBRE} AS nombre_rol,
-                    h.{TBHORARIO_DIAS_SEMANALES},
-                    h.{TBHORARIO_TIPO_JORNADA},
-                    h.{TBHORARIO_HORA_INICIO},
-                    h.{TBHORARIO_HORA_FIN},
-                    h.{TBHORARIO_DESCRIPCION}
+                    h.*,
+                    r.{TBROL_ID} AS rol_id,
+                    r.{TBROL_NOMBRE} AS rol_nombre
                 FROM {TBHORARIO} h
                 LEFT JOIN {TBROLHORARIO} rh ON h.{TBHORARIO_ID} = rh.{TBROLHORARIO_ID_HORARIO}
                 LEFT JOIN {TBROL} r ON rh.{TBROLHORARIO_ID_ROL} = r.{TBROL_ID}
+                WHERE h.{TBHORARIO_ID} = %s
                 """
                 cursor.execute(query, (horario_id,))
                 registro = cursor.fetchone()
 
                 if registro:
-
-                    horario = {
-                        "id": registro[TBHORARIO_ID],
-                        "nombre_horario": registro[TBHORARIO_NOMBRE_HORARIO],
-                        "nombre_rol": registro["nombre_rol"],
-                        "dias_semanales": registro[TBHORARIO_DIAS_SEMANALES],
-                        "tipo_jornada": registro[TBHORARIO_TIPO_JORNADA],
-                        "hora_inicio": registro[TBHORARIO_HORA_INICIO],
-                        "hora_fin": registro[TBHORARIO_HORA_FIN],
-                        "descripcion": registro[TBHORARIO_DESCRIPCION],
-                        "rol_id": registro["rol_id"],
-                    }
-                    cursor.close()
-
                     return {
                         "success": True,
-                        "data": horario,
+                        "data": {
+                            "id": registro[TBHORARIO_ID],
+                            "nombre_horario": registro.get(
+                                TBHORARIO_NOMBRE_HORARIO, ""
+                            ),
+                            "dias_semanales": registro[TBHORARIO_DIAS_SEMANALES],
+                            "tipo_jornada": registro[TBHORARIO_TIPO_JORNADA],
+                            "hora_inicio": registro[TBHORARIO_HORA_INICIO],
+                            "hora_fin": registro[TBHORARIO_HORA_FIN],
+                            "descripcion": registro[TBHORARIO_DESCRIPCION],
+                            "rol_id": registro.get("rol_id"),
+                            "nombre_rol": registro.get("rol_nombre"),
+                        },
                         "message": "Horario encontrado exitosamente.",
                     }
                 else:

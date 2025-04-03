@@ -53,16 +53,29 @@ class HorarioService:
         if not result["success"]:
             return result
 
-        # Validar duplicado ignorando el registro actual
-        is_unique, message = self.horarioData.validar_unicidad_jornada(
-            nombre_horario=horario.nombre_horario,
-            dias_semanales=horario.dias_semanales,
-            tipo_jornada=horario.tipo_jornada,
-            id=horario.id,  # Pasar el ID actual para ignorarlo en la validación
-        )
+        # Obtener el horario actual de la base de datos
+        result_actual = self.horarioData.get_horario_by_id(horario.id)
+        if not result_actual["success"]:
+            return result_actual
 
-        if not is_unique:
-            return {"success": False, "message": message}
+        horario_actual = result_actual["data"]
+
+        if (
+            horario.nombre_horario != horario_actual["nombre_horario"]
+            or horario.dias_semanales != horario_actual["dias_semanales"]
+            or horario.tipo_jornada != horario_actual["tipo_jornada"]
+        ):
+
+            # Validar duplicado ignorando el registro actual
+            is_unique, message = self.horarioData.validar_unicidad_jornada(
+                nombre_horario=horario.nombre_horario,
+                dias_semanales=horario.dias_semanales,
+                tipo_jornada=horario.tipo_jornada,
+                id=horario.id,  # Pasar el ID actual para ignorarlo en la validación
+            )
+
+            if not is_unique:
+                return {"success": False, "message": message}
 
         # Modificar el horario usando la capa de datos
         return self.horarioData.update_horario(horario, id_rol)
