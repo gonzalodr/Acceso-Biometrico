@@ -2,3 +2,7 @@ bcrypt
 mysql-connector-python
 PySide6
 requests
+fpdf
+python-docx
+pandas
+openpyxl
