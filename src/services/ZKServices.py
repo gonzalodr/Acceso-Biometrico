@@ -1,11 +1,12 @@
-import time
+import time 
 from settings.config import ZKTECA_CONFIG
 from settings.logger import logger
-from zk              import ZK, const
-from datetime        import date,time, datetime
+from zk              import ZK
+from datetime        import date
 from typing import Optional, List, Union, Tuple
 from Utils.Utils     import parse_date, parse_time
 import re
+import traceback
 
 class ZKServices:
     def __init__(self):
@@ -45,7 +46,7 @@ class ZKServices:
             return {'success':True,'message':'Se registro el empleado pero sin huella.','huella_id_ZK':None}
         except Exception as e:
             logger.error(f'{e}')
-            return {'success':False, 'message':'Ocurrio un error al registrar el empleado.'}
+            return {'success':False, 'message':f'Ocurrio un error al registrar el empleado.'}
     
     def obtener_asistencias(self, id_empleado: Optional[int]    = None, 
                         fecha: Optional[Union[date, str]]       = None,
@@ -92,3 +93,33 @@ class ZKServices:
         except Exception as e:
             logger.error(f'{e}')
             return {'success':False, 'message':'Ocurrio un erro al obtener la asistencias'}
+    
+    def actualizar_empleado(self, id_em: int, nombre: str, cedula: str):
+        try:
+            conn = self.zk.connect()
+            conn.enable_device()
+
+            # Actualizar los datos del empleado
+            conn.set_user(uid = id_em, name = f'{nombre}-{cedula}')
+            time.sleep(1)
+
+            # Aquí decidimos si también actualizamos la huella, si es necesario
+            conn.enroll_user(uid=id_em, temp_id=9)
+
+            start_time = time.time()
+            while (time.time() - start_time) < 30:
+                templates = conn.get_templates()
+                huella = list(filter(lambda t: t.uid == id_em, templates)) or None
+
+                if huella:
+                    conn.test_voice(0)
+                    conn.disconnect()
+                    return {'success': True, 'message': 'Empleado actualizado con éxito.', 'huella_id_ZK': huella[0].uid}
+                time.sleep(0.5)
+
+            conn.disconnect()
+            return {'success': True, 'message': 'Empleado actualizado pero sin huella.', 'huella_id_ZK': None}
+        except Exception as e:
+            logger.error(f'{e}')
+            return {'success': False, 'message': 'Ocurrió un error al actualizar el empleado.'}
+        
