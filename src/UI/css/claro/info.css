@@ -1,0 +1,31 @@
+#infoJustificacion {
+    background-color: #f9f9f9; /* Color de fondo más suave */
+    border: 2px solid #007286; /* Borde del diálogo */
+    border-radius: 10px; /* Bordes redondeados */
+}
+
+#infoJustificacion #titulo {
+    background-color: #004e64; /* Fondo del título */
+    color: #ffffff; /* Color del texto del título */
+    font: 10 20pt "Cooper Black"; /* Fuente del título */
+    padding: 10px; /* Espaciado interno */
+    border-top-left-radius: 10px; /* Bordes redondeados en la parte superior */
+    border-top-right-radius: 10px;
+}
+
+#infoJustificacion #infoLabel {
+    background-color: #ffffff; /* Fondo blanco para la información */
+    border: 1px solid #007286; /* Borde del área de información */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 15px; /* Espaciado interno */
+    font: 10 12pt "Arial"; /* Fuente de la información */
+    color: #000000; /* Color del texto */
+}
+
+#infoJustificacion #btnaceptar {
+    background-color: #28A745; /* Color de fondo del botón */
+    border-radius: 5px; /* Bordes redondeados */
+    color: #ffffff; /* Color del texto del botón */
+    font: 10 13pt "Cooper Black"; /* Fuente del botón */
+    padding: 10px 20px; /* Espaciado interno */
+}
