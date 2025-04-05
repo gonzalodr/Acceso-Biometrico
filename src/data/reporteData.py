@@ -149,12 +149,21 @@ class ReporteData:
             #se ajusta
             tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
             
-            query = f"SELECT * FROM {TBREPORTE}"
+            query = f"""SELECT 
+                    r.*,
+                    p.{TBPERSONA_NOMBRE} AS nombre_persona
+                FROM {TBREPORTE} r
+                INNER JOIN {TBEMPLEADO} e ON r.{TBREPORTE_ID_EMPLEADO} = e.{TBEMPLEADO_ID}
+                INNER JOIN {TBPERSONA} p ON e.{TBEMPLEADO_PERSONA} = p.{TBPERSONA_ID}"""
             valores = []
             
             if busqueda:
-                query += f" WHERE {TBREPORTE_ID_EMPLEADO} LIKE %s OR {TBREPORTE_FECHA_GENERACION} LIKE %s OR {TBREPORTE_TIPO_REPORTE} LIKE %s OR {TBREPORTE_CONTENIDO} LIKE %"
-                valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
+                query += f""" WHERE p.{TBPERSONA_NOMBRE} LIKE %s 
+                              OR r.{TBREPORTE_ID_EMPLEADO} LIKE %s 
+                              OR r.{TBREPORTE_FECHA_GENERACION} LIKE %s 
+                              OR r.{TBREPORTE_TIPO_REPORTE} LIKE %s 
+                              OR r.{TBREPORTE_CONTENIDO} LIKE %s """
+                valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
             
             query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
             valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
@@ -169,7 +178,7 @@ class ReporteData:
                     contenido=registro[TBREPORTE_CONTENIDO],
                     id=registro[TBREPORTE_ID]
                 )
-                listaReportes.append(reporte)# Se añade el perfil a la lista
+                listaReportes.append({'reporte': reporte,'nombre_empleado': registro['nombre_persona'] })# Se añade el perfil a la lista
             
             cursor.execute(f"SELECT COUNT(*) as total FROM {TBREPORTE}") #TBROL
             total_registros = cursor.fetchone()["total"]  # Se obtiene el número total de registros
@@ -238,84 +247,32 @@ class ReporteData:
     def obtener_todo_reportes(self):
         conexion, resultado = conection()
         if not resultado["success"]:
-            logger.error("Error al conectar a la base de datos.") 
             return resultado
         
         listaReportes = []  # Lista donde se almacenarán los perfiles ob
         try:
-            logger.info("Iniciando obtención de todos los reportes...")
             with conexion.cursor(dictionary=True) as cursor:
-                #query = f"SELECT * FROM {TBREPORTE}"
-                query = f"""
-                    SELECT 
-                    r.{TBREPORTE_ID},
-                    r.{TBREPORTE_ID_EMPLEADO},
-                    r.{TBREPORTE_FECHA_GENERACION},
-                    r.{TBREPORTE_TIPO_REPORTE},
-                    r.{TBREPORTE_CONTENIDO},
-                    p.{TBPERSONA_NOMBRE} AS nombre_persona
-                FROM {TBREPORTE} r
-                INNER JOIN {TBEMPLEADO} e ON r.{TBREPORTE_ID_EMPLEADO} = e.{TBEMPLEADO_ID}
-                INNER JOIN {TBPERSONA} p ON e.{TBEMPLEADO_PERSONA} = p.{TBPERSONA_ID}
-                """
-                logger.debug(f"Ejecutando consulta: {query}")
+                query = f"SELECT * FROM {TBREPORTE}"
                 cursor.execute(query)
                 registros = cursor.fetchall()
                 
-                
-                if not registros:
-                    logger.warning("La consulta no devolvió ningún registro")
-                else:
-                    logger.info(f"Se encontraron {len(registros)} reportes")
-                
-                    primer_registro = registros[0]
-                    logger.debug(f"Estructura del primer registro: {primer_registro.keys()}")
-                 
-                 
-                    for registro in registros:
-                            reporte = Reporte(
-                                id_empleado=registro[TBREPORTE_ID_EMPLEADO],
-                                fecha_generacion=registro[TBREPORTE_FECHA_GENERACION],
-                                tipo_reporte=registro[TBREPORTE_TIPO_REPORTE],
-                                contenido=registro[TBREPORTE_CONTENIDO],
-                                id=registro[TBREPORTE_ID],
-                                nombre_persona=registro["nombre_persona"] 
-                            )
-                            listaReportes.append(reporte)
-              
-                    
-                """   cursor.execute(query)
-                    registros = cursor.fetchall()
-               
            # Se convierten los registros en objetos de tipo Reporte y se almacenan en la lista
-            for registro in registros:
-                reporte = Reporte(
-                    id_empleado=registro[TBREPORTE_ID_EMPLEADO],
-                    fecha_generacion=registro[TBREPORTE_FECHA_GENERACION],
-                    tipo_reporte=registro[TBREPORTE_TIPO_REPORTE],
-                    contenido=registro[TBREPORTE_CONTENIDO],
-                    id=registro[TBREPORTE_ID],
-                    nombre_persona=registro["persona_nombre"]  # Se agrega el nombre de la persona
-                )
-                listaReportes.append(reporte)
-                """
+                for registro in registros:
+                    reporte = Reporte(
+                        id_empleado=registro[TBREPORTE_ID_EMPLEADO],
+                        fecha_generacion=registro[TBREPORTE_FECHA_GENERACION],
+                        tipo_reporte=registro[TBREPORTE_TIPO_REPORTE],
+                        contenido=registro[TBREPORTE_CONTENIDO],
+                        id=registro[TBREPORTE_ID],
+                    )
+                    listaReportes.append(reporte)
                 
                 resultado["data"] = {
                     "listaReportes": listaReportes,
                 }
                 resultado["success"] = True
                 resultado["message"] = "Reportes listados exitosamente."
-                
-        except Error as e:
-            error_msg = f"Error de MySQL: {str(e)}"
-            logger.error(error_msg, exc_info=True)
-            resultado.update({"success": False, "message": error_msg})
-            resultado["success"] = False
-            resultado["message"] = f"Error de MySQL al ejecutar la consulta: {e}"
         except Exception as e:
-            error_msg = f"Error inesperado: {str(e)}"
-            logger.error(error_msg, exc_info=True)
-            resultado.update({"success": False, "message": error_msg})
             resultado["success"] = False
             resultado["message"] = f"Error al listar reportes: {e}"
         finally:
@@ -323,8 +280,6 @@ class ReporteData:
                 cursor.close()# Se cierra el cursor
             if conexion:
                 conexion.close()# Se cierra la conexión a la base de datos
-                logger.debug("Conexión a BD cerrada")
-                logger.info(f"Resultado final: {resultado.get('success')}, Mensaje: {resultado.get('message')}")
         
         return resultado
         

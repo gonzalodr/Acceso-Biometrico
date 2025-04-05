@@ -9,3 +9,11 @@
 2025-04-02 10:56:05,285 - INFO - ℹ Este es un mensaje de prueba INFO - [logger.py:35]
 2025-04-02 10:56:05,286 - ERROR - ❌ Este es un mensaje de prueba ERROR - [logger.py:36]
 2025-04-02 10:56:05,684 - INFO - 🚀 Aplicación iniciada - [reporteData.py:11]
+2025-04-04 12:59:10,301 - ERROR - 'ZKServices' object has no attribute 'zk' - ZKServices.py:80
+2025-04-04 13:03:00,901 - ERROR - 'str' object cannot be interpreted as an integer - ZKServices.py:80
+2025-04-04 13:03:13,135 - ERROR - 'str' object cannot be interpreted as an integer - ZKServices.py:80
+2025-04-04 13:22:49,700 - ERROR - Cant Enroll user #3 [9] - ZKServices.py:77
+2025-04-04 13:22:51,216 - ERROR - Cant Enroll user #2 [9] - ZKServices.py:106
+2025-04-04 13:26:35,298 - ERROR - Cant Enroll user #3 [9] - ZKServices.py:106
+2025-04-04 13:26:59,582 - ERROR - Cant Enroll user #3 [9] - ZKServices.py:106
+2025-04-04 13:32:55,045 - ERROR - Cant Enroll user #3 [9] - ZKServices.py:106
