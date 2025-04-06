@@ -2,6 +2,8 @@ from PySide6.QtWidgets import QGraphicsDropShadowEffect, QLabel,QPushButton
 from PySide6.QtGui import QPixmap, QPainter,QIcon
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtCore import QSize, Qt
+from datetime import date, time, datetime
+import re
 import os
 import inspect
 
@@ -127,3 +129,19 @@ def format_Fecha(fecha:str):
         }
         mes_nombre = meses[mes]
         return f"{int(dia)} de {mes_nombre} del {año}"
+
+def parse_date(date_str: str) -> date:
+    """Convierte string 'dd-mm-yyyy' a objeto date"""
+    try:
+        day, month, year = map(int, date_str.split('-'))
+        return date(year, month, day)
+    except (ValueError, AttributeError) as e:
+        raise ValueError(f"Formato de fecha inválido: {date_str}. Use 'dd-mm-yyyy'") from e
+
+def parse_time(time_str: str) -> time:
+    """Convierte string 'HH:MM' a objeto time"""
+    try:
+        hours, minutes = map(int, time_str.split(':'))
+        return time(hours, minutes)
+    except (ValueError, AttributeError) as e:
+        raise ValueError(f"Formato de hora inválido: {time_str}. Use 'HH:MM'") from e

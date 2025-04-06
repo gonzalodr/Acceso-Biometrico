@@ -5,7 +5,7 @@ from Utils.Utils import *
 from UI.AdministrarReporte.formReporte import *
 from services.reporteService import *
 from services.empleadoServices import *
-
+from settings.logger import logger
 from settings.variable import *
 
 class AdminReporte(QWidget):
@@ -181,9 +181,13 @@ class AdminReporte(QWidget):
             
     def _cargar_tabla(self):
           # Método para cargar los datos en la tabla
+        
+
         result = self.reporteServices.obtenerListaReporte(pagina=self.paginaActual, tam_pagina=10, tipo_orden="DESC", busqueda=self.busqueda)
         if result["success"]:
-            listaReporte = result["data"]["listaReportes"] # Obtener la lista de perfiles
+            listaReporte = result["data"]["listaReportes"] # Obtener la lista de perfiles     
+            
+            
             if len(listaReporte) > 0:
                 paginaActual = result["data"]["pagina_actual"]
                 tamPagina = result["data"]["tam_pagina"]
@@ -194,26 +198,45 @@ class AdminReporte(QWidget):
                 self._actualizarValoresPaginado(paginaActual, totalPaginas)
                 
                 self.tbReporte.setRowCount(0)
+                print("🔍 Datos recibidos en _cargar_tabla:")
+                for reporte in listaReporte:
+                    print(f"- Nombre: {reporte['nombre_empleado']}, Fecha: {reporte['reporte'].fecha_generacion}, Tipo: {reporte['reporte'].tipo_reporte}, Contenido: {reporte['reporte'].contenido}")
+
                 for index, reporte in enumerate(listaReporte):  # Iterar sobre la lista de perfiles
                     self.tbReporte.insertRow(index)# Insertar una nueva fila en la tabla
                     self.tbReporte.setRowHeight(index, 45) # Establecer la altura de la fila
 
  # Agregar los datos del perfil a la tabla
-                    self.addItem_a_tabla(index, 0, str(reporte.id_empleado))
-                    self.addItem_a_tabla(index, 1, reporte.fecha_generacion.strftime("%Y-%m-%d"))  # Formatear fecha
-                    self.addItem_a_tabla(index, 2, reporte.tipo_reporte)# Agregar el nombre del perfil a la columna 0
-                    self.addItem_a_tabla(index, 3, reporte.contenido)
+                
+                    #print(f"✅ Insertando en fila {index}: {reporte.nombre_persona}")  # DEPURACIÓN SI PONE reporte.id_empleado carga el id
+                    self.addItem_a_tabla(index, 0, str(reporte['nombre_empleado'])) 
+
+                   
+                    #self.addItem_a_tabla(index, 1, reporte.fecha_generacion.strftime("%Y-%m-%d"))  # Formatear fecha
+                    self.addItem_a_tabla(index, 1, reporte["reporte"].fecha_generacion.strftime("%Y-%m-%d"))
+
+
+                    #self.addItem_a_tabla(index, 2, reporte.tipo_reporte)# Agregar el nombre del perfil a la columna 0
+                    #self.addItem_a_tabla(index, 3, reporte.contenido)
+                    self.addItem_a_tabla(index, 2, reporte["reporte"].tipo_reporte)
+                    self.addItem_a_tabla(index, 3, reporte["reporte"].contenido)
+
+
 
                     # Botones para editar y eliminar
                     btnEliminar = QPushButton("Eliminar")
-                    btnEliminar.clicked.connect(lambda checked, idx=reporte.id: self._eliminarRegistro(idx))
+                    #btnEliminar.clicked.connect(lambda checked, idx=reporte.id: self._eliminarRegistro(idx))
+                    btnEliminar.clicked.connect(lambda checked, idx=reporte["reporte"].id: self._eliminarRegistro(idx))
+
                     btnEliminar.setMinimumSize(QSize(80, 35))# Establecer el tamaño mínimo del botón
                     btnEliminar.setStyleSheet("""   QPushButton{background-color:#ff5151;color:white;}
                                                     QPushButton::hover{background-color:#ff0000;color:white;}
                                               """)# Estilo del botón
 
                     btnEditar = QPushButton("Editar")
-                    btnEditar.clicked.connect(lambda checked, idx=reporte.id: self._editar_Reporte(idx))
+                    #btnEditar.clicked.connect(lambda checked, idx=reporte.id: self._editar_Reporte(idx))
+                    btnEditar.clicked.connect(lambda checked, idx=reporte["reporte"].id: self._editar_Reporte(idx))
+
                     btnEditar.setMinimumSize(QSize(80, 35))
                     btnEditar.setStyleSheet(""" QPushButton{background-color:#00b800;color:white;}
                                                 QPushButton::hover{background-color:#00a800;color:white;}
@@ -267,7 +290,13 @@ class AdminReporte(QWidget):
         self.setGraphicsEffect(None)
 
     def _eliminarRegistro(self, id_reporte):
-        dial = DialogoEmergente("¿Seguro que quieres eliminar este registro?",True,True)
+        dial = DialogoEmergente(
+            title="Confirmación",
+            message="¿Seguro que quieres eliminar este registro?",
+            Icono="Question",
+            show_accept_button=True,
+            show_cancel_button=True
+        )
         if dial.exec() == QDialog.Accepted:
                 result = self.reporteServices.eliminarReporte(id_reporte)
                 if result["success"]:
