@@ -1,12 +1,15 @@
 import re
 from models.reporte import Reporte
 from data.reporteData import ReporteData
+from PySide6.QtCore import *
+
 
 class ReporteServices:
     def __init__(self):
         self.reporteData = ReporteData()
         
     def insertarReporte(self, reporte: Reporte):
+        reporte.fecha_generacion = QDate.currentDate().toString("yyyy-MM-dd")
         return self.reporteData.create_reporte(reporte)
     
     def modificarReporte(self, reporte: Reporte):

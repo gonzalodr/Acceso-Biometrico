@@ -566,7 +566,7 @@ class EmpleadoData:
                 conexion.close()
                 
                 
-    def obtener_todo_empleados(self):
+    """   def obtener_todo_empleados(self):
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
@@ -584,6 +584,63 @@ class EmpleadoData:
                         id_persona=registro[TBEMPLEADO_PERSONA],
                         id_departamento=registro[TBEMPLEADO_DEPARTAMENTO],
                         id=registro[TBEMPLEADO_ID]
+                    )
+                    listaEmpleados.append(empleado)
+                
+                resultado["data"] = {
+                    "listaEmpleados": listaEmpleados,
+                }
+                resultado["success"] = True
+                resultado["message"] = "Empleados listados exitosamente."
+        except Exception as e:
+            resultado["success"] = False
+            resultado["message"] = f"Error al listar empleado: {e}"
+        finally:
+            if cursor:
+                cursor.close()# Se cierra el cursor
+            if conexion:
+                conexion.close()# Se cierra la conexión a la base de datos
+
+        return resultado
+        
+    
+     """
+     
+    def obtener_todo_empleados(self):
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+        
+        """listaEmpleados = []  # Lista donde se almacenarán los perfiles ob
+        try:
+            with conexion.cursor(dictionary=True) as cursor:
+                query = f"SELECT * FROM {TBEMPLEADO}"
+                cursor.execute(query)
+                registros = cursor.fetchall()
+                """
+                
+        listaEmpleados = []  # Lista donde se almacenarán los empleados
+        try:
+            with conexion.cursor(dictionary=True) as cursor:
+                query = f"""
+                    SELECT 
+                        e.{TBEMPLEADO_ID}, 
+                        e.{TBEMPLEADO_PERSONA}, 
+                        e.{TBEMPLEADO_DEPARTAMENTO}, 
+                        p.{TBPERSONA_NOMBRE} AS nombre_persona  -- Obtener el nombre de la persona
+                    FROM {TBEMPLEADO} e
+                    INNER JOIN {TBPERSONA} p ON e.{TBEMPLEADO_PERSONA} = p.{TBPERSONA_ID}
+                """
+                cursor.execute(query)
+                registros = cursor.fetchall()
+            
+                 # Se convierten los registros en objetos de tipo Perfil y se almacenan en la lista
+                for registro in registros:
+                    empleado = Empleado(
+                        id_persona=registro[TBEMPLEADO_PERSONA],
+                        id_departamento=registro[TBEMPLEADO_DEPARTAMENTO],
+                        id=registro[TBEMPLEADO_ID],
+                        nombre_persona=registro["nombre_persona"]
                     )
                     listaEmpleados.append(empleado)
                 

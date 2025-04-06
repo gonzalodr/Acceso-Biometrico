@@ -1,6 +1,15 @@
+from data.EmpleadoData import Empleado
+from settings.tablas import *       #obtener los nombres de tablas
 from models.reporte import Reporte #importa la clase de reportes 
 from data.data import conection # importa la funcion de conection para crear la conexion enla base de datos
-from settings.config import * 
+
+from mysql.connector import Error 
+# Asumiendo que ya has configurado el logger
+  # Asegúrate de importar correctamente desde 'settings.loggers'
+from settings.config import *
+from settings.logger import logger
+
+
 
 class ReporteData:
     
@@ -140,12 +149,21 @@ class ReporteData:
             #se ajusta
             tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
             
-            query = f"SELECT * FROM {TBREPORTE}"
+            query = f"""SELECT 
+                    r.*,
+                    p.{TBPERSONA_NOMBRE} AS nombre_persona
+                FROM {TBREPORTE} r
+                INNER JOIN {TBEMPLEADO} e ON r.{TBREPORTE_ID_EMPLEADO} = e.{TBEMPLEADO_ID}
+                INNER JOIN {TBPERSONA} p ON e.{TBEMPLEADO_PERSONA} = p.{TBPERSONA_ID}"""
             valores = []
             
             if busqueda:
-                query += f" WHERE {TBREPORTE_ID_EMPLEADO} LIKE %s OR {TBREPORTE_FECHA_GENERACION} LIKE %s OR {TBREPORTE_TIPO_REPORTE} LIKE %s OR {TBREPORTE_CONTENIDO} LIKE %"
-                valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
+                query += f""" WHERE p.{TBPERSONA_NOMBRE} LIKE %s 
+                              OR r.{TBREPORTE_ID_EMPLEADO} LIKE %s 
+                              OR r.{TBREPORTE_FECHA_GENERACION} LIKE %s 
+                              OR r.{TBREPORTE_TIPO_REPORTE} LIKE %s 
+                              OR r.{TBREPORTE_CONTENIDO} LIKE %s """
+                valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
             
             query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
             valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
@@ -160,7 +178,7 @@ class ReporteData:
                     contenido=registro[TBREPORTE_CONTENIDO],
                     id=registro[TBREPORTE_ID]
                 )
-                listaReportes.append(reporte)# Se añade el perfil a la lista
+                listaReportes.append({'reporte': reporte,'nombre_empleado': registro['nombre_persona'] })# Se añade el perfil a la lista
             
             cursor.execute(f"SELECT COUNT(*) as total FROM {TBREPORTE}") #TBROL
             total_registros = cursor.fetchone()["total"]  # Se obtiene el número total de registros
@@ -238,14 +256,14 @@ class ReporteData:
                 cursor.execute(query)
                 registros = cursor.fetchall()
                 
-                 # Se convierten los registros en objetos de tipo Perfil y se almacenan en la lista
+           # Se convierten los registros en objetos de tipo Reporte y se almacenan en la lista
                 for registro in registros:
                     reporte = Reporte(
                         id_empleado=registro[TBREPORTE_ID_EMPLEADO],
                         fecha_generacion=registro[TBREPORTE_FECHA_GENERACION],
                         tipo_reporte=registro[TBREPORTE_TIPO_REPORTE],
                         contenido=registro[TBREPORTE_CONTENIDO],
-                        id=registro[TBPERFIL_ID]
+                        id=registro[TBREPORTE_ID],
                     )
                     listaReportes.append(reporte)
                 
@@ -262,5 +280,7 @@ class ReporteData:
                 cursor.close()# Se cierra el cursor
             if conexion:
                 conexion.close()# Se cierra la conexión a la base de datos
-
+        
         return resultado
+        
+  

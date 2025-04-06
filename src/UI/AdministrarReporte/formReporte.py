@@ -52,12 +52,19 @@ class formReporte(QDialog):
         self.inputFecha = QDateEdit()
         self.inputFecha.setCalendarPopup(True)
         self.inputFecha.setDate(QDate.currentDate())
-        self.inputFecha.setMinimumDate(QDate.currentDate())  # Bloquear fechas anteriores
-        self.inputFecha.setMaximumDate(QDate.currentDate())  # Bloquear fechas posteriores
+        
+        
+        if id is None:  # Crear nuevo reporte
+            self.inputFecha.setMinimumDate(QDate.currentDate())  # Bloquear fechas anteriores
+            self.inputFecha.setMaximumDate(QDate.currentDate())  # Bloquear fechas posteriores
+        else:  # Editar reporte
+            self.inputFecha.setMinimumDate(QDate(2000, 1, 1))  # Permitir fechas de hace años
+            self.inputFecha.setMaximumDate(QDate.currentDate())  # Bloquear fechas futuras
+
         # Acceder al QCalendarWidget asociado al QDateEdit
         self.calendar = self.inputFecha.calendarWidget()
-        self.calendar.setMinimumDate(QDate.currentDate())  # Bloquear fechas anteriores
-        self.calendar.setMaximumDate(QDate.currentDate())  # Bloquear fechas posterio
+        self.calendar.setMinimumDate(self.inputFecha.minimumDate())  # Bloquear fechas anteriores
+        self.calendar.setMaximumDate(self.inputFecha.maximumDate())  # Bloquear fechas posteriores
         layoutForm.addWidget(lblFecha, 1, 0)
         layoutForm.addWidget(self.inputFecha, 2, 0)
         Sombrear(self.inputFecha, 20, 0, 0)
@@ -161,23 +168,28 @@ class formReporte(QDialog):
          #    self.reject()##cerrar la ventana
          
     def _cancelar_registro(self):
+        dialEmergente = DialogoEmergente("Confirmación", "¿Estás seguro de que quieres cancelar?", "Confirmation", True, True)
+        opcion = dialEmergente.exec()
+
+        if opcion == QDialog.Accepted:
+            self.reject()  # Cierra la ventana si el usuario acepta
         #if self._validar_inputs_vacios():
         # Si los campos están vacíos, cerrar la ventana directamente
          #   self.reject()
         #else:
         # Mostrar un diálogo emergente de confirmación
-            dialEmergente = QMessageBox()
-            dialEmergente.setIcon(QMessageBox.Question)
-            dialEmergente.setText("¿Estás seguro que quieres cancelar?")
-            dialEmergente.setWindowTitle("Confirmar cancelación")
+            #dialEmergente = QMessageBox()
+            #dialEmergente.setIcon(QMessageBox.Question)
+            #dialEmergente.setText("¿Estás seguro que quieres cancelar?")
+            #dialEmergente.setWindowTitle("Confirmar cancelación")
 
         # Personalizar los botones para que digan "Sí" y "No"
-            boton_si = dialEmergente.addButton("Sí", QMessageBox.YesRole)
-            boton_no = dialEmergente.addButton("No", QMessageBox.NoRole)
+            #boton_si = dialEmergente.addButton("Sí", QMessageBox.YesRole)
+            #boton_no = dialEmergente.addButton("No", QMessageBox.NoRole)
 
         # Aplicar estilos para cambiar el fondo a blanco
-            dialEmergente.setStyleSheet("""
-                QMessageBox {
+            #dialEmergente.setStyleSheet("""
+            """    QMessageBox {
                     background-color: white;
                 }
                 QMessageBox QLabel {
@@ -195,7 +207,7 @@ class formReporte(QDialog):
                 QMessageBox QPushButton:pressed {
                     background-color: #a0a0a0; /* Color de fondo al presionar el botón */
                 }
-            """)
+            )
 
         # Obtener la respuesta del usuario
             dialEmergente.exec()
@@ -206,7 +218,7 @@ class formReporte(QDialog):
         # Si el usuario elige "No", no hacer nada
             elif dialEmergente.clickedButton() == boton_no:
                 pass
-      
+      """
 
 
 
@@ -216,9 +228,10 @@ class formReporte(QDialog):
             listaEmpleados = result["data"]["listaEmpleados"]
             if len(listaEmpleados) > 0:
                 for empleado in listaEmpleados:
-                    self.inputEmpleado.addItem(str(empleado.id_persona))
-                    #self.listaEmpleadosID[empleado.id_persona] = empleado.id
-                    self.listaEmpleadosID[str(empleado.id_persona)] = empleado.id  # Usar id_persona 
+                    
+                    self.inputEmpleado.addItem(empleado.nombre_persona)  # Usar nombre_persona
+                    self.listaEmpleadosID[empleado.nombre_persona] = empleado.id  # Usar id_persona 
+                  
             else:
                 dialEmergente = DialogoEmergente("","Ocurrio un error","Error")
                 if dialEmergente.exec() == QDialog.Accepted:
@@ -244,9 +257,13 @@ class formReporte(QDialog):
             if result["data"]:
                 reporte : Reporte = result["data"]
                 self.idP = reporte.id
-                self.inputEmpleado.setCurrentText(str(reporte.id_empleado))
+                self.inputEmpleado.setCurrentText(reporte.nombre_persona)
+                
                 fecha_qt = QDate(reporte.fecha_generacion.year, reporte.fecha_generacion.month, reporte.fecha_generacion.day)
                 self.inputFecha.setDate(fecha_qt)
+                 # Restringir la fecha máxima a hoy
+                self.inputFecha.setMaximumDate(QDate.currentDate())
+            
                # self.inputFecha.setText(reporte.fecha_generacion)
                 self.inputTipo.setCurrentText(reporte.tipo_reporte)
                 self.inputContenido.setText(reporte.contenido)
