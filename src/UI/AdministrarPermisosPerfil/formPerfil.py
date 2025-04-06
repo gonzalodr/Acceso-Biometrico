@@ -43,6 +43,7 @@ class FormularioPerfilAccesos(QDialog):
         ##label e input para el nombre del perfil
         self.lblNombrePerfil = QLabel("Nombre del perfil")
         self.inNombrePerfil = QLineEdit()
+        self.inNombrePerfil.editingFinished.connect(self.validadrNombrePerfil)
         self.inErrorNombrePerfil = QLabel()
         
         ##label e input para la descripcion del perfil
@@ -241,7 +242,23 @@ class FormularioPerfilAccesos(QDialog):
         print(error)
         self.errAcceso.setText(error)
         return validacionAceptada
-   
+
+    def validadrNombrePerfil(self):
+        nombre = self.inNombrePerfil.text()
+        self.inErrorNombrePerfil.clear()
+
+        if nombre:
+            result = self.perfilServices.existeNombreRegistrado(nombre,self.idPerfil)
+            if not result['success']:
+                return False
+            if result['exists']:
+                self.inErrorNombrePerfil.setText('El nombre ya se encuentra registrado.')
+                return True
+        else:
+            return False
+
+
+
     """Elimina un acceso del árbol, manda a eliminar en bd si el acceso ya esta registrado(solo se ve al editar)"""
     def eliminarAcceso(self, item):
         id_permiso = item.data(Qt.UserRole)
@@ -396,6 +413,12 @@ class FormularioPerfilAccesos(QDialog):
             dial = DialogoEmergente("","Asegurese de completar los datos correctamente.","Warning",True, False)
             dial.exec()
             return #evita que se proceda a actualizar o crear perfil
+        
+        if self.validadrNombrePerfil():
+            dial = DialogoEmergente("","El nombre de perfil ya esta registrado.","Warning",True, False)
+            dial.exec()
+            return
+        
         perfil, listaPermisos= self.obtenerTodoFormulario()
 
         if self.idPerfil:   ## se procede a actualizar y mostrar mensaje de confirmacion.

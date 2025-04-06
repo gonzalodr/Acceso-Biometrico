@@ -27,6 +27,8 @@ class PerfilServices:
         else:
             return {"success": False, "message": "La descripción del perfil no es válida."}
 
+    def existeNombreRegistrado(self, nombre, idPerfil = None):
+        return self.perfilData.verificar_nombre_perfil(nombre,idPerfil)
     ##
     # Funciones públicas
     ##

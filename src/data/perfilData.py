@@ -8,12 +8,54 @@ import traceback
 class PerfilData:
     def __init__(self):
         self.permisoPerfilData = PermisosPerfilData()
-    
+
+    def verificar_nombre_perfil(self, nombre_perfil: str, id_perfil_excluir: int = None) -> dict:
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+        
+        try:
+            with conexion.cursor() as cursor:
+                if id_perfil_excluir:
+                    # Consulta que excluye el perfil que se está actualizando
+                    query = f"""
+                            SELECT 
+                                COUNT(*) 
+                            FROM  {TBPERFIL} 
+                            WHERE {TBPERFIL_NOMBRE} = %s 
+                            AND {TBPERFIL_ID} != %s"""
+                    cursor.execute(query, (nombre_perfil, id_perfil_excluir))
+                else:
+                    # Consulta normal para creación de nuevo perfil
+                    query = f"""
+                            SELECT 
+                                COUNT(*) 
+                            FROM {TBPERFIL} 
+                            WHERE {TBPERFIL_NOMBRE} = %s"""
+                    cursor.execute(query, (nombre_perfil,))
+                
+                count = cursor.fetchone()[0]
+                
+                return {
+                    'exists': count > 0,
+                    'success': True,
+                    'message': 'Verificación completada'
+                }
+        except Exception as e:
+            logger.error(f'{e} - {traceback.format_exc()}')
+            return {
+                'exists': False,
+                'success': False,
+                'message': 'Ocurrió un error al verificar el nombre del perfil'
+            }
+        finally:
+            if conexion:
+                conexion.close()
+
     def create_perfil(self, perfil: Perfil,listaPermisos): #metodo para crear el perfil en la base de datos
         conexion, resultado = conection() 
         if not resultado["success"]: # si falla la conexion retorna error
             return resultado
-        
         try:
             with conexion.cursor() as cursor: #se utiliza el cursor para las consultas a la base de datos
                 query = f"""INSERT INTO {TBPERFIL}(
