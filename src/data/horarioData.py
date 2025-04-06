@@ -147,9 +147,9 @@ class HorarioData:
             return resultado
 
         # Validar los datos antes de la actualización
-        datos_validos, mensaje = self.validar_datos_horario(horario)
+        """datos_validos, mensaje = self.validar_datos_horario(horario)
         if not datos_validos:
-            return {"success": False, "message": mensaje}
+            return {"success": False, "message": mensaje}"""
 
         id_rol_valido, mensaje_rol = self.validar_id_rol(id_rol)
         if not id_rol_valido:
