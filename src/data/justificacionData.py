@@ -44,7 +44,6 @@ class JustificacionData:
                 query = f"""UPDATE {TBJUSTIFICACION} SET 
                 {TBJUSTIFICACION_ID_EMPLEADO} = %s,
                 {TBJUSTIFICACION_ID_ASISTENCIA} = %s,
-                {TBJUSTIFICACION_FECHA} = %s,
                 {TBJUSTIFICACION_MOTIVO} = %s,
                 {TBJUSTIFICACION_DESCRIPCION} = %s
                 WHERE {TBJUSTIFICACION_ID} = %s"""
@@ -52,7 +51,6 @@ class JustificacionData:
                 cursor.execute(query, (
                     justificacion.id_empleado,
                     justificacion.id_asistencia,
-                    justificacion.fecha,
                     justificacion.motivo,
                     justificacion.descripcion,
                     justificacion.id_justificacion
@@ -84,7 +82,7 @@ class JustificacionData:
             if conexion:
                 conexion.close()
 
-    def list_justificaciones(self, pagina=1, tam_pagina=10, ordenar_por="ID_JUSTIFICACION", tipo_orden="ASC", busqueda=None):
+    def list_justificaciones(self, pagina=1, tam_pagina=10, ordenar_por="fecha", tipo_orden="DESC", busqueda=None):
         conexion, resultado = conection()
         cursor = None
         if not resultado["success"]:
@@ -103,14 +101,15 @@ class JustificacionData:
                     "apellido_empleado": TBPERSONA_APELLIDOS,  # Para ordenar por apellido del empleado
                     "fecha": TBJUSTIFICACION_FECHA  # Para ordenar por fecha
                 }
-                ordenar_por = columna_orden.get(ordenar_por, TBJUSTIFICACION_ID)
+                ordenar_por = columna_orden.get(ordenar_por, TBJUSTIFICACION_FECHA)
 
                 # Asigna el tipo de orden ascendente o descendente
                 tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
 
                 # Construcción de la consulta base
                 query = f"""
-                    SELECT J.*, P.{TBPERSONA_NOMBRE} AS nombre_empleado, P.{TBPERSONA_APELLIDOS} AS apellido_empleado, A.{TBASISTENCIA_FECHA} AS fecha_asistencia
+                    SELECT J.*, P.{TBPERSONA_NOMBRE} AS nombre_empleado, P.{TBPERSONA_APELLIDOS} AS apellido_empleado, 
+                        A.{TBASISTENCIA_FECHA} AS fecha_asistencia
                     FROM {TBJUSTIFICACION} J
                     INNER JOIN EMPLEADO E ON J.{TBJUSTIFICACION_ID_EMPLEADO} = E.ID
                     INNER JOIN {TBPERSONA} P ON E.ID_PERSONA = P.{TBPERSONA_ID}
@@ -128,7 +127,7 @@ class JustificacionData:
                         OR P.{TBPERSONA_NOMBRE} LIKE %s
                         OR P.{TBPERSONA_APELLIDOS} LIKE %s
                     """
-                    valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
+                    valores = [f"%{busqueda}%"] * 6
 
                 # Añadir la cláusula ORDER BY y LIMIT/OFFSET
                 query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"

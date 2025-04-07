@@ -240,11 +240,19 @@ class formJustificacion(QDialog):
     def _obtener_registroId(self, id):
         result = self.Pservices.obtenerJustificacionPorId(id)
         if result["success"]:
-            if result["data"]:
-                justificacion: Justificacion = result["data"]
+            if result["exists"]:
+                justificacion: Justificacion = result["justificacion"]
                 self.idJ = justificacion.id_justificacion
                 self.inputMotivo.setText(justificacion.motivo)
                 self.inputDescripcion.setText(justificacion.descripcion)
+
+                # Cargar el empleado
+                self.comboEmpleado.setCurrentIndex(self.comboEmpleado.findData(justificacion.id_empleado))
+                self._actualizar_asistencias()  # Cargar asistencias para el empleado
+                
+                # Seleccionar la asistencia si existe
+                if justificacion.id_asistencia:
+                    self.comboAsistencia.setCurrentIndex(self.comboAsistencia.findData(justificacion.id_asistencia))
             else:
                 dial = DialogoEmergente("Error", "Hubo un error de carga.", "Error")
                 dial.exec()
@@ -257,7 +265,7 @@ class formJustificacion(QDialog):
     def _accion_justificacion(self):
         id_empleado = self.comboEmpleado.currentData()
         justificacion = Justificacion(
-            id_empleado=id_empleado,  # Cambia esto según tu lógica
+            id_empleado=id_empleado, 
             id_asistencia=self.comboAsistencia.currentData(),  # Obtener el id de asistencia seleccionado
             fecha=date.today(),
             motivo=self.inputMotivo.text(),
