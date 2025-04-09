@@ -50,19 +50,15 @@ class HorarioData:
             # Manejo de errores si algo falla en la consulta
             return False, f"Error al verificar si existe el Id_Rol: {e}"
 
-    def validar_datos_horario(self, horario):
-
+    def validar_datos_horario(self, horario, id_actual=None):
         # Convertir los valores a cadenas en caso de que sean None o de otro tipo
         dias_semanales = (
             str(horario.dias_semanales).strip() if horario.dias_semanales else ""
         )
         tipo_jornada = str(horario.tipo_jornada).strip() if horario.tipo_jornada else ""
-
         nombre_horario = (
             str(horario.nombre_horario).strip() if horario.nombre_horario else ""
         )
-
-        # Valida los datos del horario antes de la inserción.
 
         if not nombre_horario:
             return False, "El nombre de horario es requerido"
@@ -82,14 +78,32 @@ class HorarioData:
         if horario.descripcion and len(horario.descripcion) > 100:
             return False, "La descripción no debe exceder los 100 caracteres."
 
-        # Validación de unicidad para Dias_Semanales y Tipo_Jornada
-        is_unique, message = self.validar_unicidad_jornada(
-            horario.nombre_horario, horario.dias_semanales, horario.tipo_jornada
-        )
-        if not is_unique:
-            return False, message
+        # Validación de unicidad SOLO si es inserción o si los campos clave cambiaron
+        if id_actual is None:
+            is_unique, message = self.validar_unicidad_jornada(
+                nombre_horario, dias_semanales, tipo_jornada
+            )
+            if not is_unique:
+                return False, message
+        else:
+            # Obtiene los datos actuales y compara para ver si realmente cambiaron
+            actual_result = self.get_horario_by_id(id_actual)
+            if not actual_result["success"]:
+                return False, actual_result["message"]
 
-        return True, "Datos válidos."
+            actual = actual_result["data"]
+            if (
+                actual["nombre_horario"] != nombre_horario
+                or actual["dias_semanales"] != dias_semanales
+                or actual["tipo_jornada"] != tipo_jornada
+            ):
+                is_unique, message = self.validar_unicidad_jornada(
+                    nombre_horario, dias_semanales, tipo_jornada, id_actual
+                )
+                if not is_unique:
+                    return False, message
+
+        return True, "Datos válidos"
 
     def validar_unicidad_jornada(
         self, nombre_horario, dias_semanales, tipo_jornada, id=None
@@ -147,9 +161,11 @@ class HorarioData:
             return resultado
 
         # Validar los datos antes de la actualización
-        """datos_validos, mensaje = self.validar_datos_horario(horario)
+        datos_validos, mensaje = self.validar_datos_horario(
+            horario, id_actual=horario.id
+        )
         if not datos_validos:
-            return {"success": False, "message": mensaje}"""
+            return {"success": False, "message": mensaje}
 
         id_rol_valido, mensaje_rol = self.validar_id_rol(id_rol)
         if not id_rol_valido:
