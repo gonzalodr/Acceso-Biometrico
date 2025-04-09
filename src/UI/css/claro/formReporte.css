@@ -1,0 +1,22 @@
+QDialog{
+    background-color: #ffffff;
+}
+
+
+QGroupBox {
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding-top: 15px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    color: #000000;
+    font: 1 11pt "Arial";
+}
+
+QCheckBox{
+    font: 1 10pt "Cooper Black";
+    color:#000000;
+}
