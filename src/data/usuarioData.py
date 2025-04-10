@@ -138,71 +138,88 @@ class UsuarioData:
             if conexion and conexionEx is None:
                 conexion.close()
 
-    def list_usuarios(self, pagina=1, tam_pagina=10, ordenar_por = TBUSUARIO_ID, tipo_orden="ASC", busqueda = None):
+    def list_usuarios(self, pagina=1, tam_pagina=10, ordenar_por="id_usuario", tipo_orden="ASC", busqueda=None):
         conexion, resultado = conection()
         cursor = None
         if not resultado["success"]:
             return resultado
-        
+
         listaUsuarios = []
         try:
-            cursor = conexion.cursor(dictionary=True)  
-            columna_orden = { 
-                "usuario":TBUSUARIO_USUARIO, 
-                "id_persona":TBUSUARIO_ID_PERSONA, 
-            }
-            ordenar_por = columna_orden[ordenar_por] if ordenar_por in columna_orden else TBUSUARIO_ID
-                
-            if tipo_orden != "ASC":
-                tipo_orden = "DESC"
-                
-            query = f"SELECT * FROM {TBUSUARIO} "
-            
-            valores = []
-            if busqueda:
-                query += f"""
-                    WHERE {TBUSUARIO_USUARIO} LIKE %s 
-                    OR {TBUSUARIO_CONTRASENA} LIKE %s
+            with conexion.cursor(dictionary=True) as cursor:
+                # Validación de la columna de ordenamiento
+                columna_orden = {
+                    "usuario": TBUSUARIO_USUARIO,
+                    "id_persona": TBUSUARIO_ID_PERSONA,
+                    "nombre": TBPERSONA_NOMBRE  # Permitir ordenar por nombre
+                }
+                ordenar_por = columna_orden.get(ordenar_por, TBUSUARIO_ID)
+
+                # Asigna el tipo de orden ascendente o descendente
+                tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
+
+                # Construcción de la consulta base con INNER JOIN para obtener el nombre de la persona
+                query = f"""
+                    SELECT U.{TBUSUARIO_ID}, U.{TBUSUARIO_USUARIO}, U.{TBUSUARIO_CONTRASENA}, 
+                        U.{TBUSUARIO_ID_PERSONA}, P.{TBPERSONA_NOMBRE} AS nombre_persona, 
+                        P.{TBPERSONA_APELLIDOS} AS apellido_persona
+                    FROM {TBUSUARIO} U
+                    INNER JOIN {TBPERSONA} P ON U.{TBUSUARIO_ID_PERSONA} = P.{TBPERSONA_ID}
                 """
-                valores = [f"%{busqueda}%"] * 5 
-            
-            query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
-            valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
 
-            cursor.execute(query, valores)
-            
-            registros = cursor.fetchall()
-            for registro in registros:
-                usuario = Usuario(
-                    registro[TBUSUARIO_USUARIO],
-                    registro[TBUSUARIO_CONTRASENA],
-                    registro[TBUSUARIO_ID],
-                    registro[TBUSUARIO_ID_PERSONA],
-                )
-                listaUsuarios.append(usuario)
-                
-            cursor.execute(f"SELECT COUNT(*) as total FROM {TBUSUARIO}")
-            total_registros = cursor.fetchone()["total"]
-            total_paginas = (total_registros + tam_pagina - 1) // tam_pagina  
+                # Añadir cláusula de búsqueda si se proporciona
+                valores = []
+                if busqueda:
+                    query += f"""
+                        WHERE U.{TBUSUARIO_USUARIO} LIKE %s 
+                        OR P.{TBPERSONA_NOMBRE} LIKE %s
+                        OR P.{TBPERSONA_APELLIDOS} LIKE %s
+                    """
+                    valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
 
-            resultado["data"] = {
-                "listaUsuarios": listaUsuarios,
-                "pagina_actual": pagina,
-                "tam_pagina": tam_pagina,
-                "total_paginas": total_paginas,
-                "total_registros": total_registros
-            }
-            resultado["success"] = True
-            resultado["message"] = "Usuarios listados exitosamente."
+                # Añadir la cláusula ORDER BY y LIMIT/OFFSET
+                query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
+                valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
+
+                # Ejecutar la consulta con los parámetros de forma segura
+                cursor.execute(query, valores)
+
+                # Leer los registros
+                registros = cursor.fetchall()
+                for registro in registros:
+                    usuario = {
+                        "id_usuario": registro[TBUSUARIO_ID],
+                        "usuario": registro[TBUSUARIO_USUARIO],
+                        "contrasena": registro[TBUSUARIO_CONTRASENA],
+                        "id_persona": registro[TBUSUARIO_ID_PERSONA],
+                        "nombre_completo": f"{registro['nombre_persona']} {registro['apellido_persona']}"  # Unir nombre y apellido
+                    }
+                    listaUsuarios.append(usuario)
+
+                # Obtener el total de registros para calcular el número total de páginas
+                cursor.execute(f"SELECT COUNT(*) as total FROM {TBUSUARIO}")
+                total_registros = cursor.fetchone()["total"]
+                total_paginas = (total_registros + tam_pagina - 1) // tam_pagina  # Redondear hacia arriba
+
+                resultado["data"] = {
+                    "listaUsuarios": listaUsuarios,
+                    "pagina_actual": pagina,
+                    "tam_pagina": tam_pagina,
+                    "total_paginas": total_paginas,
+                    "total_registros": total_registros
+                }
+                resultado["success"] = True
+                resultado["message"] = "Usuarios listados exitosamente."
+                return resultado
         except Exception as e:
             resultado["success"] = False
             resultado["message"] = f"Error al listar usuarios: {e}"
         finally:
-            if cursor:
-                cursor.close()
             if conexion:
                 conexion.close()
+        
         return resultado
+
    
     def get_usuario_by_id(self, persona_id:int, conexionEx = None):
         conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})

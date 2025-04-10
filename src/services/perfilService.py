@@ -27,11 +27,13 @@ class PerfilServices:
         else:
             return {"success": False, "message": "La descripción del perfil no es válida."}
 
+    def existeNombreRegistrado(self, nombre, idPerfil = None):
+        return self.perfilData.verificar_nombre_perfil(nombre,idPerfil)
     ##
     # Funciones públicas
     ##
 
-    def insertarPerfil(self, perfil: Perfil):
+    def insertarPerfil(self, perfil: Perfil, listaPermisos):
         # Validar datos antes de pasar a la capa de datos
         result = self._validarNombre(perfil.nombre)
         if not result["success"]:
@@ -42,9 +44,9 @@ class PerfilServices:
             return result
 
         # Inserción en la capa de datos
-        return self.perfilData.create_perfil(perfil)
+        return self.perfilData.create_perfil(perfil,listaPermisos)
 
-    def modificarPerfil(self, perfil: Perfil):
+    def modificarPerfil(self, perfil: Perfil, listaPermisos):
         # Validar datos antes de actualizar en la capa de datos
         result = self._validarNombre(perfil.nombre)
         if not result["success"]:
@@ -55,7 +57,7 @@ class PerfilServices:
             return result
 
         # Actualización en la capa de datos
-        return self.perfilData.update_perfil(perfil)
+        return self.perfilData.update_perfil(perfil, listaPermisos)
 
     def eliminarPerfil(self, id):
         # Eliminar rol por ID

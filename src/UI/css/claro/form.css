@@ -121,6 +121,15 @@
 #form #btnregistrar::hover{
     background-color:#00627d;
 }
+#form #btneliminar{
+    background-color:#ff5151;
+    color:white;  
+}
+
+#form #btnAgregar{
+    background-color: #00cb00;
+    color: #000000;
+}
 
 #form #contenedor{
     background-color: #eeeeee;
@@ -180,5 +189,61 @@
 #form #select_foto::Pressed{
     background-color: #00a5cf;
     color:#FFFFFF;
+}
+
+QComboBox{
+    background-color:transparent;
+    font-size:15px;
+    border:none;
+    border-bottom:1px solid #000000;
+    color: #000000; 
+}
+QComboBox QAbstractItemView {
+    color: #000000;
+    border: none;
+    border-left: 2px solid #325fc6;
+    border-right: 2px solid #325fc6;
+    background-color: #ffffff;
+}
+
+QComboBox QAbstractItemView::item:hover {
+    color: #000000;
+    border: none;
+    border-left: 4px solid #325fc6;
+    border-right: 4px solid #325fc6;
+    background-color: #dddddd;
+}
+
+QTreeView{
+    background-color: #ffffff;
+}
+
+/* Estilo para el encabezado del QTreeView */
+QHeaderView::section {
+    background-color: #004e64;
+    color: #FFFFFF; 
+    font: 1 12pt "Cooper Black";
+    padding: 5px; /* Espaciado interno */
+    border: none; /* Borde */
+}
+
+/* Estilo para las ramas del QTreeView */
+QTreeView::item {
+    color: #000000; 
+    background-color: #ffffff; 
+    padding: 5px; 
+    border: 1px solid #efefef;
+}
+/* 
+QTreeView::branch {
+    background: palette(base);
+} */
+
+QTreeView::branch:closed:has-children {
+    border:  #000000; /* Flecha derecha (cerrado) */
+}
+
+QTreeView::branch:open:has-children {
+   border:  #000000;   /* Flecha abajo (abierto) */
 }
 

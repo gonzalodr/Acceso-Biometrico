@@ -202,7 +202,7 @@ class formHorario(QDialog):
         )
 
         if self.idH > 0:  # Si el ID es mayor a 0, se está actualizando
-            result = self.Hservices.modificarHorario(horario)
+            result = self.Hservices.modificarHorario(horario, id_rol)
             if result["success"]:
                 dial = DialogoEmergente("Actualización", result["message"], "Check")
                 dial.exec()
@@ -223,29 +223,61 @@ class formHorario(QDialog):
     def _obtener_registroId(self, id):
         """
         Carga los datos de un horario específico en los campos de entrada.
+        (Versión actualizada para manejar nombre y rol)
         """
         result = self.Hservices.obtenerHorarioPorId(id)
         if result["success"] and result["data"]:
             horario = result["data"]
-            self.idH = horario.id
-            self.inputDias.setText(horario.dias_semanales)
-            self.inputTipoJornada.setText(horario.tipo_jornada)
+            self.idH = horario["id"]
 
-            # Convertimos `horario.hora_inicio` y `horario.hora_fin` a `str` en formato "HH:mm"
-            hora_inicio_str = (datetime.min + horario.hora_inicio).strftime("%H:%M")
-            hora_fin_str = (datetime.min + horario.hora_fin).strftime("%H:%M")
+            # Campos básicos (manteniendo tu estructura original)
+            self.inputNombreHorario.setText(horario["nombre_horario"])
+            self.inputDias.setText(horario["dias_semanales"])
+            self.inputTipoJornada.setText(horario["tipo_jornada"])
+            self.inputDescripcion.setText(horario["descripcion"])
 
-            # Ahora usamos `QTime.fromString` con los valores de cadena
-            self.inputHoraInicio.setTime(QTime.fromString(hora_inicio_str, "HH:mm"))
-            self.inputHoraFin.setTime(QTime.fromString(hora_fin_str, "HH:mm"))
+            # Manejo de horas (versión mejorada)
+            try:
+                # Si las horas vienen como timedelta (formato original)
+                if isinstance(horario["hora_inicio"], timedelta):
+                    hora_inicio_str = (datetime.min + horario["hora_inicio"]).strftime(
+                        "%H:%M"
+                    )
+                    hora_fin_str = (datetime.min + horario["hora_fin"]).strftime(
+                        "%H:%M"
+                    )
+                else:  # Si ya vienen como string
+                    hora_inicio_str = str(horario["hora_inicio"])
+                    hora_fin_str = str(horario["hora_fin"])
 
-            self.inputDescripcion.setText(horario.descripcion)
+                self.inputHoraInicio.setTime(QTime.fromString(hora_inicio_str, "HH:mm"))
+                self.inputHoraFin.setTime(QTime.fromString(hora_fin_str, "HH:mm"))
+            except Exception as e:
+                print(f"Error al convertir horas: {e}")
+                # Establecer horas por defecto si hay error
+                self.inputHoraInicio.setTime(QTime.currentTime())
+                self.inputHoraFin.setTime(QTime.currentTime().addSecs(3600))  # +1 hora
+
+            # Manejo del rol (nuevo)
+            if "rol_id" in horario and horario["rol_id"]:
+                # Buscar el índice del rol actual en el combobox
+                index = self.inputRol.findData(horario["rol_id"])
+                if index >= 0:
+                    self.inputRol.setCurrentIndex(index)
+                else:
+                    print(
+                        f"Advertencia: Rol ID {horario['rol_id']} no encontrado en combobox"
+                    )
+                    self.inputRol.setCurrentIndex(-1)  # Deseleccionar cualquier rol
+            else:
+                print("Advertencia: No se encontró rol_id en los datos del horario")
+                self.inputRol.setCurrentIndex(-1)
+
         else:
-            dial = DialogoEmergente(
-                "Error", "Hubo un error al cargar los datos.", "Error"
-            )
+            error_msg = result.get("message", "Hubo un error al cargar los datos.")
+            dial = DialogoEmergente("Error", error_msg, "Error")
             dial.exec()
-            QTimer.singleShot(0, self.reject)  # Cierra el formulario si hay un error
+            QTimer.singleShot(0, self.reject)
 
     def _validar_campos(self):
         """

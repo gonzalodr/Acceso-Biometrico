@@ -1,0 +1,32 @@
+class Attendance(object):
+    def __init__(self, user_id, timestamp, status, punch=0, uid=0):
+        self.uid = uid # not really used any more
+        self.user_id = user_id
+        self.timestamp = timestamp
+        self.status = status
+        self.punch = punch
+
+La clase Attendance representa un registro de asistencia en sistemas 
+de control de acceso, típicamente usado con dispositivos ZKTeco.
+
+Atributos
+    uid (int):              Identificador único del registro. 
+                            Actualmente marcado como no utilizado.
+
+    user_id (str/int):      Identificador del usuario asociado al 
+                            registro de asistencia.
+
+    timestamp (datetime):   Marca de tiempo del evento de asistencia.
+
+    status (int):           Estado del registro de asistencia. 
+                            Los valores comunes incluyen:
+                                0: Check-in (entrada)
+                                1: Check-out (salida)
+                                Otros valores pueden indicar estados 
+                                especiales según el dispositivo
+    punch (int):            Tipo de marcación. Puede indicar el método 
+                            de autenticación usado:
+                                0: Contraseña
+                                1: Huella digital
+                                2: Tarjeta
+                            etc. (depende del dispositivo)

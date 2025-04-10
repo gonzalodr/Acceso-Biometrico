@@ -12,6 +12,7 @@ from UI.AdministrarPermisosRol.AdminPermisosRol import *
 from UI.AdministrarPermisosPerfil.AdminPermisosPerfil import *
 from UI.AdministrarEmpleado.administrarEmpleado import *
 from UI.AdministrarAsistencia.AdminAsistencia import *
+from UI.AdministrarUsuario.adminUsuario import *
 from models.usuario import *
 import sys
 
@@ -162,6 +163,12 @@ class vistaPrincipal(QWidget):
             self.listaOpciones.append((index, "Admin. Empleados", "employees.png"))
 
         if True:
+           adminUsuario = AdminUsuario(parent=self)
+           adminUsuario.cerrar_adminU.connect(self._salir_crud)
+           index = self.stackVistas.addWidget(adminUsuario)
+           self.listaOpciones.append((index, "Administrar Usuarios", "management.png"))
+
+        if True:
             AdminDepart = AdminDepartament(parent=self)
             AdminDepart.cerrar_adminD.connect(self._salir_crud)
             index = self.stackVistas.addWidget(AdminDepart)
@@ -191,7 +198,7 @@ class vistaPrincipal(QWidget):
             adminpermisosperfil = AdminPermisosPerfil()
             adminpermisosperfil.cerrar_adminP.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminpermisosperfil)
-            self.listaOpciones.append((index,"Admin. permisos perfil",'access-control-list.png'))
+            self.listaOpciones.append((index,"Perfiles de usuario",'access-control-list.png'))
             
                  
         if True:
