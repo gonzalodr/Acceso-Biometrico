@@ -691,7 +691,8 @@ class formEmpleado(QDialog):
         
         ##cargar departamento y rol
         index = self.inDep.findData(departamen)
-        self.inDep.setCurrentIndex(index if index >= 0 else None)
+        self.inDep.setCurrentIndex(index if index >= 0 else -1)
+
 
         if dictRolEmp:
             index = self.inRol.findData(dictRolEmp.get('id_rol'))

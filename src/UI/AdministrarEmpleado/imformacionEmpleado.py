@@ -6,6 +6,8 @@ from PySide6.QtGui import QPixmap
 from services.empleadoServices import EmpleadoServices
 from models.persona import Persona
 from models.usuario import Usuario
+from models.departamento import Departamento
+from services.departamentoService import DepartamentoServices 
 
 from UI.DialogoEmergente import DialogoEmergente
 from Utils.Utils import *
@@ -126,7 +128,13 @@ class informacionEmpleado(QDialog):
         usuario:Usuario = datos.get('usuario')  #objeto Usuario
         dictPerfil = datos.get('pefilUsuario')  #diccionario
         dictRolEmp = datos.get('rolEmpleado')   #diccionario
-        departamen = datos.get('departamento')  #int
+        departamen: Departamento = datos.get('departamento')  # objeto Departamento
+        #departamen = datos.get('departamento')  # objeto Departamento o None
+        print("Departamento recibido:", departamen)
+        print("Tipo:", type(departamen))
+
+
+        #departamen = datos.get('departamento')  #int
         listaTelef = datos.get('listaTelefonos')#telefonos del usuario
 
         # Cargar la foto si está disponible
@@ -168,9 +176,16 @@ class informacionEmpleado(QDialog):
 
         #Cargar el rol y el departamento
         if dictRolEmp or departamen:
-            self.dept_input = QLineEdit(str(departamen))
+            #self.dept_input = QLineEdit(str(departamen))
+            nombre_departamento = 'Sin departamento asignado'
+    
+            if departamen is not None:
+                if isinstance(departamen, str):
+            # Si es un string (nombre del departamento)
+                        nombre_departamento = departamen  # Usar directamente el nombre del departamento
+            self.dept_input = QLineEdit(nombre_departamento)
 
-            id_rol = dictRolEmp.get('id_rol') if isinstance(dictRolEmp,dict) else 'Sin Rol asignado asignado'
+            id_rol = dictRolEmp.get('id_rol') if isinstance(dictRolEmp,dict) else 'Sin Rol asignado'
             self.role_input = QLineEdit(str(id_rol))
             
             self.role_input.setReadOnly(True)
