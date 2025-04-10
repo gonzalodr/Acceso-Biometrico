@@ -61,7 +61,7 @@ class AsistenciaData:
             {TBASISTENCIA_ID_EMPLEADO} = %s,
             {TBASISTENCIA_FECHA} = %s,
             {TBASISTENCIA_ESTADO_ASISTENCIA} = %s
-            WHERE {TBREPORTE_ID} = %s"""
+            WHERE {TBASISTENCIA_ID} = %s"""
             
             #define la consulta SQL pasando los valores actualizados del  objetos reporte
             cursor.execute(query, (
