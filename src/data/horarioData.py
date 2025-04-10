@@ -508,3 +508,41 @@ class HorarioData:
         except Exception as e:
             print(f"Error al obtener horario por nombre, días y tipo: {e}")
             return None
+
+    def delete_horario(self, horario_id):
+        """
+        Elimina un horario existente en la base de datos, incluyendo sus relaciones en Rol horario.
+        """
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+
+        try:
+            conexion.start_transaction()
+            with conexion.cursor(dictionary=True) as cursor:
+                # 1. Primero eliminamos las relaciones en rol_horario del horario asociado
+                delete_relaciones = f"""
+                DELETE FROM {TBROLHORARIO} 
+                WHERE {TBROLHORARIO_ID_HORARIO} = %s
+                """
+                cursor.execute(delete_relaciones, (horario_id,))
+
+                # 2. Luego eliminamos el horario de horario
+                delete_horario = f"""
+                DELETE FROM {TBHORARIO} 
+                WHERE {TBHORARIO_ID} = %s
+                """
+                cursor.execute(delete_horario, (horario_id,))
+
+                conexion.commit()
+
+                return {
+                    "success": True,
+                    "message": "Horario y sus relaciones eliminados exitosamente.",
+                }
+
+        except Exception as e:
+            conexion.rollback()
+            return {"success": False, "message": f"Error al eliminar horario: {e}"}
+        finally:
+            conexion.close()
