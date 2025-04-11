@@ -15,6 +15,10 @@ QGroupBox {
     color: #000000;
     font: 1 11pt "Arial";
 }
+QLabel{
+    font: 1 10pt "Cooper Black";
+    color:#000000;
+}
 
 QCheckBox{
     font: 1 10pt "Cooper Black";

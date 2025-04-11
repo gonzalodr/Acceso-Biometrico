@@ -29,9 +29,9 @@ class GenerarReporte(QDialog):
         layoutTipoReporte = QVBoxLayout()
         
         self.checkJustificacion = QCheckBox("Justificaciones")
-        self.checkAsistencia = QCheckBox("Asistencias")
-        self.checkPermiso = QCheckBox("Permisos")
-        self.checkTodo = QCheckBox("Todo")
+        self.checkAsistencia    = QCheckBox("Asistencias")
+        self.checkPermiso       = QCheckBox("Permisos")
+        self.checkTodo          = QCheckBox("Todo")
         self.checkTodo.stateChanged.connect(self.SeleccionTodoTipoReporte)
         
         layoutTipoReporte.addWidget(self.checkJustificacion)

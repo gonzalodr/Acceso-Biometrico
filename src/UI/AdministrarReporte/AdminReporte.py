@@ -3,13 +3,14 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from Utils.Utils import *
 from UI.AdministrarReporte.formReporte import *
+from UI.AdministrarReporte.formGenerarReporte import GenerarReporte
 from services.reporteService import *
 from services.empleadoServices import *
 from settings.logger import logger
 from settings.variable import *
 
 class AdminReporte(QWidget):
-    cerrar_adminR = Signal()
+    signalCerrar = Signal()
     paginaActual = 1
     ultimaPagina = 1
     busqueda = None
@@ -44,41 +45,22 @@ class AdminReporte(QWidget):
         minimoTamBtn = QSize(120,40)
 
         ##botones de arriba
-        self.btnCerrar = QPushButton(text="Cerrar");
-        self.btnCerrar.setFixedSize(minimoTamBtn)
-        self.btnCerrar.setCursor(Qt.PointingHandCursor)
-        self.btnCerrar.clicked.connect(self._cerrar)
-        Sombrear(self.btnCerrar,20,0,0)
-        
         self.inputBuscar = QLineEdit()
         self.inputBuscar.setClearButtonEnabled(True)
         self.inputBuscar.setPlaceholderText("Buscar reporte.")
         self.inputBuscar.setFixedSize(QSize(500,30))
-        self.inputBuscar.textChanged.connect(self._cargar_tabla)
+        self.inputBuscar.textChanged.connect(self.cargarTabla)
         Sombrear(self.inputBuscar,20,0,0)
-        
-        self.btnBuscar = QPushButton(text="Buscar")
-        self.btnBuscar.setCursor(Qt.PointingHandCursor)
-        self.btnBuscar.setFixedSize(minimoTamBtn)
-        self.btnBuscar.clicked.connect(self._buscarEmpleado) ##revicen que el metonod _buscarPermisos haga bien su trabajp
-        Sombrear(self.btnBuscar,20,0,0)
 
-        self.btnCrear = QPushButton(text="Crear")
-        self.btnCrear.setCursor(Qt.PointingHandCursor)
-        self.btnCrear.setFixedSize(minimoTamBtn)
-        self.btnCrear.setObjectName("crear")
-        self.btnCrear.clicked.connect(self._crear_reporte) ##esto no se mueve
-        Sombrear(self.btnCrear,20,0,0)
-    
-    ##acomodando botones de arriba en el layout
+        ##acomodando botones de arriba en el layout
         layoutTop.addSpacing(25)
-        layoutTop.addWidget(self.btnCerrar,1)
+        layoutTop.addWidget(self.crearBoton('Cerrar',minimoTamBtn,self.cerrarAdminReporte))
         layoutTop.addStretch(1)
         layoutTop.addWidget(self.inputBuscar,2)
         layoutTop.addSpacing(10)
-        layoutTop.addWidget(self.btnBuscar,2)
+        layoutTop.addWidget(self.crearBoton('Buscar',minimoTamBtn,self.buscarRegistro))
         layoutTop.addStretch(1)
-        layoutTop.addWidget(self.btnCrear,2)
+        layoutTop.addWidget(self.crearBoton('Generar Reporte',minimoTamBtn,self.crearReporte))
         layoutTop.addStretch(5)
         self.layoutFrame.addLayout(layoutTop)
         
@@ -89,7 +71,6 @@ class AdminReporte(QWidget):
             self.tbReporte.setColumnCount(5)# Establece 3 columnas
         header_labels = ["Empleado", "Fecha Generación", "Tipo Reporte", "Contenido", "Acciones"]
         self.tbReporte.setHorizontalHeaderLabels(header_labels)
-
         self.tbReporte.horizontalHeader().setFixedHeight(40) # Establece una altura fija para los encabezados
         self.tbReporte.verticalHeader().setVisible(False)# Oculta los encabezados verticales
         self.tbReporte.horizontalHeader().setStretchLastSection(True) # Hace que la última sección de la tabla se estire
@@ -108,42 +89,15 @@ class AdminReporte(QWidget):
         layoutButtom.setContentsMargins(10, 10, 10, 40)  # Establece márgenes alrededor de los botones
         layoutButtom.setSpacing(5)  # Define el espacio entre los botones
 
-        # Botón para ir a la primera página
-        self.btnPrimerPagina = QPushButton(text="Primera Página.")
-        self.btnPrimerPagina.setFixedSize(minimoTamBtn)
-        self.btnPrimerPagina.setCursor(Qt.PointingHandCursor) # Cambia el cursor al pasar sobre el botón
-        self.btnPrimerPagina.setEnabled(False)
-        self.btnPrimerPagina.clicked.connect(self._irPrimeraPagina)
-        Sombrear(self.btnPrimerPagina, 20, 0, 0)
-
-        # Botón para ir a la página anterior
-        self.btnAnterior = QPushButton(text="Anterior")
-        self.btnAnterior.setEnabled(False)
-        self.btnAnterior.setCursor(Qt.PointingHandCursor)
-        self.btnAnterior.setFixedSize(minimoTamBtn)
-        self.btnAnterior.clicked.connect(self._irAnteriorPagina)
-        Sombrear(self.btnAnterior, 20, 0, 0)
-
         # Etiqueta para mostrar el número de la página actual
         self.lblNumPagina = QLabel(text="Página 0 de 0 páginas")
         self.lblNumPagina.setFixedSize(QSize(170, 40))
         self.lblNumPagina.setAlignment(Qt.AlignCenter)
-
-        # Botón para ir a la página siguiente
-        self.btnSiguiente = QPushButton(text="Siguiente")
-        self.btnSiguiente.setCursor(Qt.PointingHandCursor)
-        self.btnSiguiente.setEnabled(False)
-        self.btnSiguiente.setFixedSize(minimoTamBtn)
-        self.btnSiguiente.clicked.connect(self._irSiguientePagina)
-        Sombrear(self.btnSiguiente, 20, 0, 0)
-        
-         # Botón para ir a la última página
-        self.btnUltimaPagina = QPushButton(text="Última Página.")
-        self.btnUltimaPagina.setCursor(Qt.PointingHandCursor)
-        self.btnUltimaPagina.setEnabled(False)
-        self.btnUltimaPagina.setFixedSize(minimoTamBtn)
-        self.btnUltimaPagina.clicked.connect(self._irUltimaPagina)
-        Sombrear(self.btnUltimaPagina, 20, 0, 0)
+   
+        self.btnPrimerPagina= self.crearBoton("Primer pagina",minimoTamBtn,self._irPrimeraPagina,False)
+        self.btnAnterior    = self.crearBoton("Anterior",minimoTamBtn,self._irAnteriorPagina,False)
+        self.btnSiguiente   = self.crearBoton("Siguiente",minimoTamBtn,self._irSiguientePagina,False)
+        self.btnUltimaPagina= self.crearBoton("Ultima pagina",minimoTamBtn,self._irUltimaPagina,False)
         
         layoutButtom.addWidget(self.btnPrimerPagina)
         layoutButtom.addSpacing(10)
@@ -161,113 +115,85 @@ class AdminReporte(QWidget):
         layout.addWidget(frame) # Añadir el frame al layout principal
         self.setLayout(layout)# Establecer el layout del widget
         Sombrear(self, 30, 0, 0)
-        self._cargar_tabla()
+        self.cargarTabla()
 
-    def _cerrar(self):
+    def crearBoton(self,text:str,fixedSize:QSize, functionConnect,enable:bool = True,cursorType=Qt.PointingHandCursor)->QPushButton:
+        boton = QPushButton(text)
+        boton.setEnabled(enable)
+        boton.setFixedSize(fixedSize)
+        boton.setCursor(cursorType)
+        boton.clicked.connect(functionConnect)
+        Sombrear(boton,20,0,0)
+        return boton
+    
+    def cerrarAdminReporte(self):
          # Emitir una señal para cerrar la ventana
-        self.cerrar_adminR.emit()
+        self.signalCerrar.emit()
         
-    def _mostrar_mensaje_sin_datos(self):
-        # Si la tabla está vacía, agregar una fila con el mensaje "Sin datos"
+    def mensajeEstadoTabla(self, mensaje:str):
         self.tbReporte.setRowCount(0)
-        if self.tbReporte.rowCount() == 0: # Si no hay filas
-            self.tbReporte.setRowCount(1)# Establecer una fila para mostrar el mensaje
-            item = QTableWidgetItem("Sin datos")
-            item.setTextAlignment(Qt.AlignCenter)
-            self.tbReporte.setItem(0, 0, item)# Establecer el item en la primera celda
-            for col in range(1, self.tbReporte.columnCount()):
-                self.tbReporte.setItem(0, col, QTableWidgetItem(""))  # Celdas vacías
-            self.tbReporte.setSpan(0, 0, 1, self.tbReporte.columnCount())# Hacer que el mensaje ocupe toda la f
+        self.tbReporte.setRowCount(1) 
+        self.addItemTable(0,0,mensaje)
+        self.tbReporte.setSpan(0, 0, 1, self.tbReporte.columnCount())# Hacer que el mensaje ocupe toda la f
             
-    def _cargar_tabla(self):
-          # Método para cargar los datos en la tabla
-        
-
+    def cargarTabla(self):
+         # Método para cargar los datos en la tabla
         result = self.reporteServices.obtenerListaReporte(pagina=self.paginaActual, tam_pagina=10, tipo_orden="DESC", busqueda=self.busqueda)
-        if result["success"]:
-            listaReporte = result["data"]["listaReportes"] # Obtener la lista de perfiles     
-            
-            
-            if len(listaReporte) > 0:
-                paginaActual = result["data"]["pagina_actual"]
-                tamPagina = result["data"]["tam_pagina"]
-                totalPaginas = result["data"]["total_paginas"]
-                totalRegistros = result["data"]["total_registros"]
+        if not result["success"]:
+            self.mensajeEstadoTabla('Error de conexion.')
+            return
+        
+        listaReporte = result["data"]["listaReportes"]
+        if len(listaReporte) == 0:
+            self.mensajeEstadoTabla('No se encontraron registros que coincidan con la busqueda.' if self.busqueda else 'No hay registros.')
+            return
+
+        paginaActual    = result["data"]["pagina_actual"]
+        tamPagina       = result["data"]["tam_pagina"]
+        totalPaginas    = result["data"]["total_paginas"]
+        totalRegistros  = result["data"]["total_registros"]
                 
-                self._actualizar_lblPagina(paginaActual, totalPaginas)
-                self._actualizarValoresPaginado(paginaActual, totalPaginas)
-                
-                self.tbReporte.setRowCount(0)
-                print("🔍 Datos recibidos en _cargar_tabla:")
-                for reporte in listaReporte:
-                    print(f"- Nombre: {reporte['nombre_empleado']}, Fecha: {reporte['reporte'].fecha_generacion}, Tipo: {reporte['reporte'].tipo_reporte}, Contenido: {reporte['reporte'].contenido}")
+        self.actualizarLabelPagina(paginaActual, totalPaginas)
+        self.actualizarBtnPagina(paginaActual, totalPaginas)
+        
+        self.tbReporte.setRowCount(0)
+        for index, reporte in enumerate(listaReporte):  # Iterar sobre la lista de perfiles
+            self.tbReporte.insertRow(index)# Insertar una nueva fila en la tabla
+            self.tbReporte.setRowHeight(index, 45) # Establecer la altura de la fila
 
-                for index, reporte in enumerate(listaReporte):  # Iterar sobre la lista de perfiles
-                    self.tbReporte.insertRow(index)# Insertar una nueva fila en la tabla
-                    self.tbReporte.setRowHeight(index, 45) # Establecer la altura de la fila
+            # Agregar los datos del perfil a la tabla
+            self.addItemTable(index, 0, str(reporte['nombre_empleado'])) 
+            self.addItemTable(index, 1, reporte["reporte"].fecha_generacion.strftime("%Y-%m-%d"))
+            self.addItemTable(index, 2, reporte["reporte"].tipo_reporte)
+            self.addItemTable(index, 3, reporte["reporte"].contenido)
 
- # Agregar los datos del perfil a la tabla
-                
-                    #print(f"✅ Insertando en fila {index}: {reporte.nombre_persona}")  # DEPURACIÓN SI PONE reporte.id_empleado carga el id
-                    self.addItem_a_tabla(index, 0, str(reporte['nombre_empleado'])) 
+            layout = QHBoxLayout()
+            layout.addWidget(self.crearBtnAccion('Editar','btneditar',reporte["reporte"].id,self.editarReporte))
+            layout.addSpacing(15)
+            layout.addWidget(self.crearBtnAccion('Eliminar','btneliminar',reporte["reporte"].id,self._eliminarRegistro))
 
-                   
-                    #self.addItem_a_tabla(index, 1, reporte.fecha_generacion.strftime("%Y-%m-%d"))  # Formatear fecha
-                    self.addItem_a_tabla(index, 1, reporte["reporte"].fecha_generacion.strftime("%Y-%m-%d"))
-
-
-                    #self.addItem_a_tabla(index, 2, reporte.tipo_reporte)# Agregar el nombre del perfil a la columna 0
-                    #self.addItem_a_tabla(index, 3, reporte.contenido)
-                    self.addItem_a_tabla(index, 2, reporte["reporte"].tipo_reporte)
-                    self.addItem_a_tabla(index, 3, reporte["reporte"].contenido)
-
-
-
-                    # Botones para editar y eliminar
-                    btnEliminar = QPushButton("Eliminar")
-                    #btnEliminar.clicked.connect(lambda checked, idx=reporte.id: self._eliminarRegistro(idx))
-                    btnEliminar.clicked.connect(lambda checked, idx=reporte["reporte"].id: self._eliminarRegistro(idx))
-
-                    btnEliminar.setMinimumSize(QSize(80, 35))# Establecer el tamaño mínimo del botón
-                    btnEliminar.setStyleSheet("""   QPushButton{background-color:#ff5151;color:white;}
-                                                    QPushButton::hover{background-color:#ff0000;color:white;}
-                                              """)# Estilo del botón
-
-                    btnEditar = QPushButton("Editar")
-                    #btnEditar.clicked.connect(lambda checked, idx=reporte.id: self._editar_Reporte(idx))
-                    btnEditar.clicked.connect(lambda checked, idx=reporte["reporte"].id: self._editar_Reporte(idx))
-
-                    btnEditar.setMinimumSize(QSize(80, 35))
-                    btnEditar.setStyleSheet(""" QPushButton{background-color:#00b800;color:white;}
-                                                QPushButton::hover{background-color:#00a800;color:white;}
-                                            """)
-
-                    
-                    button_widget = QWidget()
-                    button_widget.setStyleSheet(u"background-color:transparent;")
-                    layout = QHBoxLayout()
-                    layout.addWidget(btnEditar)
-                    layout.addSpacing(15)
-                    layout.addWidget(btnEliminar)
-                    button_widget.setLayout(layout)
-                    layout.setContentsMargins(10, 0, 10,0)
-
-                    self.tbReporte.setCellWidget(index, 4, button_widget)
-            else:
-                self._mostrar_mensaje_sin_datos()
-        else:
-            self._mostrar_mensaje_sin_datos()
+            button_widget = QWidget()
+            button_widget.setLayout(layout)
+            layout.setContentsMargins(10, 0, 10,0)
+            self.tbReporte.setCellWidget(index, 4, button_widget)
             
-            
-    def addItem_a_tabla(self,row, colum,dato):
+    def crearBtnAccion(self,text:str,objectName:str,id_empleado:int,functionAction):
+        boton = QPushButton(text,parent=self.tbReporte)
+        boton.setObjectName(objectName)
+        boton.setMinimumSize(QSize(80,35))
+        boton.setMaximumWidth(100)
+        boton.clicked.connect(lambda: functionAction(id_empleado))
+        return boton
+    
+    def addItemTable(self,row, colum,dato):
         dato_item = QTableWidgetItem(dato)
         dato_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # No editable
         self.tbReporte.setItem(row, colum, dato_item)
 
-    def _actualizar_lblPagina(self, paginaActual, totalPaginas):
+    def actualizarLabelPagina(self, paginaActual, totalPaginas):
         self.lblNumPagina.setText(f"Página {paginaActual} de {totalPaginas} páginas.")
 
-    def _actualizarValoresPaginado(self, paginaActual, totalPaginas):
+    def actualizarBtnPagina(self, paginaActual, totalPaginas):
         self.paginaActual = paginaActual
         self.ultimaPagina = totalPaginas
         self.btnSiguiente.setEnabled(paginaActual < totalPaginas)
@@ -275,19 +201,22 @@ class AdminReporte(QWidget):
         self.btnPrimerPagina.setEnabled(paginaActual > 1)
         self.btnAnterior.setEnabled(paginaActual > 1)
 
-    def _buscarEmpleado(self):
-        self.busqueda = self.inputBuscar.text()
-        self.paginaActual = 1
-        self._cargar_tabla()
+    def buscarRegistro(self):
+        input_busqueda = self.inputBuscar.text()
+        if input_busqueda:
+            self.busqueda = input_busqueda
+            self.cargarTabla()
+            self.busqueda = None
+        else:
+            self.paginaActual = 1
+            self.cargarTabla()
         
-    def _crear_reporte(self):
-        blur_effect = QGraphicsBlurEffect(self)
-        blur_effect.setBlurRadius(10)
-        self.setGraphicsEffect(blur_effect)
-        reporte_form = formReporte()
-        reporte_form.exec()
-        self._cargar_tabla()
-        self.setGraphicsEffect(None)
+    def crearReporte(self):
+        reporteForm = GenerarReporte()
+        reporteForm.exec()
+        # reporte_form = formReporte()
+        # reporte_form.exec()
+        self.cargarTabla()
 
     def _eliminarRegistro(self, id_reporte):
         dial = DialogoEmergente(
@@ -302,36 +231,31 @@ class AdminReporte(QWidget):
                 if result["success"]:
                     dial = DialogoEmergente("","Se elimino el registro correctamente.","Check")
                     dial.exec()
-                    self._cargar_tabla()
+                    self.cargarTabla()
                 else:
                     dial = DialogoEmergente("","Hubo un error al eliminar este registro.","Error")
                     dial.exec()
                     
                     
-    def _editar_Reporte(self, id_reporte):
-        blur_effect = QGraphicsBlurEffect(self)
-        blur_effect.setBlurRadius(10)
-        self.setGraphicsEffect(blur_effect) # Aplicar efecto de desenfoque
+    def editarReporte(self, id_reporte):
         reporte_form = formReporte(id=id_reporte)# Abrir el formulario de edición
         reporte_form.exec()
-        self._cargar_tabla()
-        self._cargar_tabla()
-        self.setGraphicsEffect(None)# Quitar el efecto de desenfoque
+        self.cargarTabla()
 
     def _irPrimeraPagina(self):
         self.paginaActual = 1
-        self._cargar_tabla()
+        self.cargarTabla()
 
     def _irAnteriorPagina(self):
         if self.paginaActual > 1:
             self.paginaActual -= 1
-            self._cargar_tabla()
+            self.cargarTabla()
 
     def _irSiguientePagina(self):
         if self.paginaActual < self.ultimaPagina:
             self.paginaActual += 1
-            self._cargar_tabla()
+            self.cargarTabla()
 
     def _irUltimaPagina(self):
         self.paginaActual = self.ultimaPagina
-        self._cargar_tabla()
+        self.cargarTabla()
