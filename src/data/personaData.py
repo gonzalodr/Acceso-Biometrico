@@ -308,4 +308,3 @@ class PersonaData:
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
-
