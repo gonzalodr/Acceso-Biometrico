@@ -52,15 +52,23 @@ class formAsistencia(QDialog):
         self.inputFecha = QDateEdit()
         self.inputFecha.setCalendarPopup(True)
         self.inputFecha.setDate(QDate.currentDate())
-        self.inputFecha.setMinimumDate(QDate.currentDate())  # Bloquear fechas anteriores
-        self.inputFecha.setMaximumDate(QDate.currentDate())  # Bloquear fechas posteriores
+        
+        if id is None:  # Crear nuevo reporte
+            self.inputFecha.setMinimumDate(QDate.currentDate())  # Bloquear fechas anteriores
+            self.inputFecha.setMaximumDate(QDate.currentDate())  # Bloquear fechas posteriores
+        else:  # Editar reporte
+            self.inputFecha.setMinimumDate(QDate(2000, 1, 1))  # Permitir fechas de hace años
+            self.inputFecha.setMaximumDate(QDate.currentDate())  # Bloquear fechas futuras
+        
+       
         # Acceder al QCalendarWidget asociado al QDateEdit
         self.calendar = self.inputFecha.calendarWidget()
-        self.calendar.setMinimumDate(QDate.currentDate())  # Bloquear fechas anteriores
-        self.calendar.setMaximumDate(QDate.currentDate())  # Bloquear fechas posterio
+        self.calendar.setMinimumDate(self.inputFecha.minimumDate())  # Bloquear fechas anteriores
+        self.calendar.setMaximumDate(self.inputFecha.maximumDate())  # Bloquear fechas posteriores
         layoutForm.addWidget(lblFecha, 1, 0)
         layoutForm.addWidget(self.inputFecha, 2, 0)
         Sombrear(self.inputFecha, 20, 0, 0)
+
 
         # Tipo de reporte
         lblEstado = QLabel(text="Estado Asistencia:")
@@ -239,6 +247,9 @@ class formAsistencia(QDialog):
                  # Convertir fecha a QDate antes de asignarla
                 fecha_qt = QDate(asistencia.fecha.year, asistencia.fecha.month, asistencia.fecha.day)
                 self.inputFecha.setDate(fecha_qt)
+                  # Restringir la fecha máxima a hoy
+                self.inputFecha.setMaximumDate(QDate.currentDate())
+                
                 self.inputEstado.setCurrentText(asistencia.estado_asistencia)
                 
             else:

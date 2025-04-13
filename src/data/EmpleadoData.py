@@ -18,6 +18,7 @@ from data.empleado_RolData import EmpleadoRolData
 from data.departamentoData import DepartamentoData
 from data.usuario_PerfilData import UsuarioPerfilData
 from data.rolData import RolData
+from services.departamentoService import DepartamentoServices 
 
 
 
@@ -30,6 +31,7 @@ class EmpleadoData:
         self.telefonoData = TelefonoData()
         self.depaData   = DepartamentoData()
         self.rolData    = RolData()
+        self.depaService = DepartamentoServices()
 
     '''
     Registra los datos del empleado, persona, creación de usuarios, asignación de rol y de departamento
@@ -477,7 +479,11 @@ class EmpleadoData:
                 data = cursor.fetchone()
                 if data:
                     #departamento
-                    departamento = data[TBEMPLEADO_DEPARTAMENTO]
+                    departamento_id = data[TBEMPLEADO_DEPARTAMENTO]
+                    result = self.depaService.obtenerDepartamentoPorId(departamento_id)
+                    if not result['success']:
+                        return result
+                    departamento = result['departamento']
                     
                     #extraer la persona
                     result = self.personadata.get_persona_by_id(data[TBEMPLEADO_PERSONA],conexion)
@@ -522,7 +528,7 @@ class EmpleadoData:
                             'usuario':usuario,
                             'pefilUsuario':perfilUsuario,
                             'rolEmpleado':rolEmpleado,
-                            'departamento':departamento,
+                            'departamento':departamento.nombre,
                             'listaTelefonos':listaTelefonos
                         },
                         'success':True,
