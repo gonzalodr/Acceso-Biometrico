@@ -160,10 +160,9 @@ class AdminReporte(QWidget):
         for index, reporte in enumerate(listaReporte):  # Iterar sobre la lista de perfiles
             self.tbReporte.insertRow(index)# Insertar una nueva fila en la tabla
             self.tbReporte.setRowHeight(index, 45) # Establecer la altura de la fila
-
             # Agregar los datos del perfil a la tabla
             self.addItemTable(index, 0, str(reporte['nombre_empleado'])) 
-            self.addItemTable(index, 1, reporte["reporte"].fecha_generacion.strftime("%Y-%m-%d"))
+            self.addItemTable(index, 1, format_Fecha(reporte["reporte"].fecha_generacion))
             self.addItemTable(index, 2, reporte["reporte"].tipo_reporte)
             self.addItemTable(index, 3, reporte["reporte"].contenido)
 

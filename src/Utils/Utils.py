@@ -111,24 +111,40 @@ def cargar_icono(Qpushbutton:QPushButton,icono:str,Size:QSize = None):
     except Exception as e:
         print(f'Error: {e}')
 
-def format_Fecha(fecha:str):
-        año, mes, dia = fecha.split("-")
-        meses = {
-            '01': 'enero',
-            '02': 'febrero',
-            '03': 'marzo',
-            '04': 'abril',
-            '05': 'mayo',
-            '06': 'junio',
-            '07': 'julio',
-            '08': 'agosto',
-            '09': 'septiembre',
-            '10': 'octubre',
-            '11': 'noviembre',
-            '12': 'diciembre'
-        }
-        mes_nombre = meses[mes]
-        return f"{int(dia)} de {mes_nombre} del {año}"
+def format_Fecha(fecha):
+    fecha = str(fecha)
+    partes = fecha.split(' ')
+    fecha_parte = partes[0]
+    hora_parte = partes[1] if len(partes) > 1 else None
+    
+    # Procesar la parte de la fecha
+    año, mes, dia = fecha_parte.split("-")
+    meses = {
+        '01': 'enero',
+        '02': 'febrero',
+        '03': 'marzo',
+        '04': 'abril',
+        '05': 'mayo',
+        '06': 'junio',
+        '07': 'julio',
+        '08': 'agosto',
+        '09': 'septiembre',
+        '10': 'octubre',
+        '11': 'noviembre',
+        '12': 'diciembre'
+    }
+    mes_nombre = meses[mes]
+    
+    if hora_parte:
+        hh, mn, sec = hora_parte.split(':')
+    else:
+        hh, mn, sec = '00', '00', '00'
+    
+    resultado = f"{int(dia)} de {mes_nombre} del {año}"
+    if hora_parte:
+        resultado += f", {hh}:{mn}:{sec}"
+    
+    return resultado
 
 def parse_date(date_str: str) -> date:
     """Convierte string 'dd-mm-yyyy' a objeto date"""
