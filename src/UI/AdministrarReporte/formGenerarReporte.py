@@ -90,6 +90,8 @@ class GenerarReporte(QDialog):
         self.inputRuta = QLineEdit()
         self.inputRuta.setPlaceholderText("Seleccione una ruta para guardar el reporte")
         btnBuscarRuta = QPushButton("Examinar...")
+        btnBuscarRuta.setMinimumSize(50, 20)
+
         btnBuscarRuta.clicked.connect(self.BuscarRuta)
         layoutRuta.addWidget(self.inputRuta)
         layoutRuta.addWidget(btnBuscarRuta)

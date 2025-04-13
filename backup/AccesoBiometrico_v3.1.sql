@@ -1,9 +1,3 @@
---Crear la base de datos
-CREATE DATABASE IF NOT EXISTS accesobiometrico;
-
---Usar la base de datos
-USE accesobiometrico;
-
 CREATE TABLE `Asistencia`
 (
         `Id`                int PRIMARY KEY NOT NULL AUTO_INCREMENT ,
