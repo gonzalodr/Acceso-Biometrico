@@ -1,6 +1,6 @@
 from models.perfil      import Perfil
 from data.data          import conection
-from settings.tablas    import *
+from settings.config    import *
 from settings.logger    import logger
 from data.permisosPerfilData import PermisosPerfilData
 import traceback

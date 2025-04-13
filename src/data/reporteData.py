@@ -1,5 +1,5 @@
 from data.EmpleadoData import Empleado
-from settings.tablas import *       #obtener los nombres de tablas
+from settings.config import *       #obtener los nombres de tablas
 from models.reporte import Reporte #importa la clase de reportes 
 from data.data import conection # importa la funcion de conection para crear la conexion enla base de datos
 
@@ -8,6 +8,7 @@ from mysql.connector import Error
   # Asegúrate de importar correctamente desde 'settings.loggers'
 from settings.config import *
 from settings.logger import logger
+from datetime        import date
 
 
 
@@ -283,4 +284,10 @@ class ReporteData:
         
         return resultado
         
-  
+    def obtener_datos_para_reporte(self,limit:int,offset:int,tipoReporte:str='todo', id_empleado:int = None, rangoFechas:dict[str,date]= None):
+        try:
+
+        except Exception as e:
+            logger.error(f'{e}')
+            return {'succces':False, 'message':'Ocurrio un error al obtener los datos para el reporte.'}
+        pass

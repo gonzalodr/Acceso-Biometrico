@@ -1,5 +1,5 @@
 from data.data import conection     #obtener la conexión
-from settings.tablas import (TBROLEMPLEADO,TBROLEMPLEADO_ID,
+from settings.config import (TBROLEMPLEADO,TBROLEMPLEADO_ID,
                             TBROLEMPLEADO_ID_EMPLEADO,TBROLEMPLEADO_ID_ROL)     #obtener los nombres de tablas
 from settings.logger import logger  #recolectar los errores 
 from mysql.connector import Error   #controlador de errores
