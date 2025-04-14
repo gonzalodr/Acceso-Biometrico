@@ -119,6 +119,54 @@ class formUsuario(QDialog):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(5)
 
+        label_error.setObjectName("lblerror")
+        label_error.setMaximumHeight(25)
+        label_error.setMinimumHeight(25)
+        label_error.setWordWrap(True)
+
+        layout.addWidget(label)
+        layout.addWidget(input)
+        layout.addWidget(label_error)
+        return layout
+    
+    def _cargar_empleados(self):
+        result = self.Pempleado.obtener_empleados_sin_usuario()  # Llama al servicio para obtener empleados sin usuario
+        if result["success"]:
+            for empleado in result["data"]["listaEmpleadosSinUsuario"]:
+                # Asegúrate de que empleado['nombre_completo'] esté disponible
+                if 'nombre_completo' in empleado:
+                    # Agrega el nombre completo al combo box
+                    self.comboEmpleado.addItem(empleado['nombre_completo'], empleado['empleado_id'])
+                else:
+                    print("Error: 'nombre_completo' no está disponible en el empleado")
+        else:
+            dial = DialogoEmergente("Error", "No se pudieron cargar los empleados sin usuario.", "Error")
+            dial.exec()
+
+    def _cargar_perfiles(self):
+        result = self.Pperfil.obtenerListaPerfil()  # Llama al servicio para obtener la lista de perfiles
+        if result["success"]:
+            for perfil in result["data"]["listaPerfiles"]:
+                # Asegúrate de que perfil sea una instancia de Perfil
+                if isinstance(perfil, Perfil):
+                    # Agrega el nombre del perfil al combo box
+                    self.comboPerfil.addItem(perfil.nombre, perfil.id)
+                else:
+                    print("Error: perfil no es una instancia de Perfil")
+        else:
+            dial = DialogoEmergente("Error", "No se pudieron cargar los perfiles.", "Error")
+            dial.exec()
+
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.Enter:  # Mouse Enter
+            if isinstance(source, QLineEdit):
+                text = source.placeholderText()
+                QToolTip.showText(event.globalPos(), text, source)
+        elif event.type() == QEvent.Leave:  # Mouse Leave
+            if isinstance(source, QLineEdit):
+                QToolTip.hideText()
+        return super().eventFilter(source, event)
+
     def __accion_checkbox(self):
         if self.checkVerContrasena.isChecked():
             self.inputContrasena.setEchoMode(QLineEdit.Normal)  # Cambiar a inputContrasena
