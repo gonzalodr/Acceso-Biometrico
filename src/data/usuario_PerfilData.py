@@ -3,6 +3,7 @@ from settings.tablas import (TBUSUARIOPERFIL,TBUSUARIOPERFIL_ID,
                              TBUSUARIOPERFIL_ID_USER,TBUSUARIOPERFIL_ID_PERF)      #obtener los nombres de tablas
 from settings.logger import logger  #recolectar los errores 
 from mysql.connector import Error   #controlador de errores
+from settings.config import *
 '''
     Conexión a la tabla de la relación 
     de usuario y perfil.
@@ -123,11 +124,13 @@ class UsuarioPerfilData:
         try:
             with conexion.cursor() as cursor:
                 query=f'''SELECT 
-                        {TBUSUARIOPERFIL_ID},
-                        {TBUSUARIOPERFIL_ID_PERF},
-                        {TBUSUARIOPERFIL_ID_USER}
-                        FROM {TBUSUARIOPERFIL}
-                        WHERE {TBUSUARIOPERFIL_ID_USER} = %s'''
+                        up.{TBUSUARIOPERFIL_ID},
+                        up.{TBUSUARIOPERFIL_ID_PERF},
+                        up.{TBUSUARIOPERFIL_ID_USER},
+                        p.{TBPERFIL_NOMBRE} AS nombre_perfil
+                        FROM {TBUSUARIOPERFIL} up
+                        INNER JOIN {TBPERFIL} p ON up.{TBUSUARIOPERFIL_ID_PERF} = p.{TBPERFIL_ID}
+                        WHERE up.{TBUSUARIOPERFIL_ID_USER} = %s'''
                 
                 cursor.execute(query,(id_usuario,))
                 data = cursor.fetchone()
@@ -140,7 +143,10 @@ class UsuarioPerfilData:
                         'usuarioPerfil':{
                             'id':data[0],
                             'id_perfil':data[1],
-                            'id_usuario':data[2]
+                            'id_usuario':data[2],
+                            'nombre_perfil': data[3]
+                            
+                            
                         }
                     }
                 else:
