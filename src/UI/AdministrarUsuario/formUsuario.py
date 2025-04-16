@@ -6,7 +6,7 @@ from Utils.Utils import *
 from models.usuario import Usuario
 from models.perfil import Perfil
 
-from services.empleadoServices import EmpleadoServices
+from services.personaService import PersonaServices
 from services.perfilService import PerfilServices
 from services.usuarioService import UsuarioServices
 from UI.DialogoEmergente import DialogoEmergente
@@ -17,7 +17,7 @@ import re
 class formUsuario(QDialog):
     update: bool = False
     Uservices = UsuarioServices()
-    Pempleado = EmpleadoServices()
+    Ppersona = PersonaServices()
     Pperfil = PerfilServices()
     idU = 0
 
@@ -44,12 +44,12 @@ class formUsuario(QDialog):
         layoutForm.setHorizontalSpacing(45)
         layoutForm.setVerticalSpacing(1)
 
-        # Crear el ComboBox para seleccionar el empleado
-        lblEmpleado = QLabel(text="Empleado")
-        self.comboEmpleado = QComboBox()
-        self.comboEmpleado.setPlaceholderText("Seleccione un empleado")
-        self.errorEmpleado = QLabel()
-        Sombrear(self.comboEmpleado, 20, 0, 0)
+        # Crear el ComboBox para seleccionar la persona
+        lblPersona = QLabel(text="Nombre")
+        self.comboPersona = QComboBox()
+        self.comboPersona.setPlaceholderText("Seleccione un nombre")
+        self.errorPersona = QLabel()
+        Sombrear(self.comboPersona, 20, 0, 0)
 
         # Crear los labels, inputs y labels de error
         lblUsuario = QLabel(text="Usuario")
@@ -79,7 +79,7 @@ class formUsuario(QDialog):
         Sombrear(self.checkVerContrasena, 30, 0, 5)
 
         layoutForm.addLayout(self._contenedor(lblUsuario, self.inputUsuario, self.errorUsuario), 0, 0)  # Fila 0, Columna 0
-        layoutForm.addLayout(self._contenedor(lblEmpleado, self.comboEmpleado, self.errorEmpleado), 1, 0)  # Fila 2, Columna 0
+        layoutForm.addLayout(self._contenedor(lblPersona, self.comboPersona, self.errorPersona), 1, 0)  # Fila 2, Columna 0
         layoutForm.addLayout(self._contenedor(lblPerfil, self.comboPerfil, self.errorPerfil), 2, 0)  # Fila 3, Columna 0
         layoutForm.addLayout(self._contenedor(lblContrasena, self.inputContrasena, self.errorContrasena), 3, 0)  # Contraseña en la fila 1
         layoutForm.addWidget(self.checkVerContrasena, 4, 0)  # Checkbox en la fila 2
@@ -112,6 +112,12 @@ class formUsuario(QDialog):
         layout.addWidget(frame)
         self.setLayout(layout)
 
+        # Cargar personas después de inicializar todos los widgets
+        self._cargar_personas()
+
+        # Cargar perfiles después de inicializar todos los widgets
+        self._cargar_perfiles()
+
 
 
     def _contenedor(self, label: QLabel, input: QLineEdit, label_error: QLabel):
@@ -129,18 +135,18 @@ class formUsuario(QDialog):
         layout.addWidget(label_error)
         return layout
     
-    def _cargar_empleados(self):
-        result = self.Pempleado.obtener_empleados_sin_usuario()  # Llama al servicio para obtener empleados sin usuario
+    def _cargar_personas(self):
+        result = self.Ppersona.obtenerListaPersonasSinUsuario() 
         if result["success"]:
-            for empleado in result["data"]["listaEmpleadosSinUsuario"]:
-                # Asegúrate de que empleado['nombre_completo'] esté disponible
-                if 'nombre_completo' in empleado:
-                    # Agrega el nombre completo al combo box
-                    self.comboEmpleado.addItem(empleado['nombre_completo'], empleado['empleado_id'])
-                else:
-                    print("Error: 'nombre_completo' no está disponible en el empleado")
+            for persona in result["data"]:
+                
+                id_persona = persona['id_persona']
+                nombre_completo = persona['nombre_completo']
+                
+               
+                self.comboPersona.addItem(nombre_completo, id_persona)
         else:
-            dial = DialogoEmergente("Error", "No se pudieron cargar los empleados sin usuario.", "Error")
+            dial = DialogoEmergente("Error", "No se pudieron cargar las personas sin usuario.", "Error")
             dial.exec()
 
     def _cargar_perfiles(self):
@@ -166,6 +172,57 @@ class formUsuario(QDialog):
             if isinstance(source, QLineEdit):
                 QToolTip.hideText()
         return super().eventFilter(source, event)
+    
+    def _cancelar_registro(self):
+        if self._validar_inputs_sin_con_datos():
+            dialEmergente = DialogoEmergente("¿?", "¿Estás seguro que quieres cancelar?", "Question", True, True)
+            opcion = dialEmergente.exec()
+            if opcion == QDialog.Accepted:
+                self.reject()
+        else:
+            self.reject()
+
+    def _validar_campos(self):
+        if self._validar_inputs_vacios():
+            dialEmergente = DialogoEmergente("Advertencia", "Llene todos los campos.", "Warning")
+            dialEmergente.exec()
+            return False
+        if not self.comboPerfil.currentData(): 
+            Sombrear(self.comboPerfil, 20, 0, 0, "red")
+            return False
+        return True
+
+    def _validar_inputs_vacios(self):
+        vacios = False
+
+        if not self.inputUsuario.text().strip():
+            Sombrear(self.inputUsuario, 20, 0, 0, "red")
+            vacios = True
+        else:
+            Sombrear(self.inputUsuario, 20, 0, 0)
+
+        if not self.inputContrasena.text().strip():
+            Sombrear(self.inputContrasena, 20, 0, 0, "red")
+            vacios = True
+        else:
+            Sombrear(self.inputContrasena, 20, 0, 0)
+
+        if not self.comboPersona.currentData():  # Verifica si no hay una persona seleccionado
+            Sombrear(self.comboPersona, 20, 0, 0, "red")
+            vacios = True
+        else:
+            Sombrear(self.comboPersona, 20, 0, 0)
+
+        if not self.comboPerfil.currentData():  # Verifica si no hay empleado seleccionado
+            Sombrear(self.comboPerfil, 20, 0, 0, "red")
+            vacios = True
+        else:
+            Sombrear(self.comboPerfil, 20, 0, 0)
+
+        return vacios
+
+    def _validar_inputs_sin_con_datos(self):
+        return self.inputUsuario.text().strip() or self.inputUsuario.text().strip()
 
     def __accion_checkbox(self):
         if self.checkVerContrasena.isChecked():
@@ -174,3 +231,5 @@ class formUsuario(QDialog):
         else:
             self.inputContrasena.setEchoMode(QLineEdit.Password)  # Cambiar a inputContrasena
             Sombrear(self.checkVerContrasena, 30, 0, 5)
+
+    

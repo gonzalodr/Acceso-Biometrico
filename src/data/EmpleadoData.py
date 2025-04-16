@@ -660,46 +660,4 @@ class EmpleadoData:
 
         return resultado
     
-    def obtener_empleados_sin_usuario(self):
-        conexion, resultado = conection()
-        if not resultado["success"]:
-            return resultado
-
-        listaEmpleadosSinUsuario = []
-        try:
-            with conexion.cursor(dictionary=True) as cursor:
-                # Consulta para obtener empleados sin usuario
-                query = f"""
-                    SELECT 
-                        e.{TBEMPLEADO_ID} AS empleado_id,
-                        p.{TBPERSONA_ID} AS persona_id,
-                        CONCAT(p.{TBPERSONA_NOMBRE}, ' ', p.{TBPERSONA_APELLIDOS}) AS nombre_completo
-                    FROM {TBEMPLEADO} e
-                    INNER JOIN {TBPERSONA} p ON e.{TBEMPLEADO_PERSONA} = p.{TBPERSONA_ID}
-                    LEFT JOIN {TBUSUARIO} u ON p.{TBPERSONA_ID} = u.{TBUSUARIO_ID_PERSONA}
-                    WHERE u.{TBUSUARIO_ID_PERSONA} IS NULL
-                """
-                cursor.execute(query)
-                registros = cursor.fetchall()
-
-                # Procesar resultados
-                for data in registros:
-                    listaEmpleadosSinUsuario.append({
-                        'empleado_id': data['empleado_id'],
-                        'persona_id': data['persona_id'],
-                        'nombre_completo': data['nombre_completo']
-                    })
-
-                return {
-                    "data": {
-                        "listaEmpleadosSinUsuario": listaEmpleadosSinUsuario,
-                    },
-                    "success": True,
-                    "message": "Empleados sin usuario listados exitosamente."
-                }
-        except Error as e:
-            logger.error(f"Error al obtener empleados sin usuario: {e}")
-            return {"success": False, "message": "Ocurrió un error al obtener los empleados sin usuario."}
-        finally:
-            if conexion:
-                conexion.close()
+    

@@ -308,3 +308,49 @@ class PersonaData:
         finally:
             if conexion and conexionEx is None:
                 conexion.close()
+
+
+    def list_personas_sin_usuario(self):
+        conexion, resultado = conection()
+        cursor = None
+        if not resultado["success"]:
+            return resultado
+        
+        lista_personasSinUsuario = []  # Cambiamos a una lista de diccionarios
+        try:
+            cursor = conexion.cursor(dictionary=True)
+            
+            # Consulta para obtener los nombres y el ID de las personas que no tienen un usuario
+            query = f"""
+                SELECT 
+                    {TBPERSONA_ID}, 
+                    {TBPERSONA_NOMBRE}, 
+                    {TBPERSONA_APELLIDOS} 
+                FROM {TBPERSONA} 
+                WHERE {TBPERSONA_ID} NOT IN (SELECT {TBUSUARIOIDPERSONA} FROM {TBUSUARIO})
+            """
+            
+            cursor.execute(query)
+            registros = cursor.fetchall()
+            
+            for registro in registros:
+                nombre_completo = f"{registro[TBPERSONA_NOMBRE]} {registro[TBPERSONA_APELLIDOS]}"
+                # Agregar un diccionario con el id y el nombre completo
+                lista_personasSinUsuario.append({
+                    "id_persona": registro[TBPERSONA_ID],
+                    "nombre_completo": nombre_completo
+                })
+            
+            resultado["data"] = lista_personasSinUsuario  # Guardar la lista de diccionarios
+            resultado["success"] = True
+            resultado["message"] = "Personas sin usuario listadas exitosamente."
+        except Exception as e:
+            resultado["success"] = False
+            resultado["message"] = f"Error al listar personas sin usuario: {e}"
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
+        
+        return resultado

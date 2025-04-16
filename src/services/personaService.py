@@ -80,4 +80,7 @@ class PersonaServices:
     def obtenerPersonaPorId(self, id):
         return self.personaData.get_persona_by_id(id)
     
+    def obtenerListaPersonasSinUsuario(self):
+        return self.personaData.list_personas_sin_usuario()
+    
     
