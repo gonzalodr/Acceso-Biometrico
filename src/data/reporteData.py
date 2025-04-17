@@ -1,11 +1,17 @@
 from data.EmpleadoData  import Empleado
-from settings.config    import *       #obtener los nombres de tablas
-from models.reporte     import Reporte #importa la clase de reportes 
-from data.data          import conection # importa la funcion de conection para crear la conexion enla base de datos
+from settings.config    import *      
+
+from data.data          import conection
 from mysql.connector    import Error 
 from settings.config    import *
 from settings.logger    import logger
-from datetime           import date
+from datetime           import date,datetime
+
+from models.reporte     import Reporte 
+from models.asistencia  import Asistencia
+from models.solicitud_permisos  import SolicitudPermiso
+from models.justificacion       import Justificacion
+
 
 
 
@@ -281,79 +287,154 @@ class ReporteData:
         
         return resultado
         
-    def obtener_datos_para_reporte(self,limit:int,offset:int, tipoReporte:str='todo', departamento:int = None,rol:int = None, id_empleado:int = None, rangoFechas:dict[str,date]= None):
-        # conexion, resultado = conection()
-        # if not resultado['success']:
-        #     return resultado
+    def obtener_datos_para_reporte(self, limit: int= None, offset: int = None, tipoReporte: str = 'todo', departamento: int = None, rol: int = None, id_empleado: int = None, rangoFechas: dict[str, date] = None):
+        conexion, resultado = conection()
+        if not resultado['success']:
+            return resultado
         try:
-            # with conexion.cursor(dictionary=True) as cursor:
+            with conexion.cursor(dictionary=True) as cursor:
                 datosSelect = []
                 leftJoin    = []
                 condicion   = []
                 valores     = ()
 
                 if rangoFechas:
-                    if len(rangoFechas) < 2:
-                        return {'success':False, 'message':'Error de fechas no proporcionadas correctamente.'}
-
-
-                if id_empleado:
-                    condicion.append(f'E.{TBEMPLEADO_ID} == %s')
-                    valores += (id_empleado,)
-                    pass
+                    if len(rangoFechas) != 2:
+                        return {'success': False, 'message': 'Error: Se requieren exactamente 2 fechas (inicio y fin)'}
+                    try:
+                        # Convertir strings a objetos date
+                        fecha_inicio    = datetime.strptime(rangoFechas[0], '%Y-%m-%d').date()
+                        fecha_fin       = datetime.strptime(rangoFechas[1], '%Y-%m-%d').date()
+                        
+                        if fecha_inicio > fecha_fin:
+                            return {'success': False, 'message': 'La fecha de inicio no puede ser mayor que la fecha fin'}
+                        rangoFechas = [fecha_inicio,fecha_fin]
+                    except ValueError:
+                        return {'success': False, 'message': 'Formato de fecha inválido. Use YYYY-MM-DD'}
 
                 if tipoReporte:
-                    if tipoReporte  == 'justificacion'  or tipoReporte == 'todo':
-                        leftJoin.append(F'LEFT JOIN {TBJUSTIFICACION} J ON J.{TBJUSTIFICACION_ID_EMPLEADO} == E.{TBEMPLEADO_ID}')
-                        datosSelect.append(f'J.{TBJUSTIFICACION_ID}')
-                        datosSelect.append(f'J.{TBJUSTIFICACION_ID_EMPLEADO}')
-                        datosSelect.append(f'J.{TBJUSTIFICACION_ID_ASISTENCIA}')
-                        datosSelect.append(f'J.{TBJUSTIFICACION_FECHA}')
-                        datosSelect.append(f'J.{TBJUSTIFICACION_MOTIVO}')
-                        datosSelect.append(f'J.{TBJUSTIFICACION_DESCRIPCION}')
+                    if tipoReporte == 'justificacion' or tipoReporte == 'todo':
+                        leftJoin.append(f'LEFT JOIN {TBJUSTIFICACION} J ON J.{TBJUSTIFICACION_ID_EMPLEADO} = E.{TBEMPLEADO_ID}')
                         if rangoFechas:
-                            condicion.append(f'J.{TBJUSTIFICACION_FECHA} >= %s')
-                            valores += (rangoFechas[0],)
-                            condicion.append(f'J.{TBJUSTIFICACION_FECHA} <= %s')
-                            valores += (rangoFechas[1],)
-
-                    if tipoReporte  == 'asistencias'    or tipoReporte == 'todo':
-                        leftJoin.append(f'LEFT JOIN {TBASISTENCIA} A ON A.{TBASISTENCIA_ID_EMPLEADO} == E.{TBEMPLEADO_ID}')
-                        datosSelect.append(f'A.{TBASISTENCIA_ID}')
-                        datosSelect.append(f'A.{TBASISTENCIA_ID_EMPLEADO}')
-                        datosSelect.append(f'A.{TBASISTENCIA_FECHA}')
-                        datosSelect.append(f'A.{TBASISTENCIA_ESTADO_ASISTENCIA}')
-                        if rangoFechas:
-                            condicion.append(f'A.{TBASISTENCIA_FECHA} >= %s')
-                            valores += (rangoFechas[0],)
-                            condicion.append(f'A.{TBASISTENCIA_FECHA} <= %s')
-                            valores += (rangoFechas[1],)
+                            leftJoin[-1] += f' AND (J.{TBJUSTIFICACION_FECHA} >= %s AND J.{TBJUSTIFICACION_FECHA} <= %s )'
+                            valores += (rangoFechas[0], rangoFechas[1])
                         
-                    if tipoReporte  == 'permisos'       or tipoReporte == 'todo':
-                        leftJoin.append(f'LEFT JOIN {TBSOLICITUDPERMISOS} SP ON SP.{TBSOLICITUDPERMISOS_ID_EMPLEADO} == E.{TBEMPLEADO_ID}')
-                        datosSelect.append(f'SP.{TBSOLICITUDPERMISOS_ID}')
-                        datosSelect.append(f'SP.{TBSOLICITUDPERMISOS_ID_EMPLEADO}')
-                        datosSelect.append(f'SP.{TBSOLICITUDPERMISOS_TIPO}')
-                        datosSelect.append(f'SP.{TBSOLICITUDPERMISOS_FECHA_INICIO}')
-                        datosSelect.append(f'SP.{TBSOLICITUDPERMISOS_FECHA_FIN}')
-                        datosSelect.append(f'SP.{TBSOLICITUDPERMISOS_DESCRIPCION}')
-                        datosSelect.append(f'SP.{TBSOLICITUDPERMISOS_ESTADO}')
+                        datosSelect.extend([
+                            f'J.{TBJUSTIFICACION_ID}            AS JustificacionId',
+                            f'J.{TBJUSTIFICACION_ID_EMPLEADO}   AS JustificacionIdEmpleado',
+                            f'J.{TBJUSTIFICACION_ID_ASISTENCIA} AS JustificacionIdAsistencia',
+                            f'J.{TBJUSTIFICACION_FECHA}         AS JustificacionFecha',
+                            f'J.{TBJUSTIFICACION_MOTIVO}        AS JustificacionMotivo',
+                            f'J.{TBJUSTIFICACION_DESCRIPCION}   AS JustificacionDescripcion'
+                        ])
+
+                    if tipoReporte == 'asistencias' or tipoReporte == 'todo':
+                        leftJoin.append(f'LEFT JOIN {TBASISTENCIA} A ON A.{TBASISTENCIA_ID_EMPLEADO} = E.{TBEMPLEADO_ID}')
                         if rangoFechas:
-                            condicion.append(f'SP.{TBSOLICITUDPERMISOS_FECHA_INICIO} >= %s')
-                            valores += (rangoFechas[0],)
-                            condicion.append(f'SP.{TBSOLICITUDPERMISOS_FECHA_FIN} <= %s')
-                            valores += (rangoFechas[1],)
+                            leftJoin[-1] += f' AND (A.{TBASISTENCIA_FECHA} >= %s AND A.{TBASISTENCIA_FECHA} <= %s)'
+                            valores += (rangoFechas[0],rangoFechas[1])
+                        
+                        datosSelect.extend([
+                            f'A.{TBASISTENCIA_ID}                   AS AsistenciaId',
+                            f'A.{TBASISTENCIA_ID_EMPLEADO}          AS AsistenciaIdEmpleado',
+                            f'A.{TBASISTENCIA_FECHA}                AS AsistenciaFecha',
+                            f'A.{TBASISTENCIA_ESTADO_ASISTENCIA}    AS AsistenciaEstado'
+                        ])
+                                
+                    if tipoReporte == 'permisos' or tipoReporte == 'todo':
+                        leftJoin.append(f'LEFT JOIN {TBSOLICITUDPERMISOS} SP ON SP.{TBSOLICITUDPERMISOS_ID_EMPLEADO} = E.{TBEMPLEADO_ID}')
+                        if rangoFechas:
+                            leftJoin[-1] += f' AND (SP.{TBSOLICITUDPERMISOS_FECHA_INICIO} <= %s AND SP.{TBSOLICITUDPERMISOS_FECHA_FIN} >= %s)'
+                            valores += (rangoFechas[1], rangoFechas[0])  # Nota el orden invertido para el solapamiento
+                        
+                        datosSelect.extend([
+                            f'SP.{TBSOLICITUDPERMISOS_ID}           AS PermisoId',
+                            f'SP.{TBSOLICITUDPERMISOS_ID_EMPLEADO}  AS PermisoIdEmpleado',
+                            f'SP.{TBSOLICITUDPERMISOS_TIPO}         AS PermisoTipo',
+                            f'SP.{TBSOLICITUDPERMISOS_FECHA_INICIO} AS PermisoFechaInicio',
+                            f'SP.{TBSOLICITUDPERMISOS_FECHA_FIN}    AS PermisoFechaFin',
+                            f'SP.{TBSOLICITUDPERMISOS_DESCRIPCION}  AS PermisoDescripcion',
+                            f'SP.{TBSOLICITUDPERMISOS_ESTADO}       AS PermisoEstado'
+                        ])
+                        
+                if id_empleado:
+                    condicion.append(f'E.{TBEMPLEADO_ID} = %s')
+                    valores += (id_empleado,)
+
+                # Construcción de la consulta
+                query = f'''SELECT 
+                                P.{TBPERSONA_CEDULA}    AS CedulaPersona,
+                                P.{TBPERSONA_NOMBRE}    AS NombrePersona,
+                                P.{TBPERSONA_APELLIDOS} AS ApellidosPersona,
+                                
+                                {',\n'.join(datosSelect) if datosSelect else ''} 
+                            FROM {TBEMPLEADO} E 
+                            INNER JOIN {TBPERSONA} P ON P.{TBPERSONA_ID} = E.{TBEMPLEADO_PERSONA}
+                            {'\n'.join(leftJoin)}'''
                 
+                if condicion:
+                    query += f'\nWHERE {" AND ".join(condicion)}'
+                
+                # Agregar paginación
+                if limit and offset: query += f'\nLIMIT {limit} OFFSET {offset}'
 
-                    
-                query =f'''SELECT \n {',\n'.join(datosSelect)} \n FROM {TBEMPLEADO} E \n{'\n'.join(leftJoin)} \nWHERE {'\n AND '.join(condicion)}'''
-    
+                cursor.execute(query,valores)
+                datos = cursor.fetchall()
 
-                print(query)
-                print(valores)
-
-
+                datosReporte = []
+                if datos:
+                    for reporte in datos:
+                        datosEmpleadoReporte = {}
+                        
+                        datosEmpleadoReporte['nombre']      = reporte['NombrePersona']
+                        datosEmpleadoReporte['apellidos']   = reporte['ApellidosPersona']
+                        datosEmpleadoReporte['cedula']      = reporte['ApellidosPersona']
+                        
+                        if (tipoReporte == 'justificacion' or tipoReporte == 'todo') and reporte['JustificacionId']:
+                            justificacion = Justificacion(
+                                id              = reporte['JustificacionId'],
+                                id_empleado     = reporte['JustificacionIdEmpleado'],
+                                id_asistencia   = reporte['JustificacionIdAsistencia'],
+                                fecha           = reporte['JustificacionFecha'],
+                                motivo          = reporte['JustificacionMotivo'],
+                                descripcion     = reporte['JustificacionDescripcion']
+                            )
+                            datosEmpleadoReporte['justificacion'] =justificacion
+                        
+                        if (tipoReporte == 'asistencias' or tipoReporte == 'todo') and reporte['AsistenciaId']:
+                            asistencia = Asistencia(
+                                id          = reporte['AsistenciaId'],
+                                id_empleado = reporte['AsistenciaIdEmpleado'],
+                                fecha       = reporte['AsistenciaFecha'],
+                                estado_asistencia = reporte['AsistenciaEstado']
+                            )
+                            datosEmpleadoReporte['asistencia'] = asistencia
+                        
+                        if (tipoReporte == 'permisos' or tipoReporte == 'todo') and reporte['PermisoId']:
+                            permiso = SolicitudPermiso(
+                                id          = reporte['PermisoId'],
+                                id_empleado = reporte['PermisoIdEmpleado'],
+                                tipo        = reporte['PermisoTipo'],
+                                fecha_inicio= reporte['PermisoFechaInicio'],
+                                fecha_fin   = reporte['PermisoFechaFin'],
+                                descripcion = reporte['PermisoDescripcion'],
+                                estado      = reporte['PermisoEstado']
+                            )
+                            datosEmpleadoReporte['permisos'] = permiso
+                        
+                        
+                        datosReporte.append(datosEmpleadoReporte)
+                        
+                    return{
+                        'success':True,
+                        'reporte':datosReporte,
+                        'message':'Se obtuvieron los datos correctamente.'
+                    }
+                else:
+                    return {'success': True,'reporte':datosReporte,'message': 'No se encontraron datos'}
         except Exception as e:
             logger.error(f'{e}')
-            return {'succces':False, 'message':'Ocurrio un error al obtener los datos para el reporte.'}
-        pass
+            return {'success': False, 'message': 'Ocurrió un error al obtener los datos para el reporte.'}
+        finally:
+            if conexion: conexion.close()
+        
