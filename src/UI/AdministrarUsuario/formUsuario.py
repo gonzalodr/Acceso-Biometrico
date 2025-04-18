@@ -118,6 +118,9 @@ class formUsuario(QDialog):
         # Cargar perfiles después de inicializar todos los widgets
         self._cargar_perfiles()
 
+        if id:
+            self._obtener_registroId(id)
+
 
 
     def _contenedor(self, label: QLabel, input: QLineEdit, label_error: QLabel):
@@ -223,13 +226,71 @@ class formUsuario(QDialog):
 
     def _validar_inputs_sin_con_datos(self):
         return self.inputUsuario.text().strip() or self.inputUsuario.text().strip()
+    
+
+    def _obtener_registroId(self, id):
+        result = self.Uservices.obtenerUsuarioPorId(id)  # Cambiar a obtenerUsuarioPorId
+        if result["success"]:
+            if result["exists"]:
+                usuario: Usuario = result["usuario"]
+                self.idU = usuario.id  # Cambiar a idU
+                self.inputUsuario.setText(usuario.usuario)  # Asignar el usuario
+                self.inputContrasena.setText(usuario.contrasena)  # Asignar la contraseña
+
+                # Cargar el empleado
+                self.comboPersona.setCurrentIndex(self.comboPersona.findData(usuario.id_persona))
+                self.comboPerfil.setCurrentIndex(self.comboPerfil.findData(usuario.id_perfil))  # Cargar el perfil
+
+            else:
+                dial = DialogoEmergente("Error", "Hubo un error de carga.", "Error")
+                dial.exec()
+                QTimer.singleShot(0, self.reject)
+        else:
+            dial = DialogoEmergente("Error", "Hubo un error de carga.", "Error")
+            dial.exec()
+            QTimer.singleShot(0, self.reject)
+
+    def _accion_usuario(self):
+
+        id_persona = self.comboPersona.currentData()  
+
+        id_perfil = self.comboPerfil.currentData()
+        
+ 
+        usuario = Usuario(
+            id_persona=id_persona,  
+            usuario=self.inputUsuario.text(),
+            contrasena=self.inputContrasena.text(),
+        )
+        
+        if self._validar_campos():
+            if self.idU > 0: 
+                result = self.Uservices.modificarUsuario(usuario) 
+                if result["success"]:
+                    dial = DialogoEmergente("Actualización", result["message"], "Check")
+                    dial.exec()
+                    self.reject()
+                else:
+                    dial = DialogoEmergente("Error", "Error al actualizar el usuario", "Error")
+                    dial.exec()
+            else:
+               
+                result = self.Uservices.insertarUsuario(usuario, id_perfil)  
+                if result["success"]:
+                    print(f"ID Persona: {id_persona}, ID Perfil: {id_perfil}") 
+                    dial = DialogoEmergente("Registrar", "Usuario registrado exitosamente", "Check")
+                    dial.exec()
+                    self.reject()
+                else:
+                    dial = DialogoEmergente("Error", "Error al registrar el usuario", "Error")
+                    dial.exec()
 
     def __accion_checkbox(self):
         if self.checkVerContrasena.isChecked():
-            self.inputContrasena.setEchoMode(QLineEdit.Normal)  # Cambiar a inputContrasena
+            self.inputContrasena.setEchoMode(QLineEdit.Normal)  
             Sombrear(self.checkVerContrasena, 30, 0, 5, "green")
         else:
-            self.inputContrasena.setEchoMode(QLineEdit.Password)  # Cambiar a inputContrasena
+            self.inputContrasena.setEchoMode(QLineEdit.Password)  
             Sombrear(self.checkVerContrasena, 30, 0, 5)
 
     
