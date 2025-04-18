@@ -9,8 +9,11 @@ from datetime           import date,datetime
 
 from models.reporte     import Reporte 
 from models.asistencia  import Asistencia
+from models.rol         import Rol
+from models.departamento        import Departamento
 from models.solicitud_permisos  import SolicitudPermiso
 from models.justificacion       import Justificacion
+
 
 
 
@@ -287,7 +290,7 @@ class ReporteData:
         
         return resultado
         
-    def obtener_datos_para_reporte(self, limit: int= None, offset: int = None, tipoReporte: str = 'todo', departamento: int = None, rol: int = None, id_empleado: int = None, rangoFechas: dict[str, date] = None):
+    def obtener_datos_para_reporte(self, limit: int= None, offset: int = None, tipoReporte: str = 'todo', id_departamento: int = None, id_rol: int = None, id_empleado: int = None, rangoFechas: dict[str, date] = None):
         conexion, resultado = conection()
         if not resultado['success']:
             return resultado
@@ -361,13 +364,38 @@ class ReporteData:
                     condicion.append(f'E.{TBEMPLEADO_ID} = %s')
                     valores += (id_empleado,)
 
+                
+                leftJoin.append(F'INNER JOIN {TBDEPARTAMENTO} D ON D.{TBDEPARTAMENTO_ID} = E.{TBEMPLEADO_DEPARTAMENTO} ')
+                if id_departamento:
+                    leftJoin[-1] += f' AND D.{TBDEPARTAMENTO_ID} = %s'
+                    valores += (id_departamento,)
+                    
+                datosSelect.extend([
+                    f'D.{TBDEPARTAMENTO_ID}     AS DepartamentoId',
+                    f'D.{TBDEPARTAMENTO_NOMBRE} AS DepartamentoNombre',
+                    f'D.{TBDEPARTAMENTO_DESCRIPCION} AS DepartamentoDescripcion'
+                ])
+                
+
+                leftJoin.append(f'INNER JOIN {TBROLEMPLEADO} RE ON RE.{TBROLEMPLEADO_ID_EMPLEADO} = E.{TBEMPLEADO_ID}')
+                leftJoin.append(f'INNER JOIN {TBROL} R ON R.{TBROL_ID} = RE.{TBROLEMPLEADO_ID_ROL}')
+                if id_rol:
+                    leftJoin[-1] += f' AND RE.{TBROLEMPLEADO_ID_ROL} = %s'
+                    valores += (id_rol,)
+                
+                datosSelect.extend([
+                    f'R.{TBROL_ID}          AS RolId',
+                    f'R.{TBROL_NOMBRE}      AS RolNombre',
+                    f'R.{TBROL_DESCRIPCION} AS RolDescripcion'
+                ])
+                    
                 # Construcción de la consulta
                 query = f'''SELECT 
-                                P.{TBPERSONA_CEDULA}    AS CedulaPersona,
-                                P.{TBPERSONA_NOMBRE}    AS NombrePersona,
-                                P.{TBPERSONA_APELLIDOS} AS ApellidosPersona,
+                            P.{TBPERSONA_CEDULA}    AS CedulaPersona,
+                            P.{TBPERSONA_NOMBRE}    AS NombrePersona,
+                            P.{TBPERSONA_APELLIDOS} AS ApellidosPersona,
                                 
-                                {',\n'.join(datosSelect) if datosSelect else ''} 
+                            {',\n'.join(datosSelect) if datosSelect else ''} 
                             FROM {TBEMPLEADO} E 
                             INNER JOIN {TBPERSONA} P ON P.{TBPERSONA_ID} = E.{TBEMPLEADO_PERSONA}
                             {'\n'.join(leftJoin)}'''
@@ -422,7 +450,22 @@ class ReporteData:
                             )
                             datosEmpleadoReporte['permisos'] = permiso
                         
-                        
+                        if reporte['DepartamentoId']:
+                            departamento = Departamento(
+                                id          = reporte['DepartamentoId'],
+                                nombre      = reporte['DepartamentoNombre'],
+                                descripcion = reporte['DepartamentoDescripcion']
+                            )
+                            datosEmpleadoReporte['departamento'] = departamento
+                            
+                        if reporte['RolId']:
+                            rol = Rol(
+                                id      = reporte['RolId'],
+                                nombre  = reporte['RolNombre'],
+                                descripcion = reporte['RolDescripcion']
+                            )
+                            datosEmpleadoReporte['rol'] = rol
+                            
                         datosReporte.append(datosEmpleadoReporte)
                         
                     return{
