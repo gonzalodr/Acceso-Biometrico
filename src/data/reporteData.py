@@ -14,6 +14,8 @@ from models.departamento        import Departamento
 from models.solicitud_permisos  import SolicitudPermiso
 from models.justificacion       import Justificacion
 
+import traceback
+import sys
 
 
 
@@ -290,33 +292,38 @@ class ReporteData:
         
         return resultado
         
-    def obtener_datos_para_reporte(self, limit: int= None, offset: int = None, tipoReporte: str = 'todo', id_departamento: int = None, id_rol: int = None, id_empleado: int = None, rangoFechas: dict[str, date] = None):
+    def obtener_datos_para_reporte(self, limit: int= None, offset: int = None, tipoReporte: list = ['todo'], id_departamento: int = None, id_rol: int = None, id_empleado: int = None, rangoFechas: dict[str, date] = None):
         conexion, resultado = conection()
         if not resultado['success']:
             return resultado
         try:
+            if rangoFechas:
+                if len(rangoFechas) != 2:
+                    return {'success': False, 'message': 'Error: Se requieren exactamente 2 fechas (inicio y fin)'}
+                try:
+                    # Convertir strings a objetos date
+                    fecha_inicio    = datetime.strptime(rangoFechas[0], '%Y-%m-%d').date()
+                    fecha_fin       = datetime.strptime(rangoFechas[1], '%Y-%m-%d').date()
+                    
+                    if fecha_inicio > fecha_fin:
+                        return {'success': False, 'message': 'La fecha de inicio no puede ser mayor que la fecha fin'}
+                    rangoFechas = [fecha_inicio,fecha_fin]
+                except ValueError:
+                    return {'success': False, 'message': 'Formato de fecha inválido. Use YYYY-MM-DD'}
+            
+            REPORTES_VALIDOS = ['todo','justificacion','asistencias','permisos']
+            
+            if not all(reporte in REPORTES_VALIDOS for reporte in tipoReporte):
+                return {'success':False,'message':f'El tipo de reporte no es valido. Tipos de reportes \'{', '.join(REPORTES_VALIDOS)}\''}
+            
             with conexion.cursor(dictionary=True) as cursor:
                 datosSelect = []
                 leftJoin    = []
                 condicion   = []
                 valores     = ()
 
-                if rangoFechas:
-                    if len(rangoFechas) != 2:
-                        return {'success': False, 'message': 'Error: Se requieren exactamente 2 fechas (inicio y fin)'}
-                    try:
-                        # Convertir strings a objetos date
-                        fecha_inicio    = datetime.strptime(rangoFechas[0], '%Y-%m-%d').date()
-                        fecha_fin       = datetime.strptime(rangoFechas[1], '%Y-%m-%d').date()
-                        
-                        if fecha_inicio > fecha_fin:
-                            return {'success': False, 'message': 'La fecha de inicio no puede ser mayor que la fecha fin'}
-                        rangoFechas = [fecha_inicio,fecha_fin]
-                    except ValueError:
-                        return {'success': False, 'message': 'Formato de fecha inválido. Use YYYY-MM-DD'}
-
                 if tipoReporte:
-                    if tipoReporte == 'justificacion' or tipoReporte == 'todo':
+                    if any(reporte in ['justificacion', 'todo'] for reporte in tipoReporte) :
                         leftJoin.append(f'LEFT JOIN {TBJUSTIFICACION} J ON J.{TBJUSTIFICACION_ID_EMPLEADO} = E.{TBEMPLEADO_ID}')
                         if rangoFechas:
                             leftJoin[-1] += f' AND (J.{TBJUSTIFICACION_FECHA} >= %s AND J.{TBJUSTIFICACION_FECHA} <= %s )'
@@ -331,7 +338,7 @@ class ReporteData:
                             f'J.{TBJUSTIFICACION_DESCRIPCION}   AS JustificacionDescripcion'
                         ])
 
-                    if tipoReporte == 'asistencias' or tipoReporte == 'todo':
+                    if any(reporte in ['asistencias', 'todo']   for reporte in tipoReporte) :
                         leftJoin.append(f'LEFT JOIN {TBASISTENCIA} A ON A.{TBASISTENCIA_ID_EMPLEADO} = E.{TBEMPLEADO_ID}')
                         if rangoFechas:
                             leftJoin[-1] += f' AND (A.{TBASISTENCIA_FECHA} >= %s AND A.{TBASISTENCIA_FECHA} <= %s)'
@@ -344,7 +351,7 @@ class ReporteData:
                             f'A.{TBASISTENCIA_ESTADO_ASISTENCIA}    AS AsistenciaEstado'
                         ])
                                 
-                    if tipoReporte == 'permisos' or tipoReporte == 'todo':
+                    if any(reporte in ['permisos', 'todo']      for reporte in tipoReporte) :
                         leftJoin.append(f'LEFT JOIN {TBSOLICITUDPERMISOS} SP ON SP.{TBSOLICITUDPERMISOS_ID_EMPLEADO} = E.{TBEMPLEADO_ID}')
                         if rangoFechas:
                             leftJoin[-1] += f' AND (SP.{TBSOLICITUDPERMISOS_FECHA_INICIO} <= %s AND SP.{TBSOLICITUDPERMISOS_FECHA_FIN} >= %s)'
@@ -360,11 +367,6 @@ class ReporteData:
                             f'SP.{TBSOLICITUDPERMISOS_ESTADO}       AS PermisoEstado'
                         ])
                         
-                if id_empleado:
-                    condicion.append(f'E.{TBEMPLEADO_ID} = %s')
-                    valores += (id_empleado,)
-
-                
                 leftJoin.append(F'INNER JOIN {TBDEPARTAMENTO} D ON D.{TBDEPARTAMENTO_ID} = E.{TBEMPLEADO_DEPARTAMENTO} ')
                 if id_departamento:
                     leftJoin[-1] += f' AND D.{TBDEPARTAMENTO_ID} = %s'
@@ -388,7 +390,11 @@ class ReporteData:
                     f'R.{TBROL_NOMBRE}      AS RolNombre',
                     f'R.{TBROL_DESCRIPCION} AS RolDescripcion'
                 ])
-                    
+                
+                if id_empleado: #siempre tiene que ir de ultimo por que es lo que va en el where
+                    condicion.append(f'E.{TBEMPLEADO_ID} = %s')
+                    valores += (id_empleado,)
+
                 # Construcción de la consulta
                 query = f'''SELECT 
                             P.{TBPERSONA_CEDULA}    AS CedulaPersona,
@@ -411,14 +417,14 @@ class ReporteData:
 
                 datosReporte = []
                 if datos:
-                    for reporte in datos:
+                    for reporte in datos:                        
                         datosEmpleadoReporte = {}
                         
                         datosEmpleadoReporte['nombre']      = reporte['NombrePersona']
                         datosEmpleadoReporte['apellidos']   = reporte['ApellidosPersona']
                         datosEmpleadoReporte['cedula']      = reporte['ApellidosPersona']
                         
-                        if (tipoReporte == 'justificacion' or tipoReporte == 'todo') and reporte['JustificacionId']:
+                        if (any(reporte in ['justificacion', 'todo'] for reporte in tipoReporte)) and reporte['JustificacionId']:
                             justificacion = Justificacion(
                                 id              = reporte['JustificacionId'],
                                 id_empleado     = reporte['JustificacionIdEmpleado'],
@@ -429,7 +435,7 @@ class ReporteData:
                             )
                             datosEmpleadoReporte['justificacion'] =justificacion
                         
-                        if (tipoReporte == 'asistencias' or tipoReporte == 'todo') and reporte['AsistenciaId']:
+                        if (any(reporte in ['asistencias', 'todo']   for reporte in tipoReporte)) and reporte['AsistenciaId']:
                             asistencia = Asistencia(
                                 id          = reporte['AsistenciaId'],
                                 id_empleado = reporte['AsistenciaIdEmpleado'],
@@ -438,7 +444,7 @@ class ReporteData:
                             )
                             datosEmpleadoReporte['asistencia'] = asistencia
                         
-                        if (tipoReporte == 'permisos' or tipoReporte == 'todo') and reporte['PermisoId']:
+                        if (any(reporte in ['permisos', 'todo']      for reporte in tipoReporte)) and reporte['PermisoId']:
                             permiso = SolicitudPermiso(
                                 id          = reporte['PermisoId'],
                                 id_empleado = reporte['PermisoIdEmpleado'],
@@ -476,7 +482,11 @@ class ReporteData:
                 else:
                     return {'success': True,'reporte':datosReporte,'message': 'No se encontraron datos'}
         except Exception as e:
-            logger.error(f'{e}')
+            
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            errores = traceback.extract_tb(exc_traceback)[-1]
+            logger.error(f'{e} - LIN&COL {errores.lineno}:{errores.colno if hasattr(errores, 'colno') else 'N/A'}')
+
             return {'success': False, 'message': 'Ocurrió un error al obtener los datos para el reporte.'}
         finally:
             if conexion: conexion.close()

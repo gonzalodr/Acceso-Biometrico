@@ -2,8 +2,10 @@ from datetime import datetime
 from PySide6.QtWidgets import *
 from PySide6.QtCore import QDate
 from Utils.Utils import cargar_estilos
+from services.empleadoServices import EmpleadoServices
 
 class GenerarReporte(QDialog):
+    
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Generar Reporte")
@@ -18,7 +20,7 @@ class GenerarReporte(QDialog):
         layoutEmpleado = QVBoxLayout()
         
         self.cmbEmpleado = QComboBox()
-        self.cmbEmpleado.addItem("Todos los empleados")
+        self.cmbEmpleado.addItem("Todos los empleados",None)
         
         layoutEmpleado.addWidget(self.cmbEmpleado)
         groupEmpleado.setLayout(layoutEmpleado)
@@ -125,7 +127,6 @@ class GenerarReporte(QDialog):
         if fechaInicio > fechaFin:
             self.fechaFin.setDate(self.fechaInicio.date()) 
 
-
     def SeleccionTodoTipoReporte(self, state):
         """Activa/desactiva todos los checkboxes de tipo de reporte"""
         checked = state == 2  # 2 representa "checked" en Qt
@@ -162,4 +163,5 @@ class GenerarReporte(QDialog):
             "tipoArchivo": self.cmbTipoArchivo.currentText().lower(),
             "ruta": self.inputRuta.text()
         }
+        
         return data
