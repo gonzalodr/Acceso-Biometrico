@@ -5,6 +5,8 @@ from Utils.Utils import *
 from UI.AdministrarAsistencia.formAsistencia import *
 from services.asistenciaService import *
 from services.empleadoServices import *
+import locale
+from datetime import datetime
 
 from settings.config import *
 
@@ -206,7 +208,11 @@ class AdminAsistencia(QWidget):
 
  # Agregar los datos del perfil a la tabla
                     self.addItem_a_tabla(index, 0, str(asistencia['nombre_empleado'])) 
-                    self.addItem_a_tabla(index, 1, asistencia["asistencia"].fecha.strftime("%Y-%m-%d"))  # Formatear fecha
+                   # Esta línea va dentro del bucle donde estás cargando la tabla
+                    locale.setlocale(locale.LC_TIME, 'Spanish_Spain')  # Para Windows
+                    fecha_obj = asistencia["asistencia"].fecha
+                    fecha_formateada = fecha_obj.strftime('%A, %d de %B de %Y').capitalize()
+                    self.addItem_a_tabla(index, 1, fecha_formateada)
                     self.addItem_a_tabla(index, 2, asistencia["asistencia"].estado_asistencia)# Agregar el nombre del perfil a la columna 0
 
                     # Botones para editar y eliminar
