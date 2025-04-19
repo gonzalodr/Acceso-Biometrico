@@ -1,6 +1,7 @@
 from data.data import conection     #obtener la conexión
-from settings.tablas import (TBROLEMPLEADO,TBROLEMPLEADO_ID,
-                            TBROLEMPLEADO_ID_EMPLEADO,TBROLEMPLEADO_ID_ROL)     #obtener los nombres de tablas
+from settings.config import (TBROLEMPLEADO,TBROLEMPLEADO_ID,
+                            TBROLEMPLEADO_ID_EMPLEADO,TBROLEMPLEADO_ID_ROL, TBROL_NOMBRE, TBROL,
+                            TBROL_ID)     #obtener los nombres de tablas
 from settings.logger import logger  #recolectar los errores 
 from mysql.connector import Error   #controlador de errores
 
@@ -136,18 +137,21 @@ class EmpleadoRolData:
         try:
             with conexion.cursor(dictionary = True) as cursor:
                 query = f'''SELECT 
-                        {TBROLEMPLEADO_ID},
-                        {TBROLEMPLEADO_ID_ROL},
-                        {TBROLEMPLEADO_ID_EMPLEADO}
-                        FROM {TBROLEMPLEADO}
-                        WHERE {TBROLEMPLEADO_ID_EMPLEADO} = %s'''
+                        re.{TBROLEMPLEADO_ID},
+                        re.{TBROLEMPLEADO_ID_ROL},
+                        re.{TBROLEMPLEADO_ID_EMPLEADO},
+                        r.{TBROL_NOMBRE} as Nombre_rol
+                        FROM {TBROLEMPLEADO} re
+                        JOIN {TBROL} r ON r.{TBROL_ID} = re.{TBROLEMPLEADO_ID_ROL}
+                        WHERE re.{TBROLEMPLEADO_ID_EMPLEADO} = %s'''
                 cursor.execute(query,(id_empleado,))
                 data = cursor.fetchone()
                 if data:
                     rolEmpleado = {
                             'id': data['Id'],
                             'id_rol':data['Id_Rol'],
-                            'id_empleado':data['Id_Empleado']
+                            'id_empleado':data['Id_Empleado'],
+                            'nombre_rol': data['Nombre_rol'] 
                     }
                     return {
                         'success':True,

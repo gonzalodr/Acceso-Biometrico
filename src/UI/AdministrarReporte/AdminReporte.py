@@ -6,7 +6,7 @@ from UI.AdministrarReporte.formReporte import *
 from services.reporteService import *
 from services.empleadoServices import *
 from settings.logger import logger
-from settings.variable import *
+from settings.config import *
 
 class AdminReporte(QWidget):
     cerrar_adminR = Signal()

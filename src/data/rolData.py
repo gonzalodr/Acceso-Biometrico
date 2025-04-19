@@ -1,7 +1,7 @@
 from models.rol import Rol
 from data.data import conection
 from settings.logger import logger
-from settings.tablas import TBROL, TBROL_ID, TBROL_NOMBRE, TBROL_DESCRIPCION
+from settings.config import TBROL, TBROL_ID, TBROL_NOMBRE, TBROL_DESCRIPCION
 
 
 class RolData:

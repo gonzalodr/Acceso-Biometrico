@@ -1,5 +1,5 @@
 from data.data import conection     #obtener la conexión
-from settings.tablas import (TBUSUARIOPERFIL,TBUSUARIOPERFIL_ID,
+from settings.config import (TBUSUARIOPERFIL,TBUSUARIOPERFIL_ID,
                              TBUSUARIOPERFIL_ID_USER,TBUSUARIOPERFIL_ID_PERF)      #obtener los nombres de tablas
 from settings.logger import logger  #recolectar los errores 
 from mysql.connector import Error   #controlador de errores

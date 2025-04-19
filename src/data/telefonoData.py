@@ -1,6 +1,6 @@
 from data.data import conection     #obtener la conexión
 from mysql.connector import Error
-from settings.tablas import ( TBTELEFONO,TBTELEFONO_ID,TBTELEFONO_TIPO_CONTACTO,
+from settings.config import ( TBTELEFONO,TBTELEFONO_ID,TBTELEFONO_TIPO_CONTACTO,
                              TBTELEFONO_ID_PERSONA,TBTELEFONO_NUMERO)       #obtener los nombres de tablas
 from settings.logger import logger  #recolectar los errores 
 

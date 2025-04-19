@@ -6,7 +6,7 @@ from UI.AdministrarPerfil.formPerfil            import *
 from services.permisosPerfilServices            import *
 from services.perfilService                     import *
 
-from settings.variable import *
+from settings.config import *
 
 class AdminPermisosPerfil(QWidget):
     cerrar_adminP = Signal()

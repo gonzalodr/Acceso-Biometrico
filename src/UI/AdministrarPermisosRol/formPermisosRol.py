@@ -5,7 +5,7 @@ from Utils.Utils import *
 from UI.DialogoEmergente import *
 from services.permisosRolServices import *
 from services.rolService import *
-from settings.variable import *
+from settings.config import *
 
 class formPermiso(QDialog):
     permisosServices = PermisosRolServices() 

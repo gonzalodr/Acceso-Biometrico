@@ -6,7 +6,7 @@ from UI.AdministrarAsistencia.formAsistencia import *
 from services.asistenciaService import *
 from services.empleadoServices import *
 
-from settings.variable import *
+from settings.config import *
 
 class AdminAsistencia(QWidget):
     cerrar_adminA = Signal()
