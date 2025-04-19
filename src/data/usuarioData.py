@@ -2,6 +2,7 @@ from mysql.connector import Error
 from models.usuario import Usuario
 from data.data import conection
 from settings.config import *
+from settings.tablas import *
 from settings.logger import logger
 from settings.tablas import TBUSUARIOPERFIL,TBUSUARIOPERFIL_ID_USER
 import bcrypt
@@ -159,23 +160,36 @@ class UsuarioData:
                 tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
 
                 # Construcción de la consulta base con INNER JOIN para obtener el nombre de la persona
+                # Construcción de la consulta base con INNER JOIN para obtener el nombre de la persona y el perfil
                 query = f"""
-                    SELECT U.{TBUSUARIO_ID}, U.{TBUSUARIO_USUARIO}, U.{TBUSUARIO_CONTRASENA}, 
-                        U.{TBUSUARIO_ID_PERSONA}, P.{TBPERSONA_NOMBRE} AS nombre_persona, 
-                        P.{TBPERSONA_APELLIDOS} AS apellido_persona
-                    FROM {TBUSUARIO} U
-                    INNER JOIN {TBPERSONA} P ON U.{TBUSUARIO_ID_PERSONA} = P.{TBPERSONA_ID}
+                    SELECT 
+                        U.id AS id_usuario, 
+                        U.usuario, 
+                        P.nombre AS nombre_persona, 
+                        P.apellidos AS apellido_persona, 
+                        UP.{TBUSUARIOPERFIL_ID} AS id_usuario_perfil,  -- ID de la tabla usuario_perfil
+                        UP.{TBUSUARIOPERFIL_ID_PERF} AS id_perfil,  -- ID del perfil (llave foránea)
+                        PF.nombre AS nombre_perfil 
+                    FROM 
+                        {TBUSUARIO} U 
+                    INNER JOIN 
+                        {TBPERSONA} P ON U.id_persona = P.id 
+                    LEFT JOIN 
+                        {TBUSUARIOPERFIL} UP ON U.id = UP.{TBUSUARIOPERFIL_ID_USER} 
+                    LEFT JOIN 
+                        {TBPERFIL} PF ON UP.{TBUSUARIOPERFIL_ID_PERF} = PF.id 
                 """
 
                 # Añadir cláusula de búsqueda si se proporciona
                 valores = []
                 if busqueda:
                     query += f"""
-                        WHERE U.{TBUSUARIO_USUARIO} LIKE %s 
-                        OR P.{TBPERSONA_NOMBRE} LIKE %s
-                        OR P.{TBPERSONA_APELLIDOS} LIKE %s
+                        WHERE U.usuario LIKE %s 
+                        OR CONCAT(P.nombre, ' ', P.apellidos) LIKE %s  
+                        OR PF.nombre LIKE %s
+                        OR (PF.nombre IS NULL AND LOWER(%s) = 'Sin perfil')  
                     """
-                    valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
+                    valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", busqueda.lower()]
 
                 # Añadir la cláusula ORDER BY y LIMIT/OFFSET
                 query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
@@ -188,11 +202,12 @@ class UsuarioData:
                 registros = cursor.fetchall()
                 for registro in registros:
                     usuario = {
-                        "id_usuario": registro[TBUSUARIO_ID],
-                        "usuario": registro[TBUSUARIO_USUARIO],
-                        "contrasena": registro[TBUSUARIO_CONTRASENA],
-                        "id_persona": registro[TBUSUARIO_ID_PERSONA],
-                        "nombre_completo": f"{registro['nombre_persona']} {registro['apellido_persona']}"  # Unir nombre y apellido
+                        "id_usuario": registro['id_usuario'],  # ID del usuario
+                        "usuario": registro['usuario'],
+                        "nombre_completo": f"{registro['nombre_persona']} {registro['apellido_persona']}",  # Unir nombre y apellido
+                        "id_usuario_perfil": registro['id_usuario_perfil'],  # ID de la tabla usuario_perfil
+                        "id_perfil": registro['id_perfil'],  # ID del perfil (llave foránea)
+                        "nombre_perfil": registro['nombre_perfil'] if registro['nombre_perfil'] else "Sin perfil"  # Manejo de caso sin perfil
                     }
                     listaUsuarios.append(usuario)
 

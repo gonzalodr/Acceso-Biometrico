@@ -1,7 +1,9 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
+from UI.DialogoEmergente import DialogoEmergente
 from Utils.Utils import *
 from services.usuarioService import *
+from UI.AdministrarUsuario.formUsuario import *
 from functools import partial
 
 class AdminUsuario(QWidget):
@@ -54,6 +56,7 @@ class AdminUsuario(QWidget):
         self.btnBuscar = QPushButton(text="Buscar")
         self.btnBuscar.setCursor(Qt.PointingHandCursor)
         self.btnBuscar.setFixedSize(minimoTamBtn)
+        self.btnBuscar.clicked.connect(self._buscarUsuario)
         Sombrear(self.btnBuscar, 20, 0, 0)
 
         self.btnCrear = QPushButton(text="Crear")
@@ -75,9 +78,9 @@ class AdminUsuario(QWidget):
 
         # Tabla Usuario
         self.tbUsuario = QTableWidget()
-        if self.tbUsuario.columnCount() < 3:
-            self.tbUsuario.setColumnCount(3)
-        header_labels = ["Nombre", "Usuario", "Acciones"]
+        if self.tbUsuario.columnCount() < 4:
+            self.tbUsuario.setColumnCount(4)
+        header_labels = ["Nombre", "Usuario", "Perfil", "Acciones"]
         self.tbUsuario.setHorizontalHeaderLabels(header_labels)
 
         self.tbUsuario.horizontalHeader().setFixedHeight(40)
@@ -151,6 +154,17 @@ class AdminUsuario(QWidget):
             pagina=self.paginaActual, tam_pagina=10, busqueda=self.busqueda
         )
 
+        if self.inputBuscar.text() == '':
+            self.busqueda = None  
+            self.paginaActual = 1  
+
+        self.tbUsuario.setRowCount(0)
+
+         # Verificar si result es None
+        if result is None:
+            print("Error: No se obtuvo ningún resultado.")
+            return  # Salir de la función si no hay resultados
+
         if result["success"]:
             listaUsuarios = result["data"]["listaUsuarios"]
 
@@ -175,6 +189,12 @@ class AdminUsuario(QWidget):
                     item_usuario.setTextAlignment(Qt.AlignCenter)
                     self.tbUsuario.setItem(index, 1, item_usuario)
 
+                    # Nombre del perfil
+                    nombre_perfil = usuario.get("nombre_perfil", "Sin perfil")
+                    item_perfil = QTableWidgetItem(nombre_perfil)
+                    item_perfil.setTextAlignment(Qt.AlignCenter)
+                    self.tbUsuario.setItem(index, 2, item_perfil)
+                    
                     # Creación de un contenedor para los botones de acción
                     contenedor_botones = QWidget()
                     layout_botones = QHBoxLayout()
@@ -205,7 +225,11 @@ class AdminUsuario(QWidget):
 
             else:
                 print("No se encontraron usuarios.")  # Mensaje de depuración
-                self.tbUsuario.setRowCount(0)
+                self.tbUsuario.setRowCount(1)
+                self.tbUsuario.setItem(0, 0, QTableWidgetItem("No se encontraron resultados."))
+                self.tbUsuario.setSpan(0, 0, 1, 4)  # Hacer que el mensaje ocupe varias columnas
+                self.tbUsuario.item(0, 0).setTextAlignment(Qt.AlignCenter)
+
                 self._actualizar_lblPagina(0, 0)
                 self._actualizarValoresPaginado(0, 0)
         else:
@@ -258,3 +282,47 @@ class AdminUsuario(QWidget):
         if (self.paginaActual - 1) >= 1:
             self.paginaActual -= 1
             self._cargar_tabla()
+
+    def _buscarUsuario(self):
+        input_busqueda = self.inputBuscar.text()
+        if input_busqueda:
+            self.busqueda = input_busqueda
+            self.paginaActual = 1 
+            self._cargar_tabla()
+        else:
+            self.busqueda = None  
+            self.paginaActual = 1  
+            self._cargar_tabla() 
+
+    def _eliminarRegistro(self, usuario_id, usuario_perfil_id):
+        dial = DialogoEmergente("¿?", "¿Seguro que quieres eliminar este registro?", "Question", True, True)
+        if dial.exec() == QDialog.Accepted:
+            result = self.Uservices.eliminarUsuario(usuario_id, usuario_perfil_id)
+            if result["success"]:
+                dial = DialogoEmergente("", "Se eliminó el registro correctamente.", "Check")
+                dial.exec()
+                self._cargar_tabla()
+            else:
+                dial = DialogoEmergente("", "Hubo un error al eliminar este registro.", "Error")
+                dial.exec()
+
+    def _editar_Usuario(self, id, id_usuario_perfil):
+        blur_effect = QGraphicsBlurEffect(self)
+        blur_effect.setBlurRadius(10)
+        self.setGraphicsEffect(blur_effect)
+        
+        form = formUsuario(titulo="Actualizar usuario", id=id, id_usuario_perfil=id_usuario_perfil)
+        form.exec()
+        
+        self._cargar_tabla()
+        self.setGraphicsEffect(None)
+
+    def _crear_usuario(self):
+        blur_effect = QGraphicsBlurEffect(self)
+        blur_effect.setBlurRadius(10)
+        self.setGraphicsEffect(blur_effect)
+        
+        form = formUsuario()
+        form.exec()
+        self._cargar_tabla()
+        self.setGraphicsEffect(None)
