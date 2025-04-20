@@ -62,3 +62,32 @@ QCheckBox{
     font: 1 10pt "Cooper Black";
     color:#000000;
 }
+
+#btncancelar{
+    background-color:#325fc6 ;
+    border-radius: 5px;
+    color:#ffffff;
+    font: 10 13pt "Cooper Black";
+}
+
+#btncancelar::Hover{
+    background-color: #213a75;
+}
+#btngenerar{
+    background-color: #409da1;
+    border-radius: 5px;
+    color:#ffffff;
+    font: 10 13pt "Cooper Black";
+}
+#btngenerar::hover{
+    background-color:#00627d;
+}
+#btnexaminar{
+    background-color: #409da1;
+    border-radius: 5px;
+    color:#ffffff;
+    font: 10 13pt "Cooper Black";
+}
+#btnexaminar::hover{
+    background-color:#00627d;
+}

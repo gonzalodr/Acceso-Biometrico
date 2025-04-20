@@ -42,3 +42,6 @@ class EmpleadoServices:
     
     def obtener_todo_empleados(self):
         return self.empleServ.obtener_todo_empleados()
+    
+    def list_empleados_todos(self):
+        return self.empleServ.list_Empleados_todos()

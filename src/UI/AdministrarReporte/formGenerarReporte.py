@@ -1,21 +1,64 @@
-from datetime import datetime
-from PySide6.QtWidgets import *
-from PySide6.QtCore import QDate
-from Utils.Utils import cargar_estilos
-from services.empleadoServices import EmpleadoServices
+from datetime           import datetime
+from PySide6.QtWidgets  import *
+from PySide6.QtGui      import * 
+from PySide6.QtCore     import QDate
+from Utils.Utils        import cargar_estilos
+from services.empleadoServices      import EmpleadoServices
+from services.reporteService        import ReporteServices
+from services.departamentoService   import DepartamentoServices
+from services.rolService            import RolServices
+
+from UI.DialogoEmergente        import DialogoEmergente
+import os
 
 class GenerarReporte(QDialog):
+    reporteServices = ReporteServices()
+    rolServices     = RolServices()
+    depaServices    = DepartamentoServices()
+    empleServices   = EmpleadoServices()
     
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Generar Reporte")
 
         # Layout principal
-        layout = QVBoxLayout()
+        self.layout = QVBoxLayout()
 
         cargar_estilos('claro','formReporte.css',self)
         
-        # Grupo para selección de empleado
+        self.grupoSeleccionEmpleado()
+        self.grupoSeleccionarDempartamentoRol()
+        self.grupoTipoReporte()
+        self.grupoRangoFechas()
+        self.grupoGenerarReporte()
+        
+        self.cargarComboboxEmpleados()
+        self.cargarComboboxDepartamento()
+        self.cargarComboboxRol()
+        
+        # Botones de acción
+        boton_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        boton_box.button(QDialogButtonBox.Cancel).setText("Cancelar")
+        boton_box.button(QDialogButtonBox.Cancel).setObjectName("btncancelar")
+        boton_box.button(QDialogButtonBox.Cancel).setMinimumSize(150,30)
+        
+        boton_box.button(QDialogButtonBox.Ok).setText("Generar")
+        boton_box.button(QDialogButtonBox.Ok).setObjectName("btngenerar")
+        boton_box.button(QDialogButtonBox.Ok).setMinimumSize(150,30)
+        
+        boton_box.accepted.connect(self.generaReporte)
+        boton_box.rejected.connect(self.reject())        
+
+        # Centrar los botones
+        boton_layout = QHBoxLayout()
+        boton_layout.addStretch()
+        boton_layout.addWidget(boton_box)
+        boton_layout.addStretch()
+        
+        self.layout.addLayout(boton_layout)
+        self.setLayout(self.layout)
+
+    def grupoSeleccionEmpleado(self):
         groupEmpleado = QGroupBox("Selección de Empleado")
         layoutEmpleado = QVBoxLayout()
         
@@ -24,8 +67,28 @@ class GenerarReporte(QDialog):
         
         layoutEmpleado.addWidget(self.cmbEmpleado)
         groupEmpleado.setLayout(layoutEmpleado)
-        layout.addWidget(groupEmpleado)
+        self.layout.addWidget(groupEmpleado)
+    
+    def grupoSeleccionarDempartamentoRol(self):
+        groupDepaRol    = QGroupBox("Departamento y rol")
+        layoutDepaRol   = QVBoxLayout()
         
+        self.cmbDepartamento    = QComboBox()
+        self.cmbRol             = QComboBox()
+        
+        self.cmbDepartamento.addItem('Todos',None)
+        self.cmbRol.addItem('Todos',None)
+        
+        layoutDepaRol.addWidget(QLabel('Seleccionar departamento'))
+        layoutDepaRol.addWidget(self.cmbDepartamento)
+        
+        layoutDepaRol.addWidget(QLabel('Seleccionar rol'))
+        layoutDepaRol.addWidget(self.cmbRol)
+        
+        groupDepaRol.setLayout(layoutDepaRol)
+        self.layout.addWidget(groupDepaRol)        
+                
+    def grupoTipoReporte(self):
         # Grupo para tipo de reporte
         groupTipoReporte = QGroupBox("Tipo de Reporte")
         layoutTipoReporte = QVBoxLayout()
@@ -34,28 +97,34 @@ class GenerarReporte(QDialog):
         self.checkAsistencia    = QCheckBox("Asistencias")
         self.checkPermiso       = QCheckBox("Permisos")
         self.checkTodo          = QCheckBox("Todo")
-        self.checkTodo.stateChanged.connect(self.SeleccionTodoTipoReporte)
+        
+        #conexiones de los checks
+        self.checkJustificacion.clicked.connect(self.seleccionTipoReporte)
+        self.checkAsistencia.clicked.connect(self.seleccionTipoReporte)
+        self.checkPermiso.clicked.connect(self.seleccionTipoReporte)
+        self.checkTodo.clicked.connect(self.SeleccionTodoTipoReporte)
         
         layoutTipoReporte.addWidget(self.checkJustificacion)
         layoutTipoReporte.addWidget(self.checkAsistencia)
         layoutTipoReporte.addWidget(self.checkPermiso)
         layoutTipoReporte.addWidget(self.checkTodo)
         groupTipoReporte.setLayout(layoutTipoReporte)
-        layout.addWidget(groupTipoReporte)
+        self.layout.addWidget(groupTipoReporte)
+    
+    def grupoRangoFechas(self):
+        groupRangoFecha     = QGroupBox("Rango de Fechas (Opcional)")
+        layoutRangoFecha    = QHBoxLayout()
         
-        # Grupo para rango de fechas
-        groupRangoFecha = QGroupBox("Rango de Fechas (Opcional)")
-        layoutRangoFecha = QHBoxLayout()
+        self.checkRangoFecha= QCheckBox("Aplicar rango de fechas")
         
-        self.checkRangoFecha = QCheckBox("Aplicar rango de fechas")
-        self.checkRangoFecha.stateChanged.connect(self.SeleccionRangoFecha)
         
-        self.fechaInicio = QDateEdit(QDate.currentDate())
+        self.fechaInicio    = QDateEdit(QDate.currentDate())
+        self.fechaFin       = QDateEdit(QDate.currentDate())
+        
         self.fechaInicio.setEnabled(False)
-        self.fechaFin = QDateEdit(QDate.currentDate())
         self.fechaFin.setEnabled(False)
-
-
+        #conexiones
+        self.checkRangoFecha.stateChanged.connect(self.SeleccionRangoFecha)
         self.fechaInicio.editingFinished.connect(self.validarFechaInicio)
         self.fechaFin.editingFinished.connect(self.validarFechaFin)
         
@@ -65,8 +134,9 @@ class GenerarReporte(QDialog):
         layoutRangoFecha.addWidget(QLabel("Hasta:"))
         layoutRangoFecha.addWidget(self.fechaFin)
         groupRangoFecha.setLayout(layoutRangoFecha)
-        layout.addWidget(groupRangoFecha)
-        
+        self.layout.addWidget(groupRangoFecha)
+    
+    def grupoGenerarReporte(self):
         # Grupo para nombre y ubicación del archivo
         groupArchivo = QGroupBox("Opciones de Archivo")
         layoutArchivo = QVBoxLayout()
@@ -83,7 +153,11 @@ class GenerarReporte(QDialog):
         layoutTipoArchivo = QHBoxLayout()
         layoutTipoArchivo.addWidget(QLabel("Tipo de archivo:"))
         self.cmbTipoArchivo = QComboBox()
-        self.cmbTipoArchivo.addItems(["PDF", "DOCX", "CSV"])
+        
+        self.cmbTipoArchivo.addItem('PDF','pdf')
+        self.cmbTipoArchivo.addItem('DOCX','docx')
+        self.cmbTipoArchivo.addItem('CSV','csv')
+        
         layoutTipoArchivo.addWidget(self.cmbTipoArchivo)
         layoutArchivo.addLayout(layoutTipoArchivo)
         
@@ -92,7 +166,8 @@ class GenerarReporte(QDialog):
         self.inputRuta = QLineEdit()
         self.inputRuta.setPlaceholderText("Seleccione una ruta para guardar el reporte")
         btnBuscarRuta = QPushButton("Examinar...")
-        btnBuscarRuta.setMinimumSize(50, 20)
+        btnBuscarRuta.setObjectName('btnexaminar')
+        btnBuscarRuta.setMinimumSize(150, 30)
 
         btnBuscarRuta.clicked.connect(self.BuscarRuta)
         layoutRuta.addWidget(self.inputRuta)
@@ -100,19 +175,62 @@ class GenerarReporte(QDialog):
         layoutArchivo.addLayout(layoutRuta)
         
         groupArchivo.setLayout(layoutArchivo)
-        layout.addWidget(groupArchivo)
+        self.layout.addWidget(groupArchivo)
+    
+    def cargarComboboxDepartamento(self):
+        result = self.depaServices.obtenerTodoDepartamento()
+        if not result['success']:
+            dial = DialogoEmergente('','Ocurrio un error de conexion.','Error',True)
+            dial.exec()
+            self.reject()
+            return
         
-        # Botones de acción
-        layoutBotones = QHBoxLayout()
-        self.btnGenerar = QPushButton("Generar Reporte")
-        self.btnCancelar = QPushButton("Cancelar")
-        self.btnCancelar.clicked.connect(self.reject)
+        departamentos = result['listaDepa']
+        if len(departamentos) == 0:
+            dial = DialogoEmergente('','No existen departamentos.','Error',True)
+            dial.exec()
+            return
         
-        layoutBotones.addWidget(self.btnGenerar)
-        layoutBotones.addWidget(self.btnCancelar)
-        layout.addLayout(layoutBotones)
-        self.setLayout(layout)
+        for depa in departamentos:
+            self.cmbDepartamento.addItem(depa.nombre, depa.id)        
         
+    def cargarComboboxRol(self):
+        result = self.rolServices.obtener_todo_roles()
+        
+        if not result['success']:
+            dial = DialogoEmergente('','Ocurrio un error de conexion.','Error',True)
+            dial.exec()
+            self.reject()
+            return
+        
+        roles = result['data']['listaRoles']
+        if len(roles) == 0:
+            dial = DialogoEmergente('','No existen roles.','Error',True)
+            dial.exec()
+            return
+        
+        for rol in roles:
+            self.cmbRol.addItem(rol.nombre,rol.id)
+       
+    def cargarComboboxEmpleados(self):
+        result = self.empleServices.list_empleados_todos()
+        if not result['success']:
+            dial = DialogoEmergente('','Ocurrio un error de conexion.','Error',True)
+            dial.exec()
+            self.reject()
+            return
+        
+        empleados = result['listaEmpleados']
+        if len(empleados) == 0:
+            dial = DialogoEmergente('','No existen empleados.','Error',True)
+            dial.exec()
+            return
+
+        for datos in empleados:
+            id_empleado = datos['id_empleado']
+            persona     = datos['persona']
+            self.cmbEmpleado.addItem(f'{persona.nombre +' '+persona.apellidos} - {persona.cedula}',id_empleado)        
+    
     def validarFechaInicio(self):
         fechaInicio = self.fechaInicio.date().toString('yyyy-MM-dd')
         fechaFin    = self.fechaFin.date().toString('yyyy-MM-dd')
@@ -127,13 +245,23 @@ class GenerarReporte(QDialog):
         if fechaInicio > fechaFin:
             self.fechaFin.setDate(self.fechaInicio.date()) 
 
-    def SeleccionTodoTipoReporte(self, state):
+    def SeleccionTodoTipoReporte(self):
         """Activa/desactiva todos los checkboxes de tipo de reporte"""
-        checked = state == 2  # 2 representa "checked" en Qt
+        checked = self.checkTodo.isChecked() 
+
         self.checkJustificacion.setChecked(checked)
         self.checkAsistencia.setChecked(checked)
         self.checkPermiso.setChecked(checked)
-        
+    
+    def seleccionTipoReporte(self):
+        asistencias     = self.checkAsistencia.isChecked()
+        justificacion   = self.checkJustificacion.isChecked()
+        permiso         = self.checkPermiso.isChecked()
+        if asistencias and justificacion and permiso:
+            self.checkTodo.setChecked(True)
+            return
+        self.checkTodo.setChecked(False)
+  
     def SeleccionRangoFecha(self, state):
         """Activa/desactiva los date edits según el checkbox"""
         enabled = state == 2
@@ -146,22 +274,92 @@ class GenerarReporte(QDialog):
         if path:
             self.inputRuta.setText(path)
             
+    def validarTiposReportes(self):
+        asistencias     = self.checkAsistencia.isChecked()
+        justificacion   = self.checkJustificacion.isChecked()
+        permiso         = self.checkPermiso.isChecked()
+        todo            = self.checkTodo.isChecked()
+        if not asistencias and not justificacion and not permiso and not todo:
+            return False
+        return True
+    
     def obtenerDatosReporte(self):
-        """Recopila todos los datos ingresados en el formulario"""
-        data = {
-            "empleado": self.cmbEmpleado.currentText(),
-            "tipoReporte": {
-                "justificacion": self.checkJustificacion.isChecked(),
-                "asistencia": self.checkAsistencia.isChecked(),
-                "permisos": self.checkPermiso.isChecked(),
-                "todo": self.checkTodo.isChecked()
-            },
-            "rangofecha": self.checkRangoFecha.isChecked(),
-            "fechaInicio": self.fechaInicio.date().toString("yyyy-MM-dd"),
-            "fechaFin": self.fechaFin.date().toString("yyyy-MM-dd"),
-            "nombreReporte": self.inputNombreArchivo.text() or f"reporte-{datetime.now().strftime('%Y-%m-%d-%H-%M')}",
-            "tipoArchivo": self.cmbTipoArchivo.currentText().lower(),
-            "ruta": self.inputRuta.text()
-        }
+        #empleado seleccionado
+        empleado    = self.cmbEmpleado.currentData()
         
-        return data
+        #empleado seleccionar departamento o rol
+        departamento    = self.cmbDepartamento.currentData()
+        rol             = self.cmbRol.currentData()
+        
+        #tipo de reportes seleccionados
+        asistencias     = self.checkAsistencia.isChecked()
+        justificacion   = self.checkJustificacion.isChecked()
+        permiso         = self.checkPermiso.isChecked()
+        todo            = self.checkTodo.isChecked()
+        
+        #rango de fechas seleccionadas
+        fechaIncio  = self.fechaInicio.date().toString("yyyy-MM-dd") if self.checkRangoFecha.isChecked() else None
+        fechaFin    = self.fechaFin.date().toString("yyyy-MM-dd")    if self.checkRangoFecha.isChecked() else None
+
+        #datos del archivo reporte
+        nombre      = self.inputNombreArchivo.text() or f"reporte-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
+        extencion   = self.cmbTipoArchivo.currentData()
+        ruta        = self.inputRuta.text()
+        
+        #mostrar el nombre predeterminado
+        self.inputNombreArchivo.setText(nombre)
+        
+        tipoReporte =[]
+        
+        if asistencias:
+            tipoReporte.append('justificacion')
+        
+        if justificacion:
+            tipoReporte.append('asistencias')
+            
+        if permiso:
+            tipoReporte.append('permisos')
+        
+        return {
+            'nombre_reporte'    :nombre,
+            'extencion'         :extencion,
+            'ruta'              :ruta,
+            'tipoReporte'       :tipoReporte,
+            'id_departamento'   :departamento,
+            'id_rol'            :rol,
+            'id_empleado'       :empleado,
+            'rangoFechas'       :[fechaIncio,fechaFin] if fechaIncio and fechaFin else None
+        }
+    
+    def generaReporte(self):
+        
+        datos = self.obtenerDatosReporte()
+        print(datos)
+        #se valida antes de generar reporte
+        if not self.validarTiposReportes():
+            dial = DialogoEmergente('',f'Debes seleccionar el tipo de reporte.','Error',True, False)
+            dial.exec()
+            return
+        
+        if not os.path.exists(datos['ruta']):
+            dial = DialogoEmergente('',f'La ruta \'{datos['ruta']}\' para guardar el documento no existe.','Error',True, False)
+            dial.exec()
+            return
+        
+        if os.path.isfile(os.path.join(datos['ruta'], f'{datos['nombre_reporte']}.{datos['extencion']}')):
+            dial = DialogoEmergente('',f'Ya existe un documento en la misma ruta con el mismo nombre y formato: \'{os.path.join(datos['ruta'], f'{datos['nombre_reporte']}.{datos['extencion']}')}\'','Error',True, False)
+            dial.exec()
+            return
+        
+        #genera reporte
+        resultado = self.reporteServices.crear_reporte(**datos)
+        if resultado['success']:
+            dial = DialogoEmergente('','Se genero el reporte correctamente.','Check',True,False)
+            dial.exec()
+            self.reject()
+            return
+        
+        if not resultado['success']:
+            dial = DialogoEmergente('',resultado['message'],'Error',True,False)
+            dial.exec()
+            return

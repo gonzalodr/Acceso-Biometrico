@@ -297,6 +297,7 @@ class ReporteData:
         if not resultado['success']:
             return resultado
         try:
+            
             if rangoFechas:
                 if len(rangoFechas) != 2:
                     return {'success': False, 'message': 'Error: Se requieren exactamente 2 fechas (inicio y fin)'}
@@ -397,6 +398,7 @@ class ReporteData:
 
                 # Construcción de la consulta
                 query = f'''SELECT 
+                            E.{TBEMPLEADO_ID}       AS EmpleadoId,
                             P.{TBPERSONA_CEDULA}    AS CedulaPersona,
                             P.{TBPERSONA_NOMBRE}    AS NombrePersona,
                             P.{TBPERSONA_APELLIDOS} AS ApellidosPersona,
@@ -419,7 +421,7 @@ class ReporteData:
                 if datos:
                     for reporte in datos:                        
                         datosEmpleadoReporte = {}
-                        
+                        datosEmpleadoReporte['id_empleado'] = reporte['EmpleadoId']
                         datosEmpleadoReporte['nombre']      = reporte['NombrePersona']
                         datosEmpleadoReporte['apellidos']   = reporte['ApellidosPersona']
                         datosEmpleadoReporte['cedula']      = reporte['ApellidosPersona']
@@ -486,7 +488,6 @@ class ReporteData:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             errores = traceback.extract_tb(exc_traceback)[-1]
             logger.error(f'{e} - LIN&COL {errores.lineno}:{errores.colno if hasattr(errores, 'colno') else 'N/A'}')
-
             return {'success': False, 'message': 'Ocurrió un error al obtener los datos para el reporte.'}
         finally:
             if conexion: conexion.close()
