@@ -2,6 +2,7 @@ from data.data import conection  # obtener la conexión
 from settings.config import *  # obtener los nombres de tablas
 from settings.logger import logger  # recolectar los errores
 from mysql.connector import Error
+from settings.config import *
 
 # importando clases
 from typing import Dict, Any  # clase diccionario
@@ -809,3 +810,52 @@ class EmpleadoData:
                 conexion.close()  # Se cierra la conexión a la base de datos
 
         return resultado
+
+    def get_full_name_empleado(self):
+        """
+        Obtiene todos los empleados (nombre completo e ID)
+        uniendo las tablas Empleado y Persona.
+        Retorna un diccionario con los datos
+        """
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+
+        try:
+            with conexion.cursor() as cursor:
+                query = f"""
+                SELECT 
+                    e.{TBEMPLEADO_ID},
+                    CONCAT(p.{TBPERSONA_NOMBRE}, ' ', p.{TBPERSONA_APELLIDOS}) AS nombre_completo
+                FROM {TBEMPLEADO} e
+                INNER JOIN {TBPERSONA} p 
+                ON e.{TBEMPLEADO_PERSONA} = p.{TBPERSONA_ID}
+                """
+                cursor.execute(query)
+                empleados = cursor.fetchall()
+
+                if empleados:
+                    lista_empleados = [
+                        {"id": emp[0], "nombre_completo": emp[1]} for emp in empleados
+                    ]
+                    return {
+                        "success": True,
+                        "message": "Empleados obtenidos correctamente.",
+                        "data": lista_empleados,
+                    }
+                else:
+                    return {
+                        "success": True,
+                        "message": "No se encontraron empleados.",
+                        "data": [],
+                    }
+        except Exception as e:
+            logger.error(f"Error al obtener empleados: {e}")
+            return {
+                "success": False,
+                "message": "Error al obtener empleados.",
+                "data": None,
+            }
+        finally:
+            if conexion:
+                conexion.close()

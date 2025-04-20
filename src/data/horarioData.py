@@ -221,7 +221,7 @@ class HorarioData:
             conexion.close()
 
     def create_horario(self, horario: Horario, id_rol: int):
-        conexion, resultado = self.obtener_conexion()
+        conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
         """
