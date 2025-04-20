@@ -172,6 +172,7 @@ class ReporteServices:
 
                 if cedula not in empleados_dict:
                     empleados_dict[cedula] = {
+                        'id_empleado': empleado['id_empleado'],
                         'nombre': empleado['nombre'],
                         'apellidos': empleado['apellidos'],
                         'cedula': cedula,
@@ -194,6 +195,7 @@ class ReporteServices:
             reporte:Reporte = Reporte(id_empleado=emp['id_empleado'],fecha_generacion=datetime.datetime.now(),tipo_reporte=','.join(tipoReporte),contenido=','.join(tipoReporte))
             
             resultHistoria = self.insertarReporte(reporte)
+            print(datetime.datetime.now())
             print(resultHistoria)
             
             if emp['departamento']:
