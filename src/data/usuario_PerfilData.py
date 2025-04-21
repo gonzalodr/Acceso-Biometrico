@@ -65,7 +65,14 @@ class UsuarioPerfilData:
                         {TBUSUARIOPERFIL_ID_PERF} = %s,
                         {TBUSUARIOPERFIL_ID_USER} = %s
                         WHERE {TBUSUARIOPERFIL_ID} = %s """
-                cursor.execute(query, (id_perfil, id_usuario, id_usuarioPerfil))
+                cursor.execute(
+                    query,
+                    (
+                        usuario_perfil.id_perfil,
+                        usuario_perfil.id_Usuario,
+                        usuario_perfil.id,
+                    ),
+                )
                 if conexionEx is None:
                     conexion.commit()
                 return {
