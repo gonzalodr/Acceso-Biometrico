@@ -317,10 +317,6 @@ class AdminHorario(QWidget):
         self.setGraphicsEffect(None)
 
     def _editar_horario(self, id):
-        blur_effect = QGraphicsBlurEffect(self)
-        blur_effect.setBlurRadius(10)
-        self.setGraphicsEffect(blur_effect)
         form = formHorario(titulo="Actualizar Horario", id=id)
         form.exec()
         self._cargar_tabla()
-        self.setGraphicsEffect(None)

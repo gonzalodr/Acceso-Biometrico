@@ -1,5 +1,5 @@
 from data.EmpleadoData import EmpleadoData
-from settings.tablas import TBPERSONA_ID
+from settings.config import TBPERSONA_ID
 from typing import Dict, Any
 import bcrypt 
 class EmpleadoServices:

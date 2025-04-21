@@ -225,11 +225,24 @@ ADD CONSTRAINT `FK_Usuario_Perfil_Perfil` FOREIGN KEY (`Id_Perfil`) REFERENCES `
 ADD CONSTRAINT `FK_Usuario_Perfil_Usuario` FOREIGN KEY (`Id_Usuario`) REFERENCES `Usuario` (`Id`);
 
 -- Insertando en la tabla Persona
-INSERT INTO `Persona`(Nombre, Apellidos, Fecha_Nacimiento, Cedula, Estado_Civil, Correo, Direccion)
-VALUES('admin', 'admin', '2000-01-01', '0000000000', 'vacio', 'admin@admin.admin', 'direccion admin');
+-- Iniciando una transacción
+START TRANSACTION;
+
+-- Insertando en la tabla Persona
+INSERT INTO `Persona` (Nombre, Apellidos, Fecha_Nacimiento, Cedula, Estado_Civil, Correo, Direccion)
+VALUES ('admin', 'admin', '2000-01-01', '0000000000', 'vacio', 'admin@admin.admin', 'direccion admin');
+
+-- Obteniendo el ID de la persona recién insertada
+SET @IdPersona = LAST_INSERT_ID();
+
+-- Insertando en la tabla Empleado usando el ID de la persona insertada
+INSERT INTO Empleado (Id_Persona) VALUES (@IdPersona);
 
 -- Insertando en la tabla Usuario usando el ID de la persona insertada
-INSERT INTO `Usuario`(Id_Persona, Usuario, Contrasena)
-VALUES(LAST_INSERT_ID(), 'admin', '$2a$12$38OuH8cvPIAxyqLqm240f.8TVh8o8eReC.UCWS2HJYBaqsmPlFNCC');
+INSERT INTO `Usuario` (Id_Persona, Usuario, Contrasena)
+VALUES (@IdPersona, 'admin', '$2a$12$38OuH8cvPIAxyqLqm240f.8TVh8o8eReC.UCWS2HJYBaqsmPlFNCC');
+
+-- Confirmando la transacción
+COMMIT;
 
 -- Contrasena 12345678

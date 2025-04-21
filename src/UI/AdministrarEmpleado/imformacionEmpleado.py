@@ -6,6 +6,10 @@ from PySide6.QtGui import QPixmap
 from services.empleadoServices import EmpleadoServices
 from models.persona import Persona
 from models.usuario import Usuario
+from models.departamento import Departamento
+from services.departamentoService import DepartamentoServices 
+from models.perfil import Perfil
+from models.rol    import Rol
 
 from UI.DialogoEmergente import DialogoEmergente
 from Utils.Utils import *
@@ -124,9 +128,20 @@ class informacionEmpleado(QDialog):
         datos   = result.get('empleado')
         persona:Persona = datos.get('persona')  #objeto Persona
         usuario:Usuario = datos.get('usuario')  #objeto Usuario
-        dictPerfil = datos.get('pefilUsuario')  #diccionario
-        dictRolEmp = datos.get('rolEmpleado')   #diccionario
-        departamen = datos.get('departamento')  #int
+        dictPerfil: Perfil = datos.get('pefilUsuario')  #diccionario
+        dictRolEmp: Rol = datos.get('rolEmpleado')   #diccionario
+        departamen: Departamento = datos.get('departamento')  # objeto Departamento
+        #departamen = datos.get('departamento')  # objeto Departamento o None
+        print("Departamento recibido:", departamen)
+        print("Tipo:", type(departamen))
+
+        print("dictPerfil recibido:", dictPerfil)
+        print("Tipo:", type(dictPerfil))
+        
+        print("rolEmpleado recibido:", dictRolEmp)
+        print("Tipo:", type(dictRolEmp))
+
+        #departamen = datos.get('departamento')  #int
         listaTelef = datos.get('listaTelefonos')#telefonos del usuario
 
         # Cargar la foto si está disponible
@@ -168,10 +183,18 @@ class informacionEmpleado(QDialog):
 
         #Cargar el rol y el departamento
         if dictRolEmp or departamen:
-            self.dept_input = QLineEdit(str(departamen))
+            #self.dept_input = QLineEdit(str(departamen))
+            nombre_departamento = 'Sin departamento asignado'
+    
+            if departamen is not None:
+                if isinstance(departamen, str):
+            # Si es un string (nombre del departamento)
+                        nombre_departamento = departamen  # Usar directamente el nombre del departamento
+            self.dept_input = QLineEdit(nombre_departamento)
 
-            id_rol = dictRolEmp.get('id_rol') if isinstance(dictRolEmp,dict) else 'Sin Rol asignado asignado'
-            self.role_input = QLineEdit(str(id_rol))
+            nombre_rol = dictRolEmp.get('nombre_rol') if isinstance(dictRolEmp, dict) else 'Sin Rol asignado'
+            self.role_input = QLineEdit(nombre_rol)
+
             
             self.role_input.setReadOnly(True)
             self.dept_input.setReadOnly(True)
@@ -186,8 +209,8 @@ class informacionEmpleado(QDialog):
         if usuario:
             self.username_input = QLineEdit(usuario.usuario)
 
-            id_perfil = dictPerfil.get('id_perfil') if isinstance(dictPerfil, dict) else 'Sin perfil asignado'
-            self.profile_input = QLineEdit(str(id_perfil))
+            nombre_perfil = dictPerfil.get('nombre_perfil') if isinstance(dictPerfil, dict) else 'Sin perfil asignado'
+            self.profile_input = QLineEdit(nombre_perfil)
             
             self.username_input.setReadOnly(True)
             self.profile_input.setReadOnly(True)

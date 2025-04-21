@@ -61,7 +61,7 @@ class AsistenciaData:
             {TBASISTENCIA_ID_EMPLEADO} = %s,
             {TBASISTENCIA_FECHA} = %s,
             {TBASISTENCIA_ESTADO_ASISTENCIA} = %s
-            WHERE {TBREPORTE_ID} = %s"""
+            WHERE {TBASISTENCIA_ID} = %s"""
             
             #define la consulta SQL pasando los valores actualizados del  objetos reporte
             cursor.execute(query, (
@@ -117,7 +117,7 @@ class AsistenciaData:
                 conexion.close()
         return resultado
     
-    def list_asistencias(self, pagina=1, tam_pagina=10, ordenar_por=TBREPORTE_ID, tipo_orden="ASC", busqueda=None):
+    def list_asistencias(self, pagina=1, tam_pagina=10, ordenar_por=TBASISTENCIA_ID, tipo_orden="ASC", busqueda=None):
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
@@ -136,11 +136,18 @@ class AsistenciaData:
             #se ajusta
             tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
             
-            query = f"SELECT * FROM {TBASISTENCIA}"
+            query = f"""SELECT 
+                    a.*,
+                    p.{TBPERSONA_NOMBRE} AS nombre_persona
+                FROM {TBASISTENCIA} a
+                INNER JOIN {TBEMPLEADO} e ON a.{TBASISTENCIA_ID_EMPLEADO} = e.{TBEMPLEADO_ID}
+                INNER JOIN {TBPERSONA} p ON e.{TBEMPLEADO_PERSONA} = p.{TBPERSONA_ID}"""
             valores = []
             
             if busqueda:
-                query += f" WHERE {TBASISTENCIA_ID_EMPLEADO} LIKE %s OR {TBASISTENCIA_FECHA} LIKE %s OR {TBASISTENCIA_ESTADO_ASISTENCIA} LIKE %s"
+                query += f""" WHERE {TBASISTENCIA_ID_EMPLEADO} LIKE %s 
+                              OR {TBASISTENCIA_FECHA} LIKE %s
+                              OR {TBASISTENCIA_ESTADO_ASISTENCIA} LIKE %s """
                 valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
             
             query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
@@ -155,7 +162,7 @@ class AsistenciaData:
                     estado_asistencia=registro[TBASISTENCIA_ESTADO_ASISTENCIA],
                     id=registro[TBASISTENCIA_ID]
                 )
-                listaAsistencias.append(asistencia)# Se añade el perfil a la lista
+                listaAsistencias.append({'asistencia': asistencia, 'nombre_empleado': registro['nombre_persona']})# Se añade el perfil a la lista
             
             cursor.execute(f"SELECT COUNT(*) as total FROM {TBASISTENCIA}") #TBROL
             total_registros = cursor.fetchone()["total"]  # Se obtiene el número total de registros

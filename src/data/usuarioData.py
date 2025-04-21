@@ -4,7 +4,7 @@ from data.data import conection
 from settings.config import *
 from settings.tablas import *
 from settings.logger import logger
-from settings.tablas import TBUSUARIOPERFIL,TBUSUARIOPERFIL_ID_USER
+from settings.config import TBUSUARIOPERFIL,TBUSUARIOPERFIL_ID_USER
 import bcrypt
 
 class UsuarioData:

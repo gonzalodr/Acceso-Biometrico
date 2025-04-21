@@ -5,7 +5,7 @@ from UI.AdministrarPermisosRol.formPermisosRol import *
 from services.permisosRolServices import *
 from services.rolService import *
 from services.rolService import *
-from settings.variable import *
+from settings.config import *
 
 class AdminPermisosRol(QWidget):
     cerrar_adminP = Signal()

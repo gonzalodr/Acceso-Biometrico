@@ -1,5 +1,5 @@
 from data.EmpleadoData import Empleado
-from settings.tablas import *       #obtener los nombres de tablas
+from settings.config import *       #obtener los nombres de tablas
 from models.reporte import Reporte #importa la clase de reportes 
 from data.data import conection # importa la funcion de conection para crear la conexion enla base de datos
 

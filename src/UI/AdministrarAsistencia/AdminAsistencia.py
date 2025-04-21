@@ -6,7 +6,7 @@ from UI.AdministrarAsistencia.formAsistencia import *
 from services.asistenciaService import *
 from services.empleadoServices import *
 
-from settings.variable import *
+from settings.config import *
 
 class AdminAsistencia(QWidget):
     cerrar_adminA = Signal()
@@ -197,25 +197,28 @@ class AdminAsistencia(QWidget):
                 self._actualizarValoresPaginado(paginaActual, totalPaginas)
                 
                 self.tbAsistencia.setRowCount(0)
+                print("🔍 Datos recibidos en _cargar_tabla:")
+                for asistencia in listaAsistencias:
+                    print(f"- Nombre: {asistencia['nombre_empleado']}, Fecha: {asistencia['asistencia'].fecha}, Estado: {asistencia['asistencia'].estado_asistencia}")
                 for index, asistencia in enumerate(listaAsistencias):  # Iterar sobre la lista de perfiles
                     self.tbAsistencia.insertRow(index)# Insertar una nueva fila en la tabla
                     self.tbAsistencia.setRowHeight(index, 45) # Establecer la altura de la fila
 
  # Agregar los datos del perfil a la tabla
-                    self.addItem_a_tabla(index, 0, str(asistencia.id_empleado))
-                    self.addItem_a_tabla(index, 1, asistencia.fecha.strftime("%Y-%m-%d"))  # Formatear fecha
-                    self.addItem_a_tabla(index, 2, asistencia.estado_asistencia)# Agregar el nombre del perfil a la columna 0
+                    self.addItem_a_tabla(index, 0, str(asistencia['nombre_empleado'])) 
+                    self.addItem_a_tabla(index, 1, asistencia["asistencia"].fecha.strftime("%Y-%m-%d"))  # Formatear fecha
+                    self.addItem_a_tabla(index, 2, asistencia["asistencia"].estado_asistencia)# Agregar el nombre del perfil a la columna 0
 
                     # Botones para editar y eliminar
                     btnEliminar = QPushButton("Eliminar")
-                    btnEliminar.clicked.connect(lambda checked, idx=asistencia.id: self._eliminarRegistro(idx))
+                    btnEliminar.clicked.connect(lambda checked, idx=asistencia["asistencia"].id: self._eliminarRegistro(idx))
                     btnEliminar.setMinimumSize(QSize(80, 35))# Establecer el tamaño mínimo del botón
                     btnEliminar.setStyleSheet("""   QPushButton{background-color:#ff5151;color:white;}
                                                     QPushButton::hover{background-color:#ff0000;color:white;}
                                               """)# Estilo del botón
 
                     btnEditar = QPushButton("Editar")
-                    btnEditar.clicked.connect(lambda checked, idx=asistencia.id: self._editar_Asistencia(idx))
+                    btnEditar.clicked.connect(lambda checked, idx=asistencia["asistencia"].id: self._editar_Asistencia(idx))
                     btnEditar.setMinimumSize(QSize(80, 35))
                     btnEditar.setStyleSheet(""" QPushButton{background-color:#00b800;color:white;}
                                                 QPushButton::hover{background-color:#00a800;color:white;}
