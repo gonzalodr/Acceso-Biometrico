@@ -7,7 +7,7 @@ from settings.logger import logger
 
 class SolicitudPermisoData:
 
-    def crear_solicitud(solicitud: SolicitudPermiso):
+    def crear_solicitud(self, solicitud: SolicitudPermiso):
         """
         Crea una nueva solicitud de permiso en la base de datos
 
@@ -68,6 +68,6 @@ class SolicitudPermisoData:
                 "error_details": str(e),
             }
         finally:
-            if conexion and conexion.is_connected():
-                # cierre de conexion
-                conexion.close()
+
+            # cierre de conexion
+            conexion.close()

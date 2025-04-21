@@ -16,7 +16,7 @@ class FormSolicitudPermisoAdmin(QDialog):
     ):
         super().__init__(parent)
         self.setObjectName("form")
-        self.setMinimumSize(QSize(600, 500))
+        self.setMinimumSize(QSize(700, 600))
         self.setWindowFlags(Qt.FramelessWindowHint)
         cargar_estilos("claro", "form.css", self)
 
@@ -86,10 +86,10 @@ class FormSolicitudPermisoAdmin(QDialog):
         Sombrear(self.inputEstado, 20, 0, 0)
 
         # Descripción
-        lblDescripcion = QLabel(text="Descripción/Motivo")
-        self.inputDescripcion = QTextEdit()
-        self.inputDescripcion.setPlaceholderText("Descripción del permiso...")
-        self.inputDescripcion.setMaximumHeight(100)
+        lblDescripcion = QLabel(text="Descripción")
+        self.inputDescripcion = QLineEdit()
+        self.inputDescripcion.setPlaceholderText("Ingrese una descripción opcional")
+        self.inputDescripcion.setMaximumHeight(50)
         self.errorDescripcion = QLabel()
         Sombrear(self.inputDescripcion, 20, 0, 0)
 
@@ -156,7 +156,7 @@ class FormSolicitudPermisoAdmin(QDialog):
 
         # Cargar datos si se pasa un ID de solicitud
         if id_solicitud:
-            self.cargar_solicitud(id_solicitud)
+            """self.cargar_solicitud(id_solicitud)"""
 
     def _contenedor(self, label: QLabel, input, label_error: QLabel):
         layout = QVBoxLayout()
@@ -184,8 +184,8 @@ class FormSolicitudPermisoAdmin(QDialog):
         except Exception as e:
             print(f"Error al cargar empleados: {e}")
 
-    def cargar_solicitud(self, id_solicitud):
-        """Carga los datos de una solicitud existente para edición"""
+    """def cargar_solicitud(self, id_solicitud):
+        
         try:
             solicitud = self.service.obtener_solicitud(id_solicitud)
             if solicitud:
@@ -208,7 +208,7 @@ class FormSolicitudPermisoAdmin(QDialog):
                 self.inputEstado.setCurrentText(solicitud.estado)
                 self.inputDescripcion.setPlainText(solicitud.descripcion)
         except Exception as e:
-            print(f"Error al cargar solicitud: {e}")
+            print(f"Error al cargar solicitud: {e}")""" ""
 
     def gestionar_solicitud(self):
         """Gestiona la creación o actualización de una solicitud"""
@@ -225,7 +225,7 @@ class FormSolicitudPermisoAdmin(QDialog):
             ).exec()
             return
 
-        if len(self.inputDescripcion.toPlainText().strip()) < 10:
+        if len(self.inputDescripcion.text().strip()) < 10:
             DialogoEmergente(
                 "Error", "La descripción debe tener al menos 10 caracteres", "Error"
             ).exec()
@@ -237,7 +237,7 @@ class FormSolicitudPermisoAdmin(QDialog):
             tipo=self.inputTipoPermiso.currentText(),
             fecha_inicio=self.inputFechaInicio.date().toPython(),
             fecha_fin=self.inputFechaFin.date().toPython(),
-            descripcion=self.inputDescripcion.toPlainText(),
+            descripcion=self.inputDescripcion.text(),
             estado=self.inputEstado.currentText(),
             id_solicitud_permiso=self.id_solicitud if self.id_solicitud else 0,
         )
@@ -251,7 +251,7 @@ class FormSolicitudPermisoAdmin(QDialog):
             else:
                 DialogoEmergente("Error", result["message"], "Error").exec()
         else:  # Si no hay ID, es creación
-            result = self.service.crear_solicitud(solicitud)
+            result = self.service.crear_permiso(solicitud)
             if result["success"]:
                 DialogoEmergente("Registro", result["message"], "Check").exec()
                 self.accept()
