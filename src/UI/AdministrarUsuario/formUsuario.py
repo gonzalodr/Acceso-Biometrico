@@ -128,7 +128,7 @@ class formUsuario(QDialog):
 
         # Cargar datos si se proporciona un id
         if id:
-            self._obtener_registroId(id, id_usuario_perfil)
+            self._obtener_registroId(id)
 
     def _contenedor(self, label: QLabel, input: QLineEdit, label_error: QLabel):
         layout = QVBoxLayout()
@@ -159,7 +159,7 @@ class formUsuario(QDialog):
             dial.exec()
 
     def _cargar_perfiles(self):
-        result = self.Pperfil.obtenerListaPerfil()  # Llama al servicio para obtener la lista de perfiles
+        result = self.Pperfil.obtenerListaPerfilCB()  # Llama al servicio para obtener la lista de perfiles
         if result["success"]:
             for perfil in result["data"]["listaPerfiles"]:
                 self.comboPerfil.addItem(perfil.nombre, perfil.id)
@@ -229,7 +229,7 @@ class formUsuario(QDialog):
     def _validar_inputs_sin_con_datos(self):
         return self.inputUsuario.text().strip() or self.inputUsuario.text().strip()
 
-    def _obtener_registroId(self, id, id_usuario_perfil):
+    def _obtener_registroId(self, id):
         result = self.Uservices.obtenerUsuarioPorId(id)  # Cambiar a obtenerUsuarioPorId
         if result["success"]:
             if result["exists"]:

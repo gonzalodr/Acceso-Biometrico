@@ -179,7 +179,7 @@ class PersonaData:
     # Se lista las personas
     # tipo de orden ASC o DESC
     # ##
-    def list_personas(self, pagina=1, tam_pagina=10, ordenar_por = TBPERSONA_ID, tipo_orden="ASC", busqueda = None):
+    def list_personas(self, pagina=1, tam_pagina=10, ordenar_por=TBPERSONA_ID, tipo_orden="ASC", busqueda=None):
         conexion, resultado = conection()
         cursor = None
         if not resultado["success"]:
@@ -188,17 +188,17 @@ class PersonaData:
         listaPersonas = []
         try:
             cursor = conexion.cursor(dictionary=True)  
-            #validacion de por que columna ordenar
+            # Validación de por qué columna ordenar
             columna_orden = { 
-                "cedula":TBPERSONA_CEDULA, 
-                "fechaNacimiento":TBPERSONA_NACIMIENTO, 
-                "apellido":TBPERSONA_APELLIDOS, 
-                "nombre":TBPERSONA_NOMBRE
+                "cedula": TBPERSONA_CEDULA, 
+                "fechaNacimiento": TBPERSONA_NACIMIENTO, 
+                "apellido": TBPERSONA_APELLIDOS, 
+                "nombre": TBPERSONA_NOMBRE
             }
-            ## asigna sobre que tabla realizar el orden
+            # Asigna sobre qué tabla realizar el orden
             ordenar_por = columna_orden[ordenar_por] if ordenar_por in columna_orden else TBPERSONA_ID
                 
-            ## asigna el tipo de orden ascendente o descendente
+            # Asigna el tipo de orden ascendente o descendente
             if tipo_orden != "ASC":
                 tipo_orden = "DESC"
                 
@@ -214,17 +214,18 @@ class PersonaData:
                     OR {TBPERSONA_CEDULA} LIKE %s 
                     OR {TBPERSONA_CORREO} LIKE %s
                 """
-                valores = [f"%{busqueda}%"] * 5  # Para usar el valor de búsqueda con LIKE en todas las columnas
-            
+                valores = [f"%{busqueda}%"] * 4  # Para usar el valor de búsqueda con LIKE en todas las columnas
+                
             # Añadir la cláusula ORDER BY y LIMIT/OFFSET
             query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
             valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
 
             cursor.execute(query, valores)
             
-            #Leyendo los registros de 
+            # Leyendo los registros
             registros = cursor.fetchall()
             for registro in registros:
+                nombre_completo = f"{registro[TBPERSONA_NOMBRE]} {registro[TBPERSONA_APELLIDOS]}"
                 persona = Persona(
                     registro[TBPERSONA_NOMBRE],
                     registro[TBPERSONA_APELLIDOS],
@@ -236,6 +237,8 @@ class PersonaData:
                     registro[TBPERSONA_ID],
                     registro[TBPERSONA_FOTO]
                 )
+                # Agregar el nombre completo al objeto persona
+                persona.nombre_completo = nombre_completo
                 listaPersonas.append(persona)
                 
             # Obtener el total de registros para calcular el número total de páginas
@@ -309,3 +312,77 @@ class PersonaData:
             if conexion and conexionEx is None:
                 conexion.close()
 
+    def list_personas_sin_usuario(self, id_persona: int):
+        print("Id recibido en la base de datos: " + str(id_persona))
+        conexion, resultado = conection()
+        cursor = None
+        if not resultado["success"]:
+            return resultado
+        
+        lista_personasSinUsuario = []  # Cambiamos a una lista de diccionarios
+        posicion_id_persona = -1  # Inicializar la posición como -1 (no encontrado)
+        
+        try:
+            cursor = conexion.cursor(dictionary=True)
+            
+            # Consulta para obtener los nombres y el ID de las personas que no tienen un usuario
+            query = f"""
+                SELECT 
+                    {TBPERSONA_ID}, 
+                    {TBPERSONA_NOMBRE}, 
+                    {TBPERSONA_APELLIDOS} 
+                FROM {TBPERSONA} 
+                WHERE {TBPERSONA_ID} NOT IN (SELECT {TBUSUARIO_ID_PERSONA} FROM {TBUSUARIO})
+            """
+            
+            cursor.execute(query)
+            registros = cursor.fetchall()
+            
+            for registro in registros:
+                nombre_completo = f"{registro[TBPERSONA_NOMBRE]} {registro[TBPERSONA_APELLIDOS]}"
+                # Agregar un diccionario con el id y el nombre completo
+                lista_personasSinUsuario.append({
+                    "id_persona": registro[TBPERSONA_ID],
+                    "nombre_completo": nombre_completo
+                })
+            
+            # Si se proporciona un id_persona, buscar esa persona y agregarla a la lista
+            if id_persona > 0:
+                # Consulta para obtener la persona específica
+                query_persona = f"""
+                    SELECT 
+                        {TBPERSONA_ID}, 
+                        {TBPERSONA_NOMBRE}, 
+                        {TBPERSONA_APELLIDOS} 
+                    FROM {TBPERSONA} 
+                    WHERE {TBPERSONA_ID} = %s
+                """
+                cursor.execute(query_persona, (id_persona,))
+                persona_especifica = cursor.fetchone()
+                
+                if persona_especifica:
+                    nombre_completo = f"{persona_especifica[TBPERSONA_NOMBRE]} {persona_especifica[TBPERSONA_APELLIDOS]}"
+                    # Agregar la persona específica a la lista
+                    lista_personasSinUsuario.append({
+                        "id_persona": persona_especifica[TBPERSONA_ID],
+                        "nombre_completo": nombre_completo
+                    })
+                    # Guardar la posición de la persona específica
+                    posicion_id_persona = len(lista_personasSinUsuario) - 1  # Última posición
+
+            resultado["data"] = {
+                "lista_personasSinUsuario": lista_personasSinUsuario,
+                "posicion_id_persona": posicion_id_persona
+            }
+            resultado["success"] = True
+            resultado["message"] = "Personas sin usuario listadas exitosamente."
+        except Exception as e:
+            resultado["success"] = False
+            resultado["message"] = f"Error al listar personas sin usuario: {e}"
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
+        
+        return resultado

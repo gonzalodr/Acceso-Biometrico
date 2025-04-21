@@ -54,6 +54,7 @@ class Ventana(QMainWindow):
         else:
             event.ignore() 
 
+
                 
         
         

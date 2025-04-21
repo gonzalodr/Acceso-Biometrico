@@ -211,6 +211,10 @@ class vistaPrincipal(QWidget):
                 (index, "Perfiles de usuario", "access-control-list.png")
             )
 
+            self.listaOpciones.append(
+                (index, "Admin. permisos perfil", "access-control-list.png")
+            )
+
         if True:
             adminreporte = AdminReporte()
             adminreporte.cerrar_adminR.connect(self._salir_crud)
