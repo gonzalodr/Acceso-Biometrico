@@ -198,7 +198,7 @@ class vistaPrincipal(QWidget):
             adminpermisosperfil = AdminPermisosPerfil()
             adminpermisosperfil.cerrar_adminP.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminpermisosperfil)
-            self.listaOpciones.append((index,"Perfiles de usuario",'access-control-list.png'))
+            self.listaOpciones.append((index,"Admin. permisos perfil",'access-control-list.png'))
             
                  
         if True:
