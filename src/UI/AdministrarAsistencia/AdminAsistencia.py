@@ -5,6 +5,8 @@ from Utils.Utils import *
 from UI.AdministrarAsistencia.formAsistencia import *
 from services.asistenciaService import *
 from services.empleadoServices import *
+import locale
+from datetime import datetime
 
 from settings.config import *
 

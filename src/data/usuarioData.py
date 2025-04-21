@@ -89,10 +89,9 @@ class UsuarioData:
                 # Construir la consulta SQL dinámicamente
                 if usuario.contrasena is None:
                     query = f"""UPDATE {TBUSUARIO} SET 
-                                {TBUSUARIO_USUARIO} = %s,
-                                {TBUSUARIO_ID_PERSONA} = %s
-                                WHERE {TBUSUARIO_ID} = %s"""
-                    params = (usuario.usuario, usuario.id_persona, usuario.id)
+                    {TBUSUARIO_USUARIO} = %s
+                    WHERE {TBUSUARIO_ID} = %s"""
+                    params = (usuario.usuario, usuario.id)
                 else:
                     query = f"""UPDATE {TBUSUARIO} SET 
                                 {TBUSUARIO_USUARIO} = %s,

@@ -276,7 +276,7 @@ class AsistenciaData:
                 query = f'''
                     SELECT Id, Id_Empleado, Fecha, Estado_Asistencia 
                     FROM Asistencia 
-                    WHERE Id_Empleado = %s AND Estado_Asistencia = 'Ausente'
+                    WHERE Id_Empleado = %s AND Estado_Asistencia = 'No_Justificada'
                     ORDER BY Fecha DESC
                 '''
                 cursor.execute(query, (id_empleado,))
