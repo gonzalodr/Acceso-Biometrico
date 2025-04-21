@@ -26,8 +26,16 @@ class JustificacionData:
                     justificacion.motivo,
                     justificacion.descripcion
                 ))
+
+                # Actualización del estado de la asistencia
+                query_update = f"""UPDATE {TBASISTENCIA}
+                SET {TBASISTENCIA_ESTADO_ASISTENCIA} = 'Justificada'
+                WHERE {TBASISTENCIA_ID} = %s"""
+                
+                cursor.execute(query_update, (justificacion.id_asistencia,))
+
                 conexion.commit()
-                return {'success': True, 'message': 'La justificación se guardó correctamente.'}
+                return {'success': True, 'message': 'La justificación se guardó correctamente y la asistencia se actualizó.'}
         except Error as e:
             logger.error(f'Error: {e}')
             return {'success': False, 'message': 'Ocurrió un error al guardar la justificación.'}
@@ -71,10 +79,29 @@ class JustificacionData:
         
         try:
             with conexion.cursor() as cursor:
+                # Obtener el id de asistencia antes de eliminar la justificación
+                query_select = f"SELECT {TBJUSTIFICACION_ID_ASISTENCIA} FROM {TBJUSTIFICACION} WHERE {TBJUSTIFICACION_ID} = %s"
+                cursor.execute(query_select, (justificacion_id,))
+                asistencia_id = cursor.fetchone()
+
+                if asistencia_id is None:
+                    return {'success': False, 'message': 'No se encontró la justificación.'}
+                
+                asistencia_id = asistencia_id[0]  # Extraer el id de asistencia
+
                 query = f"DELETE FROM {TBJUSTIFICACION} WHERE {TBJUSTIFICACION_ID} = %s"
                 cursor.execute(query, (justificacion_id,))
+
+                # Actualizar el estado de la asistencia a "Ausente"
+                query_update = f"""UPDATE {TBASISTENCIA}
+                SET {TBASISTENCIA_ESTADO_ASISTENCIA} = 'Ausente'
+                WHERE {TBASISTENCIA_ID} = %s"""
+
+                cursor.execute(query_update, (asistencia_id,))
+
+
                 conexion.commit()
-                return {'success': True, 'message': 'La justificación se eliminó correctamente.'}
+                return {'success': True, 'message': 'La justificación se eliminó correctamente y la asistencia se actualizó.'}
         except Error as e:
             logger.error(f'Error: {e}')
             return {'success': False, 'message': 'Ocurrió un error al eliminar la justificación.'}
