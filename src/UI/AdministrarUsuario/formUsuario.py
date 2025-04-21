@@ -229,7 +229,7 @@ class formUsuario(QDialog):
     def _validar_inputs_sin_con_datos(self):
         return self.inputUsuario.text().strip() or self.inputUsuario.text().strip()
 
-    def _obtener_registroId(self, id, id_usuario_perfil):
+    def _obtener_registroId(self, id):
         result = self.Uservices.obtenerUsuarioPorId(id)  # Cambiar a obtenerUsuarioPorId
         if result["success"]:
             if result["exists"]:
