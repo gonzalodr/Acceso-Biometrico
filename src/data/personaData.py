@@ -328,7 +328,7 @@ class PersonaData:
                     {TBPERSONA_NOMBRE}, 
                     {TBPERSONA_APELLIDOS} 
                 FROM {TBPERSONA} 
-                WHERE {TBPERSONA_ID} NOT IN (SELECT {TBUSUARIOIDPERSONA} FROM {TBUSUARIO})
+                WHERE {TBPERSONA_ID} NOT IN (SELECT {TBUSUARIO_ID_PERSONA} FROM {TBUSUARIO})
             """
             
             cursor.execute(query)

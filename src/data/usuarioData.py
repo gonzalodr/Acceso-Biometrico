@@ -2,7 +2,6 @@ from mysql.connector import Error
 from models.usuario import Usuario
 from data.data import conection
 from settings.config import *
-from settings.tablas import *
 from settings.logger import logger
 from settings.config import TBUSUARIOPERFIL,TBUSUARIOPERFIL_ID_USER
 import bcrypt
@@ -156,7 +155,7 @@ class UsuarioData:
                     "id_persona": TBUSUARIO_ID_PERSONA,
                     "nombre": TBPERSONA_NOMBRE  # Permitir ordenar por nombre
                 }
-                ordenar_por = columna_orden.get(ordenar_por, TBUSUARIOIDPERSONA)
+                ordenar_por = columna_orden.get(ordenar_por, TBUSUARIO_ID_PERSONA)
 
                 # Asigna el tipo de orden ascendente o descendente
                 tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
