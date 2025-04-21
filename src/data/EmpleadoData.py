@@ -665,5 +665,3 @@ class EmpleadoData:
                 conexion.close()# Se cierra la conexión a la base de datos
 
         return resultado
-    
-    

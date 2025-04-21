@@ -87,17 +87,15 @@ class UsuarioData:
                 # Construir la consulta SQL dinámicamente
                 if usuario.contrasena is None:
                     query = f"""UPDATE {TBUSUARIO} SET 
-                                {TBUSUARIO_USUARIO} = %s,
-                                {TBUSUARIO_ID_PERSONA} = %s
-                                WHERE {TBUSUARIO_ID} = %s"""
-                    params = (usuario.usuario, usuario.id_persona, usuario.id)
+                    {TBUSUARIO_USUARIO} = %s
+                    WHERE {TBUSUARIO_ID} = %s"""
+                    params = (usuario.usuario, usuario.id)
                 else:
                     query = f"""UPDATE {TBUSUARIO} SET 
-                                {TBUSUARIO_USUARIO} = %s,
-                                {TBUSUARIO_ID_PERSONA} = %s,
-                                {TBUSUARIO_CONTRASENA} = %s
-                                WHERE {TBUSUARIO_ID} = %s"""
-                    params = (usuario.usuario, usuario.id_persona, usuario.contrasena, usuario.id)
+                    {TBUSUARIO_USUARIO} = %s,
+                    {TBUSUARIO_CONTRASENA} = %s
+                    WHERE {TBUSUARIO_ID} = %s"""
+                    params = (usuario.usuario, usuario.contrasena, usuario.id)
                 
                 cursor.execute(query, params)
                 
@@ -155,42 +153,29 @@ class UsuarioData:
                     "id_persona": TBUSUARIO_ID_PERSONA,
                     "nombre": TBPERSONA_NOMBRE  # Permitir ordenar por nombre
                 }
-                ordenar_por = columna_orden.get(ordenar_por, TBUSUARIO_ID_PERSONA)
+                ordenar_por = columna_orden.get(ordenar_por, TBUSUARIO_ID)
 
                 # Asigna el tipo de orden ascendente o descendente
                 tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
 
                 # Construcción de la consulta base con INNER JOIN para obtener el nombre de la persona
-                # Construcción de la consulta base con INNER JOIN para obtener el nombre de la persona y el perfil
                 query = f"""
-                    SELECT 
-                        U.id AS id_usuario, 
-                        U.usuario, 
-                        P.nombre AS nombre_persona, 
-                        P.apellidos AS apellido_persona, 
-                        UP.{TBUSUARIOPERFIL_ID} AS id_usuario_perfil,  -- ID de la tabla usuario_perfil
-                        UP.{TBUSUARIOPERFIL_ID_PERF} AS id_perfil,  -- ID del perfil (llave foránea)
-                        PF.nombre AS nombre_perfil 
-                    FROM 
-                        {TBUSUARIO} U 
-                    INNER JOIN 
-                        {TBPERSONA} P ON U.id_persona = P.id 
-                    LEFT JOIN 
-                        {TBUSUARIOPERFIL} UP ON U.id = UP.{TBUSUARIOPERFIL_ID_USER} 
-                    LEFT JOIN 
-                        {TBPERFIL} PF ON UP.{TBUSUARIOPERFIL_ID_PERF} = PF.id 
+                    SELECT U.{TBUSUARIO_ID}, U.{TBUSUARIO_USUARIO}, U.{TBUSUARIO_CONTRASENA}, 
+                        U.{TBUSUARIO_ID_PERSONA}, P.{TBPERSONA_NOMBRE} AS nombre_persona, 
+                        P.{TBPERSONA_APELLIDOS} AS apellido_persona
+                    FROM {TBUSUARIO} U
+                    INNER JOIN {TBPERSONA} P ON U.{TBUSUARIO_ID_PERSONA} = P.{TBPERSONA_ID}
                 """
 
                 # Añadir cláusula de búsqueda si se proporciona
                 valores = []
                 if busqueda:
                     query += f"""
-                        WHERE U.usuario LIKE %s 
-                        OR CONCAT(P.nombre, ' ', P.apellidos) LIKE %s  
-                        OR PF.nombre LIKE %s
-                        OR (PF.nombre IS NULL AND LOWER(%s) = 'Sin perfil')  
+                        WHERE U.{TBUSUARIO_USUARIO} LIKE %s 
+                        OR P.{TBPERSONA_NOMBRE} LIKE %s
+                        OR P.{TBPERSONA_APELLIDOS} LIKE %s
                     """
-                    valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%", busqueda.lower()]
+                    valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
 
                 # Añadir la cláusula ORDER BY y LIMIT/OFFSET
                 query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
@@ -203,12 +188,11 @@ class UsuarioData:
                 registros = cursor.fetchall()
                 for registro in registros:
                     usuario = {
-                        "id_usuario": registro['id_usuario'],  # ID del usuario
-                        "usuario": registro['usuario'],
-                        "nombre_completo": f"{registro['nombre_persona']} {registro['apellido_persona']}",  # Unir nombre y apellido
-                        "id_usuario_perfil": registro['id_usuario_perfil'],  # ID de la tabla usuario_perfil
-                        "id_perfil": registro['id_perfil'],  # ID del perfil (llave foránea)
-                        "nombre_perfil": registro['nombre_perfil'] if registro['nombre_perfil'] else "Sin perfil"  # Manejo de caso sin perfil
+                        "id_usuario": registro[TBUSUARIO_ID],
+                        "usuario": registro[TBUSUARIO_USUARIO],
+                        "contrasena": registro[TBUSUARIO_CONTRASENA],
+                        "id_persona": registro[TBUSUARIO_ID_PERSONA],
+                        "nombre_completo": f"{registro['nombre_persona']} {registro['apellido_persona']}"  # Unir nombre y apellido
                     }
                     listaUsuarios.append(usuario)
 
@@ -243,16 +227,11 @@ class UsuarioData:
             return resultado
         try:
             with conexion.cursor(dictionary=True) as cursor:
-                query = f"""
-                    SELECT
-                        U.{TBUSUARIO_ID},
-                        U.{TBUSUARIO_ID_PERSONA},
-                        U.{TBUSUARIO_USUARIO},
-                        UP.{TBUSUARIOPERFIL_ID_PERF} AS id_perfil
-                    FROM {TBUSUARIO} U
-                    LEFT JOIN {TBUSUARIOPERFIL} UP ON U.{TBUSUARIO_ID} = UP.{TBUSUARIOPERFIL_ID_USER}
-                    WHERE U.{TBUSUARIO_ID} = %s  -- Cambiar a buscar por id_usuario
-                """
+                query = f"""SELECT
+                                {TBUSUARIO_ID},
+                                {TBUSUARIO_ID_PERSONA},
+                                {TBUSUARIO_USUARIO}
+                            FROM {TBUSUARIO} WHERE {TBUSUARIO_ID_PERSONA} = %s"""
                 cursor.execute(query, (persona_id,))
                 data = cursor.fetchone()
                 if data:
@@ -261,19 +240,9 @@ class UsuarioData:
                         id      = data[TBUSUARIO_ID],
                         id_persona = data[TBUSUARIO_ID_PERSONA]
                     )
-                    return {
-                        "success": True,
-                        "exists": True,
-                        "message": "Usuario obtenido exitosamente",
-                        "usuario": usuario,
-                        "id_perfil": data['id_perfil']  # Agregar el id_perfil a la respuesta
-                    }
+                    return {"success":True,"exists":True, "message":"Usuario obtenido exitosamente", "usuario":usuario}
                 else:
-                    return {
-                        "success": True,
-                        "exists": False,
-                        "message": "Usuario no encontrado"
-                    }
+                    return {"success":True,"exists":False,"message":"Usuario no encontrado"}
         except Error as error:
             logger.error(f'{error}')
             return {'success':False, 'message':'Ocurrió un error al obtener el usuario.'}

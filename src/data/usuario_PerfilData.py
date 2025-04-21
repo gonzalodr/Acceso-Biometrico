@@ -1,5 +1,6 @@
 from data.data import conection     #obtener la conexión
-from models.usuario_perfil import Usuario_Perfil
+from settings.config import (TBUSUARIOPERFIL,TBUSUARIOPERFIL_ID,
+                             TBUSUARIOPERFIL_ID_USER,TBUSUARIOPERFIL_ID_PERF)      #obtener los nombres de tablas
 from settings.logger import logger  #recolectar los errores 
 from mysql.connector import Error   #controlador de errores
 from settings.config import *
@@ -40,7 +41,7 @@ class UsuarioPerfilData:
             if conexion and conexionEx is None:
                 conexion.close()
   
-    def update_usuario_perfil(self, usuario_perfil: Usuario_Perfil, conexionEx=None):
+    def update_usuario_perfil(self, id_usuarioPerfil:int, id_usuario:int, id_perfil:int,  conexionEx = None):
         conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
         if not resultado["success"]:
             return resultado
@@ -51,7 +52,7 @@ class UsuarioPerfilData:
                         {TBUSUARIOPERFIL_ID_PERF} = %s,
                         {TBUSUARIOPERFIL_ID_USER} = %s
                         WHERE {TBUSUARIOPERFIL_ID} = %s '''
-                cursor.execute(query, (usuario_perfil.id_perfil, usuario_perfil.id_Usuario, usuario_perfil.id))
+                cursor.execute(query,(id_perfil,id_usuario,id_usuarioPerfil))
                 if conexionEx is None:
                     conexion.commit()
                 return {'success':True, 'message':'Se actualizo el perfil asignado correctamente.'}
