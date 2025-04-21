@@ -9,6 +9,7 @@ from models.usuario import Usuario
 from models.departamento import Departamento
 from services.departamentoService import DepartamentoServices 
 from models.perfil import Perfil
+from models.rol    import Rol
 
 from UI.DialogoEmergente import DialogoEmergente
 from Utils.Utils import *
@@ -128,7 +129,7 @@ class informacionEmpleado(QDialog):
         persona:Persona = datos.get('persona')  #objeto Persona
         usuario:Usuario = datos.get('usuario')  #objeto Usuario
         dictPerfil: Perfil = datos.get('pefilUsuario')  #diccionario
-        dictRolEmp = datos.get('rolEmpleado')   #diccionario
+        dictRolEmp: Rol = datos.get('rolEmpleado')   #diccionario
         departamen: Departamento = datos.get('departamento')  # objeto Departamento
         #departamen = datos.get('departamento')  # objeto Departamento o None
         print("Departamento recibido:", departamen)
@@ -136,6 +137,9 @@ class informacionEmpleado(QDialog):
 
         print("dictPerfil recibido:", dictPerfil)
         print("Tipo:", type(dictPerfil))
+        
+        print("rolEmpleado recibido:", dictRolEmp)
+        print("Tipo:", type(dictRolEmp))
 
         #departamen = datos.get('departamento')  #int
         listaTelef = datos.get('listaTelefonos')#telefonos del usuario
@@ -188,8 +192,9 @@ class informacionEmpleado(QDialog):
                         nombre_departamento = departamen  # Usar directamente el nombre del departamento
             self.dept_input = QLineEdit(nombre_departamento)
 
-            id_rol = dictRolEmp.get('id_rol') if isinstance(dictRolEmp,dict) else 'Sin Rol asignado'
-            self.role_input = QLineEdit(str(id_rol))
+            nombre_rol = dictRolEmp.get('nombre_rol') if isinstance(dictRolEmp, dict) else 'Sin Rol asignado'
+            self.role_input = QLineEdit(nombre_rol)
+
             
             self.role_input.setReadOnly(True)
             self.dept_input.setReadOnly(True)

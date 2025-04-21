@@ -5,8 +5,6 @@ from data.data import (
     conection,
 )  # importa la funcion de conection para crear la conexion enla base de datos
 
-from mysql.connector import Error
-
 # Asumiendo que ya has configurado el logger
 # Asegúrate de importar correctamente desde 'settings.loggers'
 from settings.config import *
