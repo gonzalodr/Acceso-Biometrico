@@ -5,6 +5,8 @@ from UI.AdministrarJustificacion.formJustificacion import *
 from services.justificacionService import *
 from functools import partial
 from .infoJustificacion import InfoJustificacion
+import locale
+from datetime import datetime
 
 class AdminJustificacion(QWidget):
     cerrar_adminJ = Signal()
@@ -19,7 +21,9 @@ class AdminJustificacion(QWidget):
         self.setObjectName("admin")
         
         cargar_estilos('claro', 'admin.css', self)
-        
+
+        locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+
         layout = QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
     
@@ -200,14 +204,18 @@ class AdminJustificacion(QWidget):
 
                     # Fecha de asistencia
                     fecha_Asistencia = justificacion["fecha_asistencia"]
-                    fecha_str = fecha_Asistencia.strftime("%Y-%m-%d")
+                    fecha_str = fecha_Asistencia.strftime("%d de %B del %Y")  # Cambiado a %d
+                    dia = int(fecha_str.split(" ")[0])  # Convertir el día a entero para eliminar ceros a la izquierda
+                    fecha_str = f"{dia} de {fecha_Asistencia.strftime('%B')} del {fecha_Asistencia.strftime('%Y')}"
                     item_fecha_Asistencia = QTableWidgetItem(fecha_str)
                     item_fecha_Asistencia.setTextAlignment(Qt.AlignCenter) 
                     self.tbJustificacion.setItem(index, 3, item_fecha_Asistencia)
 
                     # Fecha realizado
                     fecha_Realizado = justificacion["fecha_realizado"]
-                    fecha_str = fecha_Realizado.strftime("%Y-%m-%d %H:%M:%S")
+                    fecha_str = fecha_Realizado.strftime("%d de %B del %Y")  # Cambiado a %d
+                    dia = int(fecha_str.split(" ")[0])  # Convertir el día a entero para eliminar ceros a la izquierda
+                    fecha_str = f"{dia} de {fecha_Realizado.strftime('%B')} del {fecha_Realizado.strftime('%Y')}"
                     item_fecha_Realizado = QTableWidgetItem(fecha_str)
                     item_fecha_Realizado.setTextAlignment(Qt.AlignCenter)
                     self.tbJustificacion.setItem(index, 4, item_fecha_Realizado)
