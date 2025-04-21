@@ -62,7 +62,7 @@ class AdminUsuario(QWidget):
         self.btnCrear = QPushButton(text="Crear")
         self.btnCrear.setCursor(Qt.PointingHandCursor)
         self.btnCrear.setFixedSize(minimoTamBtn)
-        self.btnCrear.setObjectName("crear")
+        self.btnCrear.clicked.connect(self._crear_usuario)
         Sombrear(self.btnCrear, 20, 0, 0)
 
         layoutTop.addSpacing(25)
@@ -165,8 +165,8 @@ class AdminUsuario(QWidget):
             print("Error: No se obtuvo ningún resultado.")
             return  # Salir de la función si no hay resultados
 
-        if result["success"]:
-            listaUsuarios = result["data"]["listaUsuarios"]
+        if result.get("success"):  # Usar get para evitar KeyError
+            listaUsuarios = result.get("data", {}).get("listaUsuarios", [])
 
             if listaUsuarios:
                 paginaActual = result["data"]["pagina_actual"]
@@ -174,7 +174,6 @@ class AdminUsuario(QWidget):
                 self._actualizar_lblPagina(paginaActual, totalPaginas)
                 self._actualizarValoresPaginado(paginaActual, totalPaginas)
 
-                self.tbUsuario.setRowCount(0)
                 for index, usuario in enumerate(listaUsuarios):
                     self.tbUsuario.insertRow(index)
                     self.tbUsuario.setRowHeight(index, 45)
@@ -203,6 +202,7 @@ class AdminUsuario(QWidget):
 
                     # Botón Editar
                     btnEditar = QPushButton("Editar")
+                    btnEditar.clicked.connect(partial(self._editar_Usuario, usuario["id_usuario"], usuario["id_usuario_perfil"]))
                     btnEditar.setStyleSheet("""
                         QPushButton{background-color:#28A745;color:white;}
                         QPushButton::hover{background-color:#218838;color:white;}
@@ -211,6 +211,7 @@ class AdminUsuario(QWidget):
 
                     # Botón Eliminar
                     btnEliminar = QPushButton("Eliminar")
+                    btnEliminar.clicked.connect(partial(self._eliminarRegistro, usuario["id_usuario"], usuario["id_usuario_perfil"]))
                     btnEliminar.setStyleSheet("""
                         QPushButton{background-color:#DC3545;color:white;}
                         QPushButton::hover{background-color:#C82333;color:white;}
@@ -221,7 +222,7 @@ class AdminUsuario(QWidget):
                     layout_botones.addWidget(btnEliminar)
                     contenedor_botones.setLayout(layout_botones)
 
-                    self.tbUsuario.setCellWidget(index, 2, contenedor_botones)
+                    self.tbUsuario.setCellWidget(index, 3, contenedor_botones)
 
             else:
                 print("No se encontraron usuarios.")  # Mensaje de depuración

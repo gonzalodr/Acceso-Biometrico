@@ -310,13 +310,14 @@ class PersonaData:
                 conexion.close()
 
 
-    def list_personas_sin_usuario(self):
+    def list_personas_sin_usuario(self, id_persona: int):
         conexion, resultado = conection()
         cursor = None
         if not resultado["success"]:
             return resultado
         
         lista_personasSinUsuario = []  # Cambiamos a una lista de diccionarios
+        posicion_id_persona = -1 
         try:
             cursor = conexion.cursor(dictionary=True)
             
@@ -340,8 +341,35 @@ class PersonaData:
                     "id_persona": registro[TBPERSONA_ID],
                     "nombre_completo": nombre_completo
                 })
+
+            if id_persona > 0:
             
-            resultado["data"] = lista_personasSinUsuario  # Guardar la lista de diccionarios
+            # Consulta para obtener la persona específica
+                query_persona = f"""
+                    SELECT 
+                        {TBPERSONA_ID}, 
+                        {TBPERSONA_NOMBRE}, 
+                        {TBPERSONA_APELLIDOS} 
+                    FROM {TBPERSONA} 
+                    WHERE {TBPERSONA_ID} = %s
+                """
+                cursor.execute(query_persona, (id_persona,))
+                persona_especifica = cursor.fetchone()
+                
+                if persona_especifica:
+                    nombre_completo = f"{persona_especifica[TBPERSONA_NOMBRE]} {persona_especifica[TBPERSONA_APELLIDOS]}"
+                    # Agregar la persona específica a la lista
+                    lista_personasSinUsuario.append({
+                        "id_persona": persona_especifica[TBPERSONA_ID],
+                        "nombre_completo": nombre_completo
+                    })
+                    # Guardar la posición de la persona específica
+                    posicion_id_persona = len(lista_personasSinUsuario) - 1  # Última posición
+
+            resultado["data"] = {
+                "lista_personasSinUsuario": lista_personasSinUsuario,
+                "posicion_id_persona": posicion_id_persona
+            }
             resultado["success"] = True
             resultado["message"] = "Personas sin usuario listadas exitosamente."
         except Exception as e:

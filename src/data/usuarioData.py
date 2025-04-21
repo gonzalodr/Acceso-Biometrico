@@ -88,15 +88,17 @@ class UsuarioData:
                 # Construir la consulta SQL dinámicamente
                 if usuario.contrasena is None:
                     query = f"""UPDATE {TBUSUARIO} SET 
-                    {TBUSUARIO_USUARIO} = %s
-                    WHERE {TBUSUARIO_ID} = %s"""
-                    params = (usuario.usuario, usuario.id)
+                                {TBUSUARIO_USUARIO} = %s,
+                                {TBUSUARIO_ID_PERSONA} = %s
+                                WHERE {TBUSUARIO_ID} = %s"""
+                    params = (usuario.usuario, usuario.id_persona, usuario.id)
                 else:
                     query = f"""UPDATE {TBUSUARIO} SET 
-                    {TBUSUARIO_USUARIO} = %s,
-                    {TBUSUARIO_CONTRASENA} = %s
-                    WHERE {TBUSUARIO_ID} = %s"""
-                    params = (usuario.usuario, usuario.contrasena, usuario.id)
+                                {TBUSUARIO_USUARIO} = %s,
+                                {TBUSUARIO_ID_PERSONA} = %s,
+                                {TBUSUARIO_CONTRASENA} = %s
+                                WHERE {TBUSUARIO_ID} = %s"""
+                    params = (usuario.usuario, usuario.id_persona, usuario.contrasena, usuario.id)
                 
                 cursor.execute(query, params)
                 
@@ -154,7 +156,7 @@ class UsuarioData:
                     "id_persona": TBUSUARIO_ID_PERSONA,
                     "nombre": TBPERSONA_NOMBRE  # Permitir ordenar por nombre
                 }
-                ordenar_por = columna_orden.get(ordenar_por, TBUSUARIO_ID)
+                ordenar_por = columna_orden.get(ordenar_por, TBUSUARIOIDPERSONA)
 
                 # Asigna el tipo de orden ascendente o descendente
                 tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
@@ -242,11 +244,16 @@ class UsuarioData:
             return resultado
         try:
             with conexion.cursor(dictionary=True) as cursor:
-                query = f"""SELECT
-                                {TBUSUARIO_ID},
-                                {TBUSUARIO_ID_PERSONA},
-                                {TBUSUARIO_USUARIO}
-                            FROM {TBUSUARIO} WHERE {TBUSUARIO_ID_PERSONA} = %s"""
+                query = f"""
+                    SELECT
+                        U.{TBUSUARIO_ID},
+                        U.{TBUSUARIO_ID_PERSONA},
+                        U.{TBUSUARIO_USUARIO},
+                        UP.{TBUSUARIOPERFIL_ID_PERF} AS id_perfil
+                    FROM {TBUSUARIO} U
+                    LEFT JOIN {TBUSUARIOPERFIL} UP ON U.{TBUSUARIO_ID} = UP.{TBUSUARIOPERFIL_ID_USER}
+                    WHERE U.{TBUSUARIO_ID} = %s  -- Cambiar a buscar por id_usuario
+                """
                 cursor.execute(query, (persona_id,))
                 data = cursor.fetchone()
                 if data:
@@ -255,9 +262,19 @@ class UsuarioData:
                         id      = data[TBUSUARIO_ID],
                         id_persona = data[TBUSUARIO_ID_PERSONA]
                     )
-                    return {"success":True,"exists":True, "message":"Usuario obtenido exitosamente", "usuario":usuario}
+                    return {
+                        "success": True,
+                        "exists": True,
+                        "message": "Usuario obtenido exitosamente",
+                        "usuario": usuario,
+                        "id_perfil": data['id_perfil']  # Agregar el id_perfil a la respuesta
+                    }
                 else:
-                    return {"success":True,"exists":False,"message":"Usuario no encontrado"}
+                    return {
+                        "success": True,
+                        "exists": False,
+                        "message": "Usuario no encontrado"
+                    }
         except Error as error:
             logger.error(f'{error}')
             return {'success':False, 'message':'Ocurrió un error al obtener el usuario.'}
