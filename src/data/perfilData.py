@@ -220,6 +220,67 @@ class PerfilData:
         finally:
             if conexion:
                 conexion.close()
+
+    def list_perfilesComboBox(self, pagina=1, tam_pagina=10, ordenar_por=TBPERFIL_ID, tipo_orden="ASC", busqueda=None):
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+        
+        listaPerfiles = [] #lista donde se almacenan los perfiles
+        try:
+            cursor = conexion.cursor(dictionary=True) #cursor para ejecutar las consultas
+            #diccionario para  mapear los nombres de las columnas
+            columna_orden = {
+                "nombre": TBPERFIL_NOMBRE,
+                "descripcion": TBPERFIL_DESCRIPCION
+            }
+            # si la columna esta desordenada se ordena por id
+            ordenar_por = columna_orden.get(ordenar_por, TBPERFIL_ID)
+            #se ajusta
+            tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
+            
+            query = f"SELECT * FROM {TBPERFIL}"
+            valores = []
+            
+            if busqueda:
+                query += f" WHERE {TBPERFIL_NOMBRE} LIKE %s OR {TBPERFIL_DESCRIPCION} LIKE %s"
+                valores = [f"%{busqueda}%", f"%{busqueda}%"]
+            
+            query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
+            valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
+            
+            cursor.execute(query, valores) # Ejecuta la consulta SQL
+            registros = cursor.fetchall()# Obtiene todos los registros
+            for registro in registros:        # Se iteran los registros obtenidos y se convierten en objetos de tipo Perfil
+                perfil = Perfil(
+                    nombre=registro[TBPERFIL_NOMBRE],
+                    descripcion=registro[TBPERFIL_DESCRIPCION],
+                    id=registro[TBPERFIL_ID]
+                )
+                listaPerfiles.append(perfil)# Se añade el perfil a la lista
+            
+            cursor.execute(f"SELECT COUNT(*) as total FROM {TBPERFIL}") #TBROL
+            total_registros = cursor.fetchone()["total"]  # Se obtiene el número total de registros
+            total_paginas = (total_registros + tam_pagina - 1) // tam_pagina
+            
+            resultado["data"] = {
+                "listaPerfiles": listaPerfiles,
+                "pagina_actual": pagina,
+                "tam_pagina": tam_pagina,
+                "total_paginas": total_paginas,
+                "total_registros": total_registros
+            }
+            resultado["success"] = True
+            resultado["message"] = "Perfiles listados exitosamente."
+        except Exception as e:
+            resultado["success"] = False
+            resultado["message"] = f"Error al listar perfiles: {e}"
+        finally:
+            if cursor:
+                cursor.close()
+            if conexion:
+                conexion.close()
+        return resultado
     
     def get_perfil_by_id(self, perfil_id):
         conexion, resultado = conection()
