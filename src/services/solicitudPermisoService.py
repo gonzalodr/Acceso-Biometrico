@@ -6,7 +6,7 @@ from datetime import date
 
 class SolicitudPermisoService:
     def __init__(self):
-        self.solicitudPermiso = SolicitudPermisoData()
+        self.solicitudPermisoData = SolicitudPermisoData()
 
     def crear_permiso(self, solicitud: SolicitudPermiso):
         """
@@ -49,7 +49,7 @@ class SolicitudPermisoService:
 
         try:
             # procedemos a crear
-            resultado = self.solicitud_data.crear_solicitud(solicitud)
+            resultado = self.solicitudPermisoData.crear_solicitud(solicitud)
 
             return resultado
 
