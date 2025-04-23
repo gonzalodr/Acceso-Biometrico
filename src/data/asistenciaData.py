@@ -42,8 +42,7 @@ class AsistenciaData:
             if conexion:
                 conexion.close()
         return resultado 
-    
-    
+
     #metodo para actualizar el reporte
     def update_asistencia(self, asistencia: Asistencia):
         #llama a la funcion conection para tener conexion a la base datos
@@ -264,7 +263,6 @@ class AsistenciaData:
 
         return resultado
 
-
     def listar_asistencia_por_empleado(self, id_empleado: int):
         conexion, resultado = conection()
         if not resultado["success"]:
@@ -302,3 +300,17 @@ class AsistenciaData:
         finally:
             if conexion:
                 conexion.close()
+
+    def registrar_asistencia(self,lista):
+        conexion, resultado = conection()
+        if not resultado['success']:
+            return resultado
+        try:
+            with conexion.cursor() as cursor:
+                for asistencias in lista:
+                    self.create_asistencia(asistencias)
+        except Exception as e:
+            conexion.rollback()
+            return {'success':True, 'message':'Ocurrio un error al registrar la asistencia.'}
+        finally: 
+            if conexion: conexion.close()

@@ -3,6 +3,8 @@ from settings.config import ZKTECA_CONFIG
 from settings.logger import logger
 from zk              import ZK
 from datetime        import date
+from datetime        import time as dt_time
+
 from typing import Optional, List, Union, Tuple
 from Utils.Utils     import parse_date, parse_time
 import re
@@ -52,23 +54,25 @@ class ZKServices:
                         fecha: Optional[Union[date, str]]       = None,
                         rango_fechas: Optional[Union[Tuple[date, date], List[str]]] = None):
         try:
-            if isinstance(fecha, str):
-                fecha = parse_date(fecha)
+            if fecha:
+                if isinstance(fecha, str):
+                    fecha = parse_date(fecha)
+            if rango_fechas:  
+                if isinstance(rango_fechas, list):
+                    if len(rango_fechas) != 2:
+                        raise ValueError("El rango de fechas debe contener exactamente 2 elementos")
+                    rango_fechas = (parse_date(rango_fechas[0]), parse_date(rango_fechas[1]))
                 
-            if isinstance(rango_fechas, list):
-                if len(rango_fechas) != 2:
-                    raise ValueError("El rango de fechas debe contener exactamente 2 elementos")
-                rango_fechas = (parse_date(rango_fechas[0]), parse_date(rango_fechas[1]))
-            
-            if rango_fechas[0] > rango_fechas[1]:
-                return {'success':False,'message':'la primera fecha del filtro debe ser menor o igual a la ultima fecha.'}
+                if rango_fechas[0] > rango_fechas[1]:
+                    return {'success':False,'message':'La primera fecha del filtro debe ser menor o igual a la ultima fecha.'}
 
             conn        = self.zk.connect() 
+            
             conn.disable_device()
             
             asistencias = conn.get_attendance()
+            users       = conn.get_users()
             filtered    = []
-
             for asist in asistencias:
                 asist_datetime = asist.timestamp
                 
@@ -84,9 +88,10 @@ class ZKServices:
                     fecha_inicio, fecha_fin = rango_fechas
                     if not (fecha_inicio <= asist_datetime.date() <= fecha_fin):
                         continue
+                # envia tanto el empleado al que le pertenece la asistencia como la misma asistencias
+                empleado    = list(filter(lambda e: str(e.uid) ==  str(asist.user_id),users)) or None
+                filtered.append((empleado,asist))
                 
-                filtered.append(asist)
-
             conn.enable_device()
             conn.disconnect()
             return {'success':True, 'message':'Se obtuvieron las asistencias.','asistencias':filtered}
@@ -122,4 +127,26 @@ class ZKServices:
         except Exception as e:
             logger.error(f'{e}')
             return {'success': False, 'message': 'Ocurrió un error al actualizar el empleado.'}
-        
+
+    def verificar_puntualidad(self, id_empleado: int):
+        hoy = date.today()
+        print(f"🔍 Buscando asistencias para {id_empleado} el día {hoy}")
+
+        resultado = self.obtener_asistencias(id_empleado=id_empleado, fecha=hoy)
+        print(f"📋 Resultado de obtener_asistencias: {resultado}")
+
+        if not resultado["success"]:
+            return {'success': False, 'message': resultado["message"]}
+
+        asistencias = resultado.get("asistencias", [])
+        if not asistencias:
+            return {'success': False, 'message': "No hay asistencia registrada para hoy."}
+
+        primera_asistencia = min(asistencias, key=lambda x: x.timestamp)
+        hora_asistencia = primera_asistencia.timestamp.time()
+        hora_limite = dt_time(14, 30)
+
+        if hora_asistencia <= hora_limite:
+            return {'success': True, 'message': f"✅ Llegaste a tiempo: {hora_asistencia}"}
+        else:
+            return {'success': True, 'message': f"⚠ Llegaste tarde: {hora_asistencia}"}
