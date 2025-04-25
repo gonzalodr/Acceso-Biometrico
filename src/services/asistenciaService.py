@@ -1,6 +1,9 @@
 import re
-from models.asistencia import Asistencia
-from data.asistenciaData import AsistenciaData
+from models.asistencia      import Asistencia
+from data.asistenciaData    import AsistenciaData
+from datetime               import date
+from typing                 import Optional, List, Union, Tuple
+from .ZKService             import ZKServices
 
 class AsistenciaServices:
     def __init__(self):
@@ -26,3 +29,21 @@ class AsistenciaServices:
     
     def obtenerAsistenciaPorEmpleado(self, id_empleado):
         return self.asistenciaData.listar_asistencia_por_empleado(id_empleado)
+
+    def registrarAsistenciaEmpleado(self,id_empleado:int=None,fecha:date=None,rango_fechas: Optional[Union[Tuple[date, date], List[str]]] = None):
+        result = ZKServices().obtener_asistencias(id_empleado,fecha,rango_fechas)
+        if not result['success']:
+            return result
+        if len(result['asistencias']) == 0:
+            return {'success':False, 'message':'No hay asistencias registradas.'}
+        listAsistencia = []
+        for asistEmpl in listAsistencia:
+            if asistEmpl[0]:
+                asist = Asistencia(
+                    id_empleado = asistEmpl[0].uid,
+                    fecha       = asistEmpl[1].date(),
+                    estado_asistencia = 'presente'
+                )
+                listAsistencia.append(asist)
+        
+        return self.asistenciaData.registrar_asistencia(listAsistencia)
