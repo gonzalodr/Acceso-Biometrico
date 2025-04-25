@@ -123,3 +123,59 @@ class ZKServices:
             logger.error(f'{e}')
             return {'success': False, 'message': 'Ocurrió un error al actualizar el empleado.'}
         
+    def obtener_usuarios():
+        # Dirección IP y puerto del dispositivo ZKTeco K20
+        ip = '192.168.1.201'  # Dirección IP del dispositivo de huella
+        puerto = 4370  # Puerto del dispositivo
+
+        # Crear una instancia de ZK
+        zk = ZK(ip, puerto, timeout=5, force_udp=False)
+
+        try:
+            zk.connect()  # Conectar al dispositivo
+            print("Conectado al dispositivo de huella.")
+
+            # Obtener todos los usuarios
+            usuarios = zk.get_users()
+            for usuario in usuarios:
+                print(f"ID: {usuario.uid}, Nombre: {usuario.name}, Privilegio: {usuario.privilege}, User ID: {usuario.user_id}")
+
+        except Exception as e:
+            print(f"Error al conectar al dispositivo: {e}")
+        finally:
+            zk.disconnect()  # Desconectar cuando termine
+            print("Desconectado del dispositivo.")
+
+    def obtener_usuarios_y_huellas():
+        # Dirección IP y puerto del dispositivo ZKTeco K20
+        ip = '192.168.1.201'  # Dirección IP del dispositivo de huella
+        puerto = 4370  # Puerto del dispositivo
+
+        # Crear una instancia de ZK
+        zk = ZK(ip, puerto, timeout=5, force_udp=False)
+
+        try:
+            zk.connect()  # Conectar al dispositivo
+            print("Conectado al dispositivo de huella.")
+
+            # Obtener todos los usuarios
+            usuarios = zk.get_users()
+            for usuario in usuarios:
+                print(f"ID: {usuario.uid}, Nombre: {usuario.name}, Privilegio: {usuario.privilege}, User ID: {usuario.user_id}")
+
+                # Obtener las huellas del usuario
+                huellas = zk.get_templates()
+                huellas_usuario = list(filter(lambda f: f.uid == usuario.uid, huellas))
+                if huellas_usuario:
+                    print(f"  Huellas para el usuario {usuario.name}:")
+                    for huella in huellas_usuario:
+                        print(f"    Huella ID: {huella.fid}, Valida: {huella.valid}")
+                else:
+                    print(f"  No se encontraron huellas para el usuario {usuario.name}.")
+
+        except Exception as e:
+            print(f"Error al conectar al dispositivo: {e}")
+        finally:
+            zk.disconnect()  # Desconectar cuando termine
+            print("Desconectado del dispositivo.")
+            
