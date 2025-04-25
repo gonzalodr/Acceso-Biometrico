@@ -150,3 +150,5 @@ class ZKServices:
             return {'success': True, 'message': f"✅ Llegaste a tiempo: {hora_asistencia}"}
         else:
             return {'success': True, 'message': f"⚠ Llegaste tarde: {hora_asistencia}"}
+        
+        
