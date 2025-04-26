@@ -183,4 +183,51 @@ class ZKServices:
         finally:
             zk.disconnect()  # Desconectar cuando termine
             print("Desconectado del dispositivo.")
+
+
             
+    def registrar_empleado_con_huella(self, id_empleado: int, nombre: str):
+    # Dirección IP y puerto del dispositivo ZKTeco K20
+        ip = '192.168.1.201'  # Dirección IP del dispositivo de huella
+        puerto = 4370  # Puerto del dispositivo
+
+        # Crear una instancia de ZK
+        zk = ZK(ip, puerto, timeout=5, force_udp=False)
+        try:
+            conn = self.zk.connect()
+            conn.enable_device()
+
+            # Establecer el usuario en el dispositivo
+            conn.set_user(uid=id_empleado, name=f'{nombre}')
+            time.sleep(1)
+
+            # Iniciar el proceso de enrolamiento de la huella
+            conn.enroll_user(uid=id_empleado, temp_id=6)
+
+            start_time = time.time()
+            while (time.time() - start_time) < 30:
+                templates = conn.get_templates()
+                huella = list(filter(lambda t: t.uid == id_empleado, templates)) or None
+                if huella:
+                    conn.test_voice(0)  # Reproducir un sonido de éxito
+                    # Crear una instancia de Huella
+                    #nueva_huella = Huella(id_huella=str(huella[0].fid), nombre=nombre, userID=str(id_empleado))
+                    return {
+                        'success': True,
+                                'message': 'Se registró con éxito el empleado.',
+                                'huella_id_ZK': huella[0].fid,
+                                #'huella_info': str(nueva_huella)  # Información de la huella
+                        }
+                time.sleep(0.5)
+
+            return {
+                    'success': True,
+                    'message': 'Se registró el empleado pero sin huella.',
+                    'huella_id_ZK': None
+                }
+        except Exception as e:
+                logger.error(f'{e}')
+                return {
+                    'success': False,
+                    'message': 'Ocurrió un error al registrar el empleado.'
+                }
