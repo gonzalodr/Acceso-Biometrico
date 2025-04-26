@@ -127,26 +127,60 @@ class ZKServices:
         except Exception as e:
             logger.error(f'{e}')
             return {'success': False, 'message': 'Ocurrió un error al actualizar el empleado.'}
+        
+    def obtener_usuarios():
+        # Dirección IP y puerto del dispositivo ZKTeco K20
+        ip = '192.168.1.201'  # Dirección IP del dispositivo de huella
+        puerto = 4370  # Puerto del dispositivo
 
-    def verificar_puntualidad(self, id_empleado: int):
-        hoy = date.today()
-        print(f"🔍 Buscando asistencias para {id_empleado} el día {hoy}")
+        # Crear una instancia de ZK
+        zk = ZK(ip, puerto, timeout=5, force_udp=False)
 
-        resultado = self.obtener_asistencias(id_empleado=id_empleado, fecha=hoy)
-        print(f"📋 Resultado de obtener_asistencias: {resultado}")
+        try:
+            zk.connect()  # Conectar al dispositivo
+            print("Conectado al dispositivo de huella.")
 
-        if not resultado["success"]:
-            return {'success': False, 'message': resultado["message"]}
+            # Obtener todos los usuarios
+            usuarios = zk.get_users()
+            for usuario in usuarios:
+                print(f"ID: {usuario.uid}, Nombre: {usuario.name}, Privilegio: {usuario.privilege}, User ID: {usuario.user_id}")
 
-        asistencias = resultado.get("asistencias", [])
-        if not asistencias:
-            return {'success': False, 'message': "No hay asistencia registrada para hoy."}
+        except Exception as e:
+            print(f"Error al conectar al dispositivo: {e}")
+        finally:
+            zk.disconnect()  # Desconectar cuando termine
+            print("Desconectado del dispositivo.")
 
-        primera_asistencia = min(asistencias, key=lambda x: x.timestamp)
-        hora_asistencia = primera_asistencia.timestamp.time()
-        hora_limite = dt_time(14, 30)
+    def obtener_usuarios_y_huellas():
+        # Dirección IP y puerto del dispositivo ZKTeco K20
+        ip = '192.168.1.201'  # Dirección IP del dispositivo de huella
+        puerto = 4370  # Puerto del dispositivo
 
-        if hora_asistencia <= hora_limite:
-            return {'success': True, 'message': f"✅ Llegaste a tiempo: {hora_asistencia}"}
-        else:
-            return {'success': True, 'message': f"⚠ Llegaste tarde: {hora_asistencia}"}
+        # Crear una instancia de ZK
+        zk = ZK(ip, puerto, timeout=5, force_udp=False)
+
+        try:
+            zk.connect()  # Conectar al dispositivo
+            print("Conectado al dispositivo de huella.")
+
+            # Obtener todos los usuarios
+            usuarios = zk.get_users()
+            for usuario in usuarios:
+                print(f"ID: {usuario.uid}, Nombre: {usuario.name}, Privilegio: {usuario.privilege}, User ID: {usuario.user_id}")
+
+                # Obtener las huellas del usuario
+                huellas = zk.get_templates()
+                huellas_usuario = list(filter(lambda f: f.uid == usuario.uid, huellas))
+                if huellas_usuario:
+                    print(f"  Huellas para el usuario {usuario.name}:")
+                    for huella in huellas_usuario:
+                        print(f"    Huella ID: {huella.fid}, Valida: {huella.valid}")
+                else:
+                    print(f"  No se encontraron huellas para el usuario {usuario.name}.")
+
+        except Exception as e:
+            print(f"Error al conectar al dispositivo: {e}")
+        finally:
+            zk.disconnect()  # Desconectar cuando termine
+            print("Desconectado del dispositivo.")
+            
