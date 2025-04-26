@@ -1,4 +1,6 @@
-from models.asistencia import Asistencia #importa la clase de reportes 
+from models.asistencia          import Asistencia
+from models.detalle_asistencia  import DetalleAsistencia
+
 from data.data import conection # importa la funcion de conection para crear la conexion enla base de datos
 from settings.config import * 
 from mysql.connector import Error
@@ -301,16 +303,102 @@ class AsistenciaData:
             if conexion:
                 conexion.close()
 
-    def registrar_asistencia(self,lista):
+    def registrar_asistencia(self, lista):
         conexion, resultado = conection()
         if not resultado['success']:
             return resultado
+
         try:
-            with conexion.cursor() as cursor:
-                for asistencias in lista:
-                    self.create_asistencia(asistencias)
+            with conexion.cursor(dictionary=True) as cursor:
+                for item in lista:
+                    # item[0] = Asistencia, item[1] = Hora
+                    asistencia = item[0]
+                    hora = item[1]
+
+                    # Verificar si ya existe un registro de asistencia para ese día y empleado
+                    cursor.execute(f'''
+                        SELECT * FROM {TBASISTENCIA}
+                        WHERE {TBASISTENCIA_FECHA} = %s
+                        AND {TBASISTENCIA_ID_EMPLEADO} = %s;
+                    ''', (asistencia.fecha, asistencia.id_empleado))
+
+                    existe = cursor.fetchone()
+
+                    if existe:
+                        asistencia.id = existe[TBASISTENCIA_ID]
+
+                        # Buscar detalle de asistencia
+                        cursor.execute(f'''
+                            SELECT * FROM {TBDETALLEASISTENCIA}
+                            WHERE {TBDETALLEASISTENCIA_ID_ASISTENCIA} = %s;
+                        ''', (asistencia.id,))
+                        
+                        data = cursor.fetchone()
+
+                        if data:
+                            detalle = DetalleAsistencia(
+                                id_detalle      =data[TBDETALLEASISTENCIA_ID],
+                                id_asistencia   =data[TBDETALLEASISTENCIA_ID_ASISTENCIA],
+                                hora_entrada    =data[TBDETALLEASISTENCIA_HORA_ENTRADA],
+                                hora_salida     =data[TBDETALLEASISTENCIA_HORA_SALIDA],
+                                horas_trabajadas=data[TBDETALLEASISTENCIA_HORAS_TRABAJADAS]
+                            )
+
+                            # Actualiza hora entrada o salida
+                            if detalle.hora_entrada is None:
+                                detalle.hora_entrada = hora
+                            else:
+                                detalle.hora_salida = hora
+                                diferencia = detalle.hora_salida - detalle.hora_entrada
+                                detalle.horas_trabajadas = round(diferencia.total_seconds() / 3600, 2)
+
+                            # Actualizar detalle
+                            cursor.execute(f'''
+                                UPDATE {TBDETALLEASISTENCIA}
+                                SET
+                                    {TBDETALLEASISTENCIA_HORA_ENTRADA} = %s,
+                                    {TBDETALLEASISTENCIA_HORA_SALIDA} = %s,
+                                    {TBDETALLEASISTENCIA_HORAS_TRABAJADAS} = %s
+                                WHERE {TBDETALLEASISTENCIA_ID} = %s;
+                            ''', (
+                                detalle.hora_entrada,
+                                detalle.hora_salida,
+                                detalle.horas_trabajadas,
+                                detalle.id_detalle
+                            ))
+
+                    else:
+                        # Insertar nuevo registro en asistencia
+                        cursor.execute(f'''
+                            INSERT INTO {TBASISTENCIA} (
+                                {TBASISTENCIA_ID_EMPLEADO},
+                                {TBASISTENCIA_FECHA},
+                                {TBASISTENCIA_ESTADO_ASISTENCIA}
+                            ) VALUES (%s, %s, %s);
+                        ''', (
+                            asistencia.id_empleado,
+                            asistencia.fecha,
+                            asistencia.estado_asistencia
+                        ))
+
+                        id_asistencia = cursor.lastrowid
+
+                        # Insertar nuevo detalle de asistencia con hora de entrada
+                        cursor.execute(f'''
+                            INSERT INTO {TBDETALLEASISTENCIA} (
+                                {TBDETALLEASISTENCIA_ID_ASISTENCIA},
+                                {TBDETALLEASISTENCIA_HORA_ENTRADA}
+                            ) VALUES (%s, %s);
+                        ''', (id_asistencia, hora))
+
+            conexion.commit()
+            return {'success': True, 'message': 'Asistencia registrada correctamente.'}
+
         except Exception as e:
             conexion.rollback()
-            return {'success':True, 'message':'Ocurrio un error al registrar la asistencia.'}
-        finally: 
-            if conexion: conexion.close()
+            logger.error(f'Error al registrar asistencia: {e}')
+            return {'success': False, 'message': 'Ocurrió un error al registrar la asistencia.'}
+
+        finally:
+            if conexion:
+                conexion.close()
