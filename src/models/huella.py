@@ -4,4 +4,4 @@ class Huella:
         id_empleado = id_empleado
 
     def __str__(self):
-        return f"ID Huella: {self.id_huella}, Huella: {self.huella.hex()}"  # Representación hexadecimal de la huella
+        return f"ID Empleado: {self.id_empleado}, ID Empleado: {self.id_huella}"  # Representación hexadecimal de la huella
