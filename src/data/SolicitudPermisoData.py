@@ -71,3 +71,60 @@ class SolicitudPermisoData:
 
             # cierre de conexion
             conexion.close()
+
+    def eliminar_solicitud(self, id_solicitud: int) -> dict:
+        """
+        Elimina una solicitud de permiso de la base de datos
+
+        Args:
+            id_solicitud (int): ID de la solicitud a eliminar
+
+        Returns:
+            dict: Resultado de la operación con la estructura:
+                {
+                    'success': bool,
+                    'message': str,
+                    'error_details': str (opcional)
+                }
+        """
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+
+        try:
+            with conexion.cursor() as cursor:
+                # Iniciamos transacción
+                conexion.start_transaction()
+
+                query = f"""
+                    DELETE FROM {TBSOLICITUD_PERMISO} 
+                    WHERE {TBSOLICITUD_PERMISO_ID} = %s
+                """
+                cursor.execute(query, (id_solicitud,))
+
+                # Verificamos si se afectó alguna fila
+                if cursor.rowcount == 0:
+                    conexion.rollback()
+                    return {
+                        "success": False,
+                        "message": "No se encontró la solicitud con el ID proporcionado",
+                    }
+
+                conexion.commit()
+
+                return {"success": True, "message": "Solicitud eliminada correctamente"}
+
+        except Error as e:
+            if conexion.in_transaction:
+                conexion.rollback()
+
+            logger.error(f"Error al eliminar solicitud {id_solicitud}: {str(e)}")
+            return {
+                "success": False,
+                "message": "Error al eliminar la solicitud",
+                "error_details": str(e),
+            }
+
+        finally:
+            if conexion and conexion.is_connected():
+                conexion.close()

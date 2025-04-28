@@ -270,7 +270,7 @@ class AdminSoliPermiso(QWidget):
             # self._cargar_tabla()
 
     def _crear_permiso(self):
-        blur_effect = QGraphicsBlurEffect(self)
+        # blur_effect = QGraphicsBlurEffect(self)
         ##blur_effect.setBlurRadius(10)
         ##self.setGraphicsEffect(blur_effect)
 
@@ -283,3 +283,28 @@ class AdminSoliPermiso(QWidget):
         form = FormSolicitudPermisoAdmin(titulo="Editar Solicitud", id_solicitud=id)
         form.exec()
         # self._cargar_tabla()
+
+    def _eliminarRegistro(self, id_solicitud: int):
+        """
+        Maneja la eliminación de una solicitud con confirmación
+
+        Args:
+            id_solicitud (int): ID de la solicitud a eliminar
+        """
+        dial = DialogoEmergente(
+            "Confirmación",
+            "¿Estás seguro de eliminar esta solicitud de permiso?",
+            "Question",
+            True,
+            True,
+        )
+
+        if dial.exec() == QDialog.Accepted:
+            resultado = self.permiso_service.eliminar_permiso(id_solicitud)
+
+            mensaje = resultado["message"]
+            icono = "Check" if resultado["success"] else "Error"
+
+            DialogoEmergente("Resultado", mensaje, icono, True, False).exec()
+
+            # self._cargar_tabla()  # Refrescar la tabla
