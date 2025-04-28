@@ -179,55 +179,69 @@ class formAsistencia(QDialog):
     # else:
     #    self.reject()##cerrar la ventana
 
+    # def _cancelar_registro(self):
+#     if not self._validar_inputs_vacios():
+#         # Mostrar un diálogo emergente de confirmación
+#         dialEmergente = QMessageBox()
+#         dialEmergente.setIcon(QMessageBox.Question)
+#         dialEmergente.setText("¿Estás seguro que quieres cancelar?")
+#         dialEmergente.setWindowTitle("Confirmar cancelación")
+
+#         # Personalizar los botones para que digan "Sí" y "No"
+#         boton_si = dialEmergente.addButton("Sí", QMessageBox.YesRole)
+#         boton_no = dialEmergente.addButton("No", QMessageBox.NoRole)
+
+#         # Aplicar estilos para cambiar el fondo a blanco
+#         dialEmergente.setStyleSheet(
+#             """
+#             QMessageBox {
+#                 background-color: white;
+#             }
+#             QMessageBox QLabel {
+#                 color: black; /* Cambiar el color del texto si es necesario */
+#             }
+#             QMessageBox QPushButton {
+#                 background-color: #f0f0f0; /* Color de fondo del botón */
+#                 color: black; /* Color del texto del botón */
+#                 border: 1px solid #ccc; /* Borde del botón */
+#                 padding: 5px 10px; /* Espaciado interno del botón */
+#             }
+#             QMessageBox QPushButton:hover {
+#                 background-color: #d0d0d0; /* Color de fondo al pasar el mouse */
+#             }
+#             QMessageBox QPushButton:pressed {
+#                 background-color: #a0a0a0; /* Color de fondo al presionar el botón */
+#             }
+#         """
+#         )
+
+#         # Obtener la respuesta del usuario
+#         dialEmergente.exec()
+
+#         # Si el usuario elige "Sí", cerrar la ventana
+#         if dialEmergente.clickedButton() == boton_si:
+#             self.reject()
+#         # Si el usuario elige "No", no hacer nada
+#         elif dialEmergente.clickedButton() == boton_no:
+#             pass
+#     else:
+#         # Si los inputs están vacíos, cerrar la ventana directamente
+#         self.reject()
+
     def _cancelar_registro(self):
-        if not self._validar_inputs_vacios():
-            # Mostrar un diálogo emergente de confirmación
-            dialEmergente = QMessageBox()
-            dialEmergente.setIcon(QMessageBox.Question)
-            dialEmergente.setText("¿Estás seguro que quieres cancelar?")
-            dialEmergente.setWindowTitle("Confirmar cancelación")
+        dialEmergente = DialogoEmergente(
+            "Confirmación",
+            "¿Estás seguro de que quieres cancelar?",
+            "Confirmation",
+            True,
+            True,
+        )
+        opcion = dialEmergente.exec()
 
-            # Personalizar los botones para que digan "Sí" y "No"
-            boton_si = dialEmergente.addButton("Sí", QMessageBox.YesRole)
-            boton_no = dialEmergente.addButton("No", QMessageBox.NoRole)
-
-            # Aplicar estilos para cambiar el fondo a blanco
-            dialEmergente.setStyleSheet(
-                """
-                QMessageBox {
-                    background-color: white;
-                }
-                QMessageBox QLabel {
-                    color: black; /* Cambiar el color del texto si es necesario */
-                }
-                QMessageBox QPushButton {
-                    background-color: #f0f0f0; /* Color de fondo del botón */
-                    color: black; /* Color del texto del botón */
-                    border: 1px solid #ccc; /* Borde del botón */
-                    padding: 5px 10px; /* Espaciado interno del botón */
-                }
-                QMessageBox QPushButton:hover {
-                    background-color: #d0d0d0; /* Color de fondo al pasar el mouse */
-                }
-                QMessageBox QPushButton:pressed {
-                    background-color: #a0a0a0; /* Color de fondo al presionar el botón */
-                }
-            """
-            )
-
-            # Obtener la respuesta del usuario
-            dialEmergente.exec()
-
-            # Si el usuario elige "Sí", cerrar la ventana
-            if dialEmergente.clickedButton() == boton_si:
-                self.reject()
-            # Si el usuario elige "No", no hacer nada
-            elif dialEmergente.clickedButton() == boton_no:
-                pass
-        else:
-            # Si los inputs están vacíos, cerrar la ventana directamente
-            self.reject()
-
+        if opcion == QDialog.Accepted:
+            self.reject() 
+            
+            
     def _cargar_empleados(self):
         result = self.empleadoServices.obtener_todo_empleados()
         if result["success"]:
