@@ -127,28 +127,107 @@ class ZKServices:
         except Exception as e:
             logger.error(f'{e}')
             return {'success': False, 'message': 'Ocurrió un error al actualizar el empleado.'}
-
-    def verificar_puntualidad(self, id_empleado: int):
-        hoy = date.today()
-        print(f"🔍 Buscando asistencias para {id_empleado} el día {hoy}")
-
-        resultado = self.obtener_asistencias(id_empleado=id_empleado, fecha=hoy)
-        print(f"📋 Resultado de obtener_asistencias: {resultado}")
-
-        if not resultado["success"]:
-            return {'success': False, 'message': resultado["message"]}
-
-        asistencias = resultado.get("asistencias", [])
-        if not asistencias:
-            return {'success': False, 'message': "No hay asistencia registrada para hoy."}
-
-        primera_asistencia = min(asistencias, key=lambda x: x.timestamp)
-        hora_asistencia = primera_asistencia.timestamp.time()
-        hora_limite = dt_time(14, 30)
-
-        if hora_asistencia <= hora_limite:
-            return {'success': True, 'message': f"✅ Llegaste a tiempo: {hora_asistencia}"}
-        else:
-            return {'success': True, 'message': f"⚠ Llegaste tarde: {hora_asistencia}"}
         
-        
+    def obtener_usuarios():
+        # Dirección IP y puerto del dispositivo ZKTeco K20
+        ip = '192.168.1.201'  # Dirección IP del dispositivo de huella
+        puerto = 4370  # Puerto del dispositivo
+
+        # Crear una instancia de ZK
+        zk = ZK(ip, puerto, timeout=5, force_udp=False)
+
+        try:
+            zk.connect()  # Conectar al dispositivo
+            print("Conectado al dispositivo de huella.")
+
+            # Obtener todos los usuarios
+            usuarios = zk.get_users()
+            for usuario in usuarios:
+                print(f"ID: {usuario.uid}, Nombre: {usuario.name}, Privilegio: {usuario.privilege}, User ID: {usuario.user_id}")
+
+        except Exception as e:
+            print(f"Error al conectar al dispositivo: {e}")
+        finally:
+            zk.disconnect()  # Desconectar cuando termine
+            print("Desconectado del dispositivo.")
+
+    def obtener_usuarios_y_huellas():
+        # Dirección IP y puerto del dispositivo ZKTeco K20
+        ip = '192.168.1.201'  # Dirección IP del dispositivo de huella
+        puerto = 4370  # Puerto del dispositivo
+
+        # Crear una instancia de ZK
+        zk = ZK(ip, puerto, timeout=5, force_udp=False)
+
+        try:
+            zk.connect()  # Conectar al dispositivo
+            print("Conectado al dispositivo de huella.")
+
+            # Obtener todos los usuarios
+            usuarios = zk.get_users()
+            for usuario in usuarios:
+                print(f"ID: {usuario.uid}, Nombre: {usuario.name}, Privilegio: {usuario.privilege}, User ID: {usuario.user_id}")
+
+                # Obtener las huellas del usuario
+                huellas = zk.get_templates()
+                huellas_usuario = list(filter(lambda f: f.uid == usuario.uid, huellas))
+                if huellas_usuario:
+                    print(f"  Huellas para el usuario {usuario.name}:")
+                    for huella in huellas_usuario:
+                        print(f"    Huella ID: {huella.fid}, Valida: {huella.valid}")
+                else:
+                    print(f"  No se encontraron huellas para el usuario {usuario.name}.")
+
+        except Exception as e:
+            print(f"Error al conectar al dispositivo: {e}")
+        finally:
+            zk.disconnect()  # Desconectar cuando termine
+            print("Desconectado del dispositivo.")
+
+
+            
+    def registrar_empleado_con_huella(self, id_empleado: int, nombre: str):
+    # Dirección IP y puerto del dispositivo ZKTeco K20
+        ip = '192.168.1.201'  # Dirección IP del dispositivo de huella
+        puerto = 4370  # Puerto del dispositivo
+
+        # Crear una instancia de ZK
+        zk = ZK(ip, puerto, timeout=5, force_udp=False)
+        try:
+            conn = self.zk.connect()
+            conn.enable_device()
+
+            # Establecer el usuario en el dispositivo
+            conn.set_user(uid=id_empleado, name=f'{nombre}')
+            time.sleep(1)
+
+            # Iniciar el proceso de enrolamiento de la huella
+            conn.enroll_user(uid=id_empleado, temp_id=6)
+
+            start_time = time.time()
+            while (time.time() - start_time) < 30:
+                templates = conn.get_templates()
+                huella = list(filter(lambda t: t.uid == id_empleado, templates)) or None
+                if huella:
+                    conn.test_voice(0)  # Reproducir un sonido de éxito
+                    # Crear una instancia de Huella
+                    #nueva_huella = Huella(id_huella=str(huella[0].fid), nombre=nombre, userID=str(id_empleado))
+                    return {
+                        'success': True,
+                                'message': 'Se registró con éxito el empleado.',
+                                'huella_id_ZK': huella[0].fid,
+                                #'huella_info': str(nueva_huella)  # Información de la huella
+                        }
+                time.sleep(0.5)
+
+            return {
+                    'success': True,
+                    'message': 'Se registró el empleado pero sin huella.',
+                    'huella_id_ZK': None
+                }
+        except Exception as e:
+                logger.error(f'{e}')
+                return {
+                    'success': False,
+                    'message': 'Ocurrió un error al registrar el empleado.'
+                }
