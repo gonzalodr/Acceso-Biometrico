@@ -5,6 +5,7 @@ from data.data import conection # importa la funcion de conection para crear la 
 from settings.config import * 
 from mysql.connector import Error
 from settings.logger import logger
+from datetime        import datetime
 
 class AsistenciaData:
     
@@ -312,9 +313,8 @@ class AsistenciaData:
             with conexion.cursor(dictionary=True) as cursor:
                 for item in lista:
                     # item[0] = Asistencia, item[1] = Hora
-                    asistencia = item[0]
-                    hora = item[1]
-
+                    asistencia  = item[0]
+                    hora        = item[1]
                     # Verificar si ya existe un registro de asistencia para ese día y empleado
                     cursor.execute(f'''
                         SELECT * FROM {TBASISTENCIA}
@@ -326,7 +326,6 @@ class AsistenciaData:
 
                     if existe:
                         asistencia.id = existe[TBASISTENCIA_ID]
-
                         # Buscar detalle de asistencia
                         cursor.execute(f'''
                             SELECT * FROM {TBDETALLEASISTENCIA}
@@ -334,7 +333,6 @@ class AsistenciaData:
                         ''', (asistencia.id,))
                         
                         data = cursor.fetchone()
-
                         if data:
                             detalle = DetalleAsistencia(
                                 id_detalle      =data[TBDETALLEASISTENCIA_ID],
@@ -343,15 +341,25 @@ class AsistenciaData:
                                 hora_salida     =data[TBDETALLEASISTENCIA_HORA_SALIDA],
                                 horas_trabajadas=data[TBDETALLEASISTENCIA_HORAS_TRABAJADAS]
                             )
-
+                            detalle.hora_entrada = (datetime.min + detalle.hora_entrada).time()
+                            
+                            
                             # Actualiza hora entrada o salida
                             if detalle.hora_entrada is None:
-                                detalle.hora_entrada = hora
+                                detalle.hora_entrada = hora  
+                            elif detalle.hora_entrada == hora: 
+                                continue
                             else:
-                                detalle.hora_salida = hora
-                                diferencia = detalle.hora_salida - detalle.hora_entrada
-                                detalle.horas_trabajadas = round(diferencia.total_seconds() / 3600, 2)
+                                detalle.hora_salida = hora  
+                                fecha_actual        = datetime.now().date()
+                                datetime_salida     = datetime.combine(fecha_actual, detalle.hora_salida)
+                                datetime_entrada    = datetime.combine(fecha_actual, detalle.hora_entrada)
+                                
+                                diferencia = datetime_salida - datetime_entrada
 
+                                # Calcular las horas trabajadas en decimal
+                                detalle.horas_trabajadas = round(diferencia.total_seconds() / 3600, 2)
+                                
                             # Actualizar detalle
                             cursor.execute(f'''
                                 UPDATE {TBDETALLEASISTENCIA}
@@ -382,7 +390,6 @@ class AsistenciaData:
                         ))
 
                         id_asistencia = cursor.lastrowid
-
                         # Insertar nuevo detalle de asistencia con hora de entrada
                         cursor.execute(f'''
                             INSERT INTO {TBDETALLEASISTENCIA} (
@@ -391,14 +398,11 @@ class AsistenciaData:
                             ) VALUES (%s, %s);
                         ''', (id_asistencia, hora))
 
-            conexion.commit()
-            return {'success': True, 'message': 'Asistencia registrada correctamente.'}
-
+                conexion.commit()
+                return {'success': True, 'message': 'Asistencia registrada correctamente.'}
         except Exception as e:
             conexion.rollback()
             logger.error(f'Error al registrar asistencia: {e}')
             return {'success': False, 'message': 'Ocurrió un error al registrar la asistencia.'}
-
         finally:
-            if conexion:
-                conexion.close()
+            if conexion: conexion.close()
