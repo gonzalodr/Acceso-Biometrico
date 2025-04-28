@@ -210,7 +210,13 @@ class formEmpleado(QDialog):
         self.inDireccion = QTextEdit()
         self.inDireccion.setMaximumHeight(30)
         self.errDireccion = QLabel()
-        
+
+        self.btnEscanearHuella = QPushButton('Escanear huella')
+        self.btnEscanearHuella.setObjectName('btn_escanear_huella')
+        self.btnEscanearHuella.setMinimumHeight(40)
+        self.btnEscanearHuella.setMinimumWidth(200)
+        layoutBoton = QHBoxLayout()
+        layoutBoton.addWidget(self.btnEscanearHuella, alignment=Qt.AlignCenter)
         #asignando al layoutIzq
         self.layoutIzq.addWidget(tituloIzq)
         self.layoutIzq.addLayout(self.layoutFoto)
@@ -222,7 +228,7 @@ class formEmpleado(QDialog):
         self.layoutIzq.addLayout(self.contenedor(self.lblTelefonos,self.layoutTelPrinc,self.errTelefono))
         self.layoutIzq.addLayout(self.contenedor(self.lblEstCivil,self.inEstCivil,self.errEstCivil))
         self.layoutIzq.addLayout(self.contenedor(self.lblDireccion,self.inDireccion,self.errDireccion))
-    
+        self.layoutIzq.addLayout(layoutBoton)
     #layout para la foto
     def llenarLayoutFoto(self):
         self.foto = QLabel()
