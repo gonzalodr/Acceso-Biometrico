@@ -85,3 +85,27 @@ class SolicitudPermisoService:
                 "message": "Error interno al procesar la eliminación",
                 "error_details": str(e),
             }
+
+    def obtener_lista_permisos(
+        self,
+        pagina=1,
+        tam_pagina=10,
+        ordenar_por="fecha_inicio",
+        tipo_orden="DESC",
+        busqueda=None,
+    ):
+        try:
+            return self.solicitudPermisoData.list_solicitudes_permisos(
+                pagina=pagina,
+                tam_pagina=tam_pagina,
+                ordenar_por=ordenar_por,
+                tipo_orden=tipo_orden,
+                busqueda=busqueda,
+            )
+        except Exception as e:
+            logger.error(f"Error en servicio al obtener permisos: {str(e)}")
+            return {
+                "success": False,
+                "message": "Error interno al obtener permisos",
+                "error_details": str(e),
+            }

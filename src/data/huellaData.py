@@ -1,14 +1,16 @@
-from data.data import conection
+from data.data import conection  # Asegúrate de que este sea el path correcto
 from settings.logger import logger
 
 
 class HuellaData:
-
+    @staticmethod
     def registrar_huella(
-        self,
         id_empleado: int,
+        uid_dispositivo: int,
         user_id_dispositivo: str,
+        nombre_guardado: str,
         privilegio: int = 0,
+        tiene_huella: bool = True,
     ):
         conexion, resultado = conection()
         if not resultado["success"]:
@@ -18,13 +20,16 @@ class HuellaData:
             with conexion.cursor() as cursor:
                 query = """
                 INSERT INTO huella 
-                (id_empleado, user_id_dispositivo, privilegio,)
-                VALUES (%s, %s, %s)
+                (id_empleado, uid_dispositivo, user_id_dispositivo, nombre_guardado, privilegio, tiene_huella)
+                VALUES (%s, %s, %s, %s, %s, %s)
             """
             valores = (
                 id_empleado,
+                uid_dispositivo,
                 user_id_dispositivo,
+                nombre_guardado,
                 privilegio,
+                tiene_huella,
             )
             cursor.execute(query, valores)
             conexion.commit()

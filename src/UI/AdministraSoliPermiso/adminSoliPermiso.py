@@ -106,20 +106,61 @@ class AdminSoliPermiso(QWidget):
         layoutTb.addWidget(self.tbPermisos)
         self.layoutFrame.addLayout(layoutTb)
 
-        # Botones de paginación (igual que en AdminHorario)
+        # Botones de paginación
+        # -------------------------------------------------------------------------------
         layoutButtom = QHBoxLayout()
         layoutButtom.setAlignment(Qt.AlignCenter)
         layoutButtom.setContentsMargins(10, 10, 10, 40)
         layoutButtom.setSpacing(5)
+        self.btnPrimerPagina = QPushButton(text="Primera Pagina")
+        self.btnPrimerPagina.setFixedSize(minimoTamBtn)
+        self.btnPrimerPagina.setCursor(Qt.PointingHandCursor)
+        self.btnPrimerPagina.setEnabled(False)
+        self.btnPrimerPagina.clicked.connect(self._irPrimeraPagina)
+        Sombrear(self.btnPrimerPagina, 20, 0, 0)
 
-        # ... (Mantén el mismo código de paginación que en AdminHorario)
+        self.btnAnterior = QPushButton(text="Anterior")
+        self.btnAnterior.setEnabled(False)
+        self.btnAnterior.setCursor(Qt.PointingHandCursor)
+        self.btnAnterior.setFixedSize(minimoTamBtn)
+        self.btnAnterior.clicked.connect(self._irAnteriorPagina)
+        Sombrear(self.btnAnterior, 20, 0, 0)
+
+        self.lblNumPagina = QLabel(text="Pagina 0 de 0 paginas")
+        self.lblNumPagina.setFixedSize(QSize(170, 40))
+        self.lblNumPagina.setAlignment(Qt.AlignCenter)
+
+        self.btnSiguiente = QPushButton(text="Siguiente")
+        self.btnSiguiente.setCursor(Qt.PointingHandCursor)
+        self.btnSiguiente.setEnabled(False)
+        self.btnSiguiente.setFixedSize(minimoTamBtn)
+        self.btnSiguiente.clicked.connect(self._irSiguientePagina)
+        Sombrear(self.btnSiguiente, 20, 0, 0)
+
+        self.btnUltimaPagina = QPushButton(text="Ultima Pagina")
+        self.btnUltimaPagina.setCursor(Qt.PointingHandCursor)
+        self.btnUltimaPagina.setEnabled(False)
+        self.btnUltimaPagina.setFixedSize(minimoTamBtn)
+        self.btnUltimaPagina.clicked.connect(self._irUltimaPagina)
+        Sombrear(self.btnUltimaPagina, 20, 0, 0)
+
+        layoutButtom.addWidget(self.btnPrimerPagina)
+        layoutButtom.addSpacing(10)
+        layoutButtom.addWidget(self.btnAnterior)
+        layoutButtom.addSpacing(10)
+        layoutButtom.addWidget(self.lblNumPagina)
+        layoutButtom.addSpacing(10)
+        layoutButtom.addWidget(self.btnSiguiente)
+        layoutButtom.addSpacing(10)
+        layoutButtom.addWidget(self.btnUltimaPagina)
+        # --------------------------------------------------------
 
         self.layoutFrame.addLayout(layoutButtom)
         frame.setLayout(self.layoutFrame)
         layout.addWidget(frame)
         self.setLayout(layout)
         Sombrear(self, 30, 0, 0)
-        # self._cargar_tabla()
+        self._cargar_tabla()
 
     def _cerrar(self):
         self.cerrar_admin_soli_permiso.emit()
@@ -135,17 +176,17 @@ class AdminSoliPermiso(QWidget):
             if self.tbPermisos.columnCount() > 0:
                 self.tbPermisos.setSpan(0, 0, 1, self.tbPermisos.columnCount())
 
-    """def _cargar_tabla(self):
+    def _cargar_tabla(self):
         self.tbPermisos.setRowCount(0)
         result = self.permiso_service.obtener_lista_permisos(
             pagina=self.paginaActual,
             tam_pagina=10,
+            tipo_orden="DESC",
             busqueda=self.busqueda,
         )
-
         if result["success"]:
-            lista_permisos = result["data"]["lista_permisos"]
-            if lista_permisos:
+            listaSolicitudes = result["data"]["listaSolicitudes"]
+            if listaSolicitudes:
                 paginaActual = result["data"]["pagina_actual"]
                 totalPaginas = result["data"]["total_paginas"]
                 self._actualizar_lblPagina(paginaActual, totalPaginas)
@@ -153,35 +194,26 @@ class AdminSoliPermiso(QWidget):
 
                 self.tbPermisos.setRowCount(0)
 
-                for index, permiso in enumerate(lista_permisos):
+                for index, solicitud in enumerate(listaSolicitudes):
                     self.tbPermisos.insertRow(index)
                     self.tbPermisos.setRowHeight(index, 45)
 
-                    # Calcular días de diferencia
-                    fecha_inicio = datetime.strptime(
-                        permiso["fecha_inicio"], "%Y-%m-%d"
-                    ).date()
-                    fecha_fin = datetime.strptime(
-                        permiso["fecha_fin"], "%Y-%m-%d"
-                    ).date()
-                    dias = (fecha_fin - fecha_inicio).days + 1
+                    fecha_inicio_str = str(solicitud["fecha_inicio"])
+                    fecha_fin_str = str(solicitud["fecha_fin"])
 
-                    self.addItem_a_tabla(
-                        index,
-                        0,
-                        f"{permiso['nombre_empleado']} {permiso['apellido_empleado']}",
-                    )
-                    self.addItem_a_tabla(index, 1, permiso["tipo"])
-                    self.addItem_a_tabla(index, 2, permiso["fecha_inicio"])
-                    self.addItem_a_tabla(index, 3, permiso["fecha_fin"])
-                    self.addItem_a_tabla(index, 4, str(dias))
-                    self.addItem_a_tabla(index, 5, permiso["descripcion"])
-                    self.addItem_a_tabla(index, 6, permiso["estado"])
-                    self._agregar_acciones(index, permiso["id"])
+                    # Agregar datos a la tabla
+                    self.addItem_a_tabla(index, 0, solicitud["nombre_empleado"])
+                    self.addItem_a_tabla(index, 1, solicitud["tipo"])
+                    self.addItem_a_tabla(index, 2, fecha_inicio_str)
+                    self.addItem_a_tabla(index, 3, fecha_fin_str)
+                    self.addItem_a_tabla(index, 4, solicitud["descripcion"])
+                    self.addItem_a_tabla(index, 5, solicitud["estado"])
+
+                    self._agregar_acciones(index, solicitud["id"])
             else:
-                self._mostrar_mensaje_sin_datos("No hay registros")
+                self._mostrar_mensaje_sin_datos("No hay solicitudes registradas")
         else:
-            self._mostrar_mensaje_sin_datos("Error de conexión")"""
+            self._mostrar_mensaje_sin_datos("Error de conexión al cargar solicitudes")
 
     def addItem_a_tabla(self, row, colum, dato):
         dato_item = QTableWidgetItem(str(dato))
@@ -209,49 +241,49 @@ class AdminSoliPermiso(QWidget):
             "QPushButton{background-color:#00b800;color:white;} QPushButton::hover{background-color:#00a800;color:white;}"
         )
 
-        btnAprobar = QPushButton("Aprobar")
-        btnAprobar.clicked.connect(
-            lambda checked, idx=permiso_id: self._cambiar_estado(idx, "Aprobado")
-        )
-        btnAprobar.setMinimumSize(QSize(80, 35))
-        btnAprobar.setMaximumWidth(100)
-        btnAprobar.setStyleSheet(
-            "QPushButton{background-color:#0078d7;color:white;} QPushButton::hover{background-color:#006cbe;color:white;}"
-        )
-
         button_widget = QWidget()
         layout = QHBoxLayout(button_widget)
         layout.addWidget(btnEditar)
-        layout.addSpacing(5)
-        layout.addWidget(btnAprobar)
         layout.addSpacing(5)
         layout.addWidget(btnEliminar)
         layout.setContentsMargins(10, 0, 10, 0)
         self.tbPermisos.setCellWidget(index, 7, button_widget)
 
-    """def _cambiar_estado(self, id_permiso, estado):
-        dial = DialogoEmergente(
-            "Confirmación", f"¿Cambiar estado a {estado}?", "Question", True, True
-        )
-        if dial.exec() == QDialog.Accepted:
-            result = self.permiso_service.cambiar_estado(id_permiso, estado)
-            mensaje = (
-                f"Estado cambiado a {estado} correctamente."
-                if result["success"]
-                else "Hubo un error al cambiar el estado."
-            )
-            DialogoEmergente(
-                "", mensaje, "Check" if result["success"] else "Error"
-            ).exec()
-            self._cargar_tabla()"""
+    # Paginado
+    def _actualizar_lblPagina(self, numPagina, totalPagina):
+        self.lblNumPagina.setText(f"Pagina {numPagina} de {totalPagina} ")
 
-    # ... (Mantén los mismos métodos de paginación que en AdminHorario)
+    def _actualizarValoresPaginado(self, paginaActual, totalPaginas):
+        self.paginaActual = paginaActual
+        self.ultimaPagina = totalPaginas
+        self.btnPrimerPagina.setEnabled(paginaActual > 1)
+        self.btnAnterior.setEnabled(paginaActual > 1)
+        self.btnSiguiente.setEnabled(paginaActual < totalPaginas)
+        self.btnUltimaPagina.setEnabled(paginaActual < totalPaginas)
 
     def _buscarPermisos(self):
         input_busqueda = self.inputBuscar.text()
         self.busqueda = input_busqueda if input_busqueda else None
         self.paginaActual = 1
         # self._cargar_tabla()
+
+    def _irPrimeraPagina(self):
+        self.paginaActual = 1
+        self._cargar_tabla()
+
+    def _irUltimaPagina(self):
+        self.paginaActual = self.ultimaPagina
+        self._cargar_tabla()
+
+    def _irSiguientePagina(self):
+        if self.paginaActual < self.ultimaPagina:
+            self.paginaActual += 1
+            self._cargar_tabla()
+
+    def _irAnteriorPagina(self):
+        if self.paginaActual > 1:
+            self.paginaActual -= 1
+            self._cargar_tabla()
 
     def _eliminarRegistro(self, idx):
         dial = DialogoEmergente(
@@ -270,19 +302,16 @@ class AdminSoliPermiso(QWidget):
             # self._cargar_tabla()
 
     def _crear_permiso(self):
-        # blur_effect = QGraphicsBlurEffect(self)
-        ##blur_effect.setBlurRadius(10)
-        ##self.setGraphicsEffect(blur_effect)
 
         form = FormSolicitudPermisoAdmin()
         if form.exec() == QDialog.Accepted:
-            # self._cargar_tabla()
+            self._cargar_tabla()
             self.setGraphicsEffect(None)
 
     def _editar_permiso(self, id):
         form = FormSolicitudPermisoAdmin(titulo="Editar Solicitud", id_solicitud=id)
         form.exec()
-        # self._cargar_tabla()
+        self._cargar_tabla()
 
     def _eliminarRegistro(self, id_solicitud: int):
         """
@@ -307,4 +336,4 @@ class AdminSoliPermiso(QWidget):
 
             DialogoEmergente("Resultado", mensaje, icono, True, False).exec()
 
-            # self._cargar_tabla()  # Refrescar la tabla
+            self._cargar_tabla()  # Refrescar la tabla
