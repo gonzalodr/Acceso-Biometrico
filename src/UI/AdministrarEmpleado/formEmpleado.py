@@ -12,6 +12,7 @@ from services.personaService    import PersonaServices
 from services.rolService        import RolServices
 from services.perfilService     import PerfilServices
 from services.telefonoServices  import TelefonoServices
+from services.ZKService        import ZKServices 
 
 from UI.DialogoEmergente import DialogoEmergente
 
@@ -210,13 +211,30 @@ class formEmpleado(QDialog):
         self.inDireccion = QTextEdit()
         self.inDireccion.setMaximumHeight(30)
         self.errDireccion = QLabel()
-
-        self.btnEscanearHuella = QPushButton('Escanear huella')
-        self.btnEscanearHuella.setObjectName('btn_escanear_huella')
-        self.btnEscanearHuella.setMinimumHeight(40)
-        self.btnEscanearHuella.setMinimumWidth(200)
-        layoutBoton = QHBoxLayout()
-        layoutBoton.addWidget(self.btnEscanearHuella, alignment=Qt.AlignCenter)
+        
+        # Botón para registrar huella - CAMBIO IMPORTANTE
+        self.btnRegistrarHuella = QPushButton('Registrar huella')
+        self.btnRegistrarHuella.setObjectName('btnHuella')
+        self.btnRegistrarHuella.setMinimumHeight(40)
+        self.btnRegistrarHuella.setStyleSheet("""
+        QPushButton {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px;
+            font-size: 14px;
+        }
+        QPushButton:hover {
+            background-color: #45a049;
+        }
+    """)
+        self.btnRegistrarHuella.clicked.connect(self.registrar_huella)
+    
+    # Layout contenedor para el botón (para mejor espaciado)
+        layoutHuella = QVBoxLayout()
+        layoutHuella.setContentsMargins(10, 10, 10, 10)
+        layoutHuella.addWidget(self.btnRegistrarHuella)  
         #asignando al layoutIzq
         self.layoutIzq.addWidget(tituloIzq)
         self.layoutIzq.addLayout(self.layoutFoto)
@@ -228,7 +246,8 @@ class formEmpleado(QDialog):
         self.layoutIzq.addLayout(self.contenedor(self.lblTelefonos,self.layoutTelPrinc,self.errTelefono))
         self.layoutIzq.addLayout(self.contenedor(self.lblEstCivil,self.inEstCivil,self.errEstCivil))
         self.layoutIzq.addLayout(self.contenedor(self.lblDireccion,self.inDireccion,self.errDireccion))
-        self.layoutIzq.addLayout(layoutBoton)
+        self.layoutIzq.addLayout(layoutHuella)  
+    
     #layout para la foto
     def llenarLayoutFoto(self):
         self.foto = QLabel()
@@ -920,7 +939,51 @@ class formEmpleado(QDialog):
         cargar_Icono(self.foto, 'userPerson.png')
         self.btnFoto.setText("Seleccionar foto")
         self.fotografia = None
-    
+        
+    def registrar_huella(self):
+        try:
+            # Crear instancia del servicio ZKTeco
+            zk_service = ZKServices()
+        
+            # Intentar conectar al dispositivo
+            conn = zk_service.zk.connect()
+            
+            if conn:
+                # Verificar si el dispositivo está conectado
+                conn.enable_device()  # Esto activa el dispositivo si está en modo sleep
+         # Mostrar mensaje de conexión exitosa
+                dial = DialogoEmergente(
+                    'Conexión Exitosa', 
+                    'Dispositivo ZKTeco conectado correctamente.\n\n'
+                    'Ahora puede proceder con el registro de huella digital.', 
+                    'Check', 
+                    True
+                )
+                dial.exec()
+            
+            # Cerrar la conexión
+                conn.disconnect()
+            else:
+                raise ConnectionError("No se pudo establecer conexión con el dispositivo")
+        except Exception as e:
+            # Mostrar mensaje de error si no hay conexión
+            dial = DialogoEmergente(
+                'Error de Conexión', 
+                f'No se pudo conectar al dispositivo ZKTeco. Error: \n\n'
+                'Por favor, verifique:\n'
+                '1. Que el dispositivo esté encendido\n'
+                '2. Que esté conectado a la red\n'
+                '3. Que la configuración IP/puerto sea correcta\n'
+                '4. Que el cable de red esté bien conectado', 
+                'Error', 
+                True
+            )
+            dial.exec()
+            
+            
+            
+            
+            
     def registrarDatos(self):
         if not self.validar_datos_personales():
             dial = DialogoEmergente('','Asegurece de llenar todos los datos personales','Error',True)
