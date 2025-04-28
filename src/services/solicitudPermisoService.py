@@ -60,3 +60,52 @@ class SolicitudPermisoService:
                 "message": "Error interno al procesar la solicitud",
                 "error_details": str(e),
             }
+
+    def eliminar_permiso(self, id_solicitud: int) -> dict:
+        """
+        Elimina una solicitud de permiso con validaciones previas
+
+        Args:
+            id_solicitud (int): ID de la solicitud a eliminar
+
+        Returns:
+            dict: Resultado de la operación en un diccionario
+        """
+        # Validación de ID valido
+        if not id_solicitud or id_solicitud <= 0:
+            return {"success": False, "message": "ID de solicitud inválido"}
+
+        try:
+            return self.solicitudPermisoData.eliminar_solicitud(id_solicitud)
+
+        except Exception as e:
+            logger.error(f"Error en servicio al eliminar permiso: {str(e)}")
+            return {
+                "success": False,
+                "message": "Error interno al procesar la eliminación",
+                "error_details": str(e),
+            }
+
+    def obtener_lista_permisos(
+        self,
+        pagina=1,
+        tam_pagina=10,
+        ordenar_por="fecha_inicio",
+        tipo_orden="DESC",
+        busqueda=None,
+    ):
+        try:
+            return self.solicitudPermisoData.list_solicitudes_permisos(
+                pagina=pagina,
+                tam_pagina=tam_pagina,
+                ordenar_por=ordenar_por,
+                tipo_orden=tipo_orden,
+                busqueda=busqueda,
+            )
+        except Exception as e:
+            logger.error(f"Error en servicio al obtener permisos: {str(e)}")
+            return {
+                "success": False,
+                "message": "Error interno al obtener permisos",
+                "error_details": str(e),
+            }
