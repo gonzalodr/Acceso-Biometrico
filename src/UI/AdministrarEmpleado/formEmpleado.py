@@ -399,7 +399,7 @@ class formEmpleado(QDialog):
             return
         
         if len(result['data']['listaRoles']) == 0:
-            self.inDep.setItemText(0,'No hay roles registrados.')
+            self.inRol.setItemText(0,'No hay roles registrados.')
             return
 
         for rol in result['data']['listaRoles']:
@@ -438,6 +438,10 @@ class formEmpleado(QDialog):
 
         inputCont = QLineEdit()
         inputCont.setPlaceholderText('Ingrese la contraseña')
+        inputCont.setEchoMode(QLineEdit.Password)
+        
+        checkMostrarContrasena  = QCheckBox('Mostrar contraseña')
+        checkMostrarContrasena.clicked.connect(lambda:self.mostrarContrasena(inputCont))
         
         lblError = QLabel()
         lblError.setObjectName("lblerror")
@@ -481,6 +485,7 @@ class formEmpleado(QDialog):
         layout.addWidget(inputUser) 
         layout.addWidget(lblContrasena)
         layout.addWidget(inputCont)
+        layout.addWidget(checkMostrarContrasena)
         layout.addWidget(lblError)
         layout.addSpacing(10)
         layout.addWidget(lblPerfil)
@@ -523,6 +528,12 @@ class formEmpleado(QDialog):
         self.btnCrearUsuario.setText('Crear usuario')
         self.btnCrearUsuario.setProperty("crear",True)
         self.btnCrearUsuario.style().polish(self.btnCrearUsuario)
+
+    def mostrarContrasena(self,input:QLineEdit):
+        if input.echoMode() == QLineEdit.Password:
+            input.setEchoMode(QLineEdit.Normal)
+        else:
+            input.setEchoMode(QLineEdit.Password)
 
     #eliminacion de layout y sus elementos
     def eliminacionLayout(self,layout:QVBoxLayout | QHBoxLayout):
@@ -636,7 +647,7 @@ class formEmpleado(QDialog):
         id_user     = layout.property('id_usuario')
         usuario     = layout.itemAt(1).widget().text()
         contrasena  = layout.itemAt(3).widget().text()
-        idperfil    = layout.itemAt(7).widget().currentData()
+        idperfil    = layout.itemAt(8).widget().currentData()
         if not usuario and not contrasena:
             return {'usuario':None,'idperfil':None}
         
@@ -789,7 +800,7 @@ class formEmpleado(QDialog):
         id_user     = layout.property('id_usuario')
         usuario     = layout.itemAt(1).widget().text().strip()
         contrasena  = layout.itemAt(3).widget().text().strip()
-        lblError: QLabel = layout.itemAt(4).widget()
+        lblError: QLabel = layout.itemAt(5).widget()
 
         # Limpiar mensaje de error
         lblError.clear()
