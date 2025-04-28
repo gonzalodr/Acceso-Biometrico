@@ -145,6 +145,15 @@ class formUsuario(QDialog):
         layout.addWidget(label_error)
         return layout
     
+    def validar_usuario(self, usuario,id,errorlbl:QLabel):
+        errorlbl.clear()
+        if usuario:
+            result = self.userServices.verificarUsuario(usuario,id)
+            if result:
+                errorlbl.setText('El nombre de usuario ya se encuentra registrado.')
+                return False
+            return True
+    
     def _cargar_personas_sin_usuario(self, id_persona=0):
         result = self.Ppersona.obtenerListaPersonasSinUsuario(id_persona)  # Asegúrate de que el método acepte el parámetro
         if result["success"]:
@@ -265,6 +274,9 @@ class formUsuario(QDialog):
             usuario=self.inputUsuario.text(),
             contrasena=self.inputContrasena.text(),
         )
+
+        if not self.validar_usuario(usuario.usuario, self.idU, self.errorUsuario):
+            return  # Si el usuario ya existe, salir del método
 
         # Crear el objeto Usuario_Perfil con los datos necesarios
         usuario_perfil = Usuario_Perfil(
