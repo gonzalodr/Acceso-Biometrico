@@ -210,11 +210,6 @@ class vistaPrincipal(QWidget):
             self.listaOpciones.append(
                 (index, "Perfiles de usuario", "access-control-list.png")
             )
-
-            self.listaOpciones.append(
-                (index, "Admin. permisos perfil", "access-control-list.png")
-            )
-
         if True:
             adminreporte = AdminReporte()
             adminreporte.cerrar_adminR.connect(self._salir_crud)
@@ -229,10 +224,6 @@ class vistaPrincipal(QWidget):
             index = self.stackVistas.addWidget(adminasistencia)
             self.listaOpciones.append(
                 (index, "Admin. Asistencia", "access-control-list.png")
-            )
-
-            self.listaOpciones.append(
-                (index, "Admin. permisos perfil", "access-control-list.png")
             )
 
         self.stackVistas.setCurrentIndex(0)

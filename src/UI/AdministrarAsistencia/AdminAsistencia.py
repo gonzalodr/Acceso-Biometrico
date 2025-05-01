@@ -74,6 +74,13 @@ class AdminAsistencia(QWidget):
         self.btnCrear.setObjectName("crear")
         self.btnCrear.clicked.connect(self._crear_asistencia)  ##esto no se mueve
         Sombrear(self.btnCrear, 20, 0, 0)
+        
+        self.btnActualizar = QPushButton(text="Actualizar")
+        self.btnActualizar.setCursor(Qt.PointingHandCursor)
+        self.btnActualizar.setFixedSize(minimoTamBtn)
+        self.btnActualizar.setObjectName("crear")
+        self.btnActualizar.clicked.connect(self.actualizarAsistencias)  ##esto no se mueve
+        Sombrear(self.btnActualizar, 20, 0, 0)
 
         ##acomodando botones de arriba en el layout
         layoutTop.addSpacing(25)
@@ -84,6 +91,8 @@ class AdminAsistencia(QWidget):
         layoutTop.addWidget(self.btnBuscar, 2)
         layoutTop.addStretch(1)
         layoutTop.addWidget(self.btnCrear, 2)
+        layoutTop.addStretch(1)
+        layoutTop.addWidget(self.btnActualizar, 2)
         layoutTop.addStretch(5)
         self.layoutFrame.addLayout(layoutTop)
 
@@ -370,4 +379,8 @@ class AdminAsistencia(QWidget):
 
     def _irUltimaPagina(self):
         self.paginaActual = self.ultimaPagina
+        self._cargar_tabla()
+        
+    def actualizarAsistencias(self):
+        self.asistenciaServices.registrarAsistenciaEmpleado()
         self._cargar_tabla()
