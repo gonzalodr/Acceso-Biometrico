@@ -113,6 +113,7 @@ class EmpleadoData:
             return {
                 "success": True,
                 "message": "Se registro el empleado correctamente.",
+                "id_empleado":id_empleado
             }
         except Exception as e:
             conexion.rollback()
