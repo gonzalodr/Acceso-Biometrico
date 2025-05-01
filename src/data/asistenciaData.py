@@ -347,8 +347,8 @@ class AsistenciaData:
                             # Actualiza hora entrada o salida
                             if detalle.hora_entrada is None:
                                 detalle.hora_entrada = hora  
-                            elif detalle.hora_entrada == hora: 
-                                continue
+                            elif detalle.hora_entrada == hora or hora < detalle.hora_entrada: 
+                                continue 
                             else:
                                 detalle.hora_salida = hora  
                                 fecha_actual        = datetime.now().date()
@@ -397,7 +397,6 @@ class AsistenciaData:
                                 {TBDETALLEASISTENCIA_HORA_ENTRADA}
                             ) VALUES (%s, %s);
                         ''', (id_asistencia, hora))
-
                 conexion.commit()
                 return {'success': True, 'message': 'Asistencia registrada correctamente.'}
         except Exception as e:
