@@ -952,13 +952,17 @@ class formEmpleado(QDialog):
                 # Verificar si el dispositivo está conectado
                 conn.enable_device()  # Esto activa el dispositivo si está en modo sleep
          # Mostrar mensaje de conexión exitosa
-                dial = DialogoEmergente(
-                    'Conexión Exitosa', 
-                    'Dispositivo ZKTeco conectado correctamente.\n\n'
-                    'Ahora puede proceder con el registro de huella digital.', 
-                    'Check', 
-                    True
-                )
+                # Mostrar mensaje de conexión exitosa
+                dial = QDialog(self)
+                dial.setWindowTitle('Esperando registro de huella...')
+                dial.setModal(True)
+                dial.setFixedSize(400, 200)
+                layout = QVBoxLayout(dial)
+
+                message = QLabel('El dispositivo ZKTeco está conectado y listo\n\n'
+                                'Por favor, coloque su dedo en el sensor.')
+                layout.addWidget(message)
+
                 dial.exec()
             
             # Cerrar la conexión
