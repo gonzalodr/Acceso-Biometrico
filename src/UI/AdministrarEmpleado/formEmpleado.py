@@ -13,7 +13,7 @@ from services.rolService        import RolServices
 from services.perfilService     import PerfilServices
 from services.telefonoServices  import TelefonoServices
 from services.ZKService        import ZKServices 
-
+from settings.logger         import logger
 from UI.DialogoEmergente import DialogoEmergente
 
 from models.usuario     import Usuario
@@ -21,7 +21,7 @@ from models.persona     import Persona
 from models.telefono    import Telefono
 
 from datetime import datetime
-
+import time
 import re
 
 class formEmpleado(QDialog):
@@ -941,49 +941,65 @@ class formEmpleado(QDialog):
         self.fotografia = None
         
     def registrar_huella(self):
+        """Maneja el registro de huella usando solo el nombre"""
         try:
-            # Crear instancia del servicio ZKTeco
-            zk_service = ZKServices()
-        
-            # Intentar conectar al dispositivo
-            conn = zk_service.zk.connect()
-            
-            if conn:
-                # Verificar si el dispositivo está conectado
-                conn.enable_device()  # Esto activa el dispositivo si está en modo sleep
-         # Mostrar mensaje de conexión exitosa
-                # Mostrar mensaje de conexión exitosa
-                dial = QDialog(self)
-                dial.setWindowTitle('Esperando registro de huella...')
-                dial.setModal(True)
-                dial.setFixedSize(400, 200)
-                layout = QVBoxLayout(dial)
+            # Validar que se ingresó el nombre
+            nombre = self.inNombre.text().strip()
+            if not nombre:
+                self.errNombre.setText("El nombre es obligatorio")
+                DialogoEmergente(
+                    'Datos incompletos',
+                    'Debe ingresar el nombre del empleado',
+                    'Warning',
+                    True
+                ).exec()
+                return
 
-                message = QLabel('El dispositivo ZKTeco está conectado y listo\n\n'
-                                'Por favor, coloque su dedo en el sensor.')
-                layout.addWidget(message)
-
-                dial.exec()
-            
-            # Cerrar la conexión
-                conn.disconnect()
-            else:
-                raise ConnectionError("No se pudo establecer conexión con el dispositivo")
-        except Exception as e:
-            # Mostrar mensaje de error si no hay conexión
-            dial = DialogoEmergente(
-                'Error de Conexión', 
-                f'No se pudo conectar al dispositivo ZKTeco. Error: \n\n'
-                'Por favor, verifique:\n'
-                '1. Que el dispositivo esté encendido\n'
-                '2. Que esté conectado a la red\n'
-                '3. Que la configuración IP/puerto sea correcta\n'
-                '4. Que el cable de red esté bien conectado', 
-                'Error', 
-                True
+            # Mostrar diálogo de espera
+            dialogo_espera = DialogoEmergente(
+                'Registro de Huella',
+                'Preparando dispositivo...\n\nPor favor espere',
+                'Info',
+                False
             )
-            dial.exec()
-            
+            dialogo_espera.show()
+            QApplication.processEvents()
+
+            # Llamar al servicio simplificado que genera el ID automáticamente
+            zk_service = ZKServices()
+            resultado = zk_service.registrar_empleado_simple(nombre)
+
+            # Cerrar diálogo de espera
+            dialogo_espera.close()
+
+            # Mostrar resultados
+            if resultado['success']:
+                if resultado['huella_registrada']:
+                    DialogoEmergente(
+                        'Registro Exitoso',
+                        f'Empleado registrado:\n\nNombre: {nombre}\nID: {resultado["user_id"]}',
+                        'Check',
+                        True
+                    ).exec()
+                else:
+                    DialogoEmergente(
+                        'Registro Parcial',
+                        f'Usuario registrado pero sin huella:\n\nNombre: {nombre}',
+                        'Warning',
+                        True
+                    ).exec()
+            else:
+                raise Exception(resultado['message'])
+
+        except Exception as e:
+            DialogoEmergente(
+                'Error',
+                f'Error durante el registro:\n\n{str(e)}',
+                'Error',
+                True
+            ).exec()
+
+
             
             
             
