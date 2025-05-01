@@ -213,28 +213,28 @@ class formEmpleado(QDialog):
         self.errDireccion = QLabel()
         
         # Botón para registrar huella - CAMBIO IMPORTANTE
-        self.btnRegistrarHuella = QPushButton('Registrar huella')
-        self.btnRegistrarHuella.setObjectName('btnHuella')
-        self.btnRegistrarHuella.setMinimumHeight(40)
-        self.btnRegistrarHuella.setStyleSheet("""
-        QPushButton {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px;
-            font-size: 14px;
-        }
-        QPushButton:hover {
-            background-color: #45a049;
-        }
-    """)
-        self.btnRegistrarHuella.clicked.connect(self.registrar_huella)
+        #self.btnRegistrarHuella = QPushButton('Registrar huella')
+        #self.btnRegistrarHuella.setObjectName('btnHuella')
+        #self.btnRegistrarHuella.setMinimumHeight(40)
+        #self.btnRegistrarHuella.setStyleSheet("""
+        #QPushButton {
+         #   background-color: #4CAF50;
+          #  color: white;
+           # border: none;
+            #border-radius: 5px;
+            #padding: 8px;
+            #font-size: 14px;
+        #}
+        #QPushButton:hover {
+         #   background-color: #45a049;
+        #}
+    #""")
+     #   self.btnRegistrarHuella.clicked.connect(self.registrar_huella)
     
     # Layout contenedor para el botón (para mejor espaciado)
-        layoutHuella = QVBoxLayout()
-        layoutHuella.setContentsMargins(10, 10, 10, 10)
-        layoutHuella.addWidget(self.btnRegistrarHuella)  
+       # layoutHuella = QVBoxLayout()
+       # layoutHuella.setContentsMargins(10, 10, 10, 10)
+       # layoutHuella.addWidget(self.btnRegistrarHuella)  
         #asignando al layoutIzq
         self.layoutIzq.addWidget(tituloIzq)
         self.layoutIzq.addLayout(self.layoutFoto)
@@ -246,7 +246,7 @@ class formEmpleado(QDialog):
         self.layoutIzq.addLayout(self.contenedor(self.lblTelefonos,self.layoutTelPrinc,self.errTelefono))
         self.layoutIzq.addLayout(self.contenedor(self.lblEstCivil,self.inEstCivil,self.errEstCivil))
         self.layoutIzq.addLayout(self.contenedor(self.lblDireccion,self.inDireccion,self.errDireccion))
-        self.layoutIzq.addLayout(layoutHuella)  
+        #self.layoutIzq.addLayout(layoutHuella)  
     
     #layout para la foto
     def llenarLayoutFoto(self):
@@ -940,8 +940,8 @@ class formEmpleado(QDialog):
         self.btnFoto.setText("Seleccionar foto")
         self.fotografia = None
         
-    def registrar_huella(self):
-        """Maneja el registro de huella usando solo el nombre"""
+    """def registrar_huella(self):
+        #Maneja el registro de huella usando solo el nombre
         try:
             # Validar que se ingresó el nombre
             nombre = self.inNombre.text().strip()
@@ -998,13 +998,13 @@ class formEmpleado(QDialog):
                 'Error',
                 True
             ).exec()
+    """
 
-
             
             
             
             
-    def registrarDatos(self):
+    """def registrarDatos(self):
         if not self.validar_datos_personales():
             dial = DialogoEmergente('','Asegurece de llenar todos los datos personales','Error',True)
             dial.exec()
@@ -1055,5 +1055,108 @@ class formEmpleado(QDialog):
             dial = DialogoEmergente('',result['message'],'Check',True)
             dial.exec()
             self.reject()
+    
+    """
+    
+    def registrarDatos(self):
+        """Maneja el registro completo del empleado incluyendo huella digital"""
+        try:
+            # 1. Validar todos los campos obligatorios
+            if not self.validar_datos_personales():
+                DialogoEmergente('', 'Complete todos los campos obligatorios', 'Error', True).exec()
+                return
 
-                
+            # 2. Extraer datos del formulario
+            datos = self.extraerDatosEmpleados()
+            
+            # 3. Mostrar diálogo de confirmación
+            confirmacion = DialogoEmergente(
+                'Confirmar Registro',
+                '¿Desea registrar al empleado y capturar su huella digital?',
+                'Question',
+                True,
+                True
+            )
+            
+            if confirmacion.exec() != QDialog.Accepted:
+                return
+
+            # 4. Mostrar diálogo de progreso (sin intentar modificar lblMensaje)
+            dialogo_progreso = DialogoEmergente(
+                'Procesando Registro',
+                'Guardando datos del empleado...',
+                'Info',
+                False
+            )
+            dialogo_progreso.show()
+            QApplication.processEvents()
+
+            # 5. Registrar datos básicos en la base de datos
+            if self.idEmpleado:
+                resultado_db = self.emplServices.actualizar_empleado(self.idEmpleado, datos)
+            else:
+                resultado_db = self.emplServices.crear_empleado(datos)
+
+            if not resultado_db['success']:
+                dialogo_progreso.close()
+                DialogoEmergente('', f"Error en registro: {resultado_db['message']}", 'Error', True).exec()
+                return
+
+            # 6. Crear nuevo diálogo para captura de huella (evitando modificar lblMensaje)
+            dialogo_progreso.close()
+            dialogo_huella = DialogoEmergente(
+                'Captura de Huella',
+                'Por favor, coloque el dedo en el lector biométrico...',
+                'Info',
+                False
+            )
+            dialogo_huella.show()
+            QApplication.processEvents()
+
+            # 7. Registrar huella digital
+            zk_service = ZKServices()
+            nombre_completo = datos['persona'].nombre  # Solo el nombre, sin apellidos
+            resultado_huella = zk_service.registrar_empleado_simple(nombre_completo)
+
+            # 8. Manejar resultados
+            dialogo_huella.close()
+            
+            if not resultado_huella['success']:
+                DialogoEmergente(
+                    'Error en Huella',
+                    f"Empleado registrado pero error en huella: {resultado_huella['message']}",
+                    'Error',
+                    True
+                ).exec()
+            elif resultado_huella.get('huella_registrada', False):
+                DialogoEmergente(
+                    'Registro Exitoso',
+                    'Empleado registrado con huella digital correctamente',
+                    'Check',
+                    True
+                ).exec()
+                self.reject()
+            else:
+                DialogoEmergente(
+                    'Registro Parcial',
+                    'Empleado registrado pero no se capturó huella digital',
+                    'Warning',
+                    True
+                ).exec()
+                self.reject()
+
+        except Exception as e:
+            if 'dialogo_progreso' in locals():
+                dialogo_progreso.close()
+            if 'dialogo_huella' in locals():
+                dialogo_huella.close()
+            logger.error(f"Error en registro completo: {str(e)}")
+            DialogoEmergente(
+                'Error',
+                f'Ocurrió un error inesperado:\n\n{str(e)}',
+                'Error',
+                True
+            ).exec()
+
+
+   
