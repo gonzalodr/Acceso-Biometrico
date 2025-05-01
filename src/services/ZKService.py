@@ -165,26 +165,19 @@ class ZKServices:
                 "success": False,
                 "message": "Ocurrió un error al actualizar el empleado.",
             }
-    def obtener_usuarios(self):
-        # Crear una instancia de ZK
-        zk = ZK(ip, puerto, timeout=5, force_udp=False)
-
+    def obtener_usuarios(self, id_empleado = None):
         try:
-            zk.connect()  # Conectar al dispositivo
-            print("Conectado al dispositivo de huella.")
-
+            conn =  self.zk.connect()  # Conectar al dispositivo
             # Obtener todos los usuarios
-            usuarios = zk.get_users()
-            for usuario in usuarios:
-                print(
-                    f"ID: {usuario.uid}, Nombre: {usuario.name}, Privilegio: {usuario.privilege}, User ID: {usuario.user_id}"
-                )
-
+            usuarios = conn.get_users()
+            if id_empleado:
+                usuarios = list(filter(lambda u: u.uid == id_empleado,usuarios)) or None
+            return {'success':True, 'message':'Se obtuvieron los usuarios.','usuarios':usuarios}
         except Exception as e:
-            print(f"Error al conectar al dispositivo: {e}")
+            logger.error(e)
+            return {"success":False,"message":"Ocurrio un error al obtener usuarios."}
         finally:
-            zk.disconnect()  # Desconectar cuando termine
-            print("Desconectado del dispositivo.")
+            if conn: conn.disconnect()
 
     def obtener_usuarios_y_huellas(self):
         # Dirección IP y puerto del dispositivo ZKTeco K20
