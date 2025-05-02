@@ -45,6 +45,12 @@ TBDEPARTAMENTO_ID = "Id"
 TBDEPARTAMENTO_NOMBRE = "Nombre"
 TBDEPARTAMENTO_DESCRIPCION = "Descripcion"
 
+# Tabla huella y sus campos
+TBHUELLA = "huella"
+TBHUELLA_ID = "Id"
+TBHUELLA_ID_EMPLEADO = "Id_Empleado"
+TBHUELLA_HUELLA = "huella"
+
 
 # Tabla de permisos de rol
 TBPERMISOROL = "permiso_rol"

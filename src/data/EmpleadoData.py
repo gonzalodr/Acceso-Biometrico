@@ -873,7 +873,7 @@ class EmpleadoData:
                 max_id = cursor.fetchone()[0]
 
                 # Si no hay empleados, max_id será None, así que retornamos 1
-                return (max_id + 1) if max_id is not None else 1
+                return (max_id) if max_id is not None else 1
         except Exception as e:
             logger.error(f"Error al obtener el ID del empleado: {e}")
             return None  # O puedes lanzar una excepción si prefieres

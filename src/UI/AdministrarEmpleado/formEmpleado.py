@@ -1116,7 +1116,10 @@ class formEmpleado(QDialog):
             # 7. Registrar huella digital
             zk_service = ZKServices()
             nombre_completo = datos['persona'].nombre  # Solo el nombre, sin apellidos
-            resultado_huella = zk_service.registrar_empleado_simple(nombre_completo)
+
+
+            
+            resultado_huella = zk_service.registrar_empleado_simple(nombre_completo, self.emplServices.obtener_id_empleado())
 
             # 8. Manejar resultados
             dialogo_huella.close()

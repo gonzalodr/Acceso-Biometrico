@@ -5,14 +5,20 @@ from zk import ZK
 from datetime import date
 from datetime import time as dt_time
 
+from services.huellaService import HuellaService
+
 from typing import Optional, List, Union, Tuple
 from Utils.Utils import parse_date, parse_time
+from models.huella import Huella
 import re
 import traceback
 
 
 class ZKServices:
+
+    huellaService = HuellaService()
     def __init__(self):
+        
         self.zk = ZK(ZKTECA_CONFIG["host"], ZKTECA_CONFIG["port"])
 
     # obteniendo huella
@@ -362,7 +368,7 @@ class ZKServices:
             return 1  # Valor por defecto seguro
         
         
-    def registrar_empleado_simple(self, nombre: str):
+    def registrar_empleado_simple(self, nombre: str, id_empleado: int):
         try:
             conn = self.zk.connect()
             conn.enable_device()
@@ -385,11 +391,15 @@ class ZKServices:
                 huella = list(filter(lambda t: t.uid == next_uid, templates)) or None
                 if huella:
                     conn.test_voice(0)
+                    nueva_huella = Huella(next_uid, id_empleado=id_empleado)
+                    self.huellaService.insertarHuella(nueva_huella)
                     conn.disconnect()
                     return {
                         "success": True,
                         "huella_registrada": True,
                         "user_id": next_uid,
+                        'huella_info': str(nueva_huella), 
+                        "huella": nueva_huella,  
                         "message": "Empleado registrado con éxito.",
                     }
                 time.sleep(0.5)
