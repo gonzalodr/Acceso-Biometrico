@@ -248,9 +248,12 @@ class formAsistencia(QDialog):
             listaEmpleados = result["data"]["listaEmpleados"]
             if len(listaEmpleados) > 0:
                 for empleado in listaEmpleados:
-                    self.inputEmpleado.addItem(str(empleado.id_persona))
+                    
+                    self.inputEmpleado.addItem(
+                        empleado.nombre_persona
+                        )
                     # self.listaEmpleadosID[empleado.id_persona] = empleado.id
-                    self.listaEmpleadosID[str(empleado.id_persona)] = (
+                    self.listaEmpleadosID[empleado.nombre_persona] = (
                         empleado.id
                     )  # Usar id_persona
             else:
@@ -276,7 +279,7 @@ class formAsistencia(QDialog):
             if result["data"]:
                 asistencia: Asistencia = result["data"]
                 self.idP = asistencia.id
-                self.inputEmpleado.setCurrentText(str(asistencia.id_empleado))
+                self.inputEmpleado.setCurrentText(asistencia.nombre_persona)
                 # Convertir fecha a QDate antes de asignarla
                 fecha_qt = QDate(
                     asistencia.fecha.year, asistencia.fecha.month, asistencia.fecha.day
