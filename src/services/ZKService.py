@@ -38,7 +38,7 @@ class ZKServices:
             conn.set_user(uid=id_empleado, name=f"{nombre}-{cedula}")
             time.sleep(1)
 
-            conn.enroll_user(uid = id_empleado, temp_id = 9)
+            conn.enroll_user(uid=id_empleado, temp_id=9)
 
             start_time = time.time()
             while (time.time() - start_time) < 30:
@@ -78,20 +78,29 @@ class ZKServices:
             if rango_fechas:
                 if isinstance(rango_fechas, list):
                     if len(rango_fechas) != 2:
-                            return {'success':False,'message':"El rango de fechas debe contener exactamente 2 elementos"}
-                    rango_fechas = (parse_date(rango_fechas[0]),parse_date(rango_fechas[1]),)
+                        return {
+                            "success": False,
+                            "message": "El rango de fechas debe contener exactamente 2 elementos",
+                        }
+                    rango_fechas = (
+                        parse_date(rango_fechas[0]),
+                        parse_date(rango_fechas[1]),
+                    )
 
                 if rango_fechas[0] > rango_fechas[1]:
-                    return { "success": False,"message": "La primera fecha del filtro debe ser menor o igual a la ultima fecha."}
+                    return {
+                        "success": False,
+                        "message": "La primera fecha del filtro debe ser menor o igual a la ultima fecha.",
+                    }
 
             conn = self.zk.connect()
 
             conn.disable_device()
 
             asistencias = conn.get_attendance()
-            users       = conn.get_users()
-            
-            filtered    = []
+            users = conn.get_users()
+
+            filtered = []
             for asist in asistencias:
                 asist_datetime = asist.timestamp
 
@@ -108,10 +117,13 @@ class ZKServices:
                     if not (fecha_inicio <= asist_datetime.date() <= fecha_fin):
                         continue
                 # envia tanto el empleado al que le pertenece la asistencia como la misma asistencias
-                empleado    = list(filter(lambda e: str(e.user_id) ==  str(asist.user_id),users)) or None
+                empleado = (
+                    list(filter(lambda e: str(e.user_id) == str(asist.user_id), users))
+                    or None
+                )
                 if empleado:
-                    filtered.append((empleado[0],asist))
-                    
+                    filtered.append((empleado[0], asist))
+
             conn.enable_device()
             conn.disconnect()
             return {
@@ -165,9 +177,10 @@ class ZKServices:
                 "success": False,
                 "message": "Ocurrió un error al actualizar el empleado.",
             }
+
     def obtener_usuarios(self):
         # Crear una instancia de ZK
-        zk = ZK(ip, puerto, timeout=5, force_udp=False)
+        zk = ZK("host", "port", timeout=5, force_udp=False)
 
         try:
             zk.connect()  # Conectar al dispositivo
@@ -214,7 +227,7 @@ class ZKServices:
                         print(f"    Huella ID: {huella.fid}, Valida: {huella.valid}")
                 else:
                     print(
-                        f"  No se encontraron huellas para el usuario {usuario.name}."
+                        f"  No se encontraron  huellas para el usuario {usuario.name}."
                     )
 
         except Exception as e:
@@ -222,7 +235,7 @@ class ZKServices:
         finally:
             zk.disconnect()  # Desconectar cuando termine
             print("Desconectado del dispositivo.")
-            
+
     def registrar_empleado_con_huella(self, id_empleado: int, nombre: str):
         # Dirección IP y puerto del dispositivo ZKTeco K20
         ip = "192.168.1.201"  # Dirección IP del dispositivo de huella
