@@ -59,6 +59,14 @@ class formJustificacion(QDialog):
         self.errorDescripcion = QLabel()
         Sombrear(self.inputDescripcion, 20, 0, 0)
 
+        # Modificación al layoutForm para agregar el campo de tipo
+        lblTipo = QLabel(text="Tipo")
+        self.comboTipo = QComboBox()
+        self.comboTipo.addItems(["Médica", "Personal", "Maternidad", "Judicial", "Incapacidad", "Otro"])
+        self.comboTipo.setCurrentIndex(5)  # Por defecto selecciona "Otro"
+        self.errorTipo = QLabel()
+        Sombrear(self.comboTipo, 20, 0, 0)
+
         # Crear el ComboBox para seleccionar el empleado
         lblEmpleado = QLabel(text="Empleado")
         self.comboEmpleado = QComboBox()
@@ -79,10 +87,12 @@ class formJustificacion(QDialog):
         self.lblNoAsistencias.setVisible(False)  # Ocultar inicialmente
 
         layoutForm.addLayout(self._contenedor(lblEmpleado, self.comboEmpleado, self.errorEmpleado), 2, 0)
+        layoutForm.addLayout(self._contenedor(lblTipo, self.comboTipo, self.errorTipo), 5, 0)
         layoutForm.addLayout(self._contenedor(lblAsistencia, self.comboAsistencia, self.errorAsistencia), 3, 0)
-        layoutForm.addWidget(self.lblNoAsistencias, 4, 0, 1, 2)  # Añadir el label al layout
+        layoutForm.addWidget(self.lblNoAsistencias, 4, 0, 1, 2)  
         layoutForm.addLayout(self._contenedor(lblMotivo, self.inputMotivo, self.errorMotivo), 0, 0)
         layoutForm.addLayout(self._contenedor(lblDescripcion, self.inputDescripcion, self.errorDescripcion), 1, 0)
+        
 
         boton_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         boton_box.button(QDialogButtonBox.Cancel).setText("Cancelar")
@@ -226,6 +236,12 @@ class formJustificacion(QDialog):
         else:
             Sombrear(self.comboEmpleado, 20, 0, 0)
 
+        if not self.comboTipo.currentText():  # Verifica si no hay tipo seleccionado
+            Sombrear(self.comboTipo, 20, 0, 0, "red")
+            vacios = True
+        else:
+            Sombrear(self.comboTipo, 20, 0, 0)
+
         if not self.comboAsistencia.currentData():  # Verifica si no hay empleado seleccionado
             Sombrear(self.comboEmpleado, 20, 0, 0, "red")
             vacios = True
@@ -253,6 +269,11 @@ class formJustificacion(QDialog):
                 # Seleccionar la asistencia si existe
                 if justificacion.id_asistencia:
                     self.comboAsistencia.setCurrentIndex(self.comboAsistencia.findData(justificacion.id_asistencia))
+
+                tipo_index = self.comboTipo.findText(justificacion.tipo, Qt.MatchFixedString)
+                if tipo_index >= 0:
+                    self.comboTipo.setCurrentIndex(tipo_index)
+                    
             else:
                 dial = DialogoEmergente("Error", "Hubo un error de carga.", "Error")
                 dial.exec()
@@ -270,6 +291,7 @@ class formJustificacion(QDialog):
             fecha=date.today(),
             motivo=self.inputMotivo.text(),
             descripcion=self.inputDescripcion.text(),
+            tipo=self.comboTipo.currentText(),
             id_justificacion=self.idJ,
         )
         if self._validar_campos():

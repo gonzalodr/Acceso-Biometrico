@@ -5,9 +5,12 @@ from data.data import conection # importa la funcion de conection para crear la 
 from settings.config import * 
 from mysql.connector import Error
 from settings.logger import logger
-from datetime        import datetime
+from datetime        import datetime, timedelta
+from data.horarioData import HorarioData
 
 class AsistenciaData:
+    def __init__(self):
+        self.horarioData = HorarioData()
     
     def create_asistencia(self, asistencia: Asistencia):
         conexion, resultado = conection() 
@@ -277,7 +280,7 @@ class AsistenciaData:
                 query = f'''
                     SELECT Id, Id_Empleado, Fecha, Estado_Asistencia 
                     FROM Asistencia 
-                    WHERE Id_Empleado = %s AND Estado_Asistencia = 'No_Justificada'
+                    WHERE Id_Empleado = %s AND Estado_Asistencia = 'Ausente'
                     ORDER BY Fecha DESC
                 '''
                 cursor.execute(query, (id_empleado,))
@@ -311,11 +314,15 @@ class AsistenciaData:
 
         try:
             with conexion.cursor(dictionary=True) as cursor:
-                for item in lista:
-                    # item[0] = Asistencia, item[1] = Hora
-                    asistencia  = item[0]
-                    hora        = item[1]
-                    # Verificar si ya existe un registro de asistencia para ese día y empleado
+                nuevas_asistencias      = []
+                nuevos_detalles         = []
+                asistencias_existentes  = []
+
+                # listaHorario            = self.horarioData.get_horario_by_empleado()
+                
+                
+                for asistencia, hora in lista:
+                    # Verificar si ya existe la asistencia para ese empleado y fecha
                     cursor.execute(f'''
                         SELECT * FROM {TBASISTENCIA}
                         WHERE {TBASISTENCIA_FECHA} = %s
@@ -326,83 +333,190 @@ class AsistenciaData:
 
                     if existe:
                         asistencia.id = existe[TBASISTENCIA_ID]
-                        # Buscar detalle de asistencia
-                        cursor.execute(f'''
-                            SELECT * FROM {TBDETALLEASISTENCIA}
-                            WHERE {TBDETALLEASISTENCIA_ID_ASISTENCIA} = %s;
-                        ''', (asistencia.id,))
-                        
-                        data = cursor.fetchone()
-                        if data:
-                            detalle = DetalleAsistencia(
-                                id_detalle      =data[TBDETALLEASISTENCIA_ID],
-                                id_asistencia   =data[TBDETALLEASISTENCIA_ID_ASISTENCIA],
-                                hora_entrada    =data[TBDETALLEASISTENCIA_HORA_ENTRADA],
-                                hora_salida     =data[TBDETALLEASISTENCIA_HORA_SALIDA],
-                                horas_trabajadas=data[TBDETALLEASISTENCIA_HORAS_TRABAJADAS]
-                            )
-                            detalle.hora_entrada = (datetime.min + detalle.hora_entrada).time()
-                            
-                            
-                            # Actualiza hora entrada o salida
-                            if detalle.hora_entrada is None:
-                                detalle.hora_entrada = hora  
-                            elif detalle.hora_entrada == hora: 
-                                continue
-                            else:
-                                detalle.hora_salida = hora  
-                                fecha_actual        = datetime.now().date()
-                                datetime_salida     = datetime.combine(fecha_actual, detalle.hora_salida)
-                                datetime_entrada    = datetime.combine(fecha_actual, detalle.hora_entrada)
-                                
-                                diferencia = datetime_salida - datetime_entrada
-
-                                # Calcular las horas trabajadas en decimal
-                                detalle.horas_trabajadas = round(diferencia.total_seconds() / 3600, 2)
-                                
-                            # Actualizar detalle
-                            cursor.execute(f'''
-                                UPDATE {TBDETALLEASISTENCIA}
-                                SET
-                                    {TBDETALLEASISTENCIA_HORA_ENTRADA} = %s,
-                                    {TBDETALLEASISTENCIA_HORA_SALIDA} = %s,
-                                    {TBDETALLEASISTENCIA_HORAS_TRABAJADAS} = %s
-                                WHERE {TBDETALLEASISTENCIA_ID} = %s;
-                            ''', (
-                                detalle.hora_entrada,
-                                detalle.hora_salida,
-                                detalle.horas_trabajadas,
-                                detalle.id_detalle
-                            ))
-
+                        asistencias_existentes.append((asistencia, hora))  # Se procesan uno a uno
                     else:
-                        # Insertar nuevo registro en asistencia
-                        cursor.execute(f'''
-                            INSERT INTO {TBASISTENCIA} (
-                                {TBASISTENCIA_ID_EMPLEADO},
-                                {TBASISTENCIA_FECHA},
-                                {TBASISTENCIA_ESTADO_ASISTENCIA}
-                            ) VALUES (%s, %s, %s);
-                        ''', (
-                            asistencia.id_empleado,
-                            asistencia.fecha,
-                            asistencia.estado_asistencia
-                        ))
+                        nuevas_asistencias.append((asistencia.id_empleado, asistencia.fecha, asistencia.estado_asistencia))
+                        nuevos_detalles.append((None, hora))  # ID se completará luego
 
-                        id_asistencia = cursor.lastrowid
-                        # Insertar nuevo detalle de asistencia con hora de entrada
+                # Insertar nuevas asistencias
+                if nuevas_asistencias:
+                    cursor.executemany(f'''
+                        INSERT INTO {TBASISTENCIA} (
+                            {TBASISTENCIA_ID_EMPLEADO},
+                            {TBASISTENCIA_FECHA},
+                            {TBASISTENCIA_ESTADO_ASISTENCIA}
+                        ) VALUES (%s, %s, %s);
+                    ''', nuevas_asistencias)
+
+                    # Recuperar los IDs insertados
+                    primer_id = cursor.lastrowid
+                    for i in range(len(nuevas_asistencias)):
+                        nuevos_detalles[i] = (primer_id + i, nuevos_detalles[i][1]) 
+
+                    # Insertar nuevos detalles
+                    cursor.executemany(f'''
+                        INSERT INTO {TBDETALLEASISTENCIA} (
+                            {TBDETALLEASISTENCIA_ID_ASISTENCIA},
+                            {TBDETALLEASISTENCIA_HORA_ENTRADA}
+                        ) VALUES (%s, %s);
+                    ''', nuevos_detalles)
+
+                # Procesar actualizaciones de asistencias existentes
+                for asistencia, hora in asistencias_existentes:
+                    cursor.execute(f'''
+                        SELECT * FROM {TBDETALLEASISTENCIA}
+                        WHERE {TBDETALLEASISTENCIA_ID_ASISTENCIA} = %s;
+                    ''', (asistencia.id,))
+
+                    data = cursor.fetchone()
+                    if data:
+                        detalle = DetalleAsistencia(
+                            id_detalle=data[TBDETALLEASISTENCIA_ID],
+                            id_asistencia=data[TBDETALLEASISTENCIA_ID_ASISTENCIA],
+                            hora_entrada=data[TBDETALLEASISTENCIA_HORA_ENTRADA],
+                            hora_salida=data[TBDETALLEASISTENCIA_HORA_SALIDA],
+                            horas_trabajadas=data[TBDETALLEASISTENCIA_HORAS_TRABAJADAS]
+                        )
+
+                        # Normalizar hora_entrada si viene como timedelta
+                        if isinstance(detalle.hora_entrada, timedelta):
+                            detalle.hora_entrada = (datetime.min + detalle.hora_entrada).time()
+
+                        if detalle.hora_entrada is None:
+                            detalle.hora_entrada = hora
+                        elif detalle.hora_entrada == hora or hora < detalle.hora_entrada:
+                            continue
+                        else:
+                            detalle.hora_salida = hora
+                            fecha_actual        = datetime.now().date()
+                            datetime_salida     = datetime.combine(fecha_actual, detalle.hora_salida)
+                            datetime_entrada    = datetime.combine(fecha_actual, detalle.hora_entrada)
+                            diferencia          = datetime_salida - datetime_entrada
+                            detalle.horas_trabajadas = round(diferencia.total_seconds() / 3600, 2)
+
+                        # Actualizar detalle
                         cursor.execute(f'''
-                            INSERT INTO {TBDETALLEASISTENCIA} (
-                                {TBDETALLEASISTENCIA_ID_ASISTENCIA},
-                                {TBDETALLEASISTENCIA_HORA_ENTRADA}
-                            ) VALUES (%s, %s);
-                        ''', (id_asistencia, hora))
+                            UPDATE {TBDETALLEASISTENCIA}
+                            SET
+                                {TBDETALLEASISTENCIA_HORA_ENTRADA} = %s,
+                                {TBDETALLEASISTENCIA_HORA_SALIDA} = %s,
+                                {TBDETALLEASISTENCIA_HORAS_TRABAJADAS} = %s
+                            WHERE {TBDETALLEASISTENCIA_ID} = %s;
+                        ''', (
+                            detalle.hora_entrada,
+                            detalle.hora_salida,
+                            detalle.horas_trabajadas,
+                            detalle.id_detalle
+                        ))
 
                 conexion.commit()
                 return {'success': True, 'message': 'Asistencia registrada correctamente.'}
+
         except Exception as e:
             conexion.rollback()
             logger.error(f'Error al registrar asistencia: {e}')
             return {'success': False, 'message': 'Ocurrió un error al registrar la asistencia.'}
         finally:
             if conexion: conexion.close()
+
+    # def registrar_asistencia(self, lista):
+    #     conexion, resultado = conection()
+    #     if not resultado['success']:
+    #         return resultado
+
+    #     try:
+    #         with conexion.cursor(dictionary=True) as cursor:
+    #             for item in lista:
+    #                 # item[0] = Asistencia, item[1] = Hora
+    #                 asistencia  = item[0]
+    #                 hora        = item[1]
+    #                 # Verificar si ya existe un registro de asistencia para ese día y empleado
+    #                 cursor.execute(f'''
+    #                     SELECT * FROM {TBASISTENCIA}
+    #                     WHERE {TBASISTENCIA_FECHA} = %s
+    #                     AND {TBASISTENCIA_ID_EMPLEADO} = %s;
+    #                 ''', (asistencia.fecha, asistencia.id_empleado))
+
+    #                 existe = cursor.fetchone()
+
+    #                 if existe:
+    #                     asistencia.id = existe[TBASISTENCIA_ID]
+    #                     # Buscar detalle de asistencia
+    #                     cursor.execute(f'''
+    #                         SELECT * FROM {TBDETALLEASISTENCIA}
+    #                         WHERE {TBDETALLEASISTENCIA_ID_ASISTENCIA} = %s;
+    #                     ''', (asistencia.id,))
+                        
+    #                     data = cursor.fetchone()
+    #                     if data:
+    #                         detalle = DetalleAsistencia(
+    #                             id_detalle      =data[TBDETALLEASISTENCIA_ID],
+    #                             id_asistencia   =data[TBDETALLEASISTENCIA_ID_ASISTENCIA],
+    #                             hora_entrada    =data[TBDETALLEASISTENCIA_HORA_ENTRADA],
+    #                             hora_salida     =data[TBDETALLEASISTENCIA_HORA_SALIDA],
+    #                             horas_trabajadas=data[TBDETALLEASISTENCIA_HORAS_TRABAJADAS]
+    #                         )
+    #                         detalle.hora_entrada = (datetime.min + detalle.hora_entrada).time()
+                            
+                            
+    #                         # Actualiza hora entrada o salida
+    #                         if detalle.hora_entrada is None:
+    #                             detalle.hora_entrada = hora  
+    #                         elif detalle.hora_entrada == hora or hora < detalle.hora_entrada: 
+    #                             continue 
+    #                         else:
+    #                             detalle.hora_salida = hora  
+    #                             fecha_actual        = datetime.now().date()
+    #                             datetime_salida     = datetime.combine(fecha_actual, detalle.hora_salida)
+    #                             datetime_entrada    = datetime.combine(fecha_actual, detalle.hora_entrada)
+                                
+    #                             diferencia = datetime_salida - datetime_entrada
+
+    #                             # Calcular las horas trabajadas en decimal
+    #                             detalle.horas_trabajadas = round(diferencia.total_seconds() / 3600, 2)
+                                
+    #                         # Actualizar detalle
+    #                         cursor.execute(f'''
+    #                             UPDATE {TBDETALLEASISTENCIA}
+    #                             SET
+    #                                 {TBDETALLEASISTENCIA_HORA_ENTRADA} = %s,
+    #                                 {TBDETALLEASISTENCIA_HORA_SALIDA} = %s,
+    #                                 {TBDETALLEASISTENCIA_HORAS_TRABAJADAS} = %s
+    #                             WHERE {TBDETALLEASISTENCIA_ID} = %s;
+    #                         ''', (
+    #                             detalle.hora_entrada,
+    #                             detalle.hora_salida,
+    #                             detalle.horas_trabajadas,
+    #                             detalle.id_detalle
+    #                         ))
+
+    #                 else:
+    #                     # Insertar nuevo registro en asistencia
+    #                     cursor.execute(f'''
+    #                         INSERT INTO {TBASISTENCIA} (
+    #                             {TBASISTENCIA_ID_EMPLEADO},
+    #                             {TBASISTENCIA_FECHA},
+    #                             {TBASISTENCIA_ESTADO_ASISTENCIA}
+    #                         ) VALUES (%s, %s, %s);
+    #                     ''', (
+    #                         asistencia.id_empleado,
+    #                         asistencia.fecha,
+    #                         asistencia.estado_asistencia
+    #                     ))
+
+    #                     id_asistencia = cursor.lastrowid
+    #                     # Insertar nuevo detalle de asistencia con hora de entrada
+    #                     cursor.execute(f'''
+    #                         INSERT INTO {TBDETALLEASISTENCIA} (
+    #                             {TBDETALLEASISTENCIA_ID_ASISTENCIA},
+    #                             {TBDETALLEASISTENCIA_HORA_ENTRADA}
+    #                         ) VALUES (%s, %s);
+    #                     ''', (id_asistencia, hora))
+    #             conexion.commit()
+    #             return {'success': True, 'message': 'Asistencia registrada correctamente.'}
+    #     except Exception as e:
+    #         conexion.rollback()
+    #         logger.error(f'Error al registrar asistencia: {e}')
+    #         return {'success': False, 'message': 'Ocurrió un error al registrar la asistencia.'}
+    #     finally:
+    #         if conexion: conexion.close()

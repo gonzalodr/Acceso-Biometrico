@@ -1,14 +1,11 @@
 class Huella:
     def __init__(
         self,
-        fid: int,  # ID de la huella (en el dispositivo)
-        user_id: int,  # ID del usuario en el dispositivo
-        uid: int,  # UID interno del dispositivo
-        id_empleado: int = 0,  # ID de tu sistema local
-        valida: bool = True,  # Si la huella es válida
+        id_huella: int = 0,
+        id_empleado: int = 0,
     ):
-        self.fid = fid
-        self.user_id = user_id
-        self.uid = uid
-        self.id_empleado = id_empleado
-        self.valida = valida
+        self.id_huella = id_huella  # PK o ID que da el dispositivo
+        self.id_empleado = id_empleado  # ID del empleado en tu sistema
+
+    def __str__(self):
+        return f"ID Huella: {self.id_huella}, ID Empleado: {self.id_empleado}"
