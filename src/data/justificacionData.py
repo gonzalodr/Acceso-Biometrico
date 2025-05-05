@@ -28,6 +28,17 @@ class JustificacionData:
                     justificacion.descripcion,
                     justificacion.tipo
                 ))
+
+                # Actualiza el estado de la asistencia correspondiente a "Justificado"
+                query_update = f"""
+                UPDATE {TBASISTENCIA}
+                SET {TBASISTENCIA_ESTADO_ASISTENCIA} = %s
+                WHERE {TBASISTENCIA_ID} = %s
+                """
+                cursor.execute(query_update, (
+                    "Justificado",
+                    justificacion.id_asistencia
+                ))
                 conexion.commit()
                 return {'success': True, 'message': 'La justificación se guardó correctamente.'}
         except Error as e:
@@ -37,36 +48,64 @@ class JustificacionData:
             if conexion:
                 conexion.close()
     
-    def update_justificacion(self, justificacion: Justificacion):
+    def update_justificacion(self, justificacion: Justificacion, old_id_asistencia: int):
+        print("id asistencia old: " + str(old_id_asistencia))
+        print("id asistencia new: " + str(justificacion.id_asistencia))
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
+
         try:
-            with conexion.cursor() as cursor:
-                query = f"""UPDATE {TBJUSTIFICACION} SET 
-                {TBJUSTIFICACION_ID_EMPLEADO} = %s,
-                {TBJUSTIFICACION_ID_ASISTENCIA} = %s,
-                {TBJUSTIFICACION_MOTIVO} = %s,
-                {TBJUSTIFICACION_DESCRIPCION} = %s,
-                {TBJUSTIFICACION_TIPO} = %s
-                WHERE {TBJUSTIFICACION_ID} = %s"""
-            
-                cursor.execute(query, (
-                    justificacion.id_empleado,
-                    justificacion.id_asistencia,
-                    justificacion.motivo,
-                    justificacion.descripcion,
-                    justificacion.tipo,
-                    justificacion.id_justificacion
-                ))
-                conexion.commit()
-                return {'success': True, 'message': 'Justificación actualizada exitosamente.'}
+            # Mantener la conexión abierta
+            cursor = conexion.cursor()
+
+            # Cambiar el estado de la asistencia anterior a "Ausente"
+            if old_id_asistencia:
+                query_old_asistencia = f"""
+                UPDATE {TBASISTENCIA} 
+                SET {TBASISTENCIA_ESTADO_ASISTENCIA} = 'Ausente' 
+                WHERE {TBASISTENCIA_ID} = %s
+                """
+                cursor.execute(query_old_asistencia, (old_id_asistencia,))
+
+            # Cambiar el estado de la nueva asistencia a "Justificado"
+            if justificacion.id_asistencia:
+                query_new_asistencia = f"""
+                UPDATE {TBASISTENCIA} 
+                SET {TBASISTENCIA_ESTADO_ASISTENCIA} = 'Justificado' 
+                WHERE {TBASISTENCIA_ID} = %s
+                """
+                cursor.execute(query_new_asistencia, (justificacion.id_asistencia,))
+
+            # Actualizar la justificación
+            query = f"""UPDATE {TBJUSTIFICACION} SET 
+            {TBJUSTIFICACION_ID_EMPLEADO} = %s,
+            {TBJUSTIFICACION_ID_ASISTENCIA} = %s,
+            {TBJUSTIFICACION_MOTIVO} = %s,
+            {TBJUSTIFICACION_DESCRIPCION} = %s,
+            {TBJUSTIFICACION_TIPO} = %s
+            WHERE {TBJUSTIFICACION_ID} = %s"""
+
+            cursor.execute(query, (
+                justificacion.id_empleado,
+                justificacion.id_asistencia,
+                justificacion.motivo,
+                justificacion.descripcion,
+                justificacion.tipo,
+                justificacion.id_justificacion
+            ))
+
+            # Confirmar los cambios en la base de datos
+            conexion.commit()
+
+            return {'success': True, 'message': 'Justificación actualizada exitosamente.'}
         except Error as e:
             logger.error(f'Error: {e}')
             return {'success': False, 'message': 'Ocurrió un error al actualizar la justificación.'}
         finally:
             if conexion:
                 conexion.close()
+
     
     def delete_justificacion(self, justificacion_id):
         conexion, resultado = conection()

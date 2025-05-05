@@ -24,5 +24,5 @@ class AsistenciaServices:
     def obtenerTodoAsistencia(self):
         return self.asistenciaData.obtener_todo_asistencias()
     
-    def obtenerAsistenciaPorEmpleado(self, id_empleado):
-        return self.asistenciaData.listar_asistencia_por_empleado(id_empleado)
+    def obtenerAsistenciaPorEmpleado(self, id_empleado, id_asistencia):
+        return self.asistenciaData.listar_asistencia_por_empleado(id_empleado, id_asistencia)
