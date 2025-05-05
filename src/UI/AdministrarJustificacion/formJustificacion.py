@@ -125,7 +125,7 @@ class formJustificacion(QDialog):
         self._cargar_empleados()
 
         # Conectar la señal de cambio del ComboBox de empleados
-        self.comboEmpleado.currentIndexChanged.connect(self._actualizar_asistencias(0))
+        self.comboEmpleado.currentIndexChanged.connect(self._actualizar_asistencias)
 
         self.comboAsistencia.currentIndexChanged.connect(self._actualizar_prev_asistencia_id)
 
@@ -169,7 +169,7 @@ class formJustificacion(QDialog):
                 self.prevAsistenciaId = self.comboAsistencia.currentData()
 
 
-    def _actualizar_asistencias(self, id_asistencia=None):
+    def _actualizar_asistencias(self, id_asistencia=0):
         # Limpiar el ComboBox de asistencias
         self.comboAsistencia.clear()
         self.comboAsistencia.setVisible(False)  # Ocultar el ComboBox de asistencias inicialmente
@@ -196,28 +196,7 @@ class formJustificacion(QDialog):
                 dial = DialogoEmergente("Error", "No se pudieron cargar las asistencias.", "Error")
                 dial.exec()
 
-        # Seleccionar la asistencia previamente asociada a la justificación
-        if self.idJ > 0 and self.comboAsistencia.count() > 0:
-            justificacion = self.Pservices.obtenerJustificacionPorId(self.idJ)
-            if justificacion["success"]:
-                justificacion_data = justificacion["justificacion"]
-                asistencia_id = justificacion_data.id_asistencia
-                if asistencia_id:
-                    index = self.comboAsistencia.findData(asistencia_id)
-                    if index >= 0:
-                        self.comboAsistencia.setCurrentIndex(index)
-                        self.prevAsistenciaId = asistencia_id  # Guardar el ID anterior de la asistencia
-
-        # Si estamos en modo edición, seleccionamos la asistencia previamente asociada a la justificación
-        if self.idJ > 0 and self.comboAsistencia.count() > 0:
-            justificacion = self.Pservices.obtenerJustificacionPorId(self.idJ)
-            if justificacion["success"]:
-                justificacion_data = justificacion["justificacion"]
-                asistencia_id = justificacion_data.id_asistencia
-                if asistencia_id:
-                    index = self.comboAsistencia.findData(asistencia_id)
-                    if index >= 0:
-                        self.comboAsistencia.setCurrentIndex(index)
+        
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.Enter:  # Mouse Enter
@@ -303,7 +282,6 @@ class formJustificacion(QDialog):
                 if justificacion.id_asistencia:
                     self.comboAsistencia.setVisible(True) 
                     self.comboAsistencia.setCurrentIndex(self.comboAsistencia.findData(justificacion.id_asistencia))
-                    print("id asistencia: " + str(justificacion.id_asistencia))
                     self.prevAsistenciaId = justificacion.id_asistencia  # Guardar el ID de asistencia
                 tipo_index = self.comboTipo.findText(justificacion.tipo, Qt.MatchFixedString)
                 if tipo_index >= 0:
@@ -330,10 +308,9 @@ class formJustificacion(QDialog):
         )
         if self._validar_campos():
             if self.idJ > 0:
-                print("id asistencia old: " + str(self.prevAsistenciaId))
                 result = self.Pservices.modificarJustificacion(
                     justificacion=justificacion,
-                    old_asistencia_id=self.prevAsistenciaId  # Pasar el ID anterior como parámetro
+                    old_asistencia_id=self.prevAsistenciaId  
                 )
                 if result["success"]:
                     dial = DialogoEmergente("Actualización", result["message"], "Check")

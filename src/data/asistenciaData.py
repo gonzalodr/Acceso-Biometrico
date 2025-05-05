@@ -266,7 +266,6 @@ class AsistenciaData:
 
 
     def listar_asistencia_por_empleado(self, id_empleado: int, id_asistencia: int):
-        print("id asistencia: " + str(id_asistencia))
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado

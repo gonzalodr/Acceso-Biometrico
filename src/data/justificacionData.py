@@ -49,8 +49,6 @@ class JustificacionData:
                 conexion.close()
     
     def update_justificacion(self, justificacion: Justificacion, old_id_asistencia: int):
-        print("id asistencia old: " + str(old_id_asistencia))
-        print("id asistencia new: " + str(justificacion.id_asistencia))
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
