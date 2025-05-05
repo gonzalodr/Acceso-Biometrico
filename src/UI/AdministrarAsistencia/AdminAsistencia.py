@@ -251,13 +251,10 @@ class AdminAsistencia(QWidget):
                     )  # Establecer la altura de la fila
 
                     # Agregar los datos del perfil a la tabla
+                    
                     self.addItem_a_tabla(index, 0, str(asistencia["nombre_empleado"]))
-                    self.addItem_a_tabla(
-                        index, 1, asistencia["asistencia"].fecha.strftime("%Y-%m-%d")
-                    )  # Formatear fecha
-                    self.addItem_a_tabla(
-                        index, 2, asistencia["asistencia"].estado_asistencia
-                    )  # Agregar el nombre del perfil a la columna 0
+                    self.addItem_a_tabla(index, 1, asistencia["asistencia"].fecha.strftime("%Y-%m-%d"))  # Formatear fecha
+                    self.addItem_a_tabla(index, 2, asistencia["asistencia"].estado_asistencia)  # Agregar el nombre del perfil a la columna 0
 
                     # Botones para editar y eliminar
                     btnEliminar = QPushButton("Eliminar")

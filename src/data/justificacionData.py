@@ -17,14 +17,16 @@ class JustificacionData:
                 {TBJUSTIFICACION_ID_EMPLEADO},
                 {TBJUSTIFICACION_ID_ASISTENCIA},
                 {TBJUSTIFICACION_MOTIVO},
-                {TBJUSTIFICACION_DESCRIPCION})
-                VALUES (%s, %s, %s, %s)"""
+                {TBJUSTIFICACION_DESCRIPCION},
+                {TBJUSTIFICACION_TIPO})
+                VALUES (%s, %s, %s, %s, %s)"""
                 
                 cursor.execute(query, (
                     justificacion.id_empleado,
                     justificacion.id_asistencia,
                     justificacion.motivo,
-                    justificacion.descripcion
+                    justificacion.descripcion,
+                    justificacion.tipo
                 ))
                 conexion.commit()
                 return {'success': True, 'message': 'La justificación se guardó correctamente.'}
@@ -45,7 +47,8 @@ class JustificacionData:
                 {TBJUSTIFICACION_ID_EMPLEADO} = %s,
                 {TBJUSTIFICACION_ID_ASISTENCIA} = %s,
                 {TBJUSTIFICACION_MOTIVO} = %s,
-                {TBJUSTIFICACION_DESCRIPCION} = %s
+                {TBJUSTIFICACION_DESCRIPCION} = %s,
+                {TBJUSTIFICACION_TIPO} = %s
                 WHERE {TBJUSTIFICACION_ID} = %s"""
             
                 cursor.execute(query, (
@@ -53,7 +56,9 @@ class JustificacionData:
                     justificacion.id_asistencia,
                     justificacion.motivo,
                     justificacion.descripcion,
+                    justificacion.tipo,
                     justificacion.id_justificacion
+                    
                 ))
                 conexion.commit()
                 return {'success': True, 'message': 'Justificación actualizada exitosamente.'}
@@ -99,7 +104,8 @@ class JustificacionData:
                     "id_asistencia": TBJUSTIFICACION_ID_ASISTENCIA,
                     "nombre_empleado": TBPERSONA_NOMBRE,  # Para ordenar por nombre del empleado
                     "apellido_empleado": TBPERSONA_APELLIDOS,  # Para ordenar por apellido del empleado
-                    "fecha": TBJUSTIFICACION_FECHA  # Para ordenar por fecha
+                    "fecha": TBJUSTIFICACION_FECHA,  # Para ordenar por fecha
+                    "tipo": TBJUSTIFICACION_TIPO
                 }
                 ordenar_por = columna_orden.get(ordenar_por, TBJUSTIFICACION_FECHA)
 
@@ -129,9 +135,11 @@ class JustificacionData:
                     """
                     valores = [f"%{busqueda}%"] * 6
 
-                # Añadir la cláusula ORDER BY y LIMIT/OFFSET
+                # Asegúrate de que 'pagina' sea al menos 1
+                pagina = max(1, pagina)
                 query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
                 valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
+
 
                 # Ejecutar la consulta con los parámetros de forma segura
                 cursor.execute(query, valores)
@@ -143,6 +151,7 @@ class JustificacionData:
                         "id_justificacion": registro[TBJUSTIFICACION_ID],  # ID de la justificación
                         "motivo": registro[TBJUSTIFICACION_MOTIVO],
                         "descripcion": registro[TBJUSTIFICACION_DESCRIPCION],
+                        "tipo": registro[TBJUSTIFICACION_TIPO],
                         "id_empleado": registro[TBJUSTIFICACION_ID_EMPLEADO],
                         "id_asistencia": registro[TBJUSTIFICACION_ID_ASISTENCIA],
                         "nombre_completo_empleado": f"{registro['nombre_empleado']} {registro['apellido_empleado']}",  # Unir nombre y apellido
@@ -192,6 +201,7 @@ class JustificacionData:
                                 J.{TBJUSTIFICACION_FECHA} AS fecha_realizado,
                                 J.{TBJUSTIFICACION_MOTIVO},
                                 J.{TBJUSTIFICACION_DESCRIPCION},
+                                J.{TBJUSTIFICACION_TIPO},
                                 J.{TBJUSTIFICACION_ID},
                                 P.{TBPERSONA_NOMBRE} AS nombre_empleado,
                                 P.{TBPERSONA_APELLIDOS} AS apellido_empleado,  -- Agregar apellido
@@ -212,7 +222,8 @@ class JustificacionData:
                         fecha=data[2],  
                         motivo=data[3],
                         descripcion=data[4],
-                        id_justificacion=data[5]
+                        tipo=data[5],
+                        id_justificacion=data[6]
                     )
                     # Agregar el nombre completo del empleado y la fecha de asistencia al resultado
                     nombre_completo_empleado = f"{data[6]} {data[7]}"  # Unir nombre y apellido
