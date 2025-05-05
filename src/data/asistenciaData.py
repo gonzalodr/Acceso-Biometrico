@@ -6,8 +6,11 @@ from settings.config import *
 from mysql.connector import Error
 from settings.logger import logger
 from datetime        import datetime, timedelta
+from data.horarioData import HorarioData
 
 class AsistenciaData:
+    def __init__(self):
+        self.horarioData = HorarioData()
     
     def create_asistencia(self, asistencia: Asistencia):
         conexion, resultado = conection() 
@@ -315,6 +318,9 @@ class AsistenciaData:
                 nuevos_detalles         = []
                 asistencias_existentes  = []
 
+                # listaHorario            = self.horarioData.get_horario_by_empleado()
+                
+                
                 for asistencia, hora in lista:
                     # Verificar si ya existe la asistencia para ese empleado y fecha
                     cursor.execute(f'''
