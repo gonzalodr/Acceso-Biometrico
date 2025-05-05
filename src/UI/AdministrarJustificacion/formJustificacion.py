@@ -92,6 +92,7 @@ class formJustificacion(QDialog):
         layoutForm.addWidget(self.lblNoAsistencias, 5, 0, 1, 2) 
         layoutForm.addLayout(self._contenedor(lblMotivo, self.inputMotivo, self.errorMotivo), 0, 0)
         layoutForm.addLayout(self._contenedor(lblDescripcion, self.inputDescripcion, self.errorDescripcion), 1, 0)
+        
 
         boton_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         boton_box.button(QDialogButtonBox.Cancel).setText("Cancelar")
@@ -254,6 +255,12 @@ class formJustificacion(QDialog):
             vacios = True
         else:
             Sombrear(self.comboEmpleado, 20, 0, 0)
+
+        if not self.comboTipo.currentText():  # Verifica si no hay tipo seleccionado
+            Sombrear(self.comboTipo, 20, 0, 0, "red")
+            vacios = True
+        else:
+            Sombrear(self.comboTipo, 20, 0, 0)
 
         if not self.comboAsistencia.currentData():  # Verifica si no hay empleado seleccionado
             Sombrear(self.comboEmpleado, 20, 0, 0, "red")

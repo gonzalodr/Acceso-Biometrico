@@ -56,3 +56,9 @@ class EmpleadoServices:
 
     def obtener_nombre_completo(self):
         return self.empleServ.get_full_name_empleado()
+    
+    def obtener_id_empleado(self) -> int:
+        """
+        Obtiene el siguiente ID de empleado disponible.
+        """
+        return self.empleServ.obtener_id_empleado_In()

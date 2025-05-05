@@ -113,6 +113,7 @@ class EmpleadoData:
             return {
                 "success": True,
                 "message": "Se registro el empleado correctamente.",
+                "id_empleado":id_empleado
             }
         except Exception as e:
             conexion.rollback()
@@ -856,6 +857,26 @@ class EmpleadoData:
                 "message": "Error al obtener empleados.",
                 "data": None,
             }
+        finally:
+            if conexion:
+                conexion.close()
+
+    def obtener_id_empleado_In(self) -> int:
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return None  # O puedes lanzar una excepción si prefieres
+
+        try:
+            with conexion.cursor() as cursor:
+                query = f"SELECT MAX({TBEMPLEADO_ID}) FROM {TBEMPLEADO}"
+                cursor.execute(query)
+                max_id = cursor.fetchone()[0]
+
+                # Si no hay empleados, max_id será None, así que retornamos 1
+                return (max_id) if max_id is not None else 1
+        except Exception as e:
+            logger.error(f"Error al obtener el ID del empleado: {e}")
+            return None  # O puedes lanzar una excepción si prefieres
         finally:
             if conexion:
                 conexion.close()
