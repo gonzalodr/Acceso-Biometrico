@@ -30,7 +30,6 @@ class vistaPrincipal(QWidget):
         super().__init__(parent)
         self.usuario = usuario
         self.setObjectName("vistaPrincipal")
-
         cargar_estilos("claro", "ventanaPrincipal.css", self)
 
         frame = QFrame()
@@ -59,21 +58,7 @@ class vistaPrincipal(QWidget):
         layoutEncabezado.setSpacing(0)
         layoutEncabezado.setContentsMargins(20, 5, 20, 5)
 
-        """
-            btnAbrir_SideBar: Este boton nos permitirar abrir y cerrar nuestro sidebar de la ventana
-        """
-        self.btnAbrir_SideBar = QPushButton(text="")
-        self.btnAbrir_SideBar.setCursor(Qt.PointingHandCursor)
-        self.btnAbrir_SideBar.setMaximumSize(QSize(45, 45))
-        cargar_icono_svg(
-            QObjeto=self.btnAbrir_SideBar,
-            archivoSVG="arrow-bar-right.svg",
-            Size=QSize(
-                self.btnAbrir_SideBar.size().width() - 15,
-                self.btnAbrir_SideBar.size().height() - 15,
-            ),
-        )
-        Sombrear(self.btnAbrir_SideBar, 20, 0, 5)
+  
 
         """
             lblEncabezado: Mostrara el nombre de nuestra ventana.
@@ -95,8 +80,7 @@ class vistaPrincipal(QWidget):
         """
             Acomodamos los elementos de nuestra ventana
         """
-        layoutEncabezado.addWidget(self.btnAbrir_SideBar, 1)
-        layoutEncabezado.addStretch(4)
+        
         layoutEncabezado.addWidget(self.lblEncabezado, 2)
         layoutEncabezado.addStretch(4)
         layoutEncabezado.addWidget(self.lblIconoUser, 1)
@@ -116,11 +100,7 @@ class vistaPrincipal(QWidget):
         self.sidebar = SlideBar(listaOpciones=self.listaOpciones)
         cargar_Icono(self.sidebar.lblUsuario, archivoImg="user.png")
         # self.cargar_imagen_usuario(self.sidebar.lblUsuario)
-        self.btnAbrir_SideBar.clicked.connect(
-            lambda click, btn=self.btnAbrir_SideBar: self.sidebar.accion_anim(
-                btnSidebar=btn
-            )
-        )
+      
 
         """Recibimos una señal la cual nos servira para detectar los btn del sidebar"""
         self.sidebar.index_opcion_selecionada.connect(self.seleccion_sidebar)
