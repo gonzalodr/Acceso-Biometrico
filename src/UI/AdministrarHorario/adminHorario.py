@@ -320,3 +320,19 @@ class AdminHorario(QWidget):
         form = formHorario(titulo="Actualizar Horario", id=id)
         form.exec()
         self._cargar_tabla()
+
+    def eliminarRegistro(self, idx):
+        dial = DialogoEmergente(
+            "¿?", "¿Seguro que quieres eliminar este registro?", "Question", True, True
+        )
+        if dial.exec() == QDialog.Accepted:
+            result = self.Hservices.eliminarHorario(idx)
+            mensaje = (
+                "Se eliminó el registro correctamente."
+                if result["success"]
+                else "Hubo un error al eliminar este registro."
+            )
+            DialogoEmergente(
+                "", mensaje, "Check" if result["success"] else "Error"
+            ).exec()
+            self._cargar_tabla()

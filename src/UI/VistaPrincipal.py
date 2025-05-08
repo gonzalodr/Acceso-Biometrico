@@ -13,6 +13,7 @@ from UI.AdministrarPermisosPerfil.AdminPermisosPerfil import *
 from UI.AdministrarEmpleado.administrarEmpleado import *
 from UI.AdministrarAsistencia.AdminAsistencia import *
 from UI.AdministrarUsuario.adminUsuario import *
+from UI.AdministraSoliPermiso.adminSoliPermiso import *
 from models.usuario import *
 import sys
 
@@ -163,10 +164,10 @@ class vistaPrincipal(QWidget):
             self.listaOpciones.append((index, "Admin. Empleados", "employees.png"))
 
         if True:
-           adminUsuario = AdminUsuario(parent=self)
-           adminUsuario.cerrar_adminU.connect(self._salir_crud)
-           index = self.stackVistas.addWidget(adminUsuario)
-           self.listaOpciones.append((index, "Administrar Usuarios", "management.png"))
+            adminUsuario = AdminUsuario(parent=self)
+            adminUsuario.cerrar_adminU.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(adminUsuario)
+            self.listaOpciones.append((index, "Administrar Usuarios", "management.png"))
 
         if True:
             AdminDepart = AdminDepartament(parent=self)
@@ -180,7 +181,15 @@ class vistaPrincipal(QWidget):
             adminJusficacion = AdminJustificacion()
             adminJusficacion.cerrar_adminJ.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminJusficacion)
-            self.listaOpciones.append((index,"Admin.Justificacion",'division.png'))
+            self.listaOpciones.append((index, "Admin.Justificacion", "division.png"))
+
+        if True:
+            adminSoliPermiso = AdminSoliPermiso()
+            adminSoliPermiso.cerrar_admin_soli_permiso.connect(self._salir_crud)
+            index = self.stackVistas.addWidget(adminSoliPermiso)
+            self.listaOpciones.append(
+                (index, "Admin Solicitud Permisos", "management.png")
+            )
 
         # if True:
         #     adminrol = AdminRol()
@@ -198,9 +207,9 @@ class vistaPrincipal(QWidget):
             adminpermisosperfil = AdminPermisosPerfil()
             adminpermisosperfil.cerrar_adminP.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminpermisosperfil)
-            self.listaOpciones.append((index,"Perfiles de usuario",'access-control-list.png'))
-            
-                 
+            self.listaOpciones.append(
+                (index, "Perfiles de usuario", "access-control-list.png")
+            )
         if True:
             adminreporte = AdminReporte()
             adminreporte.signalCerrar.connect(self._salir_crud)
