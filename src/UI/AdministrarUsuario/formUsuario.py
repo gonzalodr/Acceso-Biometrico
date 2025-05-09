@@ -17,6 +17,7 @@ import re
 class formUsuario(QDialog):
     update: bool = False
     Uservices = UsuarioServices()
+    userServices = UsuarioServices()
     Ppersona = PersonaServices()
     Pperfil = PerfilServices()
     idU = 0

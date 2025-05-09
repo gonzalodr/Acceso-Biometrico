@@ -1,4 +1,5 @@
 from data.data import conection     #obtener la conexión
+from models.usuario_perfil import Usuario_Perfil
 from settings.config import *     #obtener los nombres de tablas
 from settings.logger import logger  #recolectar los errores 
 from mysql.connector import Error   #controlador de errores
