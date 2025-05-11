@@ -97,63 +97,51 @@ class formEmpleado(QDialog):
         #creando widgets para el scrol
         self.widgetIzq = QWidget()
         self.widgetCent = QWidget()
-        self.widgetDer = QWidget()
 
         #creando los layouts
         self.layoutIzq = QVBoxLayout()
         self.layoutCent = QVBoxLayout()
-        self.layoutDer = QVBoxLayout()
 
         #configuracion de los layouts
         self.layoutIzq.setSpacing(20)
         self.layoutCent.setSpacing(20)
-        self.layoutDer.setSpacing(20)
+
 
         #creando scrolls
         scroll_areaIzq = QScrollArea()
         scroll_areaIzq.setWidgetResizable(True)
         scroll_areaCent= QScrollArea()
         scroll_areaCent.setWidgetResizable(True)
-        scroll_areaDer = QScrollArea()
-        scroll_areaDer.setWidgetResizable(True)
 
         self.llenarLayoutIzquierda()
         self.llenarLayoutCentral()
-        self.llenarLayoutDerecho()
         
         # Crear los scroll areas
         self.scrollIzq = QScrollArea()
         self.scrollCent = QScrollArea()
-        self.scrollDer = QScrollArea()
 
         # Configurar las scroll areas
         self.scrollIzq.setWidgetResizable(True)
         self.scrollCent.setWidgetResizable(True)
-        self.scrollDer.setWidgetResizable(True)
 
         # Crear widgets contenedores para cada scroll area
         widgetIzq = QWidget()
         widgetCent = QWidget()
-        widgetDer = QWidget()
-
         # Asignar layouts a los widgets contenedores
         widgetIzq.setLayout(self.layoutIzq)
         widgetCent.setLayout(self.layoutCent)
-        widgetDer.setLayout(self.layoutDer)
         #agregando nombres
         widgetIzq.setObjectName('contenedor')
         widgetCent.setObjectName('contenedor')
-        widgetDer.setObjectName('contenedor')
 
         # Asignar los widgets a las scroll areas
         self.scrollIzq.setWidget(widgetIzq)
         self.scrollCent.setWidget(widgetCent)
-        self.scrollDer.setWidget(widgetDer)
+
 
         # Agregar las scroll areas al layout principal
         self.layoutContent.addWidget(self.scrollIzq)
         self.layoutContent.addWidget(self.scrollCent)
-        self.layoutContent.addWidget(self.scrollDer)
     '''
     Llenado de layoutIzq
     '''
@@ -429,125 +417,11 @@ class formEmpleado(QDialog):
 
         for rol in result['data']['listaRoles']:
             self.inRol.addItem(rol.nombre, rol.id)
-    '''
-    Llenado de layoutDer
-    '''
-    def llenarLayoutDerecho(self):
-        tituloDer = QLabel('Usuarios')
-        tituloDer.setObjectName('lblsubtitulos')
-        tituloDer.setAlignment(Qt.AlignCenter)
 
-        self.btnCrearUsuario = QPushButton('Crear usuario')
-        self.btnCrearUsuario.setObjectName('nuevo_usuario')
-        
-        self.btnCrearUsuario.setProperty("crear",True)
-        self.btnCrearUsuario.style().polish(self.btnCrearUsuario)
-
-        self.btnCrearUsuario.setFixedHeight(40)
-        self.btnCrearUsuario.clicked.connect(self.crearlayoutUsuario)
-
-        self.layoutPrinUsuario = QVBoxLayout()
-        self.layoutPrinUsuario.addWidget(self.btnCrearUsuario)
-
-        self.layoutDer.addWidget(tituloDer)
-        self.layoutDer.setAlignment(Qt.AlignTop)
-        self.layoutDer.addLayout(self.layoutPrinUsuario)
     
-    def crearlayoutUsuario(self, usuario:Usuario = None, id_perfil:int = None):
-        lblUsuario = QLabel('Usuario')
-
-        inputUser = QLineEdit()
-        inputUser.setPlaceholderText('Ingrese el nombre de usuario.')
-
-        lblContrasena = QLabel('Contraseña')
-
-        inputCont = QLineEdit()
-        inputCont.setPlaceholderText('Ingrese la contraseña')
-        
-        lblError = QLabel()
-        lblError.setObjectName("lblerror")
-        lblError.setMaximumHeight(25)
-        lblError.setMinimumHeight(25)
-        lblError.setWordWrap(True)
+    
 
 
-        lblPerfil   = QLabel('Seleccionar perfil') 
-        cmbPerfiles = QComboBox()
-        cmbPerfiles.addItem('Ninguno',None)
-
-        result = self.perfilServices.obtener_todo_perfiles()
-        if not result:
-            dial = DialogoEmergente('Ocurrio un problema','No se cargaron los perfiles','Error',True,False)
-            dial.exec()
-        
-        if len(result['data']['listaPerfiles']) != 0:
-            for perfil in result['data']['listaPerfiles']:
-                cmbPerfiles.addItem(perfil.nombre,perfil.id)
-            index = cmbPerfiles.findData(id_perfil)
-            cmbPerfiles.setCurrentIndex(index) if index >= 0 else cmbPerfiles.setCurrentIndex(0)
-
-        
-        arbolAccesos = QTreeView()
-        model = QStandardItemModel()
-        model.setHorizontalHeaderLabels(["Permisos"])
-
-        cmbPerfiles.currentIndexChanged.connect(lambda idperfil = cmbPerfiles.currentData(), model = model: self.actualizacionArbolPerfil(idperfil,model))
-        arbolAccesos.setModel(model)
-        layout = QVBoxLayout()
-
-        if usuario:
-            (usuario.mostrar())
-            layout.setProperty('id_usuario',usuario.id)
-            inputUser.setText(usuario.usuario)
-            inputCont.setPlaceholderText('La contraseña se puede cambiar.')
-        
-        
-        layout.addWidget(lblUsuario)
-        layout.addWidget(inputUser) 
-        layout.addWidget(lblContrasena)
-        layout.addWidget(inputCont)
-        layout.addWidget(lblError)
-        layout.addSpacing(10)
-        layout.addWidget(lblPerfil)
-        layout.addWidget(cmbPerfiles)
-        layout.addWidget(arbolAccesos)
-
-        self.layoutPrinUsuario.addLayout(layout)
-
-        self.btnCrearUsuario.clicked.disconnect(self.crearlayoutUsuario)
-        self.btnCrearUsuario.clicked.connect(partial(self.eliminacionUsuario, layout.property('id_usuario')))
-        self.btnCrearUsuario.setText('Eliminar usuario')
-        self.btnCrearUsuario.setProperty("crear",False)
-        self.btnCrearUsuario.style().polish(self.btnCrearUsuario)
-
-    def eliminacionUsuario(self, id_usuario:int = None):
-        (f'Eliminar usuario {id_usuario}')
-        if id_usuario:
-            text = 'Este usuario ya se encuentra registrado a este usuario.\n'
-            text+='¿Quieres eliminar este usuario?'
-            dial = DialogoEmergente('',text,'Warning',True,True)
-            if dial.exec() == QDialog.Accepted:
-                result = self.userServices.eliminarUsuario(id_usuario)
-                (result)
-                if not result['success']:
-                    dial = DialogoEmergente('',result['message'],'Error',True)
-                    dial.exec()
-                    return
-                dial = DialogoEmergente('',result['message'],'Check',True)
-                dial.exec()
-            else:
-                return
-
-        layout = self.layoutPrinUsuario.itemAt(1).layout()
-        self.eliminacionLayout(layout)
-        self.layoutPrinUsuario.removeItem(layout)
-        layout.deleteLater()
-        #actualizar el evento para el btncrear 
-        self.btnCrearUsuario.clicked.disconnect(self.eliminacionUsuario)
-        self.btnCrearUsuario.clicked.connect(self.crearlayoutUsuario)
-        self.btnCrearUsuario.setText('Crear usuario')
-        self.btnCrearUsuario.setProperty("crear",True)
-        self.btnCrearUsuario.style().polish(self.btnCrearUsuario)
 
     #eliminacion de layout y sus elementos
     def eliminacionLayout(self,layout:QVBoxLayout | QHBoxLayout):
@@ -723,10 +597,7 @@ class formEmpleado(QDialog):
             index = self.inRol.findData(dictRolEmp.get('id_rol'))
             self.inRol.setCurrentIndex(index if index >= 0 else None)
 
-        #cargar usuario
-        if usuario:
-            id_perfil = dictPerfil.get('id_perfil') if isinstance(dictPerfil, dict) else None
-            self.crearlayoutUsuario(usuario, id_perfil)
+
 
     #validar cedula 
     def validar_cedula(self):
