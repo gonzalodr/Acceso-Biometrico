@@ -10,5 +10,5 @@ class Permiso_Perfil:
         self.eliminar = eliminar
         
     def __repr__(self):
-        return f"{self.id}\n{self.perfil_id}\n{self.tabla}\n{self.ver}\n{self.crear}\n{self.editar}\n{self.eliminar}"
+        return f"{self.id} {self.perfil_id} {self.tabla} {self.ver} {self.crear} {self.editar} {self.eliminar}\n"
     # cadena con los detalles del permiso

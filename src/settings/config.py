@@ -24,6 +24,8 @@ MODULOS_ACCESO = [
     ("Administrar reportes", "reporte"),
     ("Administrar departamentos", "departamento"),
     ("Administrar roles", "rol"),
+    ("Administrar horario", "horario"),
+    ("Administrar permisos empleado","permisosEmpleado"),
     ("Administrar perfiles", "perfil", "perfil"),
 ]
 

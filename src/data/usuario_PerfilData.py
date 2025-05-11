@@ -1,10 +1,9 @@
-from data.data import conection  # obtener la conexión
+from data.data import conection     #obtener la conexión
 from models.usuario_perfil import Usuario_Perfil
-from settings.logger import logger  # recolectar los errores
-from mysql.connector import Error  # controlador de errores
-from settings.config import *
-
-"""
+from settings.config import *     #obtener los nombres de tablas
+from settings.logger import logger  #recolectar los errores 
+from mysql.connector import Error   #controlador de errores
+'''
     Conexión a la tabla de la relación 
     de usuario y perfil.
 
@@ -14,7 +13,7 @@ from settings.config import *
     TBUSUARIOPERFIL_ID      = 'Id'
     TBUSUARIOPERFIL_ID_USER = 'Id_Usuario'
     TBUSUARIOPERFIL_ID_PERF = 'Id_Perfil'
-"""
+'''
 
 
 class UsuarioPerfilData:

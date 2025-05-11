@@ -6,7 +6,6 @@ from services.asistenciaService import *
 from services.empleadoServices import *
 from settings.config import *
 
-
 class formAsistencia(QDialog):
     update: bool = False
     asistenciaServices = AsistenciaServices()
