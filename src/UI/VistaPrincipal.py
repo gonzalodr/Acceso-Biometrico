@@ -25,10 +25,16 @@ class vistaPrincipal(QWidget):
     def __init__(
         self,
         usuario: Usuario,
+        perfil:Perfil,
+        permisos:Permiso_Perfil,
         parent=None,
     ):
         super().__init__(parent)
-        self.usuario = usuario
+        
+        self.usuario    = usuario
+        self.permisos   = permisos
+        self.perfil     = perfil
+        
         self.setObjectName("vistaPrincipal")
 
         cargar_estilos("claro", "ventanaPrincipal.css", self)
@@ -151,25 +157,25 @@ class vistaPrincipal(QWidget):
         #     index = self.stackVistas.addWidget(adminpersona)
         #     self.listaOpciones.append((index, "Administrar Persona",'employees.png'))
 
-        if True:
+        if self.PermisoAModulo("Administrar horario"):
             adminHorario = AdminHorario(parent=self)
             adminHorario.cerrar_adminH.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminHorario)
             self.listaOpciones.append((index, "Administrar Horarios", "weekly.png"))
 
-        if True:
+        if self.PermisoAModulo("Administrar empleados"):
             adminempleado = AdminEmpleado(parent=self)
             adminempleado.signalCerrar.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminempleado)
             self.listaOpciones.append((index, "Admin. Empleados", "employees.png"))
 
-        if True:
+        if self.PermisoAModulo("Administrar usuarios"):
             adminUsuario = AdminUsuario(parent=self)
             adminUsuario.cerrar_adminU.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminUsuario)
             self.listaOpciones.append((index, "Administrar Usuarios", "management.png"))
 
-        if True:
+        if self.PermisoAModulo("Administrar departamentos"):
             AdminDepart = AdminDepartament(parent=self)
             AdminDepart.cerrar_adminD.connect(self._salir_crud)
             index = self.stackVistas.addWidget(AdminDepart)
@@ -177,19 +183,17 @@ class vistaPrincipal(QWidget):
                 (index, "Admin. Departamento", "company-department.png")
             )
 
-        if True:
+        if self.PermisoAModulo("Administrar justificaciones"):
             adminJusficacion = AdminJustificacion()
             adminJusficacion.cerrar_adminJ.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminJusficacion)
             self.listaOpciones.append((index, "Admin.Justificacion", "division.png"))
 
-        if True:
+        if self.PermisoAModulo("Administrar permisos empleado"):
             adminSoliPermiso = AdminSoliPermiso()
             adminSoliPermiso.cerrar_admin_soli_permiso.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminSoliPermiso)
-            self.listaOpciones.append(
-                (index, "Admin Solicitud Permisos", "management.png")
-            )
+            self.listaOpciones.append((index, "Admin Solicitud Permisos", "management.png"))
 
         # if True:
         #     adminrol = AdminRol()
@@ -203,21 +207,20 @@ class vistaPrincipal(QWidget):
         #     index = self.stackVistas.addWidget(adminpermisos)
         #     self.listaOpciones.append((index,"Admin. permisos rol",'access-control-list.png'))
 
-        if True:
+        if self.PermisoAModulo("Administrar perfiles"):
             adminpermisosperfil = AdminPermisosPerfil()
             adminpermisosperfil.cerrar_adminP.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminpermisosperfil)
-            self.listaOpciones.append(
-                (index, "Perfiles de usuario", "access-control-list.png")
-            )
-        if True:
+            self.listaOpciones.append( (index, "Perfiles de usuario", "access-control-list.png"))
+        
+        if self.PermisoAModulo("Administrar reportes"):
             adminreporte = AdminReporte()
             adminreporte.signalCerrar.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminreporte)
             self.listaOpciones.append((index,"Admin. reportes",'online-survey.png'))
             
                      
-        if True:
+        if self.PermisoAModulo("Administrar reportes"):
             adminasistencia = AdminAsistencia()
             adminasistencia.cerrar_adminA.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminasistencia)
@@ -241,7 +244,20 @@ class vistaPrincipal(QWidget):
         widgetP.setLayout(layout)
         Sombrear(widgetP, 50, 0, 0)
         return widgetP
+    
+    def PermisoAModulo(self,tipoAdministracion):
+        for modulo, tabla, *_ in MODULOS_ACCESO:
+            if modulo == tipoAdministracion:
+                for permiso in self.permisos:
+                    if permiso.tabla == tabla:
+                        return True
+                return False 
 
+        return False
+            
+        
+        
+        
     def _salir_crud(self):
         self.sidebar.deseleccionar()
         self.stackVistas.setCurrentIndex(0)

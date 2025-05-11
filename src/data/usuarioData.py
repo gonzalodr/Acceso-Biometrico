@@ -391,15 +391,12 @@ class UsuarioData:
                                 eliminar    = permiso[TBPERMISOPERFIL_ELIMINAR]
                             )
                             listaPermisosPerfil.append(perm)
-                            
-                        print(perfil)
-                        print("------------------")
-                        print(listaPermisosPerfil) 
-                        
                     return {
                         "success": True,
                         "password": usuarioPass[TBUSUARIO_CONTRASENA],
                         "usuario": usuario,
+                        "perfil":perfil,
+                        "listPermisos":listaPermisosPerfil
                     }
                 else:
                     return {
@@ -429,6 +426,8 @@ class UsuarioData:
                             "login": True,
                             "message": "Inicio de sesión exitoso",
                             "usuario": result["usuario"],
+                            "perfil":result["perfil"],
+                            "listPermisos":result["listPermisos"]
                         }
                     else:
                         return {
