@@ -17,7 +17,7 @@ class formHorario(QDialog):
     def __init__(self, parent=None, titulo="Registrar Horario", id=None):
         super().__init__(parent)
         self.setObjectName("form")
-        self.setMinimumSize(QSize(850, 650))
+        self.setMinimumSize(QSize(850, 950))
         self.setWindowFlags(Qt.FramelessWindowHint)
         # add_Style(carpeta="css", archivoQSS="formHorario.css", QObjeto=self)
         cargar_estilos("claro", "form.css", self)
@@ -39,7 +39,7 @@ class formHorario(QDialog):
         layoutForm = QGridLayout()
         layoutForm.setContentsMargins(20, 10, 20, 20)
         layoutForm.setHorizontalSpacing(45)
-        layoutForm.setVerticalSpacing(1)
+        layoutForm.setVerticalSpacing(20)
 
         # Elementos del formulario
         # Nombre de Horario
@@ -58,12 +58,65 @@ class formHorario(QDialog):
         self.errorRol = QLabel()
         Sombrear(self.inputRol, 20, 0, 0)
 
-        lblDias = QLabel(text="Días Semanales")
-        self.inputDias = QLineEdit()
-        self.inputDias.setPlaceholderText("Ingrese los días (ej. Lunes-Viernes)")
-        self.inputDias.installEventFilter(self)
+        lblDias = QLabel(text="Días semanales")
+        
+       # Contenedor principal como QGroupBox para mejor visualización
+        self.diasContainer = QGroupBox()
+        self.diasContainer.setFlat(True)
+        self.diasContainer.setMinimumHeight(140)  # Aumenta la altura mínima
+
+        diasLayout = QVBoxLayout()
+        diasLayout.setSpacing(15)  # Espacio entre radio buttons y checkboxes
+        self.diasContainer.setLayout(diasLayout)
+        
+    
+        # Opciones predefinidas
+        self.rangoGroup = QButtonGroup()
+        self.rangoGroup.setExclusive(True)  # Solo una opción seleccionable
+
+        
+        self.opcionLunVie = QRadioButton("Lunes-Viernes")
+        self.opcionLunSab = QRadioButton("Lunes-Sábado")
+        self.opcionPersonalizado = QRadioButton("Personalizado")
+        
+
+        self.rangoGroup.addButton(self.opcionLunVie)
+        self.rangoGroup.addButton(self.opcionLunSab)
+        self.rangoGroup.addButton(self.opcionPersonalizado)
+
+        self.diasFrame = QFrame()
+        self.diasFrame.setVisible(False)
+        self.diasFrame.setObjectName("diasFrame")
+        diasIndividualesLayout = QHBoxLayout()
+        self.diasFrame.setLayout(diasIndividualesLayout)
+      
+
+
+        dias = ["L" , "M", "X", "J", "V", "S", "D"]
+        self.checkboxes = []
+        for dia in dias:
+            chk = QCheckBox(dia)
+            chk.setObjectName("diaCheckbox")
+            chk.setEnabled(False)
+            self.checkboxes.append(chk)
+            diasIndividualesLayout.addWidget(chk)
+            
+        
+            
+            
+        diasLayout.addWidget(self.opcionLunVie)
+        diasLayout.addWidget(self.opcionLunSab)
+        diasLayout.addWidget(self.opcionPersonalizado)
+        diasLayout.addWidget(self.diasFrame)
+        
+       
+    
+
+        # Conectar señales
+        self.opcionPersonalizado.toggled.connect(self._habilitar_dias_personalizados)
         self.errorDias = QLabel()
-        Sombrear(self.inputDias, 20, 0, 0)
+        self.errorDias.setObjectName("lblerror")
+        Sombrear(self.diasContainer, 20, 0, 0)
 
         lblTipoJornada = QLabel(text="Tipo de Jornada")
         self.inputTipoJornada = QLineEdit()
@@ -105,8 +158,8 @@ class formHorario(QDialog):
             self._contenedor(lblRol, self.inputRol, self.errorRol), 1, 0
         )
         layoutForm.addLayout(
-            self._contenedor(lblDias, self.inputDias, self.errorDias), 2, 0
-        )
+            self._contenedor(lblDias, self.diasContainer, self.errorDias), 2, 0
+)
         layoutForm.addLayout(
             self._contenedor(
                 lblTipoJornada, self.inputTipoJornada, self.errorTipoJornada
@@ -167,17 +220,35 @@ class formHorario(QDialog):
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(5)
-
         label_error.setObjectName("lblerror")
         label_error.setMaximumHeight(25)
-        label_error.setMinimumHeight(25)
-        label_error.setWordWrap(True)
-
         layout.addWidget(label)
         layout.addWidget(input)
         layout.addWidget(label_error)
         return layout
 
+    def _habilitar_dias_personalizados(self):
+        personalizado_seleccionado = self.opcionPersonalizado.isChecked()
+        self.diasFrame.setVisible(personalizado_seleccionado)
+
+        for chk in self.checkboxes:
+            chk.setEnabled(personalizado_seleccionado)
+            if not personalizado_seleccionado:
+                chk.setChecked(False)
+                
+    def _obtener_dias_seleccionados(self):
+        """Convierte la selección de días a formato texto"""
+        if self.opcionLunVie.isChecked():
+            return "Lunes-Viernes"
+        elif self.opcionLunSab.isChecked():
+            return "Lunes-Sábado"
+        else:
+            dias_nombres = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+            seleccionados = [dias_nombres[i] for i, chk in enumerate(self.checkboxes) if chk.isChecked()]
+            
+            return ", ".join(seleccionados) if seleccionados else ""
+        
+        
     def _accion_horario(self):
         """
         Maneja la acción de crear o actualizar un horario.
@@ -190,10 +261,10 @@ class formHorario(QDialog):
             return
 
         id_rol = self.inputRol.currentData()
-
+        dias_seleccionados = self._obtener_dias_seleccionados()
         horario = Horario(
             nombre_horario=self.inputNombreHorario.text(),
-            dias_semanales=self.inputDias.text(),
+            dias_semanales=dias_seleccionados, 
             tipo_jornada=self.inputTipoJornada.text(),
             hora_inicio=self.inputHoraInicio.time().toString("HH:mm"),
             hora_fin=self.inputHoraFin.time().toString("HH:mm"),
@@ -232,20 +303,30 @@ class formHorario(QDialog):
 
             # Campos básicos (manteniendo tu estructura original)
             self.inputNombreHorario.setText(horario["nombre_horario"])
-            self.inputDias.setText(horario["dias_semanales"])
+            #self.inputDias.setText(horario["dias_semanales"])
             self.inputTipoJornada.setText(horario["tipo_jornada"])
             self.inputDescripcion.setText(horario["descripcion"])
 
+            dias = horario["dias_semanales"]
+            if dias == "Lunes-Viernes":
+                self.opcionLunVie.setChecked(True)
+            elif dias == "Lunes-Sábado":
+                self.opcionLunSab.setChecked(True)
+            else: 
+                self.opcionPersonalizado.setChecked(True)
+                self._habilitar_dias_personalizados(True)
+                
+                dias_lista = [d.strip() for d in dias.split(",")]
+                dias_nombres = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+                for i, chk in enumerate(dias_nombres):
+                    self.checkboxes[i].setChecked(chk in dias_lista)
+                    
             # Manejo de horas (versión mejorada)
             try:
                 # Si las horas vienen como timedelta (formato original)
                 if isinstance(horario["hora_inicio"], timedelta):
-                    hora_inicio_str = (datetime.min + horario["hora_inicio"]).strftime(
-                        "%H:%M"
-                    )
-                    hora_fin_str = (datetime.min + horario["hora_fin"]).strftime(
-                        "%H:%M"
-                    )
+                    hora_inicio_str = (datetime.min + horario["hora_inicio"]).strftime("%H:%M")
+                    hora_fin_str = (datetime.min + horario["hora_fin"]).strftime("%H:%M")
                 else:  # Si ya vienen como string
                     hora_inicio_str = str(horario["hora_inicio"])
                     hora_fin_str = str(horario["hora_fin"])
@@ -291,11 +372,15 @@ class formHorario(QDialog):
         else:
             Sombrear(self.inputNombreHorario, 20, 0, 0)
 
-        if not self.inputDias.text().strip():
-            Sombrear(self.inputDias, 20, 0, 0, "red")
+        if not (self.opcionLunVie.isChecked() or 
+                self.opcionLunSab.isChecked() or
+                any(chk.isChecked() for chk  in self.checkboxes)):
+            Sombrear(self.diasContainer, 20, 0, 0, "red")
+            self.errorDias.setText("Seleccione al menos un día")
             vacios = True
         else:
-            Sombrear(self.inputDias, 20, 0, 0)
+            Sombrear(self.diasContainer, 20, 0, 0)
+            self.errorDias.setText("")
 
         if not self.inputTipoJornada.text().strip():
             Sombrear(self.inputTipoJornada, 20, 0, 0, "red")
