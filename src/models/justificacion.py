@@ -8,8 +8,7 @@ class Justificacion:
         self.fecha              = fecha
         self.motivo             = motivo
         self.descripcion        = descripcion
-        self.tipo               = tipo                 
-
+        self.tipo               = tipo   
     def __str__(self):
-        return (f"ID Justificación: {self.id_justificacion}, ID Asistencia: {self.id_asistencia},Tipo: {self.tipo}, ID Empleado: {self.id_empleado}"
+        return (f"ID Justificación: {self.id_justificacion}, ID Asistencia: {self.id_asistencia}, Tipo: {self.tipo}, ID Empleado: {self.id_empleado}"
                 f"Fecha: {self.fecha}, Motivo: {self.motivo}, Descripción: {self.descripcion}")

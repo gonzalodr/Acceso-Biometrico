@@ -23,6 +23,7 @@ class formJustificacion(QDialog):
 
     def __init__(self, parent=None, titulo="Registrar Justificación", id=None):
         super().__init__(parent)
+        self.prevAsistenciaId = None
         self.setObjectName("form")
         self.setMinimumSize(QSize(400, 350))
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -59,7 +60,6 @@ class formJustificacion(QDialog):
         self.errorDescripcion = QLabel()
         Sombrear(self.inputDescripcion, 20, 0, 0)
 
-        # Modificación al layoutForm para agregar el campo de tipo
         lblTipo = QLabel(text="Tipo")
         self.comboTipo = QComboBox()
         self.comboTipo.addItems(["Médica", "Personal", "Maternidad", "Judicial", "Incapacidad", "Otro"])
@@ -86,10 +86,10 @@ class formJustificacion(QDialog):
         self.lblNoAsistencias = QLabel("Este empleado no tiene asistencias injustificadas")
         self.lblNoAsistencias.setVisible(False)  # Ocultar inicialmente
 
-        layoutForm.addLayout(self._contenedor(lblEmpleado, self.comboEmpleado, self.errorEmpleado), 2, 0)
-        layoutForm.addLayout(self._contenedor(lblTipo, self.comboTipo, self.errorTipo), 5, 0)
-        layoutForm.addLayout(self._contenedor(lblAsistencia, self.comboAsistencia, self.errorAsistencia), 3, 0)
-        layoutForm.addWidget(self.lblNoAsistencias, 4, 0, 1, 2)  
+        layoutForm.addLayout(self._contenedor(lblEmpleado, self.comboEmpleado, self.errorEmpleado), 3, 0)
+        layoutForm.addLayout(self._contenedor(lblAsistencia, self.comboAsistencia, self.errorAsistencia), 4, 0)
+        layoutForm.addLayout(self._contenedor(lblTipo, self.comboTipo, self.errorTipo), 2, 0)
+        layoutForm.addWidget(self.lblNoAsistencias, 5, 0, 1, 2) 
         layoutForm.addLayout(self._contenedor(lblMotivo, self.inputMotivo, self.errorMotivo), 0, 0)
         layoutForm.addLayout(self._contenedor(lblDescripcion, self.inputDescripcion, self.errorDescripcion), 1, 0)
         
@@ -128,6 +128,8 @@ class formJustificacion(QDialog):
         # Conectar la señal de cambio del ComboBox de empleados
         self.comboEmpleado.currentIndexChanged.connect(self._actualizar_asistencias)
 
+        self.comboAsistencia.currentIndexChanged.connect(self._actualizar_prev_asistencia_id)
+
         # Cargar datos si se proporciona un id
         if id:
             self._obtener_registroId(id)
@@ -161,7 +163,14 @@ class formJustificacion(QDialog):
             dial = DialogoEmergente("Error", "No se pudieron cargar los empleados.", "Error")
             dial.exec()
 
-    def _actualizar_asistencias(self):
+    def _actualizar_prev_asistencia_id(self):
+        """Actualiza el ID de asistencia previamente seleccionado."""
+        if self.comboAsistencia.count() > 0:  # Verifica que el ComboBox no esté vacío
+            if self.prevAsistenciaId is None:  # Solo lo establece al inicio
+                self.prevAsistenciaId = self.comboAsistencia.currentData()
+
+
+    def _actualizar_asistencias(self, id_asistencia=0):
         # Limpiar el ComboBox de asistencias
         self.comboAsistencia.clear()
         self.comboAsistencia.setVisible(False)  # Ocultar el ComboBox de asistencias inicialmente
@@ -169,13 +178,15 @@ class formJustificacion(QDialog):
 
         # Obtener el id del empleado seleccionado
         id_empleado = self.comboEmpleado.currentData()
+
         if id_empleado:
             # Cargar asistencias no justificadas para el empleado seleccionado
-            result = self.Pasistencia.obtenerAsistenciaPorEmpleado(id_empleado)
+            result = self.Pasistencia.obtenerAsistenciaPorEmpleado(id_empleado, id_asistencia)
             if result["success"]:
                 asistencias = result["data"]
                 if asistencias:
                     for asistencia in asistencias:
+                        # Añadir las asistencias al combo con su ID como datos
                         self.comboAsistencia.addItem(asistencia.fecha.strftime("%Y-%m-%d"), asistencia.id)
                     self.comboAsistencia.setVisible(True)  # Mostrar el ComboBox si hay asistencias
                 else:
@@ -185,6 +196,8 @@ class formJustificacion(QDialog):
             else:
                 dial = DialogoEmergente("Error", "No se pudieron cargar las asistencias.", "Error")
                 dial.exec()
+
+        
 
     def eventFilter(self, source, event):
         if event.type() == QEvent.Enter:  # Mouse Enter
@@ -230,6 +243,13 @@ class formJustificacion(QDialog):
         else:
             Sombrear(self.inputDescripcion, 20, 0, 0)
 
+        if not self.comboTipo.currentText():  # Verifica si no hay tipo seleccionado
+            Sombrear(self.comboTipo, 20, 0, 0, "red")
+            vacios = True
+        else:
+            Sombrear(self.comboTipo, 20, 0, 0)
+
+
         if not self.comboEmpleado.currentData():  # Verifica si no hay empleado seleccionado
             Sombrear(self.comboEmpleado, 20, 0, 0, "red")
             vacios = True
@@ -261,33 +281,32 @@ class formJustificacion(QDialog):
                 self.idJ = justificacion.id_justificacion
                 self.inputMotivo.setText(justificacion.motivo)
                 self.inputDescripcion.setText(justificacion.descripcion)
-
                 # Cargar el empleado
                 self.comboEmpleado.setCurrentIndex(self.comboEmpleado.findData(justificacion.id_empleado))
-                self._actualizar_asistencias()  # Cargar asistencias para el empleado
+                self._actualizar_asistencias(justificacion.id_asistencia)  # Cargar asistencias para el empleado
                 
                 # Seleccionar la asistencia si existe
                 if justificacion.id_asistencia:
+                    self.comboAsistencia.setVisible(True) 
                     self.comboAsistencia.setCurrentIndex(self.comboAsistencia.findData(justificacion.id_asistencia))
-
+                    self.prevAsistenciaId = justificacion.id_asistencia  # Guardar el ID de asistencia
                 tipo_index = self.comboTipo.findText(justificacion.tipo, Qt.MatchFixedString)
                 if tipo_index >= 0:
                     self.comboTipo.setCurrentIndex(tipo_index)
-                    
             else:
                 dial = DialogoEmergente("Error", "Hubo un error de carga.", "Error")
                 dial.exec()
                 QTimer.singleShot(0, self.reject)
         else:
             dial = DialogoEmergente("Error", "Hubo un error de carga.", "Error")
-            dial.exec()
-            QTimer.singleShot(0, self.reject)
+
 
     def _accion_justificacion(self):
         id_empleado = self.comboEmpleado.currentData()
+        newAsistenciaId = self.comboAsistencia.currentData() 
         justificacion = Justificacion(
             id_empleado=id_empleado, 
-            id_asistencia=self.comboAsistencia.currentData(),  # Obtener el id de asistencia seleccionado
+            id_asistencia=newAsistenciaId,  # Obtener el id de asistencia seleccionado
             fecha=date.today(),
             motivo=self.inputMotivo.text(),
             descripcion=self.inputDescripcion.text(),
@@ -296,7 +315,10 @@ class formJustificacion(QDialog):
         )
         if self._validar_campos():
             if self.idJ > 0:
-                result = self.Pservices.modificarJustificacion(justificacion)
+                result = self.Pservices.modificarJustificacion(
+                    justificacion=justificacion,
+                    old_asistencia_id=self.prevAsistenciaId  
+                )
                 if result["success"]:
                     dial = DialogoEmergente("Actualización", result["message"], "Check")
                     dial.exec()

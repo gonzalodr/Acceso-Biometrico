@@ -218,9 +218,9 @@ class AdminJustificacion(QWidget):
 
                     # Fecha realizado
                     fecha_Realizado = justificacion["fecha_realizado"]
-                    fecha_str = fecha_Realizado.strftime("%d de %B del %Y")  # Cambiado a %d
-                    dia = int(fecha_str.split(" ")[0])  # Convertir el día a entero para eliminar ceros a la izquierda
-                    fecha_str = f"{dia} de {fecha_Realizado.strftime('%B')} del {fecha_Realizado.strftime('%Y')}"
+                    fecha_str = fecha_Realizado.strftime("%d de %B del %Y a las %H:%M:%S")  # Cambiado a %d
+                    dia = int(fecha_str.split(" ")[0])
+                    fecha_str = f"{dia} de {fecha_Realizado.strftime('%B')} del {fecha_Realizado.strftime('%Y')} a las {fecha_Realizado.strftime('%H:%M:%S')}"
                     item_fecha_Realizado = QTableWidgetItem(fecha_str)
                     item_fecha_Realizado.setTextAlignment(Qt.AlignCenter)
                     self.tbJustificacion.setItem(index, 5, item_fecha_Realizado)
