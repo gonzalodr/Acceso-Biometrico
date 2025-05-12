@@ -17,7 +17,7 @@ class formHorario(QDialog):
     def __init__(self, parent=None, titulo="Registrar Horario", id=None):
         super().__init__(parent)
         self.setObjectName("form")
-        self.setMinimumSize(QSize(850, 950))
+        self.setMinimumSize(QSize(850, 800))
         self.setWindowFlags(Qt.FramelessWindowHint)
         # add_Style(carpeta="css", archivoQSS="formHorario.css", QObjeto=self)
         cargar_estilos("claro", "form.css", self)
@@ -39,7 +39,7 @@ class formHorario(QDialog):
         layoutForm = QGridLayout()
         layoutForm.setContentsMargins(20, 10, 20, 20)
         layoutForm.setHorizontalSpacing(45)
-        layoutForm.setVerticalSpacing(20)
+        layoutForm.setVerticalSpacing(15)
 
         # Elementos del formulario
         # Nombre de Horario
@@ -75,15 +75,33 @@ class formHorario(QDialog):
         self.rangoGroup.setExclusive(True)  # Solo una opción seleccionable
 
         
+        # Creamos un frame para las opciones Lunes-Viernes y Lunes-Sábado
+        opcionesFrame = QFrame()
+        opcionesLayout = QHBoxLayout()
+        opcionesLayout.setContentsMargins(0, 0, 0, 0)
+        opcionesLayout.setSpacing(30)  # Espacio entre las dos opciones
+        opcionesFrame.setLayout(opcionesLayout)
+        
         self.opcionLunVie = QRadioButton("Lunes-Viernes")
         self.opcionLunSab = QRadioButton("Lunes-Sábado")
         self.opcionPersonalizado = QRadioButton("Personalizado")
+        
+        self.opcionLunVie.setStyleSheet("color: black;")
+        self.opcionLunSab.setStyleSheet("color: black;")
+        self.opcionPersonalizado.setStyleSheet("color: black;")
+
         
 
         self.rangoGroup.addButton(self.opcionLunVie)
         self.rangoGroup.addButton(self.opcionLunSab)
         self.rangoGroup.addButton(self.opcionPersonalizado)
 
+        # Añadimos las opciones al layout horizontal
+        opcionesLayout.addWidget(self.opcionLunVie)
+        opcionesLayout.addStretch()  # Espacio flexible entre opciones
+        opcionesLayout.addWidget(self.opcionLunSab)
+        opcionesLayout.addStretch()  # Espacio flexible al final
+        
         self.diasFrame = QFrame()
         self.diasFrame.setVisible(False)
         self.diasFrame.setObjectName("diasFrame")
@@ -104,8 +122,7 @@ class formHorario(QDialog):
         
             
             
-        diasLayout.addWidget(self.opcionLunVie)
-        diasLayout.addWidget(self.opcionLunSab)
+        diasLayout.addWidget(opcionesFrame)  # Frame con opciones horizontales
         diasLayout.addWidget(self.opcionPersonalizado)
         diasLayout.addWidget(self.diasFrame)
         
@@ -316,7 +333,7 @@ class formHorario(QDialog):
                 self.opcionPersonalizado.setChecked(True)
                 self._habilitar_dias_personalizados(True)
                 
-                dias_lista = [d.strip() for d in dias.split(",")]
+                dias_lista = [d.strip() for d in dias.split("-")]
                 dias_nombres = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
                 for i, chk in enumerate(dias_nombres):
                     self.checkboxes[i].setChecked(chk in dias_lista)
@@ -421,9 +438,14 @@ class formHorario(QDialog):
         Verifica si algún campo del formulario tiene datos ingresados.
         Retorna True si al menos un campo tiene datos, de lo contrario, False.
         """
+        
+        # Verificar si hay algún día seleccionado
+        dias_seleccionados = (self.opcionLunVie.isChecked() or 
+                            self.opcionLunSab.isChecked() or
+                            any(chk.isChecked() for chk in self.checkboxes))
         if (
             self.inputNombreHorario.text().strip()
-            or self.inputDias.text().strip()
+            or dias_seleccionados
             or self.inputTipoJornada.text().strip()
             or self.inputHoraInicio.time().isValid()
             or self.inputHoraFin.time().isValid()

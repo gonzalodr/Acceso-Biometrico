@@ -64,7 +64,7 @@ class HorarioData:
             return False, "El nombre de horario es requerido"
         if not dias_semanales:
             return False, "El campo 'Dias Semanales' es requerido."
-        if len(dias_semanales) > 30:
+        if len(dias_semanales) > 1000:
             return False, "El campo 'Dias Semanales' no debe exceder 30 caracteres."
 
         if not tipo_jornada:
