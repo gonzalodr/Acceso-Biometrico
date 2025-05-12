@@ -13,8 +13,10 @@ class AdminHorario(QWidget):
     busqueda = None
     Hservices = HorarioService()
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None,permiso = None) -> None:
         super().__init__(parent)
+        self.permisoUsuario = permiso
+        print(permiso)
         self.setObjectName("admin")
 
         # add_Style(carpeta="css", archivoQSS="adminHorario.css", QObjeto=self)
