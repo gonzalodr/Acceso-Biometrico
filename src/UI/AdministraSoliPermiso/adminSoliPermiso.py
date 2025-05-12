@@ -14,11 +14,11 @@ class AdminSoliPermiso(QWidget):
     busqueda = None
     permiso_service = SolicitudPermisoService()
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None, permiso= None) -> None:
         super().__init__(parent)
         self.setObjectName("admin")
         cargar_estilos("claro", "admin.css", self)
-
+        self.permisoUsuario = permiso
         layout = QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
 

@@ -13,11 +13,11 @@ class AdminUsuario(QWidget):
     busqueda = None
     Uservices = UsuarioServices()
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, permiso = None):
+        super().__init__(parent )
         self.setObjectName("admin")
         cargar_estilos('claro','admin.css',self)
-        
+        self.permisoUsuario = permiso
         layout = QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
 

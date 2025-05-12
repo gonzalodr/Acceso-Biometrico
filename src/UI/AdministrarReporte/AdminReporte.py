@@ -17,9 +17,10 @@ class AdminReporte(QWidget):
     reporteServices = ReporteServices()
     empleadoServices = EmpleadoServices()
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None, permiso = None) -> None:
         super().__init__(parent)
         self.setObjectName("admin")
+        self.permisoUsuario = permiso
 
         cargar_estilos("claro", "admin.css", self)
 

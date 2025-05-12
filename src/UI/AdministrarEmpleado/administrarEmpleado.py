@@ -16,9 +16,10 @@ class AdminEmpleado(QWidget):
     EmpServices = EmpleadoServices()
 
 
-    def __init__(self, parent= None) -> None:
+    def __init__(self, parent= None, permiso= None) -> None:
         super().__init__(parent)
         self.setObjectName("admin")
+        self.permisoUsuario = permiso
         cargar_estilos('claro','admin.css',self)
 
         layout = QVBoxLayout()
