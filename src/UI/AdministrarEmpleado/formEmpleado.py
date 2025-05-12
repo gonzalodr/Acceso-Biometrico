@@ -96,52 +96,50 @@ class formEmpleado(QDialog):
     def llenarLayoutConten(self): 
         #creando widgets para el scrol
         self.widgetIzq = QWidget()
-        self.widgetCent = QWidget()
 
         #creando los layouts
         self.layoutIzq = QVBoxLayout()
-        self.layoutCent = QVBoxLayout()
+
 
         #configuracion de los layouts
         self.layoutIzq.setSpacing(20)
-        self.layoutCent.setSpacing(20)
+
 
 
         #creando scrolls
         scroll_areaIzq = QScrollArea()
         scroll_areaIzq.setWidgetResizable(True)
-        scroll_areaCent= QScrollArea()
-        scroll_areaCent.setWidgetResizable(True)
+
 
         self.llenarLayoutIzquierda()
-        self.llenarLayoutCentral()
+
         
         # Crear los scroll areas
         self.scrollIzq = QScrollArea()
-        self.scrollCent = QScrollArea()
+
 
         # Configurar las scroll areas
         self.scrollIzq.setWidgetResizable(True)
-        self.scrollCent.setWidgetResizable(True)
+
 
         # Crear widgets contenedores para cada scroll area
         widgetIzq = QWidget()
-        widgetCent = QWidget()
+
         # Asignar layouts a los widgets contenedores
         widgetIzq.setLayout(self.layoutIzq)
-        widgetCent.setLayout(self.layoutCent)
+
         #agregando nombres
         widgetIzq.setObjectName('contenedor')
-        widgetCent.setObjectName('contenedor')
+
 
         # Asignar los widgets a las scroll areas
         self.scrollIzq.setWidget(widgetIzq)
-        self.scrollCent.setWidget(widgetCent)
+
 
 
         # Agregar las scroll areas al layout principal
         self.layoutContent.addWidget(self.scrollIzq)
-        self.layoutContent.addWidget(self.scrollCent)
+
     '''
     Llenado de layoutIzq
     '''
@@ -199,6 +197,21 @@ class formEmpleado(QDialog):
         self.inDireccion = QTextEdit()
         self.inDireccion.setMaximumHeight(30)
         self.errDireccion = QLabel()
+
+        #Departamento
+        self.lblDep = QLabel('Departamento')
+        self.inDep = QComboBox()
+        self.inDep.addItem('Ninguno', None)
+        self.inDep.setMaxVisibleItems(10)
+        self.errDep = QLabel()
+        self.llenarComboboxDepa()
+        #Departamento
+        self.lblRol = QLabel('Rol')
+        self.inRol = QComboBox()
+        self.inRol.addItem('Ninguno', None)
+        self.inRol.setMaxVisibleItems(10)
+        self.errRol = QLabel()
+        self.llenarComboboxRol()
         
         # Botón para registrar huella - CAMBIO IMPORTANTE
         #self.btnRegistrarHuella = QPushButton('Registrar huella')
@@ -234,6 +247,8 @@ class formEmpleado(QDialog):
         self.layoutIzq.addLayout(self.contenedor(self.lblTelefonos,self.layoutTelPrinc,self.errTelefono))
         self.layoutIzq.addLayout(self.contenedor(self.lblEstCivil,self.inEstCivil,self.errEstCivil))
         self.layoutIzq.addLayout(self.contenedor(self.lblDireccion,self.inDireccion,self.errDireccion))
+        self.layoutIzq.addLayout(self.contenedor(self.lblDep,self.inDep,self.errDep))
+        self.layoutIzq.addLayout(self.contenedor(self.lblRol,self.inRol,self.errRol))
         #self.layoutIzq.addLayout(layoutHuella)  
     
     #layout para la foto
@@ -363,34 +378,7 @@ class formEmpleado(QDialog):
         self.layoutInputTel.removeItem(layoutInputsTelefonos)
         layoutInputsTelefonos.deleteLater()
 
-    '''
-    Llenado de layoutCent
-    '''
-    def llenarLayoutCentral(self):
-        tituloCent = QLabel('Departamento y Rol')
-        tituloCent.setObjectName('lblsubtitulos')
-        tituloCent.setAlignment(Qt.AlignCenter)
-
-        #Departamento
-        self.lblDep = QLabel('Departamento')
-        self.inDep = QComboBox()
-        self.inDep.addItem('Ninguno', None)
-        self.inDep.setMaxVisibleItems(10)
-        self.errDep = QLabel()
-        self.llenarComboboxDepa()
-        #Departamento
-        self.lblRol = QLabel('Rol')
-        self.inRol = QComboBox()
-        self.inRol.addItem('Ninguno', None)
-        self.inRol.setMaxVisibleItems(10)
-        self.errRol = QLabel()
-        self.llenarComboboxRol()
-
-        self.layoutCent.addWidget(tituloCent)
-        self.layoutCent.addLayout(self.contenedor(self.lblDep,self.inDep,self.errDep))
-        self.layoutCent.addLayout(self.contenedor(self.lblRol,self.inRol,self.errRol))
-        self.layoutCent.setAlignment(Qt.AlignTop) ##Alinea los widgets arriba
-    #llenado de opciones de los combobox de rol y departamento
+    
     def llenarComboboxDepa(self):
         result = self.depaServices.obtenerTodoDepartamento()
 
