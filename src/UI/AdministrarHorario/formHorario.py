@@ -244,9 +244,11 @@ class formHorario(QDialog):
         layout.addWidget(label_error)
         return layout
 
-    def _habilitar_dias_personalizados(self):
-        personalizado_seleccionado = self.opcionPersonalizado.isChecked()
+    def _habilitar_dias_personalizados(self, personalizado_seleccionado: bool):
+        #personalizado_seleccionado = self.opcionPersonalizado.isChecked()
         self.diasFrame.setVisible(personalizado_seleccionado)
+        
+       
 
         for chk in self.checkboxes:
             chk.setEnabled(personalizado_seleccionado)
@@ -263,7 +265,7 @@ class formHorario(QDialog):
             dias_nombres = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
             seleccionados = [dias_nombres[i] for i, chk in enumerate(self.checkboxes) if chk.isChecked()]
             
-            return ", ".join(seleccionados) if seleccionados else ""
+            return "- ".join(seleccionados) if seleccionados else ""
         
         
     def _accion_horario(self):
