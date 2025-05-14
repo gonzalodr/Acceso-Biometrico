@@ -265,7 +265,7 @@ class formReporte(QDialog):
                 if dialEmergente.exec() == QDialog.Accepted:
                     self.reject()
         else:
-            print(f"\nError:\n{e}\n----------------------\n")
+            # print(f"\nError:\n{e}\n----------------------\n")
             self.reject()
 
     def _validar_inputs_vacios(self):
