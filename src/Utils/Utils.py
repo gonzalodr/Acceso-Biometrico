@@ -6,6 +6,7 @@ from datetime import date, time, datetime
 import re
 import os
 import inspect
+import socket
 
 def Sombrear(QObjeto,shadow:int=0,xOffset:int=0,yOffset:int=0, color:str=None):
     sombra = QGraphicsDropShadowEffect(QObjeto)
@@ -161,3 +162,13 @@ def parse_time(time_str: str) -> time:
         return time(hours, minutes)
     except (ValueError, AttributeError) as e:
         raise ValueError(f"Formato de hora inválido: {time_str}. Use 'HH:MM'") from e
+    
+    
+
+
+def is_device_reachable(ip: str, port: int, timeout: float = 3.0) -> bool:
+    try:
+        with socket.create_connection((ip, port), timeout=timeout):
+            return True
+    except (socket.timeout, socket.error):
+        return False

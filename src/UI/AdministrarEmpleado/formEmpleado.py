@@ -19,6 +19,7 @@ from UI.DialogoEmergente import DialogoEmergente
 from models.usuario     import Usuario
 from models.persona     import Persona
 from models.telefono    import Telefono
+from settings.config    import ZKTECA_CONFIG
 
 from datetime import datetime
 import time
@@ -1112,7 +1113,13 @@ class formEmpleado(QDialog):
                 dialogo_progreso.close()
                 DialogoEmergente('', f"Error en registro: {resultado_db['message']}", 'Error', True).exec()
                 return
-
+            
+            if is_device_reachable(ZKTECA_CONFIG["host"], ZKTECA_CONFIG["port"]):
+                print("conectado")
+            else:
+                print("desconectado")
+        
+            
             # 6. Crear nuevo diálogo para captura de huella (evitando modificar lblMensaje)
             dialogo_progreso.close()
             dialogo_huella = DialogoEmergente(
