@@ -291,7 +291,6 @@ class GenerarReporte(QDialog):
     def obtenerDatosReporte(self):
         # empleado seleccionado
         empleado = self.cmbEmpleado.currentData()
-        todos_empleados = empleado is None
 
         # empleado seleccionar departamento o rol
         departamento = self.cmbDepartamento.currentData()
@@ -345,7 +344,6 @@ class GenerarReporte(QDialog):
             "id_departamento": departamento,
             "id_rol": rol,
             "id_empleado": empleado,
-            "todos_empleados": todos_empleados,
             "rangoFechas": [fechaIncio, fechaFin] if fechaIncio and fechaFin else None,
         }
 

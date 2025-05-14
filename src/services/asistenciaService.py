@@ -33,6 +33,7 @@ class AsistenciaServices:
 
     def registrarAsistenciaEmpleado(self,id_empleado:int=None,fecha:date=None,rango_fechas: Optional[Union[Tuple[date, date], List[str]]] = None):
         result = ZKServices().obtener_asistencias(id_empleado,fecha,rango_fechas)
+        print("result informacion: "+ str(result))
         if not result['success']:
             return result
         
@@ -41,7 +42,7 @@ class AsistenciaServices:
         
         listAsistencia = []
         for asistEmpl in result['asistencias']:
-            if asistEmpl[0] and int(asistEmpl[0].user_id) == 1:
+            #if asistEmpl[0] and int(asistEmpl[0].user_id) == 1:
                 asist = Asistencia(id_empleado = asistEmpl[0].user_id, fecha = asistEmpl[1].timestamp.date(),estado_asistencia = 'presente')
                 listAsistencia.append((asist, asistEmpl[1].timestamp.time() ))
 

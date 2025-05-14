@@ -401,25 +401,25 @@ class ZKServices:
             next_uid = max(uids) + 1 if uids else 1
 
             # Paso 2: Registrar al usuario con el nuevo ID y nombre
-            conn.set_user(uid=next_uid, name=nombre)
+            conn.set_user(uid=id_empleado, name=nombre)
 
             # Paso 3: Pedir huella para ese uid
-            conn.enroll_user(uid=next_uid)
+            conn.enroll_user(uid=id_empleado)
 
             # Esperamos hasta 30s a que el registro de huella se complete
             start_time = time.time()
             while time.time() - start_time < 30:
                 templates = conn.get_templates()
-                huella = list(filter(lambda t: t.uid == next_uid, templates)) or None
+                huella = list(filter(lambda t: t.uid == id_empleado, templates)) or None
                 if huella:
                     conn.test_voice(0)
-                    nueva_huella = Huella(next_uid, id_empleado=id_empleado)
+                    nueva_huella = Huella(id_empleado, id_empleado=id_empleado)
                     self.huellaService.insertarHuella(nueva_huella)
                     conn.disconnect()
                     return {
                         "success": True,
                         "huella_registrada": True,
-                        "user_id": next_uid,
+                        "user_id": id_empleado,
                         "huella_info": str(nueva_huella),
                         "huella": nueva_huella,
                         "message": "Empleado registrado con éxito.",
@@ -430,7 +430,7 @@ class ZKServices:
             return {
                 "success": True,
                 "huella_registrada": False,
-                "user_id": next_uid,
+                "user_id": id_empleado,
                 "message": "Empleado registrado pero sin huella.",
             }
 
