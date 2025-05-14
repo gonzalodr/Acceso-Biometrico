@@ -334,6 +334,7 @@ class UsuarioData:
         if not resultado["success"]:
             return resultado
         try:
+            
             with conexion.cursor(dictionary=True) as cursor:
                 query = f"""
                         SELECT 
@@ -350,7 +351,8 @@ class UsuarioData:
                     query, [identificador, identificador]
                 )  # ingresa los parámetros
                 usuarioPass = cursor.fetchone()  # obtiene la única contraseña
-
+                perfil = None
+                listaPermisosPerfil = []
                 if usuarioPass:
                     usuario = Usuario(usuario=usuarioPass[TBUSUARIO_USUARIO], id_persona=usuarioPass[TBPERSONA_ID])
                     queryPerfil = f"""SELECT 
@@ -395,7 +397,7 @@ class UsuarioData:
                         "success": True,
                         "password": usuarioPass[TBUSUARIO_CONTRASENA],
                         "usuario": usuario,
-                        "perfil":perfil,
+                        "perfil":perfil if perfil else None,
                         "listPermisos":listaPermisosPerfil
                     }
                 else:
