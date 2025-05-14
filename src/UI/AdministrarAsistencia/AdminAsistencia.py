@@ -10,6 +10,7 @@ from datetime import datetime
 
 from settings.config import *
 
+from settings.config import *
 
 class AdminAsistencia(QWidget):
     cerrar_adminA = Signal()

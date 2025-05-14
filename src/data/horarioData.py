@@ -1,6 +1,7 @@
 from models.horario import Horario
 from data.data import conection  # Importa la función para obtener la conexión
 from settings.config import *
+from settings.logger import logger
 
 
 class HorarioData:
@@ -546,3 +547,47 @@ class HorarioData:
             return {"success": False, "message": f"Error al eliminar horario: {e}"}
         finally:
             conexion.close()
+
+    def get_horario_by_empleado(self, id_empleado: int, conexionEx=None):
+        conexion, resultado = (conexionEx, {'success': True}) if conexionEx else conection()
+        if not resultado['success']:
+            return resultado
+        try:
+            listHorario = []
+            with conexion.cursor(dictionary=True) as cursor:
+                cursor.execute(f'''
+                    SELECT 
+                        H.{TBHORARIO_ID},
+                        H.{TBHORARIO_NOMBRE_HORARIO},
+                        H.{TBHORARIO_DESCRIPCION},
+                        H.{TBHORARIO_DIAS_SEMANALES},
+                        H.{TBHORARIO_TIPO_JORNADA},
+                        H.{TBHORARIO_HORA_INICIO},
+                        H.{TBHORARIO_HORA_FIN}
+                    FROM {TBEMPLEADO} E
+                    INNER JOIN {TBROLEMPLEADO}  RE ON RE.{TBROLEMPLEADO_ID_EMPLEADO} = E.{TBEMPLEADO_ID}
+                    INNER JOIN {TBROLHORARIO}   RH ON RH.{TBROLHORARIO_ID_ROL} = RE.{TBROLEMPLEADO_ID_ROL}
+                    INNER JOIN {TBHORARIO}      H  ON H.{TBHORARIO_ID} = RH.{TBROLHORARIO_ID_HORARIO}
+                    WHERE E.{TBEMPLEADO_ID} = %s
+                ''', (id_empleado,))
+                data = cursor.fetchall()
+
+                for item in data:
+                    horario = Horario(
+                        dias_semanales  = item[TBHORARIO_DIAS_SEMANALES],
+                        nombre_horario  = item[TBHORARIO_NOMBRE_HORARIO],
+                        tipo_jornada    = item[TBHORARIO_TIPO_JORNADA],
+                        hora_inicio     = item[TBHORARIO_HORA_INICIO],
+                        hora_fin        = item[TBHORARIO_HORA_FIN],
+                        descripcion     = item[TBHORARIO_DESCRIPCION],
+                        id              = item[TBHORARIO_ID]
+                    )
+                    listHorario.append(horario)
+                    
+            return {'success': True,'message': 'Se obtuvo el horario del empleado','horario': listHorario}
+        
+        except Exception as e:
+            logger.error(f'{e}')
+            return {'success': False, 'message': 'Ocurrió un error al obtener el horario del empleado'}
+        finally:
+            if conexion and conexionEx is None: conexion.close()

@@ -5,10 +5,11 @@ from Utils.Utils import *
 from models.usuario import *
 from services.usuarioService import *
 from UI.DialogoEmergente import *
+from typing import Dict, Any 
 import os
 
 class IniciarSesion(QWidget):
-    autenticacion = Signal(Usuario)
+    autenticacion = Signal(dict)
     Uservices = UsuarioServices()
 
     def __init__(self, parent= None):
@@ -140,7 +141,7 @@ class IniciarSesion(QWidget):
                 usuario = result["usuario"]
                 self.inputUser.setText("")
                 self.inputPass.setText("")
-                self.autenticacion.emit(usuario)
+                self.autenticacion.emit(result)
             else:
                 self.lblError.setText(result["message"])
         else:

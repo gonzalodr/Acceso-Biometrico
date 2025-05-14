@@ -24,6 +24,8 @@ MODULOS_ACCESO = [
     ("Administrar reportes", "reporte"),
     ("Administrar departamentos", "departamento"),
     ("Administrar roles", "rol"),
+    ("Administrar horario", "horario"),
+    ("Administrar permisos empleado","permisosEmpleado"),
     ("Administrar perfiles", "perfil", "perfil"),
 ]
 
@@ -121,6 +123,7 @@ TBJUSTIFICACION_ID_ASISTENCIA = "Id_Asistencia"
 TBJUSTIFICACION_FECHA = "Fecha"
 TBJUSTIFICACION_MOTIVO = "Motivo"
 TBJUSTIFICACION_DESCRIPCION = "Descripcion"
+TBJUSTIFICACION_TIPO = "Tipo"
 
 
 # Variables del archivo "Tablas"
@@ -203,6 +206,7 @@ TBJUSTIFICACION_ID_ASISTENCIA = "Id_Asistencia"
 TBJUSTIFICACION_FECHA = "Fecha"
 TBJUSTIFICACION_MOTIVO = "Motivo"
 TBJUSTIFICACION_DESCRIPCION = "Descripcion"
+TBJUSTIFICACION_TIPO = "Tipo"
 
 # Tabla de Solicitud de Permisos
 TBSOLICITUD_PERMISO = "Solicitud_Permiso"

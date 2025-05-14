@@ -196,7 +196,10 @@ QScrollArea > QWidget {
     font-size: 14px;
     font:1 12pt "Cooper Black";
 }
-
+QCheckBox{
+    font: 1 10pt "Cooper Black";
+    color:#000000;
+}
 
  /* Estilo para las ramas del QTreeView */
  #form QTreeView::item {

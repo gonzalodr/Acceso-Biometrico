@@ -4,6 +4,7 @@ from models.usuario import Usuario
 from UI.inicioSesion import *
 from UI.VistaPrincipal import *
 from UI.DialogoEmergente import *
+from typing import Dict, Any
 ##
 # Esta clase maneja la conexion de todas las vistas
 # En esta clase se estara listando las vistas que se vayan necesitando
@@ -21,10 +22,10 @@ class Ventana(QMainWindow):
         self.setCentralWidget(login)
         self.setWindowTitle("Acceso biometrico")
         
-    def _autenticacion_login(self,user:Usuario):
+    def _autenticacion_login(self,login:dict[str:Any]):
         self.setCentralWidget(None)
         # self.temporizador_inactividad.start(self.tiempo_inactividad) 
-        vista = vistaPrincipal(parent=self,usuario=user)
+        vista = vistaPrincipal(parent=self,usuario=login["usuario"],perfil=login["perfil"],permisos=login["listPermisos"])
         self.setCentralWidget(vista)
         
     # def cerrar_sesion_por_inactividad(self):

@@ -6,7 +6,6 @@ from services.permisosRolServices import *
 from services.rolService import *
 from settings.config import *
 
-
 class formPermiso(QDialog):
     permisosServices = PermisosRolServices()
     rolServices = RolServices()

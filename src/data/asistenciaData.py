@@ -6,8 +6,11 @@ from settings.config import *
 from mysql.connector import Error
 from settings.logger import logger
 from datetime        import datetime, timedelta
+from data.horarioData import HorarioData
 
 class AsistenciaData:
+    def __init__(self):
+        self.horarioData = HorarioData()
     
     def create_asistencia(self, asistencia: Asistencia):
         conexion, resultado = conection() 
@@ -266,7 +269,8 @@ class AsistenciaData:
 
         return resultado
 
-    def listar_asistencia_por_empleado(self, id_empleado: int):
+
+    def listar_asistencia_por_empleado(self, id_empleado: int, id_asistencia: int):
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
@@ -275,12 +279,13 @@ class AsistenciaData:
         try:
             with conexion.cursor(dictionary=True) as cursor:
                 query = f'''
-                    SELECT Id, Id_Empleado, Fecha, Estado_Asistencia 
-                    FROM Asistencia 
-                    WHERE Id_Empleado = %s AND Estado_Asistencia = 'No_Justificada'
-                    ORDER BY Fecha DESC
-                '''
-                cursor.execute(query, (id_empleado,))
+                SELECT Id, Id_Empleado, Fecha, Estado_Asistencia 
+                FROM Asistencia 
+                WHERE Id_Empleado = %s 
+                AND (Estado_Asistencia = 'Ausente' OR Id = %s)
+                ORDER BY Fecha DESC
+            '''
+                cursor.execute(query, (id_empleado, id_asistencia))
                 registros = cursor.fetchall()
                 
                 for data in registros:
@@ -315,6 +320,9 @@ class AsistenciaData:
                 nuevos_detalles         = []
                 asistencias_existentes  = []
 
+                # listaHorario            = self.horarioData.get_horario_by_empleado()
+                
+                
                 for asistencia, hora in lista:
                     # Verificar si ya existe la asistencia para ese empleado y fecha
                     cursor.execute(f'''
