@@ -420,12 +420,12 @@ class ReporteData:
 
                     if any(reporte in ["permisos", "todo"] for reporte in tipoReporte):
                         leftJoin.append(
-                            f"LEFT JOIN {TBSOLICITUDPERMISOS} SP ON SP.{TBSOLICITUDPERMISOS_ID_EMPLEADO} = E.{TBEMPLEADO_ID}"
+                            f"LEFT JOIN {TBSOLICITUD_PERMISO} SP ON SP.{TBSOLICITUD_PERMISO_ID_EMPLEADO} = E.{TBEMPLEADO_ID}"
                         )
                         if rangoFechas:
                             leftJoin[
                                 -1
-                            ] += f" AND (SP.{TBSOLICITUDPERMISOS_FECHA_INICIO} <= %s AND SP.{TBSOLICITUDPERMISOS_FECHA_FIN} >= %s)"
+                            ] += f" AND (SP.{TBSOLICITUD_PERMISO_FECHA_INICIO} <= %s AND SP.{TBSOLICITUD_PERMISO_FECHA_FIN} >= %s)"
                             valores += (
                                 rangoFechas[1],
                                 rangoFechas[0],
@@ -433,13 +433,13 @@ class ReporteData:
 
                         datosSelect.extend(
                             [
-                                f"SP.{TBSOLICITUDPERMISOS_ID}           AS PermisoId",
-                                f"SP.{TBSOLICITUDPERMISOS_ID_EMPLEADO}  AS PermisoIdEmpleado",
-                                f"SP.{TBSOLICITUDPERMISOS_TIPO}         AS PermisoTipo",
-                                f"SP.{TBSOLICITUDPERMISOS_FECHA_INICIO} AS PermisoFechaInicio",
-                                f"SP.{TBSOLICITUDPERMISOS_FECHA_FIN}    AS PermisoFechaFin",
-                                f"SP.{TBSOLICITUDPERMISOS_DESCRIPCION}  AS PermisoDescripcion",
-                                f"SP.{TBSOLICITUDPERMISOS_ESTADO}       AS PermisoEstado",
+                                f"SP.{TBSOLICITUD_PERMISO_ID}           AS PermisoId",
+                                f"SP.{TBSOLICITUD_PERMISO_ID_EMPLEADO}  AS PermisoIdEmpleado",
+                                f"SP.{TBSOLICITUD_PERMISO_TIPO}         AS PermisoTipo",
+                                f"SP.{TBSOLICITUD_PERMISO_FECHA_INICIO} AS PermisoFechaInicio",
+                                f"SP.{TBSOLICITUD_PERMISO_FECHA_FIN}    AS PermisoFechaFin",
+                                f"SP.{TBSOLICITUD_PERMISO_DESCRIPCION}  AS PermisoDescripcion",
+                                f"SP.{TBSOLICITUD_PERMISO_ESTADO}       AS PermisoEstado",
                             ]
                         )
 
