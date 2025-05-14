@@ -651,7 +651,7 @@ class EmpleadoData:
                     result = self.depaService.obtenerDepartamentoPorId(departamento_id)
                     if not result["success"]:
                         return result
-                    departamento = result["departamento"]
+                    departamento = result.get("departamento", None)
 
                     # extraer la persona
                     result = self.personadata.get_persona_by_id(
@@ -707,7 +707,7 @@ class EmpleadoData:
                             "usuario": usuario,
                             "pefilUsuario": perfilUsuario,
                             "rolEmpleado": rolEmpleado,
-                            "departamento": departamento.nombre,
+                            "departamento": departamento.nombre if departamento else "Sin departamento asignado",
                             "listaTelefonos": listaTelefonos,
                         },
                         "success": True,
