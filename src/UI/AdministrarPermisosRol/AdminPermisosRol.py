@@ -7,7 +7,6 @@ from services.rolService import *
 from services.rolService import *
 from settings.config import *
 
-
 class AdminPermisosRol(QWidget):
     cerrar_adminP = Signal()
     paginaActual = 1

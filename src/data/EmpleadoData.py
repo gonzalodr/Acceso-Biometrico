@@ -572,18 +572,66 @@ class EmpleadoData:
             if conexion:
                 conexion.close()
 
-    """
+    '''
     Obtener la información de un empleado por su ID
     Datos personales
     Usuario->perfil asignado
     Departamento
     Rol asignado
-    """
+    '''
+    def list_Empleados_todos(self):
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
 
-    def getEmpleadoById(self, id_empleado: int, conexionEx=None):
-        conexion, resultado = (
-            conection() if conexionEx is None else (conexionEx, {"success": True})
-        )
+        listaPersonas = []
+        try:
+            with conexion.cursor(dictionary=True) as cursor:
+                query = f"""
+                    SELECT 
+                        EMP.{TBEMPLEADO_ID} AS EMPLEADO_ID,
+                        P.{TBPERSONA_ID} AS PERSONA_ID,
+                        P.{TBPERSONA_NOMBRE}, 
+                        P.{TBPERSONA_APELLIDOS}, 
+                        P.{TBPERSONA_NACIMIENTO}, 
+                        P.{TBPERSONA_CEDULA}, 
+                        P.{TBPERSONA_ESTADO_CIVIL}, 
+                        P.{TBPERSONA_CORREO}, 
+                        P.{TBPERSONA_DIRECCION}
+                    FROM {TBPERSONA} P
+                    INNER JOIN {TBEMPLEADO} EMP ON EMP.{TBEMPLEADO_PERSONA} = P.{TBPERSONA_ID}
+                """
+
+                cursor.execute(query)
+                registros = cursor.fetchall()
+
+                for data in registros:
+                    persona: Persona = Persona(
+                        nombre           = data[TBPERSONA_NOMBRE],
+                        apellidos        = data[TBPERSONA_APELLIDOS],
+                        cedula           = data[TBPERSONA_CEDULA],
+                        fecha_nacimiento = data[TBPERSONA_NACIMIENTO],
+                        estado_civil     = data[TBPERSONA_ESTADO_CIVIL],
+                        correo           = data[TBPERSONA_CORREO],
+                        direccion        = data[TBPERSONA_DIRECCION],
+                        id               = data['PERSONA_ID']
+                    )
+                    listaPersonas.append({ 'id_empleado': data['EMPLEADO_ID'], 'persona': persona })
+
+                return {
+                    "listaEmpleados": listaPersonas,
+                    "success": True,
+                    "message": "Empleados listados exitosamente."
+                }
+        except Error as e:
+            logger.error(f"Error al listar todos los empleados: {e}")
+            return {"success": False, "message": "Ocurrió un error al listar los empleados."}
+        finally:
+            if conexion:
+                conexion.close()
+
+    def getEmpleadoById(self,id_empleado:int,conexionEx=None):
+        conexion, resultado = conection() if conexionEx is None else (conexionEx, {"success": True})
         if not resultado["success"]:
             return resultado
         try:
@@ -603,7 +651,7 @@ class EmpleadoData:
                     result = self.depaService.obtenerDepartamentoPorId(departamento_id)
                     if not result["success"]:
                         return result
-                    departamento = result["departamento"]
+                    departamento = result.get("departamento", None)
 
                     # extraer la persona
                     result = self.personadata.get_persona_by_id(
@@ -659,7 +707,7 @@ class EmpleadoData:
                             "usuario": usuario,
                             "pefilUsuario": perfilUsuario,
                             "rolEmpleado": rolEmpleado,
-                            "departamento": departamento.nombre,
+                            "departamento": departamento.nombre if departamento else "Sin departamento asignado",
                             "listaTelefonos": listaTelefonos,
                         },
                         "success": True,
@@ -718,7 +766,7 @@ class EmpleadoData:
             if conexion and conexionEx:
                 conexion.close()
 
-    """   def obtener_todo_empleados(self):
+    def obtener_todo_empleados(self):
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
@@ -755,9 +803,6 @@ class EmpleadoData:
 
         return resultado
         
-    
-     """
-
     def obtener_todo_empleados(self):
         conexion, resultado = conection()
         if not resultado["success"]:

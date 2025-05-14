@@ -1,9 +1,11 @@
-from mysql.connector import Error
-from models.usuario import Usuario
-from data.data import conection
-from settings.config import *
-from settings.logger import logger
-from settings.config import TBUSUARIOPERFIL, TBUSUARIOPERFIL_ID_USER
+from mysql.connector        import Error
+from models.usuario         import Usuario
+from models.perfil          import Perfil
+from models.permiso_perfil  import Permiso_Perfil
+from data.data              import conection
+from settings.config        import *
+from settings.logger        import logger
+from settings.config        import TBUSUARIOPERFIL, TBUSUARIOPERFIL_ID_USER
 import bcrypt
 
 
@@ -332,9 +334,11 @@ class UsuarioData:
         if not resultado["success"]:
             return resultado
         try:
-            with conexion.cursor() as cursor:
+            
+            with conexion.cursor(dictionary=True) as cursor:
                 query = f"""
                         SELECT 
+                            U.{TBUSUARIO_ID} as usuario_id,
                             U.{TBUSUARIO_USUARIO},
                             U.{TBUSUARIO_CONTRASENA},
                             P.{TBPERSONA_ID}
@@ -347,13 +351,54 @@ class UsuarioData:
                     query, [identificador, identificador]
                 )  # ingresa los parámetros
                 usuarioPass = cursor.fetchone()  # obtiene la única contraseña
-
+                perfil = None
+                listaPermisosPerfil = []
                 if usuarioPass:
-                    usuario = Usuario(usuario=usuarioPass[0], id_persona=usuarioPass[2])
+                    usuario = Usuario(usuario=usuarioPass[TBUSUARIO_USUARIO], id_persona=usuarioPass[TBPERSONA_ID])
+                    queryPerfil = f"""SELECT 
+                    PF.{TBPERFIL_ID} as perfil_id,
+                    PF.{TBPERFIL_NOMBRE},
+                    PF.{TBPERFIL_DESCRIPCION},
+                    PP.{TBPERMISOPERFIL_ID} as permisoperfil_id,
+                    PP.{TBPERMISOPERFIL_PERFIL_ID},
+                    PP.{TBPERMISOPERFIL_TABLA},
+                    PP.{TBPERMISOPERFIL_VER},
+                    PP.{TBPERMISOPERFIL_INSERTAR},
+                    PP.{TBPERMISOPERFIL_EDITAR},
+                    PP.{TBPERMISOPERFIL_ELIMINAR}
+                    
+                    FROM {TBPERFIL} PF
+                    INNER JOIN {TBUSUARIOPERFIL} UP ON UP.{TBUSUARIOPERFIL_ID_PERF} = PF.{TBPERFIL_ID}
+                    INNER JOIN {TBPERMISOPERFIL} PP ON PP.{TBPERMISOPERFIL_PERFIL_ID} = PF.{TBPERFIL_ID}
+                    WHERE UP.{TBUSUARIOPERFIL_ID_USER} = %s
+                    """
+                    cursor.execute(queryPerfil,(usuarioPass["usuario_id"],))
+                    usuarioPerfil = cursor.fetchall()
+
+                    if usuarioPerfil:   
+                        perfil = Perfil(
+                            nombre      = usuarioPerfil[0][TBPERFIL_NOMBRE],
+                            descripcion = usuarioPerfil[0][TBPERFIL_DESCRIPCION],
+                            id          = usuarioPerfil[0]["perfil_id"]
+                        )
+                        listaPermisosPerfil=[]
+                        for permiso in usuarioPerfil:
+                            perm = Permiso_Perfil(
+                                id          = permiso["permisoperfil_id"],
+                                perfil_id   = permiso[TBPERMISOPERFIL_PERFIL_ID],
+                                tabla       = permiso[TBPERMISOPERFIL_TABLA],
+                                ver         = permiso[TBPERMISOPERFIL_VER],
+                                crear       = permiso[TBPERMISOPERFIL_INSERTAR],
+                                editar      = permiso[TBPERMISOPERFIL_EDITAR],
+                                eliminar    = permiso[TBPERMISOPERFIL_ELIMINAR]
+                            )
+                            listaPermisosPerfil.append(perm)
                     return {
                         "success": True,
-                        "password": usuarioPass[1],
+                        "password": usuarioPass[TBUSUARIO_CONTRASENA],
                         "usuario": usuario,
+                        "perfil":perfil if perfil else None,
+                        "listPermisos":listaPermisosPerfil
                     }
                 else:
                     return {
@@ -383,6 +428,8 @@ class UsuarioData:
                             "login": True,
                             "message": "Inicio de sesión exitoso",
                             "usuario": result["usuario"],
+                            "perfil":result["perfil"],
+                            "listPermisos":result["listPermisos"]
                         }
                     else:
                         return {

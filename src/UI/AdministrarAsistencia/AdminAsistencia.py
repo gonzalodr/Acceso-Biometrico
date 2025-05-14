@@ -10,6 +10,7 @@ from datetime import datetime
 
 from settings.config import *
 
+from settings.config import *
 
 class AdminAsistencia(QWidget):
     cerrar_adminA = Signal()
@@ -379,5 +380,6 @@ class AdminAsistencia(QWidget):
         self._cargar_tabla()
         
     def actualizarAsistencias(self):
-        self.asistenciaServices.registrarAsistenciaEmpleado()
+        result = self.asistenciaServices.registrarAsistenciaEmpleado()
+        print(result)
         self._cargar_tabla()

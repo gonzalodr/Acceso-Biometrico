@@ -19,7 +19,7 @@ class SlideBar(QWidget):
         self.setObjectName("sidebarWidget")
         self.setMaximumWidth(300)
         self.setMinimumWidth(60)
-        self.setFixedWidth(60)
+        self.setFixedWidth(300)
         self.tamano = 60
         ##Añadomos estilos
         cargar_estilos('claro','sidebar.css',self)
@@ -42,7 +42,7 @@ class SlideBar(QWidget):
         self.lblUsuario.setMaximumSize(150,150)
         self.lblUsuario.setMinimumSize(150,150)
         self.lblUsuario.setAlignment(Qt.AlignCenter)
-        self.lblUsuario.setVisible(False)
+        self.lblUsuario.setVisible(True)
         Sombrear(self.lblUsuario,30,0,0)
 
         #layout para acomodar nuestro icono

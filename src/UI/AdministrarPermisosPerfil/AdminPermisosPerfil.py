@@ -10,6 +10,7 @@ from settings.config import *
 
 from settings.config import *
 
+from settings.config import *
 
 class AdminPermisosPerfil(QWidget):
     cerrar_adminP = Signal()

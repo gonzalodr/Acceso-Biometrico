@@ -25,12 +25,17 @@ class vistaPrincipal(QWidget):
     def __init__(
         self,
         usuario: Usuario,
+        perfil:Perfil,
+        permisos:Permiso_Perfil,
         parent=None,
     ):
         super().__init__(parent)
-        self.usuario = usuario
+        
+        self.usuario    = usuario
+        self.permisos   = permisos
+        self.perfil     = perfil
+        
         self.setObjectName("vistaPrincipal")
-
         cargar_estilos("claro", "ventanaPrincipal.css", self)
 
         frame = QFrame()
@@ -59,21 +64,7 @@ class vistaPrincipal(QWidget):
         layoutEncabezado.setSpacing(0)
         layoutEncabezado.setContentsMargins(20, 5, 20, 5)
 
-        """
-            btnAbrir_SideBar: Este boton nos permitirar abrir y cerrar nuestro sidebar de la ventana
-        """
-        self.btnAbrir_SideBar = QPushButton(text="")
-        self.btnAbrir_SideBar.setCursor(Qt.PointingHandCursor)
-        self.btnAbrir_SideBar.setMaximumSize(QSize(45, 45))
-        cargar_icono_svg(
-            QObjeto=self.btnAbrir_SideBar,
-            archivoSVG="arrow-bar-right.svg",
-            Size=QSize(
-                self.btnAbrir_SideBar.size().width() - 15,
-                self.btnAbrir_SideBar.size().height() - 15,
-            ),
-        )
-        Sombrear(self.btnAbrir_SideBar, 20, 0, 5)
+  
 
         """
             lblEncabezado: Mostrara el nombre de nuestra ventana.
@@ -95,8 +86,7 @@ class vistaPrincipal(QWidget):
         """
             Acomodamos los elementos de nuestra ventana
         """
-        layoutEncabezado.addWidget(self.btnAbrir_SideBar, 1)
-        layoutEncabezado.addStretch(4)
+        
         layoutEncabezado.addWidget(self.lblEncabezado, 2)
         layoutEncabezado.addStretch(4)
         layoutEncabezado.addWidget(self.lblIconoUser, 1)
@@ -116,11 +106,7 @@ class vistaPrincipal(QWidget):
         self.sidebar = SlideBar(listaOpciones=self.listaOpciones)
         cargar_Icono(self.sidebar.lblUsuario, archivoImg="user.png")
         # self.cargar_imagen_usuario(self.sidebar.lblUsuario)
-        self.btnAbrir_SideBar.clicked.connect(
-            lambda click, btn=self.btnAbrir_SideBar: self.sidebar.accion_anim(
-                btnSidebar=btn
-            )
-        )
+      
 
         """Recibimos una señal la cual nos servira para detectar los btn del sidebar"""
         self.sidebar.index_opcion_selecionada.connect(self.seleccion_sidebar)
@@ -151,25 +137,25 @@ class vistaPrincipal(QWidget):
         #     index = self.stackVistas.addWidget(adminpersona)
         #     self.listaOpciones.append((index, "Administrar Persona",'employees.png'))
 
-        if True:
+        if self.PermisoAModulo("Administrar horario"):
             adminHorario = AdminHorario(parent=self)
             adminHorario.cerrar_adminH.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminHorario)
             self.listaOpciones.append((index, "Administrar Horarios", "weekly.png"))
 
-        if True:
+        if self.PermisoAModulo("Administrar empleados"):
             adminempleado = AdminEmpleado(parent=self)
             adminempleado.signalCerrar.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminempleado)
             self.listaOpciones.append((index, "Admin. Empleados", "employees.png"))
 
-        if True:
+        if self.PermisoAModulo("Administrar usuarios"):
             adminUsuario = AdminUsuario(parent=self)
             adminUsuario.cerrar_adminU.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminUsuario)
             self.listaOpciones.append((index, "Administrar Usuarios", "management.png"))
 
-        if True:
+        if self.PermisoAModulo("Administrar departamentos"):
             AdminDepart = AdminDepartament(parent=self)
             AdminDepart.cerrar_adminD.connect(self._salir_crud)
             index = self.stackVistas.addWidget(AdminDepart)
@@ -177,19 +163,17 @@ class vistaPrincipal(QWidget):
                 (index, "Admin. Departamento", "company-department.png")
             )
 
-        if True:
+        if self.PermisoAModulo("Administrar justificaciones"):
             adminJusficacion = AdminJustificacion()
             adminJusficacion.cerrar_adminJ.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminJusficacion)
             self.listaOpciones.append((index, "Admin.Justificacion", "division.png"))
 
-        if True:
+        if self.PermisoAModulo("Administrar permisos empleado"):
             adminSoliPermiso = AdminSoliPermiso()
             adminSoliPermiso.cerrar_admin_soli_permiso.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminSoliPermiso)
-            self.listaOpciones.append(
-                (index, "Admin Solicitud Permisos", "management.png")
-            )
+            self.listaOpciones.append((index, "Admin Solicitud Permisos", "management.png"))
 
         # if True:
         #     adminrol = AdminRol()
@@ -203,28 +187,24 @@ class vistaPrincipal(QWidget):
         #     index = self.stackVistas.addWidget(adminpermisos)
         #     self.listaOpciones.append((index,"Admin. permisos rol",'access-control-list.png'))
 
-        if True:
+        if self.PermisoAModulo("Administrar perfiles"):
             adminpermisosperfil = AdminPermisosPerfil()
             adminpermisosperfil.cerrar_adminP.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminpermisosperfil)
-            self.listaOpciones.append(
-                (index, "Perfiles de usuario", "access-control-list.png")
-            )
-        if True:
+            self.listaOpciones.append( (index, "Perfiles de usuario", "access-control-list.png"))
+        
+        if self.PermisoAModulo("Administrar reportes"):
             adminreporte = AdminReporte()
-            adminreporte.cerrar_adminR.connect(self._salir_crud)
+            adminreporte.signalCerrar.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminreporte)
-            self.listaOpciones.append(
-                (index, "Admin. reportes", "access-control-list.png")
-            )
-
-        if True:
+            self.listaOpciones.append((index,"Admin. reportes",'online-survey.png'))
+            
+                     
+        if self.PermisoAModulo("Administrar reportes"):
             adminasistencia = AdminAsistencia()
             adminasistencia.cerrar_adminA.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminasistencia)
-            self.listaOpciones.append(
-                (index, "Admin. Asistencia", "access-control-list.png")
-            )
+            self.listaOpciones.append((index,"Admin. Asistencia",'access-control-list.png'))
 
         self.stackVistas.setCurrentIndex(0)
 
@@ -244,7 +224,20 @@ class vistaPrincipal(QWidget):
         widgetP.setLayout(layout)
         Sombrear(widgetP, 50, 0, 0)
         return widgetP
+    
+    def PermisoAModulo(self,tipoAdministracion):
+        for modulo, tabla, *_ in MODULOS_ACCESO:
+            if modulo == tipoAdministracion:
+                for permiso in self.permisos:
+                    if permiso.tabla == tabla:
+                        return True
+                return False 
 
+        return False
+            
+        
+        
+        
     def _salir_crud(self):
         self.sidebar.deseleccionar()
         self.stackVistas.setCurrentIndex(0)

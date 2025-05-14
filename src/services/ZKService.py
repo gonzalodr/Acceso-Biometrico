@@ -17,8 +17,9 @@ import traceback
 class ZKServices:
 
     huellaService = HuellaService()
+
     def __init__(self):
-        
+
         self.zk = ZK(ZKTECA_CONFIG["host"], ZKTECA_CONFIG["port"])
 
     # obteniendo huella
@@ -44,7 +45,7 @@ class ZKServices:
             conn.set_user(uid=id_empleado, name=f"{nombre}-{cedula}")
             time.sleep(1)
 
-            conn.enroll_user(uid = id_empleado, temp_id = 9)
+            conn.enroll_user(uid=id_empleado, temp_id=9)
 
             start_time = time.time()
             while (time.time() - start_time) < 30:
@@ -84,20 +85,29 @@ class ZKServices:
             if rango_fechas:
                 if isinstance(rango_fechas, list):
                     if len(rango_fechas) != 2:
-                            return {'success':False,'message':"El rango de fechas debe contener exactamente 2 elementos"}
-                    rango_fechas = (parse_date(rango_fechas[0]),parse_date(rango_fechas[1]),)
+                        return {
+                            "success": False,
+                            "message": "El rango de fechas debe contener exactamente 2 elementos",
+                        }
+                    rango_fechas = (
+                        parse_date(rango_fechas[0]),
+                        parse_date(rango_fechas[1]),
+                    )
 
                 if rango_fechas[0] > rango_fechas[1]:
-                    return { "success": False,"message": "La primera fecha del filtro debe ser menor o igual a la ultima fecha."}
+                    return {
+                        "success": False,
+                        "message": "La primera fecha del filtro debe ser menor o igual a la ultima fecha.",
+                    }
 
             conn = self.zk.connect()
 
             conn.disable_device()
 
             asistencias = conn.get_attendance()
-            users       = conn.get_users()
-            
-            filtered    = []
+            users = conn.get_users()
+
+            filtered = []
             for asist in asistencias:
                 asist_datetime = asist.timestamp
 
@@ -114,10 +124,13 @@ class ZKServices:
                     if not (fecha_inicio <= asist_datetime.date() <= fecha_fin):
                         continue
                 # envia tanto el empleado al que le pertenece la asistencia como la misma asistencias
-                empleado    = list(filter(lambda e: str(e.user_id) ==  str(asist.user_id),users)) or None
+                empleado = (
+                    list(filter(lambda e: str(e.user_id) == str(asist.user_id), users))
+                    or None
+                )
                 if empleado:
-                    filtered.append((empleado[0],asist))
-                    
+                    filtered.append((empleado[0], asist))
+
             conn.enable_device()
             conn.disconnect()
             return {
@@ -171,19 +184,30 @@ class ZKServices:
                 "success": False,
                 "message": "Ocurrió un error al actualizar el empleado.",
             }
-    def obtener_usuarios(self, id_empleado = None):
+
+    def obtener_usuarios(self, id_empleado=None):
         try:
-            conn =  self.zk.connect()  # Conectar al dispositivo
+            conn = self.zk.connect()  # Conectar al dispositivo
             # Obtener todos los usuarios
             usuarios = conn.get_users()
             if id_empleado:
-                usuarios = list(filter(lambda u: u.uid == id_empleado,usuarios)) or None
-            return {'success':True, 'message':'Se obtuvieron los usuarios.','usuarios':usuarios}
+                usuarios = (
+                    list(filter(lambda u: u.uid == id_empleado, usuarios)) or None
+                )
+            return {
+                "success": True,
+                "message": "Se obtuvieron los usuarios.",
+                "usuarios": usuarios,
+            }
         except Exception as e:
             logger.error(e)
-            return {"success":False,"message":"Ocurrio un error al obtener usuarios."}
+            return {
+                "success": False,
+                "message": "Ocurrio un error al obtener usuarios.",
+            }
         finally:
-            if conn: conn.disconnect()
+            if conn:
+                conn.disconnect()
 
     def obtener_usuarios_y_huellas(self):
         # Dirección IP y puerto del dispositivo ZKTeco K20
@@ -213,7 +237,7 @@ class ZKServices:
                         print(f"    Huella ID: {huella.fid}, Valida: {huella.valid}")
                 else:
                     print(
-                        f"  No se encontraron huellas para el usuario {usuario.name}."
+                        f"  No se encontraron  huellas para el usuario {usuario.name}."
                     )
 
         except Exception as e:
@@ -221,31 +245,33 @@ class ZKServices:
         finally:
             zk.disconnect()  # Desconectar cuando termine
             print("Desconectado del dispositivo.")
-            
+
     # En la clase ZKServices, modificar el método registrar_empleado_con_huella
     def registrar_empleado_con_huella(self, id_empleado: int, nombre: str, cedula: str):
         try:
             conn = self.zk.connect()
             conn.enable_device()
 
-        # Primero registrar el usuario con nombre y cédula
+            # Primero registrar el usuario con nombre y cédula
             conn.set_user(uid=id_empleado, name=f"{nombre}-{cedula}")
             time.sleep(1)
 
-        # Luego registrar la huella
-            conn.enroll_user(uid=id_empleado, temp_id=9)  # temp_id=9 para registro de huella
+            # Luego registrar la huella
+            conn.enroll_user(
+                uid=id_empleado, temp_id=9
+            )  # temp_id=9 para registro de huella
 
             start_time = time.time()
             while (time.time() - start_time) < 30:
                 templates = conn.get_templates()
                 huella = list(filter(lambda t: t.uid == id_empleado, templates)) or None
                 if huella:
-                # Guardar información adicional en el dispositivo
+                    # Guardar información adicional en el dispositivo
                     try:
-                    # Almacenar datos adicionales en el dispositivo (si soporta esta característica)
+                        # Almacenar datos adicionales en el dispositivo (si soporta esta característica)
                         user = conn.get_user(uid=id_empleado)
                         if user:
-                        # Algunos dispositivos permiten almacenar datos adicionales en el campo 'name'
+                            # Algunos dispositivos permiten almacenar datos adicionales en el campo 'name'
                             conn.set_user(uid=id_empleado, name=f"{nombre}-{cedula}")
                     except Exception as e:
                         logger.error(f"Error al guardar datos adicionales: {e}")
@@ -256,7 +282,7 @@ class ZKServices:
                         "message": "Empleado registrado con huella exitosamente.",
                         "huella_id_ZK": huella[0].uid,
                         "nombre": nombre,
-                        "cedula": cedula
+                        "cedula": cedula,
                     }
                 time.sleep(0.5)
 
@@ -265,7 +291,7 @@ class ZKServices:
                 "message": "Empleado registrado pero sin huella.",
                 "huella_id_ZK": None,
                 "nombre": nombre,
-                "cedula": cedula
+                "cedula": cedula,
             }
         except Exception as e:
             logger.error(f"{e}")
@@ -273,57 +299,57 @@ class ZKServices:
                 "success": False,
                 "message": f"Error al registrar empleado: {str(e)}",
             }
-            
+
     def obtener_info_empleado(self, id_empleado: int):
         try:
             conn = self.zk.connect()
             user = conn.get_user(uid=id_empleado)
             conn.disconnect()
-        
+
             if user:
-            # Extraer nombre y cédula del campo 'name' (formato: "nombre-cedula")
-                nombre_cedula = user.name.split('-')
+                # Extraer nombre y cédula del campo 'name' (formato: "nombre-cedula")
+                nombre_cedula = user.name.split("-")
                 if len(nombre_cedula) == 2:
                     nombre = nombre_cedula[0]
                     cedula = nombre_cedula[1]
                 else:
                     nombre = user.name
                     cedula = "No registrada"
-            
+
                 return {
                     "success": True,
                     "nombre": nombre,
                     "cedula": cedula,
                     "user_id": user.user_id,
-                    "privilege": user.privilege
+                    "privilege": user.privilege,
                 }
             return {"success": False, "message": "Empleado no encontrado"}
         except Exception as e:
             return {"success": False, "message": str(e)}
-        
+
     def registrar_empleado_completo(self, nombre: str, cedula: str):
         """Registra un empleado con nombre, cédula y huella en el dispositivo"""
         try:
             # Generar ID válido (1-65535)
             id_empleado = self._generar_id_valido(cedula)
-            
+
             conn = self.zk.connect()
             conn.enable_device()
-            
+
             # 1. Registrar usuario básico
             conn.set_user(
                 uid=id_empleado,
                 name=f"{nombre} ({cedula})",  # Nombre y cédula
                 privilege=0,  # Usuario normal
-                password='',
+                password="",
                 group_id=0,
-                user_id=id_empleado
+                user_id=id_empleado,
             )
             time.sleep(1)  # Pausa para asegurar registro
-            
+
             # 2. Capturar huella digital
             conn.enroll_user(uid=id_empleado, temp_id=0)  # temp_id 0 para primer dedo
-            
+
             # 3. Esperar y verificar huella
             start_time = time.time()
             while (time.time() - start_time) < 30:  # 30 segundos de espera
@@ -331,30 +357,27 @@ class ZKServices:
                 if any(t.uid == id_empleado for t in templates):
                     conn.test_voice(0)  # Sonido de confirmación
                     return {
-                        'success': True,
-                        'message': 'Registro completo exitoso',
-                        'user_id': id_empleado,
-                        'huella_registrada': True
+                        "success": True,
+                        "message": "Registro completo exitoso",
+                        "user_id": id_empleado,
+                        "huella_registrada": True,
                     }
                 time.sleep(0.5)
-            
+
             return {
-                'success': True,
-                'message': 'Usuario registrado sin huella',
-                'user_id': id_empleado,
-                'huella_registrada': False
+                "success": True,
+                "message": "Usuario registrado sin huella",
+                "user_id": id_empleado,
+                "huella_registrada": False,
             }
-            
+
         except Exception as e:
             logger.error(f"Error en registro: {str(e)}")
-            return {
-                'success': False,
-                'message': f'Error en dispositivo: {str(e)}'
-            }
+            return {"success": False, "message": f"Error en dispositivo: {str(e)}"}
         finally:
-            if 'conn' in locals():
+            if "conn" in locals():
                 conn.disconnect()
-    
+
     def _generar_id_valido(self, cedula: str) -> int:
         """Genera un ID de usuario válido para dispositivos ZKTeco"""
         try:
@@ -366,8 +389,7 @@ class ZKServices:
             return int(time.time()) % 65535 or 1
         except:
             return 1  # Valor por defecto seguro
-        
-        
+
     def registrar_empleado_simple(self, nombre: str, id_empleado: int):
         try:
             conn = self.zk.connect()
@@ -379,27 +401,27 @@ class ZKServices:
             next_uid = max(uids) + 1 if uids else 1
 
             # Paso 2: Registrar al usuario con el nuevo ID y nombre
-            conn.set_user(uid=next_uid, name=nombre)
+            conn.set_user(uid=id_empleado, name=nombre)
 
             # Paso 3: Pedir huella para ese uid
-            conn.enroll_user(uid=next_uid)
+            conn.enroll_user(uid=id_empleado)
 
             # Esperamos hasta 30s a que el registro de huella se complete
             start_time = time.time()
             while time.time() - start_time < 30:
                 templates = conn.get_templates()
-                huella = list(filter(lambda t: t.uid == next_uid, templates)) or None
+                huella = list(filter(lambda t: t.uid == id_empleado, templates)) or None
                 if huella:
                     conn.test_voice(0)
-                    nueva_huella = Huella(next_uid, id_empleado=id_empleado)
+                    nueva_huella = Huella(id_empleado, id_empleado=id_empleado)
                     self.huellaService.insertarHuella(nueva_huella)
                     conn.disconnect()
                     return {
                         "success": True,
                         "huella_registrada": True,
-                        "user_id": next_uid,
-                        'huella_info': str(nueva_huella), 
-                        "huella": nueva_huella,  
+                        "user_id": id_empleado,
+                        "huella_info": str(nueva_huella),
+                        "huella": nueva_huella,
                         "message": "Empleado registrado con éxito.",
                     }
                 time.sleep(0.5)
@@ -408,7 +430,7 @@ class ZKServices:
             return {
                 "success": True,
                 "huella_registrada": False,
-                "user_id": next_uid,
+                "user_id": id_empleado,
                 "message": "Empleado registrado pero sin huella.",
             }
 
