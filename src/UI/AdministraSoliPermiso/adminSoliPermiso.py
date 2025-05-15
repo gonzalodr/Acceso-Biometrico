@@ -81,7 +81,7 @@ class AdminSoliPermiso(QWidget):
 
         # Tabla de permisos
         self.tbPermisos = QTableWidget()
-        if self.tbPermisos.columnCount() < 8:
+        if self.tbPermisos.columnCount() < 7:
             self.tbPermisos.setColumnCount(7)
 
         header_labels = [
@@ -198,8 +198,8 @@ class AdminSoliPermiso(QWidget):
                     self.tbPermisos.insertRow(index)
                     self.tbPermisos.setRowHeight(index, 45)
 
-                    fecha_inicio_str = str(solicitud["fecha_inicio"])
-                    fecha_fin_str = str(solicitud["fecha_fin"])
+                    fecha_inicio_str = format_Fecha(str(solicitud["fecha_inicio"]))
+                    fecha_fin_str = format_Fecha(str(solicitud["fecha_fin"]))
 
                     # Agregar datos a la tabla
                     self.addItem_a_tabla(index, 0, solicitud["nombre_empleado"])
@@ -247,7 +247,7 @@ class AdminSoliPermiso(QWidget):
         layout.addSpacing(5)
         layout.addWidget(btnEliminar)
         layout.setContentsMargins(10, 0, 10, 0)
-        self.tbPermisos.setCellWidget(index, 7, button_widget)
+        self.tbPermisos.setCellWidget(index, 6, button_widget)
 
     # Paginado
     def _actualizar_lblPagina(self, numPagina, totalPagina):
@@ -265,7 +265,7 @@ class AdminSoliPermiso(QWidget):
         input_busqueda = self.inputBuscar.text()
         self.busqueda = input_busqueda if input_busqueda else None
         self.paginaActual = 1
-        # self._cargar_tabla()
+        self._cargar_tabla()
 
     def _irPrimeraPagina(self):
         self.paginaActual = 1
@@ -284,22 +284,6 @@ class AdminSoliPermiso(QWidget):
         if self.paginaActual > 1:
             self.paginaActual -= 1
             self._cargar_tabla()
-
-    def _eliminarRegistro(self, idx):
-        dial = DialogoEmergente(
-            "¿?", "¿Seguro que quieres eliminar este registro?", "Question", True, True
-        )
-        if dial.exec() == QDialog.Accepted:
-            result = self.permiso_service.eliminar_permiso(idx)
-            mensaje = (
-                "Se eliminó el registro correctamente."
-                if result["success"]
-                else "Hubo un error al eliminar este registro."
-            )
-            DialogoEmergente(
-                "", mensaje, "Check" if result["success"] else "Error"
-            ).exec()
-            # self._cargar_tabla()
 
     def _crear_permiso(self):
 

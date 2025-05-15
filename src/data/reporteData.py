@@ -1,22 +1,21 @@
-from data.EmpleadoData  import Empleado
-from settings.config    import *      
+from data.EmpleadoData import Empleado
+from settings.config import *
 
-from data.data          import conection
-from mysql.connector    import Error 
-from settings.config    import *
-from settings.logger    import logger
-from datetime           import date,datetime
+from data.data import conection
+from mysql.connector import Error
+from settings.config import *
+from settings.logger import logger
+from datetime import date, datetime
 
-from models.reporte     import Reporte 
-from models.asistencia  import Asistencia
-from models.rol         import Rol
-from models.departamento        import Departamento
-from models.solicitud_permisos  import SolicitudPermiso
-from models.justificacion       import Justificacion
+from models.reporte import Reporte
+from models.asistencia import Asistencia
+from models.rol import Rol
+from models.departamento import Departamento
+from models.solicitud_permisos import SolicitudPermiso
+from models.justificacion import Justificacion
 
 import traceback
 import sys
-
 
 
 class ReporteData:
@@ -321,109 +320,166 @@ class ReporteData:
                 conexion.close()  # Se cierra la conexión a la base de datos
 
         return resultado
-        
-    def obtener_datos_para_reporte(self, limit: int= None, offset: int = None, tipoReporte: list = ['todo'], id_departamento: int = None, id_rol: int = None, id_empleado: int = None, rangoFechas: dict[str, date] = None):
+
+    def obtener_datos_para_reporte(
+        self,
+        limit: int = None,
+        offset: int = None,
+        tipoReporte: list = ["todo"],
+        id_departamento: int = None,
+        id_rol: int = None,
+        id_empleado: int = None,
+        rangoFechas: dict[str, date] = None,
+    ):
         conexion, resultado = conection()
-        if not resultado['success']:
+        if not resultado["success"]:
             return resultado
         try:
-            
+
             if rangoFechas:
                 if len(rangoFechas) != 2:
-                    return {'success': False, 'message': 'Error: Se requieren exactamente 2 fechas (inicio y fin)'}
+                    return {
+                        "success": False,
+                        "message": "Error: Se requieren exactamente 2 fechas (inicio y fin)",
+                    }
                 try:
                     # Convertir strings a objetos date
-                    fecha_inicio    = datetime.strptime(rangoFechas[0], '%Y-%m-%d').date()
-                    fecha_fin       = datetime.strptime(rangoFechas[1], '%Y-%m-%d').date()
-                    
+                    fecha_inicio = datetime.strptime(rangoFechas[0], "%Y-%m-%d").date()
+                    fecha_fin = datetime.strptime(rangoFechas[1], "%Y-%m-%d").date()
+
                     if fecha_inicio > fecha_fin:
-                        return {'success': False, 'message': 'La fecha de inicio no puede ser mayor que la fecha fin'}
-                    rangoFechas = [fecha_inicio,fecha_fin]
+                        return {
+                            "success": False,
+                            "message": "La fecha de inicio no puede ser mayor que la fecha fin",
+                        }
+                    rangoFechas = [fecha_inicio, fecha_fin]
                 except ValueError:
-                    return {'success': False, 'message': 'Formato de fecha inválido. Use YYYY-MM-DD'}
-            
-            REPORTES_VALIDOS = ['todo','justificacion','asistencias','permisos']
-            
+                    return {
+                        "success": False,
+                        "message": "Formato de fecha inválido. Use YYYY-MM-DD",
+                    }
+
+            REPORTES_VALIDOS = ["todo", "justificacion", "asistencias", "permisos"]
+
             if not all(reporte in REPORTES_VALIDOS for reporte in tipoReporte):
-                return {'success':False,'message':f'El tipo de reporte no es valido. Tipos de reportes \'{', '.join(REPORTES_VALIDOS)}\''}
-            
+                return {
+                    "success": False,
+                    "message": f"El tipo de reporte no es valido. Tipos de reportes '{', '.join(REPORTES_VALIDOS)}'",
+                }
+
             with conexion.cursor(dictionary=True) as cursor:
                 datosSelect = []
-                leftJoin    = []
-                condicion   = []
-                valores     = ()
+                leftJoin = []
+                condicion = []
+                valores = ()
 
                 if tipoReporte:
-                    if any(reporte in ['justificacion', 'todo'] for reporte in tipoReporte) :
-                        leftJoin.append(f'LEFT JOIN {TBJUSTIFICACION} J ON J.{TBJUSTIFICACION_ID_EMPLEADO} = E.{TBEMPLEADO_ID}')
+                    if any(
+                        reporte in ["justificacion", "todo"] for reporte in tipoReporte
+                    ):
+                        leftJoin.append(
+                            f"LEFT JOIN {TBJUSTIFICACION} J ON J.{TBJUSTIFICACION_ID_EMPLEADO} = E.{TBEMPLEADO_ID}"
+                        )
                         if rangoFechas:
-                            leftJoin[-1] += f' AND (J.{TBJUSTIFICACION_FECHA} >= %s AND J.{TBJUSTIFICACION_FECHA} <= %s )'
+                            leftJoin[
+                                -1
+                            ] += f" AND (J.{TBJUSTIFICACION_FECHA} >= %s AND J.{TBJUSTIFICACION_FECHA} <= %s )"
                             valores += (rangoFechas[0], rangoFechas[1])
-                        
-                        datosSelect.extend([
-                            f'J.{TBJUSTIFICACION_ID}            AS JustificacionId',
-                            f'J.{TBJUSTIFICACION_ID_EMPLEADO}   AS JustificacionIdEmpleado',
-                            f'J.{TBJUSTIFICACION_ID_ASISTENCIA} AS JustificacionIdAsistencia',
-                            f'J.{TBJUSTIFICACION_FECHA}         AS JustificacionFecha',
-                            f'J.{TBJUSTIFICACION_MOTIVO}        AS JustificacionMotivo',
-                            f'J.{TBJUSTIFICACION_DESCRIPCION}   AS JustificacionDescripcion'
-                        ])
 
-                    if any(reporte in ['asistencias', 'todo']   for reporte in tipoReporte) :
-                        leftJoin.append(f'LEFT JOIN {TBASISTENCIA} A ON A.{TBASISTENCIA_ID_EMPLEADO} = E.{TBEMPLEADO_ID}')
+                        datosSelect.extend(
+                            [
+                                f"J.{TBJUSTIFICACION_ID}            AS JustificacionId",
+                                f"J.{TBJUSTIFICACION_ID_EMPLEADO}   AS JustificacionIdEmpleado",
+                                f"J.{TBJUSTIFICACION_ID_ASISTENCIA} AS JustificacionIdAsistencia",
+                                f"J.{TBJUSTIFICACION_FECHA}         AS JustificacionFecha",
+                                f"J.{TBJUSTIFICACION_MOTIVO}        AS JustificacionMotivo",
+                                f"J.{TBJUSTIFICACION_DESCRIPCION}   AS JustificacionDescripcion",
+                            ]
+                        )
+
+                    if any(
+                        reporte in ["asistencias", "todo"] for reporte in tipoReporte
+                    ):
+                        leftJoin.append(
+                            f"LEFT JOIN {TBASISTENCIA} A ON A.{TBASISTENCIA_ID_EMPLEADO} = E.{TBEMPLEADO_ID}"
+                        )
                         if rangoFechas:
-                            leftJoin[-1] += f' AND (A.{TBASISTENCIA_FECHA} >= %s AND A.{TBASISTENCIA_FECHA} <= %s)'
-                            valores += (rangoFechas[0],rangoFechas[1])
-                        
-                        datosSelect.extend([
-                            f'A.{TBASISTENCIA_ID}                   AS AsistenciaId',
-                            f'A.{TBASISTENCIA_ID_EMPLEADO}          AS AsistenciaIdEmpleado',
-                            f'A.{TBASISTENCIA_FECHA}                AS AsistenciaFecha',
-                            f'A.{TBASISTENCIA_ESTADO_ASISTENCIA}    AS AsistenciaEstado'
-                        ])
-                                
-                    if any(reporte in ['permisos', 'todo']      for reporte in tipoReporte) :
-                        leftJoin.append(f'LEFT JOIN {TBSOLICITUDPERMISOS} SP ON SP.{TBSOLICITUDPERMISOS_ID_EMPLEADO} = E.{TBEMPLEADO_ID}')
+                            leftJoin[
+                                -1
+                            ] += f" AND (A.{TBASISTENCIA_FECHA} >= %s AND A.{TBASISTENCIA_FECHA} <= %s)"
+                            valores += (rangoFechas[0], rangoFechas[1])
+
+                        datosSelect.extend(
+                            [
+                                f"A.{TBASISTENCIA_ID}                   AS AsistenciaId",
+                                f"A.{TBASISTENCIA_ID_EMPLEADO}          AS AsistenciaIdEmpleado",
+                                f"A.{TBASISTENCIA_FECHA}                AS AsistenciaFecha",
+                                f"A.{TBASISTENCIA_ESTADO_ASISTENCIA}    AS AsistenciaEstado",
+                            ]
+                        )
+
+                    if any(reporte in ["permisos", "todo"] for reporte in tipoReporte):
+                        leftJoin.append(
+                            f"LEFT JOIN {TBSOLICITUD_PERMISO} SP ON SP.{TBSOLICITUD_PERMISO_ID_EMPLEADO} = E.{TBEMPLEADO_ID}"
+                        )
                         if rangoFechas:
-                            leftJoin[-1] += f' AND (SP.{TBSOLICITUDPERMISOS_FECHA_INICIO} <= %s AND SP.{TBSOLICITUDPERMISOS_FECHA_FIN} >= %s)'
-                            valores += (rangoFechas[1], rangoFechas[0])  # Nota el orden invertido para el solapamiento
-                        
-                        datosSelect.extend([
-                            f'SP.{TBSOLICITUDPERMISOS_ID}           AS PermisoId',
-                            f'SP.{TBSOLICITUDPERMISOS_ID_EMPLEADO}  AS PermisoIdEmpleado',
-                            f'SP.{TBSOLICITUDPERMISOS_TIPO}         AS PermisoTipo',
-                            f'SP.{TBSOLICITUDPERMISOS_FECHA_INICIO} AS PermisoFechaInicio',
-                            f'SP.{TBSOLICITUDPERMISOS_FECHA_FIN}    AS PermisoFechaFin',
-                            f'SP.{TBSOLICITUDPERMISOS_DESCRIPCION}  AS PermisoDescripcion',
-                            f'SP.{TBSOLICITUDPERMISOS_ESTADO}       AS PermisoEstado'
-                        ])
-                        
-                leftJoin.append(F'INNER JOIN {TBDEPARTAMENTO} D ON D.{TBDEPARTAMENTO_ID} = E.{TBEMPLEADO_DEPARTAMENTO} ')
+                            leftJoin[
+                                -1
+                            ] += f" AND (SP.{TBSOLICITUD_PERMISO_FECHA_INICIO} <= %s AND SP.{TBSOLICITUD_PERMISO_FECHA_FIN} >= %s)"
+                            valores += (
+                                rangoFechas[1],
+                                rangoFechas[0],
+                            )  # Nota el orden invertido para el solapamiento
+
+                        datosSelect.extend(
+                            [
+                                f"SP.{TBSOLICITUD_PERMISO_ID}           AS PermisoId",
+                                f"SP.{TBSOLICITUD_PERMISO_ID_EMPLEADO}  AS PermisoIdEmpleado",
+                                f"SP.{TBSOLICITUD_PERMISO_TIPO}         AS PermisoTipo",
+                                f"SP.{TBSOLICITUD_PERMISO_FECHA_INICIO} AS PermisoFechaInicio",
+                                f"SP.{TBSOLICITUD_PERMISO_FECHA_FIN}    AS PermisoFechaFin",
+                                f"SP.{TBSOLICITUD_PERMISO_DESCRIPCION}  AS PermisoDescripcion",
+                                f"SP.{TBSOLICITUD_PERMISO_ESTADO}       AS PermisoEstado",
+                            ]
+                        )
+
+                leftJoin.append(
+                    f"INNER JOIN {TBDEPARTAMENTO} D ON D.{TBDEPARTAMENTO_ID} = E.{TBEMPLEADO_DEPARTAMENTO} "
+                )
                 if id_departamento:
-                    leftJoin[-1] += f' AND D.{TBDEPARTAMENTO_ID} = %s'
+                    leftJoin[-1] += f" AND D.{TBDEPARTAMENTO_ID} = %s"
                     valores += (id_departamento,)
-                    
-                datosSelect.extend([
-                    f'D.{TBDEPARTAMENTO_ID}     AS DepartamentoId',
-                    f'D.{TBDEPARTAMENTO_NOMBRE} AS DepartamentoNombre',
-                    f'D.{TBDEPARTAMENTO_DESCRIPCION} AS DepartamentoDescripcion'
-                ])
-                
 
-                leftJoin.append(f'INNER JOIN {TBROLEMPLEADO} RE ON RE.{TBROLEMPLEADO_ID_EMPLEADO} = E.{TBEMPLEADO_ID}')
-                leftJoin.append(f'INNER JOIN {TBROL} R ON R.{TBROL_ID} = RE.{TBROLEMPLEADO_ID_ROL}')
+                datosSelect.extend(
+                    [
+                        f"D.{TBDEPARTAMENTO_ID}     AS DepartamentoId",
+                        f"D.{TBDEPARTAMENTO_NOMBRE} AS DepartamentoNombre",
+                        f"D.{TBDEPARTAMENTO_DESCRIPCION} AS DepartamentoDescripcion",
+                    ]
+                )
+
+                leftJoin.append(
+                    f"INNER JOIN {TBROLEMPLEADO} RE ON RE.{TBROLEMPLEADO_ID_EMPLEADO} = E.{TBEMPLEADO_ID}"
+                )
+                leftJoin.append(
+                    f"INNER JOIN {TBROL} R ON R.{TBROL_ID} = RE.{TBROLEMPLEADO_ID_ROL}"
+                )
                 if id_rol:
-                    leftJoin[-1] += f' AND RE.{TBROLEMPLEADO_ID_ROL} = %s'
+                    leftJoin[-1] += f" AND RE.{TBROLEMPLEADO_ID_ROL} = %s"
                     valores += (id_rol,)
-                
-                datosSelect.extend([
-                    f'R.{TBROL_ID}          AS RolId',
-                    f'R.{TBROL_NOMBRE}      AS RolNombre',
-                    f'R.{TBROL_DESCRIPCION} AS RolDescripcion'
-                ])
-                
-                if id_empleado: #siempre tiene que ir de ultimo por que es lo que va en el where
-                    condicion.append(f'E.{TBEMPLEADO_ID} = %s')
+
+                datosSelect.extend(
+                    [
+                        f"R.{TBROL_ID}          AS RolId",
+                        f"R.{TBROL_NOMBRE}      AS RolNombre",
+                        f"R.{TBROL_DESCRIPCION} AS RolDescripcion",
+                    ]
+                )
+
+                if (
+                    id_empleado
+                ):  # siempre tiene que ir de ultimo por que es lo que va en el where
+                    condicion.append(f"E.{TBEMPLEADO_ID} = %s")
                     valores += (id_empleado,)
 
                 # Construcción de la consulta
@@ -437,88 +493,156 @@ class ReporteData:
                             FROM {TBEMPLEADO} E 
                             INNER JOIN {TBPERSONA} P ON P.{TBPERSONA_ID} = E.{TBEMPLEADO_PERSONA}
                             {'\n'.join(leftJoin)}'''
-                
+
                 if condicion:
                     query += f'\nWHERE {" AND ".join(condicion)}'
-                
-                # Agregar paginación
-                if limit and offset: query += f'\nLIMIT {limit} OFFSET {offset}'
 
-                cursor.execute(query,valores)
+                # Agregar paginación
+                if limit and offset:
+                    query += f"\nLIMIT {limit} OFFSET {offset}"
+
+                cursor.execute(query, valores)
                 datos = cursor.fetchall()
 
                 datosReporte = []
                 if datos:
-                    for reporte in datos:                        
+                    for reporte in datos:
                         datosEmpleadoReporte = {}
-                        datosEmpleadoReporte['id_empleado'] = reporte['EmpleadoId']
-                        datosEmpleadoReporte['nombre']      = reporte['NombrePersona']
-                        datosEmpleadoReporte['apellidos']   = reporte['ApellidosPersona']
-                        datosEmpleadoReporte['cedula']      = reporte['ApellidosPersona']
-                        
-                        if (any(reporte in ['justificacion', 'todo'] for reporte in tipoReporte)) and reporte['JustificacionId']:
+                        datosEmpleadoReporte["id_empleado"] = reporte["EmpleadoId"]
+                        datosEmpleadoReporte["nombre"] = reporte["NombrePersona"]
+                        datosEmpleadoReporte["apellidos"] = reporte["ApellidosPersona"]
+                        datosEmpleadoReporte["cedula"] = reporte["ApellidosPersona"]
+
+                        if (
+                            any(
+                                reporte in ["justificacion", "todo"]
+                                for reporte in tipoReporte
+                            )
+                        ) and reporte["JustificacionId"]:
                             justificacion = Justificacion(
-                                id              = reporte['JustificacionId'],
-                                id_empleado     = reporte['JustificacionIdEmpleado'],
-                                id_asistencia   = reporte['JustificacionIdAsistencia'],
-                                fecha           = reporte['JustificacionFecha'],
-                                motivo          = reporte['JustificacionMotivo'],
-                                descripcion     = reporte['JustificacionDescripcion']
+                                id=reporte["JustificacionId"],
+                                id_empleado=reporte["JustificacionIdEmpleado"],
+                                id_asistencia=reporte["JustificacionIdAsistencia"],
+                                fecha=reporte["JustificacionFecha"],
+                                motivo=reporte["JustificacionMotivo"],
+                                descripcion=reporte["JustificacionDescripcion"],
                             )
-                            datosEmpleadoReporte['justificacion'] =justificacion
-                        
-                        if (any(reporte in ['asistencias', 'todo']   for reporte in tipoReporte)) and reporte['AsistenciaId']:
+                            datosEmpleadoReporte["justificacion"] = justificacion
+
+                        if (
+                            any(
+                                reporte in ["asistencias", "todo"]
+                                for reporte in tipoReporte
+                            )
+                        ) and reporte["AsistenciaId"]:
                             asistencia = Asistencia(
-                                id          = reporte['AsistenciaId'],
-                                id_empleado = reporte['AsistenciaIdEmpleado'],
-                                fecha       = reporte['AsistenciaFecha'],
-                                estado_asistencia = reporte['AsistenciaEstado']
+                                id=reporte["AsistenciaId"],
+                                id_empleado=reporte["AsistenciaIdEmpleado"],
+                                fecha=reporte["AsistenciaFecha"],
+                                estado_asistencia=reporte["AsistenciaEstado"],
                             )
-                            datosEmpleadoReporte['asistencia'] = asistencia
-                        
-                        if (any(reporte in ['permisos', 'todo']      for reporte in tipoReporte)) and reporte['PermisoId']:
+                            datosEmpleadoReporte["asistencia"] = asistencia
+
+                        if (
+                            any(
+                                reporte in ["permisos", "todo"]
+                                for reporte in tipoReporte
+                            )
+                        ) and reporte["PermisoId"]:
                             permiso = SolicitudPermiso(
-                                id          = reporte['PermisoId'],
-                                id_empleado = reporte['PermisoIdEmpleado'],
-                                tipo        = reporte['PermisoTipo'],
-                                fecha_inicio= reporte['PermisoFechaInicio'],
-                                fecha_fin   = reporte['PermisoFechaFin'],
-                                descripcion = reporte['PermisoDescripcion'],
-                                estado      = reporte['PermisoEstado']
+                                id=reporte["PermisoId"],
+                                id_empleado=reporte["PermisoIdEmpleado"],
+                                tipo=reporte["PermisoTipo"],
+                                fecha_inicio=reporte["PermisoFechaInicio"],
+                                fecha_fin=reporte["PermisoFechaFin"],
+                                descripcion=reporte["PermisoDescripcion"],
+                                estado=reporte["PermisoEstado"],
                             )
-                            datosEmpleadoReporte['permisos'] = permiso
-                        
-                        if reporte['DepartamentoId']:
+                            datosEmpleadoReporte["permisos"] = permiso
+
+                        if reporte["DepartamentoId"]:
                             departamento = Departamento(
-                                id          = reporte['DepartamentoId'],
-                                nombre      = reporte['DepartamentoNombre'],
-                                descripcion = reporte['DepartamentoDescripcion']
+                                id=reporte["DepartamentoId"],
+                                nombre=reporte["DepartamentoNombre"],
+                                descripcion=reporte["DepartamentoDescripcion"],
                             )
-                            datosEmpleadoReporte['departamento'] = departamento
-                            
-                        if reporte['RolId']:
+                            datosEmpleadoReporte["departamento"] = departamento
+
+                        if reporte["RolId"]:
                             rol = Rol(
-                                id      = reporte['RolId'],
-                                nombre  = reporte['RolNombre'],
-                                descripcion = reporte['RolDescripcion']
+                                id=reporte["RolId"],
+                                nombre=reporte["RolNombre"],
+                                descripcion=reporte["RolDescripcion"],
                             )
-                            datosEmpleadoReporte['rol'] = rol
-                            
+                            datosEmpleadoReporte["rol"] = rol
+
                         datosReporte.append(datosEmpleadoReporte)
-                        
-                    return{
-                        'success':True,
-                        'reporte':datosReporte,
-                        'message':'Se obtuvieron los datos correctamente.'
+
+                    return {
+                        "success": True,
+                        "reporte": datosReporte,
+                        "message": "Se obtuvieron los datos correctamente.",
                     }
                 else:
-                    return {'success': True,'reporte':datosReporte,'message': 'No se encontraron datos'}
+                    return {
+                        "success": True,
+                        "reporte": datosReporte,
+                        "message": "No se encontraron datos",
+                    }
         except Exception as e:
-            
+
             exc_type, exc_value, exc_traceback = sys.exc_info()
             errores = traceback.extract_tb(exc_traceback)[-1]
-            logger.error(f'{e} - LIN&COL {errores.lineno}:{errores.colno if hasattr(errores, 'colno') else 'N/A'}')
-            return {'success': False, 'message': 'Ocurrió un error al obtener los datos para el reporte.'}
+            logger.error(
+                f"{e} - LIN&COL {errores.lineno}:{errores.colno if hasattr(errores, 'colno') else 'N/A'}"
+            )
+            return {
+                "success": False,
+                "message": "Ocurrió un error al obtener los datos para el reporte.",
+            }
         finally:
-            if conexion: conexion.close()
-        
+            if conexion:
+                conexion.close()
+
+    def get_reporte_by_empleado(self, reporte_id):
+        conexion, resultado = conection()
+        if not resultado["success"]:
+            return resultado
+
+        try:
+            cursor = conexion.cursor()
+            # Consulta SQL para obtener el perfil por su ID
+            query = f"""SELECT
+                            {TBREPORTE_ID_EMPLEADO}, 
+                            {TBREPORTE_FECHA_GENERACION}, 
+                            {TBREPORTE_TIPO_REPORTE}, 
+                            {TBREPORTE_CONTENIDO},
+                            {TBREPORTE_ID} 
+                        FROM {TBREPORTE} 
+                        WHERE {TBREPORTE_ID} = %s"""
+
+            cursor.execute(query, (reporte_id,))  # busca segun el id
+            data = cursor.fetchone()  # se obtiene el resultado
+
+            if data:  # si se encuentra el perfil
+                reporte = Reporte(
+                    id_empleado=data[0],
+                    fecha_generacion=data[1],
+                    tipo_reporte=data[2],
+                    contenido=data[3],
+                    id=data[4],
+                )
+                resultado["success"] = True
+                resultado["data"] = reporte
+            else:
+                resultado["success"] = False
+                resultado["message"] = (
+                    "No se encontró ningún reporte con el ID proporcionado."
+                )
+        except Exception as e:
+            resultado["success"] = False
+            resultado["message"] = f"Error al obtener reporte: {e}"
+        finally:
+            if conexion:
+                conexion.close()
+        return resultado
