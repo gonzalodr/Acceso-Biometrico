@@ -7,6 +7,7 @@ from UI.DialogoEmergente import DialogoEmergente
 from services.empleadoServices import EmpleadoServices
 from models.persona import Persona
 from datetime import datetime
+from models.permiso_perfil import Permiso_Perfil
 
 class AdminEmpleado(QWidget):
     signalCerrar = Signal()
@@ -19,7 +20,7 @@ class AdminEmpleado(QWidget):
     def __init__(self, parent= None, permiso= None) -> None:
         super().__init__(parent)
         self.setObjectName("admin")
-        self.permisoUsuario = permiso
+        self.permisoUsuario:Permiso_Perfil = permiso
         cargar_estilos('claro','admin.css',self)
 
         layout = QVBoxLayout()
@@ -244,11 +245,15 @@ class AdminEmpleado(QWidget):
             self.cargarTabla()
 
     def verMasInformacion(self, id_empleado:int):
-        print(f'\n\neliminar id {id_empleado}\n\n')
         inf = informacionEmpleado(id_empleado)
         inf.exec()
 
     def eliminarEmpleado(self, id_empleado:int):
+        if not self.permisoUsuario.eliminar:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta accion.","Error",True,False)
+            dial.exec()
+            return
+        
         texto = "Se eliminaran todos los datos asociados a este empleado."
         texto += "\n¿Quieres eliminar este empleado?"
         dial = DialogoEmergente("¡Advertencia!",texto,"Warning",True,True)
@@ -265,13 +270,20 @@ class AdminEmpleado(QWidget):
         self.cargarTabla()
     
     def editarEmpleado(self,id_empleado:int):
-        print(f'\n\nEditar id {id_empleado}\n\n')
+        if not self.permisoUsuario.editar:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta accion.","Error",True,False)
+            dial.exec()
+            return
         form = formEmpleado(titulo='Editar empleado',id_empleado = id_empleado)
         form.finished.connect(form.deleteLater)
         form.exec()
         self.cargarTabla()
 
     def crearEmpleado(self):
+        if not self.permisoUsuario.crear:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta accion.","Error",True,False)
+            dial.exec()
+            return
         form = formEmpleado()
         form.finished.connect(form.deleteLater)
         form.exec()
