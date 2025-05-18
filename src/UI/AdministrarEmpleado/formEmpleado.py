@@ -5,7 +5,6 @@ from Utils.Utils        import *
 from functools          import partial
 
 from services.empleadoServices  import EmpleadoServices
-from services.usuarioService    import UsuarioServices
 from services.rolService        import RolServices
 from services.departamentoService import DepartamentoServices
 from services.personaService    import PersonaServices
@@ -16,7 +15,7 @@ from services.ZKService        import ZKServices
 from settings.logger         import logger
 from UI.DialogoEmergente import DialogoEmergente
 
-from models.usuario     import Usuario
+
 from models.persona     import Persona
 from models.telefono    import Telefono
 from settings.config    import ZKTECA_CONFIG
@@ -28,11 +27,9 @@ import re
 class formEmpleado(QDialog):
     idEmpleado  = None
     fotografia  = None
-    idUsuario   = None
     idPersona   = None
 
     emplServices = EmpleadoServices()
-    userServices = UsuarioServices()
     depaServices = DepartamentoServices()
     rolServices  = RolServices()
     perServices  = PersonaServices()
@@ -44,6 +41,7 @@ class formEmpleado(QDialog):
         self.setObjectName('form')
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setMinimumSize(QSize(1050,700))
+        self.layoutPrinUsuario = QVBoxLayout()
         
         cargar_estilos('claro','formEm.css',self)
         
@@ -488,15 +486,12 @@ class formEmpleado(QDialog):
         )
 
         listaTelefonos  = self.extraerTelefonos()
-        dataUsuario     = self.extraerUsuarios()
 
         datos = {
             'persona'       : persona,
             'listaTelefonos': listaTelefonos,
-            'usuario'       : dataUsuario.get('usuario'),
             'id_departamento':self.inDep.currentData(),
             'id_rol'        : self.inRol.currentData(),
-            'id_perfil'     : dataUsuario.get('idperfil')
         }
 
         return datos
@@ -520,26 +515,8 @@ class formEmpleado(QDialog):
                     listaTelefonos.append(telefono)
         return listaTelefonos
 
-    #extraer usuarios
-    def extraerUsuarios(self):
-        if self.layoutPrinUsuario.itemAt(1) is None:
-            return {'usuario':None,'idperfil':None}
-        
-        layout = self.layoutPrinUsuario.itemAt(1).layout()
-        #obtengo los valores de cada numero ingresado junto con su tipo
-        id_user     = layout.property('id_usuario')
-        usuario     = layout.itemAt(1).widget().text()
-        contrasena  = layout.itemAt(3).widget().text()
-        idperfil    = layout.itemAt(8).widget().currentData()
-        if not usuario and not contrasena:
-            return {'usuario':None,'idperfil':None}
-        
-        usuario = Usuario(
-                usuario     = usuario, 
-                contrasena  = contrasena if len(contrasena.strip()) > 0 else None,
-                id          = id_user
-        )
-        return {'usuario':usuario,'idperfil':idperfil}
+ 
+    
 
     #precargando formulario en caso de que se este actualizando
     def precargarFormulario(self):
@@ -551,11 +528,9 @@ class formEmpleado(QDialog):
 
         datos   = result.get('empleado')
         persona:Persona = datos.get('persona')  #objeto Persona
-        usuario:Usuario = datos.get('usuario')  #objeto Usuario
-        dictPerfil = datos.get('pefilUsuario')  #diccionario
         dictRolEmp = datos.get('rolEmpleado')   #diccionario
         departamen = datos.get('departamento')  #int
-        listaTelef = datos.get('listaTelefonos')#telefonos del usuario
+        listaTelef = datos.get('listaTelefonos')#telefonos del 
 
         self.idPersona = persona.id
         self.fotografia = persona.foto
@@ -619,14 +594,6 @@ class formEmpleado(QDialog):
             self.errCorreo.setText("El correo es obligatorio.")
             return False
     
-    def validar_usuario(self, usuario,id,errorlbl:QLabel):
-        errorlbl.clear()
-        if usuario:
-            result = self.userServices.verificarUsuario(usuario,id)
-            if result:
-                errorlbl.setText('El nombre de usuario ya se encuentra registrado.')
-                return False
-            return True
         
     #validar numeros de telefonos
     def validar_listaTelefonos(self):
@@ -640,7 +607,7 @@ class formEmpleado(QDialog):
                 tipoCont            = item.itemAt(3).widget().text().strip()
                 lblError: QLabel    = item.itemAt(4).widget()
 
-                # Validar si el usuario ingresó algo en alguno de los inputs
+
                 if numero or tipoCont:
                     if not numero:
                         lblError.setText('Debes agregar un número telefónico.')
@@ -669,52 +636,7 @@ class formEmpleado(QDialog):
 
         return valido
     
-    #validad nombre usuario
-    def validar_usuario(self):
-        if self.layoutPrinUsuario.itemAt(1) is None:
-            return True  # No hay usuario en el formulario, se considera válido
 
-        layout = self.layoutPrinUsuario.itemAt(1).layout()
-        
-        # Obtengo los valores de los campos
-        id_user     = layout.property('id_usuario')
-        usuario     = layout.itemAt(1).widget().text().strip()
-        contrasena  = layout.itemAt(3).widget().text().strip()
-        lblError: QLabel = layout.itemAt(5).widget()
-
-        # Limpiar mensaje de error
-        lblError.clear()
-        if not usuario and not contrasena:
-            return True
-
-        # Validación del nombre de usuario
-        if not usuario:
-            lblError.setText('Debes agregar el nombre de usuario.')
-            return False  # Validación fallida
-        else:
-            result = self.userServices.verificarUsuario(usuario,id_user)
-            if result:
-                lblError.setText('El usuario no es valido, este usuario ya existe.')
-                return False
-
-        # Validación de la contraseña
-        if id_user is None:
-            # Si id_user es None, la contraseña es obligatoria
-            if not contrasena:
-                lblError.setText('Debes agregar una contraseña.')
-                return False  # Validación fallida
-            result = self.userServices.verificarContraseña(contrasena)
-            if not result['success']:
-                lblError.setText(result['message'])
-                return False  # Validación fallida
-        else:
-            # Si id_user existe, validar solo si se ingresó una nueva contraseña
-            if contrasena:
-                result = self.userServices.verificarContraseña(contrasena)
-                if not result['success']:
-                    lblError.setText(result['message'])
-                    return False  # Validación fallida
-        return True 
 
     #validar datos personales
     def validar_datos_personales(self):
@@ -925,113 +847,121 @@ class formEmpleado(QDialog):
     """
     
     def registrarDatos(self):
-        """Maneja el registro completo del empleado incluyendo huella digital"""
+        """Maneja el registro o actualización del empleado,
+           preguntando si quiere actualizar la huella si ya existe."""
         try:
-            # 1. Validar todos los campos obligatorios
+            # 1. Validar campos obligatorios
             if not self.validar_datos_personales():
                 DialogoEmergente('', 'Complete todos los campos obligatorios', 'Error', True).exec()
                 return
 
-            # 2. Extraer datos del formulario
+            # 2. Extraer datos
             datos = self.extraerDatosEmpleados()
-            
-            # 3. Mostrar diálogo de confirmación
-            confirmacion = DialogoEmergente(
-                'Confirmar Registro',
-                '¿Desea registrar al empleado y capturar su huella digital?',
+
+            # 3. Confirmar acción principal
+            modo = "actualizar" if self.idEmpleado else "registrar"
+            titulo = f"Confirmar {modo.capitalize()}"
+            confirm = DialogoEmergente(
+                titulo,
+                f"¿Desea {modo} al empleado y capturar su huella digital?",
                 'Question',
                 True,
                 True
             )
-            
-            if confirmacion.exec() != QDialog.Accepted:
+            if confirm.exec() != QDialog.Accepted:
                 return
 
-            # 4. Mostrar diálogo de progreso (sin intentar modificar lblMensaje)
-            dialogo_progreso = DialogoEmergente(
-                'Procesando Registro',
-                'Guardando datos del empleado...',
-                'Info',
-                False
-            )
-            dialogo_progreso.show()
-            QApplication.processEvents()
+            # 4. Verificar conexión con ZKT antes de tocar la BD
+            if not is_device_reachable(ZKTECA_CONFIG["host"], ZKTECA_CONFIG["port"]):
+                DialogoEmergente(
+                    'Error',
+                    'No hay conexión con el dispositivo biométrico ZKT.\n'
+                    'No se pudo completar la operación.',
+                    'Error',
+                    True
+                ).exec()
+                return
 
-            # 5. Registrar datos básicos en la base de datos
+            # 5. Guardar en BD
             if self.idEmpleado:
                 resultado_db = self.emplServices.actualizar_empleado(self.idEmpleado, datos)
             else:
                 resultado_db = self.emplServices.crear_empleado(datos)
 
             if not resultado_db['success']:
-                dialogo_progreso.close()
-                DialogoEmergente('', f"Error en registro: {resultado_db['message']}", 'Error', True).exec()
-                return
-            
-            if is_device_reachable(ZKTECA_CONFIG["host"], ZKTECA_CONFIG["port"]):
-                print("conectado")
-            else:
-                print("desconectado")
-        
-            
-            # 6. Crear nuevo diálogo para captura de huella (evitando modificar lblMensaje)
-            dialogo_progreso.close()
-            dialogo_huella = DialogoEmergente(
-                'Captura de Huella',
-                'Por favor, coloque el dedo en el lector biométrico...',
-                'Info',
-                False
-            )
-            dialogo_huella.show()
-            QApplication.processEvents()
+                return  # si falla BD, salimos silenciosos
 
-            # 7. Registrar huella digital
-            zk_service = ZKServices()
-            nombre_completo = datos['persona'].nombre  # Solo el nombre, sin apellidos
+            empleado_id = resultado_db.get('id') or self.idEmpleado
 
+            # 6. Si estamos actualizando, preguntar sobre huella existente
+            actualizar_huella = True
+            if self.idEmpleado:
+                zk = ZKServices()
+                if zk.contar_huellas_empleado(empleado_id) > 0:
+                    pregunta = DialogoEmergente(
+                        'Huella Registrada',
+                        'Este empleado ya tiene huella registrada.\n'
+                        '¿Desea actualizarla?',
+                        'Question',
+                        True,
+                        True
+                    )
+                    if pregunta.exec() != QDialog.Accepted:
+                        actualizar_huella = False
 
-            
-            resultado_huella = zk_service.registrar_empleado_simple(nombre_completo, self.emplServices.obtener_id_empleado())
+            # 7. Captura de huella si es alta nueva o si desea actualizarla
+            if not self.idEmpleado or actualizar_huella:
+                dialogo_huella = DialogoEmergente(
+                    'Captura de Huella',
+                    'Por favor, coloque el dedo en el lector biométrico...',
+                    'Info',
+                    False
+                )
+                dialogo_huella.show()
+                QApplication.processEvents()
 
-            # 8. Manejar resultados
-            dialogo_huella.close()
-            
-            if not resultado_huella['success']:
+                zk = ZKServices()
+                nombre = datos['persona'].nombre
+                res = zk.registrar_empleado_simple(nombre, empleado_id)
+                dialogo_huella.close()
+
+                if not res.get('success', False):
+                    DialogoEmergente(
+                        'Error en Huella',
+                        f"No se pudo capturar la huella: {res.get('message','')}",
+                        'Error',
+                        True
+                    ).exec()
+                    return
+
                 DialogoEmergente(
-                    'Error en Huella',
-                    f"Empleado registrado pero error en huella: {resultado_huella['message']}",
-                    'Error',
-                    True
-                ).exec()
-            elif resultado_huella.get('huella_registrada', False):
-                DialogoEmergente(
-                    'Registro Exitoso',
-                    'Empleado registrado con huella digital correctamente',
+                    'Completo',
+                    'Huella capturada correctamente.',
                     'Check',
                     True
                 ).exec()
-                self.reject()
             else:
+                # Actualización sin cambiar huella
                 DialogoEmergente(
-                    'Registro Parcial',
-                    'Empleado registrado pero no se capturó huella digital',
-                    'Warning',
+                    'Actualización Completa',
+                    'Datos del empleado actualizados correctamente (huella no modificada).',
+                    'Check',
                     True
                 ).exec()
-                self.reject()
+
+            self.accept()
 
         except Exception as e:
-            if 'dialogo_progreso' in locals():
-                dialogo_progreso.close()
             if 'dialogo_huella' in locals():
                 dialogo_huella.close()
-            logger.error(f"Error en registro completo: {str(e)}")
+            logger.error(f"Error en registrarDatos: {e}")
             DialogoEmergente(
                 'Error',
-                f'Ocurrió un error inesperado:\n\n{str(e)}',
+                f'Ocurrió un error inesperado:\n{e}',
                 'Error',
                 True
             ).exec()
+
 
 
    
