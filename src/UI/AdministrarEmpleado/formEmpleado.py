@@ -12,6 +12,7 @@ from services.rolService        import RolServices
 from services.perfilService     import PerfilServices
 from services.telefonoServices  import TelefonoServices
 from services.ZKService        import ZKServices 
+from services.huellaService import HuellaService
 from settings.logger         import logger
 from UI.DialogoEmergente import DialogoEmergente
 
@@ -28,6 +29,8 @@ class formEmpleado(QDialog):
     idEmpleado  = None
     fotografia  = None
     idPersona   = None
+    nombre_original = None  
+    cedula_original = None 
 
     emplServices = EmpleadoServices()
     depaServices = DepartamentoServices()
@@ -35,6 +38,7 @@ class formEmpleado(QDialog):
     perServices  = PersonaServices()
     perfilServices = PerfilServices()
     telServices  = TelefonoServices()
+    HueServices = HuellaService()
 
     def __init__(self, parent = None, titulo = 'Registrar empleado', id_empleado = None):
         super().__init__(parent)
@@ -532,6 +536,8 @@ class formEmpleado(QDialog):
         departamen = datos.get('departamento')  #int
         listaTelef = datos.get('listaTelefonos')#telefonos del 
 
+        self.nombre_original = persona.nombre
+        self.cedula_original = persona.cedula
         self.idPersona = persona.id
         self.fotografia = persona.foto
 
@@ -845,72 +851,149 @@ class formEmpleado(QDialog):
             self.reject()
     
     """
+
+    def obtenerHuella(self, id_empleado: int):
+        result = self.HueServices.buscar_huellas_por_empleado(id_empleado)
+
+        if not result["success"]:
+            dial = DialogoEmergente("", "Error al obtener la huella del empleado.", "Error", True)
+            dial.exec()
+            return None
+
+        if result["exists"]:
+            return result["id_huella"]  # Retorna el ID de la huella
+        else:
+            return None
     
     def registrarDatos(self):
-        """Maneja el registro o actualización del empleado,
-           preguntando si quiere actualizar la huella si ya existe."""
         try:
-            # 1. Validar campos obligatorios
+            # 1. Validar todos los campos obligatorios
             if not self.validar_datos_personales():
                 DialogoEmergente('', 'Complete todos los campos obligatorios', 'Error', True).exec()
                 return
 
-            # 2. Extraer datos
+            # 2. Extraer datos del formulario
             datos = self.extraerDatosEmpleados()
 
-            # 3. Confirmar acción principal
-            modo = "actualizar" if self.idEmpleado else "registrar"
-            titulo = f"Confirmar {modo.capitalize()}"
-            confirm = DialogoEmergente(
-                titulo,
-                f"¿Desea {modo} al empleado y capturar su huella digital?",
-                'Question',
-                True,
-                True
+            
+            # 3. Verificar conexión del dispositivo de huella
+            zk_service = ZKServices()
+            if not zk_service.verificar_conexion():
+                DialogoEmergente('', 'El dispositivo de huella dactilar está desconectado', 'Error', True).exec()
+                return
+
+            # Mostrar diálogo de progreso inicial
+            dialogo_progreso = DialogoEmergente(
+                'Procesando Registro',
+                'Procesando datos del empleado...',
+                'Info',
+                False
             )
-            if confirm.exec() != QDialog.Accepted:
-                return
+            dialogo_progreso.show()
+            QApplication.processEvents()
 
-            # 4. Verificar conexión con ZKT antes de tocar la BD
-            if not is_device_reachable(ZKTECA_CONFIG["host"], ZKTECA_CONFIG["port"]):
-                DialogoEmergente(
-                    'Error',
-                    'No hay conexión con el dispositivo biométrico ZKT.\n'
-                    'No se pudo completar la operación.',
-                    'Error',
-                    True
-                ).exec()
-                return
-
-            # 5. Guardar en BD
-            if self.idEmpleado:
-                resultado_db = self.emplServices.actualizar_empleado(self.idEmpleado, datos)
-            else:
-                resultado_db = self.emplServices.crear_empleado(datos)
-
-            if not resultado_db['success']:
-                return  # si falla BD, salimos silenciosos
-
-            empleado_id = resultado_db.get('id') or self.idEmpleado
-
-            # 6. Si estamos actualizando, preguntar sobre huella existente
-            actualizar_huella = True
-            if self.idEmpleado:
-                zk = ZKServices()
-                if zk.contar_huellas_empleado(empleado_id) > 0:
-                    pregunta = DialogoEmergente(
-                        'Huella Registrada',
-                        'Este empleado ya tiene huella registrada.\n'
-                        '¿Desea actualizarla?',
+            # Lógica diferente para nuevo registro vs actualización
+            if self.idEmpleado:  # Modo actualización
+                # Verificar si el empleado ya tiene huella registrada
+                nombre_completo = self.nombre_original + "-" + self.cedula_original
+                tiene_huella = zk_service.verificar_huella_por_nombre(nombre_completo)
+                
+                if not tiene_huella:
+                    # Mostrar diálogo para captura de huella
+                    dialogo_progreso.close()
+                    confirmacion = DialogoEmergente(
+                        'Captura de Huella',
+                        'El empleado no tiene huella registrada. ¿Desea registrar una ahora?',
                         'Question',
                         True,
                         True
                     )
-                    if pregunta.exec() != QDialog.Accepted:
-                        actualizar_huella = False
+                    
+                    if confirmacion.exec() == QDialog.Accepted:
+                        dialogo_huella = DialogoEmergente(
+                            'Captura de Huella',
+                            'Por favor, coloque el dedo en el lector biométrico...',
+                            'Info',
+                            False
+                        )
+                        dialogo_huella.show()
+                        QApplication.processEvents()
+                        
+                        # Registrar huella con bandera=True para eliminar posibles registros previos
+                        resultado_huella = zk_service.registrar_empleado_simple(
+                            nombre_completo, 
+                            self.idEmpleado, 
+                            True
+                        )
+                        
+                        dialogo_huella.close()
+                        
+                        if not resultado_huella['success']:
+                            DialogoEmergente(
+                                'Error en Huella',
+                                f"Error al registrar huella: {resultado_huella['message']}",
+                                'Error',
+                                True
+                            ).exec()
+                            return
+                
+                # Actualizar datos del empleado en la base de datos
+                resultado_db = self.emplServices.actualizar_empleado(self.idEmpleado, datos)
+                
+                dialogo_progreso.close()
+                
+                if not resultado_db['success']:
+                    DialogoEmergente('', f"Error al actualizar: {resultado_db['message']}", 'Error', True).exec()
+                    return
+                
+                mensaje = "Empleado actualizado correctamente"
+                if not tiene_huella and 'resultado_huella' in locals() and resultado_huella.get('huella_registrada', False):
+                    mensaje += " con huella digital"
+                elif not tiene_huella:
+                    mensaje += " pero sin huella digital"
+                    
+                DialogoEmergente(
+                    'Actualización Exitosa',
+                    mensaje,
+                    'Check',
+                    True
+                ).exec()
+                self.reject()
+                
+            else:  # Modo nuevo registro
+                # Mostrar diálogo de confirmación
+                dialogo_progreso.close()
+                nombre_completo = datos['persona'].nombre + "-" + datos['persona'].cedula
+                confirmacion = DialogoEmergente(
+                    'Confirmar Registro',
+                    '¿Desea registrar al empleado y capturar su huella digital?',
+                    'Question',
+                    True,
+                    True
+                )
+                
+                if confirmacion.exec() != QDialog.Accepted:
+                    return
 
-            # 7. Captura de huella si es alta nueva o si desea actualizarla
-            if not self.idEmpleado or actualizar_huella:
+                # Registrar datos básicos en la base de datos
+                dialogo_progreso = DialogoEmergente(
+                    'Procesando Registro',
+                    'Guardando datos del empleado...',
+                    'Info',
+                    False
+                )
+                dialogo_progreso.show()
+                QApplication.processEvents()
+                
+                resultado_db = self.emplServices.crear_empleado(datos)
+
+                if not resultado_db['success']:
+                    dialogo_progreso.close()
+                    DialogoEmergente('', f"Error en registro: {resultado_db['message']}", 'Error', True).exec()
+                    return
+
+                # Registrar huella digital
+                dialogo_progreso.close()
                 dialogo_huella = DialogoEmergente(
                     'Captura de Huella',
                     'Por favor, coloque el dedo en el lector biométrico...',
@@ -920,50 +1003,52 @@ class formEmpleado(QDialog):
                 dialogo_huella.show()
                 QApplication.processEvents()
 
-                zk = ZKServices()
-                nombre = datos['persona'].nombre
-                res = zk.registrar_empleado_simple(nombre, empleado_id)
-                dialogo_huella.close()
+                resultado_huella = zk_service.registrar_empleado_simple(
+                    nombre_completo, 
+                    self.emplServices.obtener_id_empleado(), 
+                    False
+                )
 
-                if not res.get('success', False):
+                # Manejar resultados
+                dialogo_huella.close()
+                
+                if not resultado_huella['success']:
                     DialogoEmergente(
                         'Error en Huella',
-                        f"No se pudo capturar la huella: {res.get('message','')}",
+                        f"Empleado registrado pero error en huella: {resultado_huella['message']}",
                         'Error',
                         True
+                        
                     ).exec()
+
+                    DialogoEmergente(
+                        'Registro Parcial',
+                        'Empleado registrado pero no se capturó huella digital',
+                        'Warning',
+                        True
+                    ).exec()
+                    
+                    # Finalmente cerrar el formulario
+                    self.reject()
                     return
-
-                DialogoEmergente(
-                    'Completo',
-                    'Huella capturada correctamente.',
-                    'Check',
-                    True
-                ).exec()
-            else:
-                # Actualización sin cambiar huella
-                DialogoEmergente(
-                    'Actualización Completa',
-                    'Datos del empleado actualizados correctamente (huella no modificada).',
-                    'Check',
-                    True
-                ).exec()
-
-            self.accept()
+                elif resultado_huella.get('huella_registrada', False):
+                    DialogoEmergente(
+                        'Registro Exitoso',
+                        'Empleado registrado con huella digital correctamente',
+                        'Check',
+                        True
+                    ).exec()
+                    self.reject()
 
         except Exception as e:
+            if 'dialogo_progreso' in locals():
+                dialogo_progreso.close()
             if 'dialogo_huella' in locals():
                 dialogo_huella.close()
-            logger.error(f"Error en registrarDatos: {e}")
+            logger.error(f"Error en registro completo: {str(e)}")
             DialogoEmergente(
                 'Error',
-                f'Ocurrió un error inesperado:\n{e}',
+                f'Ocurrió un error inesperado:\n\n{str(e)}',
                 'Error',
                 True
             ).exec()
-
-            
-
-
-
-   

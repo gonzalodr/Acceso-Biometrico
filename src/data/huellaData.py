@@ -225,8 +225,8 @@ class HuellaData:
             if conexion:
                 conexion.close()
 
+    @staticmethod
     def eliminar_huella(id_huella: int):
-
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
