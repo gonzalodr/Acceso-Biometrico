@@ -962,6 +962,8 @@ class formEmpleado(QDialog):
                 True
             ).exec()
 
+            
+
 
 
    

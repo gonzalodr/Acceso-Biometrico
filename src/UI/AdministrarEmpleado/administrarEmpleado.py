@@ -5,6 +5,8 @@ from UI.AdministrarEmpleado.formEmpleado import formEmpleado
 from UI.AdministrarEmpleado.imformacionEmpleado import informacionEmpleado
 from UI.DialogoEmergente import DialogoEmergente
 from services.empleadoServices import EmpleadoServices
+from services.huellaService import HuellaService
+from services.ZKService        import ZKServices 
 from models.persona import Persona
 from datetime import datetime
 from models.permiso_perfil import Permiso_Perfil
@@ -15,6 +17,7 @@ class AdminEmpleado(QWidget):
     ultimaPagina = 1
     busqueda = None
     EmpServices = EmpleadoServices()
+    HueServices = HuellaService()
 
 
     def __init__(self, parent= None, permiso= None) -> None:
@@ -248,25 +251,52 @@ class AdminEmpleado(QWidget):
         inf = informacionEmpleado(id_empleado)
         inf.exec()
 
-    def eliminarEmpleado(self, id_empleado:int):
-        if not self.permisoUsuario.eliminar:
-            dial = DialogoEmergente("","No tienes permiso para realizar esta accion.","Error",True,False)
+
+    def obtenerHuella(self, id_empleado: int):
+        result = self.HueServices.buscar_huellas_por_empleado(id_empleado)
+
+        if not result["success"]:
+            dial = DialogoEmergente("", "Error al obtener la huella del empleado.", "Error", True)
             dial.exec()
-            return
-        
-        texto = "Se eliminaran todos los datos asociados a este empleado."
+            return None
+
+        if result["exists"]:
+            return result["id_huella"]  # Retorna el ID de la huella
+        else:
+            return None
+
+    def eliminarEmpleado(self, id_empleado: int):
+        texto = "Se eliminarán todos los datos asociados a este empleado."
         texto += "\n¿Quieres eliminar este empleado?"
-        dial = DialogoEmergente("¡Advertencia!",texto,"Warning",True,True)
-        print(f'id empleado: {id_empleado}')
+        dial = DialogoEmergente("¡Advertencia!", texto, "Warning", True, True)
+
         if dial.exec() == QDialog.Accepted:
+            # Obtener la huella del empleado antes de eliminarlo
+            id_huella = self.obtenerHuella(id_empleado)
+            zk_service = ZKServices()
+            zk_service.eliminar_huella(id_huella)
+
+
+            # Eliminar al empleado
             result = self.EmpServices.eliminar_empleado(id_empleado)
 
             if not result['success']:
-                dial = DialogoEmergente("",texto,"Error",True)
+                dial = DialogoEmergente("", result['message'], "Error", True)
                 dial.exec()
                 return
-            dial = DialogoEmergente("",result['message'],"Check",True)
+
+            # Si el empleado fue eliminado, eliminar su huella si existe
+            if id_huella is not None:
+
+                result_huella = self.HueServices.eliminarHuella(id_huella)
+                if not result_huella['success']:
+                    dial = DialogoEmergente("", "Empleado eliminado, pero no se pudo eliminar la huella.", "Error", True)
+                    dial.exec()
+
+            # Confirmación final
+            dial = DialogoEmergente("", result['message'], "Check", True)
             dial.exec()
+
         self.cargarTabla()
     
     def editarEmpleado(self,id_empleado:int):

@@ -392,8 +392,10 @@ class ZKServices:
 
     def registrar_empleado_simple(self, nombre: str, id_empleado: int):
         try:
+            logger.info("Intentando conectar y habilitar el dispositivo.")
             conn = self.zk.connect()
             conn.enable_device()
+            logger.info("Dispositivo habilitado.")
 
             # Paso 1: Obtener usuarios actuales para saber el siguiente ID disponible
             usuarios = conn.get_users()
@@ -440,3 +442,36 @@ class ZKServices:
                 "success": False,
                 "message": str(e),
             }
+        
+    def eliminar_huella(self, id_huella: int):
+        try:
+            # Verificar si el dispositivo está conectado
+            conn = self.zk.connect()
+            
+            # Deshabilitar el dispositivo para evitar conflictos
+            conn.disable_device()
+
+            # Intentar eliminar la huella
+            success = conn.delete_user_template(uid=id_huella, temp_id=0)  # temp_id=0 para la primera huella
+            conn.enable_device()  # Rehabilitar el dispositivo
+
+            if success:
+                return {
+                    "success": True,
+                    "message": "Huella eliminada con éxito."
+                }
+            else:
+                return {
+                    "success": False,
+                    "message": "No se pudo eliminar la huella. Puede que no exista."
+                }
+        except Exception as e:
+            logger.error(f"Error al eliminar huella: {e}")
+            return {
+                "success": False,
+                "message": "Ocurrió un error al intentar eliminar la huella."
+            }
+        finally:
+            if conn:
+                conn.disconnect()  # Asegurarse de desconectar
+
