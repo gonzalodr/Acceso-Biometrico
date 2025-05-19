@@ -31,7 +31,6 @@ class formEmpleado(QDialog):
     idPersona   = None
 
     emplServices = EmpleadoServices()
-    userServices = UsuarioServices()
     depaServices = DepartamentoServices()
     rolServices  = RolServices()
     perServices  = PersonaServices()
@@ -487,15 +486,13 @@ class formEmpleado(QDialog):
         )
 
         listaTelefonos  = self.extraerTelefonos()
-        dataUsuario     = self.extraerUsuarios()
+
 
         datos = {
             'persona'       : persona,
             'listaTelefonos': listaTelefonos,
-            'usuario'       : dataUsuario.get('usuario'),
             'id_departamento':self.inDep.currentData(),
-            'id_rol'        : self.inRol.currentData(),
-            'id_perfil'     : dataUsuario.get('idperfil')
+            'id_rol'        : self.inRol.currentData()
         }
 
         return datos
@@ -520,25 +517,7 @@ class formEmpleado(QDialog):
         return listaTelefonos
 
     #extraer usuarios
-    def extraerUsuarios(self):
-        if self.layoutPrinUsuario.itemAt(1) is None:
-            return {'usuario':None,'idperfil':None}
-        
-        layout = self.layoutPrinUsuario.itemAt(1).layout()
-        #obtengo los valores de cada numero ingresado junto con su tipo
-        id_user     = layout.property('id_usuario')
-        usuario     = layout.itemAt(1).widget().text()
-        contrasena  = layout.itemAt(3).widget().text()
-        idperfil    = layout.itemAt(8).widget().currentData()
-        if not usuario and not contrasena:
-            return {'usuario':None,'idperfil':None}
-        
-        usuario = Usuario(
-                usuario     = usuario, 
-                contrasena  = contrasena if len(contrasena.strip()) > 0 else None,
-                id          = id_user
-        )
-        return {'usuario':usuario,'idperfil':idperfil}
+    
 
     #precargando formulario en caso de que se este actualizando
     def precargarFormulario(self):
@@ -618,15 +597,7 @@ class formEmpleado(QDialog):
             self.errCorreo.setText("El correo es obligatorio.")
             return False
     
-    def validar_usuario(self, usuario,id,errorlbl:QLabel):
-        errorlbl.clear()
-        if usuario:
-            result = self.userServices.verificarUsuario(usuario,id)
-            if result:
-                errorlbl.setText('El nombre de usuario ya se encuentra registrado.')
-                return False
-            return True
-        
+
     #validar numeros de telefonos
     def validar_listaTelefonos(self):
         valido = True
@@ -667,53 +638,8 @@ class formEmpleado(QDialog):
                                 lblError.setText('')  # Limpiar el mensaje de error si todo está bien
 
         return valido
-    
-    #validad nombre usuario
-    def validar_usuario(self):
-        if self.layoutPrinUsuario.itemAt(1) is None:
-            return True  # No hay usuario en el formulario, se considera válido
 
-        layout = self.layoutPrinUsuario.itemAt(1).layout()
-        
-        # Obtengo los valores de los campos
-        id_user     = layout.property('id_usuario')
-        usuario     = layout.itemAt(1).widget().text().strip()
-        contrasena  = layout.itemAt(3).widget().text().strip()
-        lblError: QLabel = layout.itemAt(5).widget()
-
-        # Limpiar mensaje de error
-        lblError.clear()
-        if not usuario and not contrasena:
-            return True
-
-        # Validación del nombre de usuario
-        if not usuario:
-            lblError.setText('Debes agregar el nombre de usuario.')
-            return False  # Validación fallida
-        else:
-            result = self.userServices.verificarUsuario(usuario,id_user)
-            if result:
-                lblError.setText('El usuario no es valido, este usuario ya existe.')
-                return False
-
-        # Validación de la contraseña
-        if id_user is None:
-            # Si id_user es None, la contraseña es obligatoria
-            if not contrasena:
-                lblError.setText('Debes agregar una contraseña.')
-                return False  # Validación fallida
-            result = self.userServices.verificarContraseña(contrasena)
-            if not result['success']:
-                lblError.setText(result['message'])
-                return False  # Validación fallida
-        else:
-            # Si id_user existe, validar solo si se ingresó una nueva contraseña
-            if contrasena:
-                result = self.userServices.verificarContraseña(contrasena)
-                if not result['success']:
-                    lblError.setText(result['message'])
-                    return False  # Validación fallida
-        return True 
+   
 
     #validar datos personales
     def validar_datos_personales(self):
