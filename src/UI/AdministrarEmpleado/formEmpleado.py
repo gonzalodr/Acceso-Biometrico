@@ -875,11 +875,24 @@ class formEmpleado(QDialog):
             # 2. Extraer datos del formulario
             datos = self.extraerDatosEmpleados()
 
-            
             # 3. Verificar conexión del dispositivo de huella
             zk_service = ZKServices()
             if not zk_service.verificar_conexion():
                 DialogoEmergente('', 'El dispositivo de huella dactilar está desconectado', 'Error', True).exec()
+                
+                # Guardar el empleado sin huella
+                resultado_db = self.emplServices.crear_empleado(datos)
+                if not resultado_db['success']:
+                    DialogoEmergente('', f"Error en registro: {resultado_db['message']}", 'Error', True).exec()
+                    return
+                
+                DialogoEmergente(
+                    'Registro Exitoso',
+                    'Empleado registrado correctamente pero sin huella digital',
+                    'Check',
+                    True
+                ).exec()
+                self.reject()
                 return
 
             # Mostrar diálogo de progreso inicial
@@ -1018,7 +1031,6 @@ class formEmpleado(QDialog):
                         f"Empleado registrado pero error en huella: {resultado_huella['message']}",
                         'Error',
                         True
-                        
                     ).exec()
 
                     DialogoEmergente(
