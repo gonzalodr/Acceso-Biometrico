@@ -61,6 +61,9 @@ class ReporteServices:
             if not any(r in reporte[0] for r in ['justificacion', 'asistencia', 'permiso']):
                 return {'success': False, 'message': 'No se encontraron datos.'}
         
+        if len(resultado['reporte']) == 0:
+            return {'success': False, 'message': 'No se encontraron datos.'}
+        
         if extencion == 'docx':
            return self.__generar_reporte_docx_por_lotes(rutaFichero=rutaFinal,**filtros)
         elif extencion == 'pdf':
@@ -77,7 +80,6 @@ class ReporteServices:
         pdf.set_auto_page_break(auto=True, margin=10)
         pdf.set_font("Arial", size=9)
         
-
         # Diccionario para agrupar los datos por cédula de empleado
         empleados_data = {}
 
