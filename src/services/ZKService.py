@@ -459,7 +459,7 @@ class ZKServices:
         
     def verificar_huella_por_nombre(self, nombre: str) -> bool:
         try:
-            conn = self.zk.connect()
+            conn = self.zk.connect(timeout=5)
             
             # Obtener todos los usuarios
             usuarios = conn.get_users()
@@ -487,7 +487,7 @@ class ZKServices:
 
     def eliminar_huella_por_nombre(self, nombre: str) -> bool:
         try:
-            conn = self.zk.connect()
+            conn = self.zk.connect(timeout=5)
             conn.enable_device()
             
             # Buscar usuario
