@@ -36,3 +36,5 @@ pyinstaller --onefile --windowed --name "AccesoBiometrico" --add-data "src/ui/cs
 
 
 pyinstaller --onefile --windowed --name "AccesoBiometrico" --add-data "src/ui/css;src/ui/css" --add-data "src/ui/iconos;src/ui/iconos" --collect-data "mysql.connector" src/main.py
+
+pyinstaller --onefile --name "AccesoBiometrico" --add-data "src/ui/css;src/ui/css" --add-data "src/ui/iconos;src/ui/iconos" --collect-data "mysql.connector" src/main.py
