@@ -399,7 +399,7 @@ class formEmpleado(QDialog):
         if len(result['listaDepa']) == 0:
             self.inDep.setItemText(0,'No hay departamentos registrados.')
             return
-
+        self.inDep.setItemText(0,'No seleccionado')
         for depa in result['listaDepa']:
             self.inDep.addItem(depa.nombre,depa.id)
             
@@ -412,7 +412,7 @@ class formEmpleado(QDialog):
         if len(result['data']['listaRoles']) == 0:
             self.inRol.setItemText(0,'No hay roles registrados.')
             return
-
+        self.inRol.setItemText(0,'No seleccionado.')
         for rol in result['data']['listaRoles']:
             self.inRol.addItem(rol.nombre, rol.id)
 
@@ -570,12 +570,12 @@ class formEmpleado(QDialog):
         
         ##cargar departamento y rol
         index = self.inDep.findData(departamen)
-        self.inDep.setCurrentIndex(index if index >= 0 else -1)
+        self.inDep.setCurrentIndex(index if index >= 0 else 0)
 
 
         if dictRolEmp:
             index = self.inRol.findData(dictRolEmp.get('id_rol'))
-            self.inRol.setCurrentIndex(index if index >= 0 else None)
+            self.inRol.setCurrentIndex(index if index >= 0 else 0)
 
 
 
