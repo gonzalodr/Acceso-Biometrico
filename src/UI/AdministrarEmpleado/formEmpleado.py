@@ -194,7 +194,7 @@ class formEmpleado(QDialog):
         self.lblEstCivil = QLabel('Estado civil')
         self.inEstCivil = QComboBox()
         self.inEstCivil.addItems(["Soltero/a", "Casado/a", "Divorciado/a", "Viudo/a"])
-        self.errEstCivil = QLabel('Error estado civil')
+        self.errEstCivil = QLabel()
         #Direccion
         self.lblDireccion = QLabel('Direccion')
         self.inDireccion = QTextEdit()
@@ -319,6 +319,11 @@ class formEmpleado(QDialog):
 
         #input para tipo de contacto
         lblTipo = QLabel(text='Tipo de contacto')
+        
+        cmbTipoTel = QComboBox()
+        cmbTipoTel.addItem("Casa")   
+        cmbTipoTel.addItem("Oficina")
+        cmbTipoTel.addItem("Celular")
 
         #input para ingresar el tipo de telefono
         inputTipo = QLineEdit()
@@ -342,6 +347,7 @@ class formEmpleado(QDialog):
         if telefono:##cargar datos de los telefonos
             inputTelefono.setText(telefono.numero)
             inputTipo.setText(telefono.tipo)
+            cmbTipoTel.setCurrentText(telefono.tipo)
             layoutInputsTelefonos.setProperty('id_telefono',telefono.id)
             inputTelefono.setEnabled(False)
             inputTipo.setEnabled(False)
@@ -354,7 +360,8 @@ class formEmpleado(QDialog):
         layoutInputsTelefonos.addWidget(lblTelefono,0)
         layoutInputsTelefonos.addWidget(inputTelefono,1)
         layoutInputsTelefonos.addWidget(lblTipo,2,)
-        layoutInputsTelefonos.addWidget(inputTipo,3)
+        # layoutInputsTelefonos.addWidget(inputTipo,3)
+        layoutInputsTelefonos.addWidget(cmbTipoTel,3)
         layoutInputsTelefonos.addWidget(lblError,4)
         layoutInputsTelefonos.addWidget(btnEliminar,5)
         self.layoutInputTel.addLayout(layoutInputsTelefonos)
@@ -509,7 +516,8 @@ class formEmpleado(QDialog):
             if isinstance(item,QVBoxLayout):
                 id          = item.property('id_telefono')
                 numero      = item.itemAt(1).widget().text()
-                tipoCont    = item.itemAt(3).widget().text()
+                # tipoCont    = item.itemAt(3).widget().text()
+                tipoCont    = item.itemAt(3).widget().currentText()
                 if numero.strip() and tipoCont.strip():
                     telefono = Telefono(
                         numero        = numero,
