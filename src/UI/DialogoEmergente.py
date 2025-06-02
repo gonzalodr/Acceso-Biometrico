@@ -42,19 +42,17 @@ class DialogoEmergente(QDialog):
         self.frame.setLayout(self.frameLayout)
 
         # Diccionario de iconos con sus rutas
-        self.path_icono = {"Warning"    : "iconos/Warning.png", 
-                           "Check"      : "iconos/Check.png", 
-                           "Error"      : "iconos/Error.png",
-                           "Save"       : "iconos/Save.png",
-                           "Question"   : "iconos/Question.png"
+        self.path_icono = {"Warning"    : "Warning.png", 
+                           "Check"      : "Check.png", 
+                           "Error"      : "Error.png",
+                           "Save"       : "Save.png",
+                           "Question"   : "Question.png"
                            }
 
         # Agregar un QLabel para el icono
         if Icono:
             self.icon_label = QLabel()
-            path_url = os.path.join(os.path.dirname(__file__), self.path_icono.get(Icono, "iconos/Warning.png"))
-            icon_pixmap = QPixmap(path_url).scaled(128, 128, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            self.icon_label.setPixmap(icon_pixmap)
+            cargar_Icono(self.icon_label, self.path_icono.get(Icono, "Warning.png"), QSize(128, 128))
             self.icon_label.setAlignment(Qt.AlignCenter)
             self.frameLayout.addWidget(self.icon_label)  # Añadir el QLabel al layout del frame
 
