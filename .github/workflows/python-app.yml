@@ -20,7 +20,7 @@ jobs:
     - name: Configurar Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12' # Asegúrate de que sea la versión correcta
+        python-version: '3.12'
 
     - name: Instalar dependencias
       run: |
@@ -29,4 +29,4 @@ jobs:
 
     - name: Ejecutar Tests con Pytest
       run: |
-        pytest src\test_perfil_acceso.py # Asegúrate de la ruta correcta a tu archivo de test
+        pytest src/test_perfil_acceso.py
