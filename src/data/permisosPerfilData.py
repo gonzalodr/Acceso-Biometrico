@@ -1,4 +1,4 @@
-from data.data import conection  # Importa la función para obtener la conexión
+from .data import conection  # Importa la función para obtener la conexión
 from settings.config import * 
 from models.permiso_perfil import * 
 from settings.logger import logger

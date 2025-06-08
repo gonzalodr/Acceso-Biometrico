@@ -1,5 +1,5 @@
 from models.perfil import Perfil
-from data.data import conection
+from .data import conection
 from settings.config import *
 from settings.logger import logger
 from data.permisosPerfilData import PermisosPerfilData
@@ -84,6 +84,7 @@ class PerfilData:
                 return {
                     "success": True,
                     "message": "El perfil se guardo correctamente.",
+                    "id_perfil": id_perfil
                 }
         except Exception as e:
             logger.error(f"{e}  - {traceback.format_exc()}")

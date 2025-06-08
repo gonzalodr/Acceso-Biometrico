@@ -1,4 +1,4 @@
-from data.permisosPerfilData import *
+from src.data.permisosPerfilData import *
 
 class PermisosPerfilServices:
     def __init__(self):
