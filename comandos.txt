@@ -32,9 +32,11 @@ pip install mysql-connector-python
 deactivate
 
 
-pyinstaller --onefile --windowed --name "AccesoBiometrico" --add-data "src/ui/css;src/ui/css" --add-data "src/ui/iconos;src/ui/iconos" src/main.py
+pyinstaller --onefile --windowed --name "AccesoBiometrico" --icon "src/ui/iconos/icono.png" --add-data "src/ui/css;src/ui/css" --add-data "src/ui/iconos;src/ui/iconos" src/main.py
 
 
 pyinstaller --onefile --windowed --name "AccesoBiometrico" --add-data "src/ui/css;src/ui/css" --add-data "src/ui/iconos;src/ui/iconos" --collect-data "mysql.connector" src/main.py
 
-pyinstaller --onefile --name "AccesoBiometrico" --add-data "src/ui/css;src/ui/css" --add-data "src/ui/iconos;src/ui/iconos" --collect-data "mysql.connector" src/main.py
+pyinstaller --onefile --windowed --name "AccesoBiometrico" --icon "src/ui/iconos/icono.png" --add-data "src/ui/css;src/ui/css" --add-data "src/ui/iconos;src/ui/iconos" --collect-data "mysql.connector" src/main.py
+
+pyinstaller --onefile --windowed --name "AccesoBiometrico" --icon "src/ui/iconos/icono.ico" --add-data "src/ui/css;src/ui/css" --add-data "src/ui/iconos;src/ui/iconos" --collect-data "mysql.connector" --add-binary "C:/Users/La Familia/Documents/GitHub/Acceso-Biometrico/venv/Lib/site-packages/mysql/vendor;mysql/vendor" src/main.py

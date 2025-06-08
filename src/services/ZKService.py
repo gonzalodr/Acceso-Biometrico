@@ -448,7 +448,7 @@ class ZKServices:
     def verificar_conexion(self) -> bool:
         try:
             # Intenta conectar al dispositivo
-            conexion = self.zk.connect(timeout=5)
+            conexion = self.zk.connect()
             # Si la conexión es exitosa, desconectar y retornar True
             conexion.disconnect()
             return True
