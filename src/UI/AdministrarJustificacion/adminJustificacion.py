@@ -7,6 +7,7 @@ from functools import partial
 from .infoJustificacion import InfoJustificacion
 import locale
 from datetime import datetime
+from models.permiso_perfil import Permiso_Perfil
 
 class AdminJustificacion(QWidget):
     cerrar_adminJ = Signal()
@@ -16,9 +17,10 @@ class AdminJustificacion(QWidget):
     busqueda = None
     Pservices = JustificacionServices()
     
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None, permiso= None) -> None:
         super().__init__(parent)
         self.setObjectName("admin")
+        self.permisoUsuario:Permiso_Perfil = permiso
         
         cargar_estilos('claro', 'admin.css', self)
 
@@ -336,6 +338,10 @@ class AdminJustificacion(QWidget):
             self._cargar_tabla()
 
     def _eliminarRegistro(self, idx):
+        if not self.permisoUsuario.eliminar:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
         dial = DialogoEmergente("¿?", "¿Seguro que quieres eliminar este registro?", "Question", True, True)
         if dial.exec() == QDialog.Accepted:
             result = self.Pservices.eliminarJustificacion(idx)
@@ -348,22 +354,20 @@ class AdminJustificacion(QWidget):
                 dial.exec()
 
     def _editar_Justificacion(self, id):
-        blur_effect = QGraphicsBlurEffect(self)
-        blur_effect.setBlurRadius(10)
-        self.setGraphicsEffect(blur_effect)
-        
+        if not self.permisoUsuario.editar:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
         form = formJustificacion(titulo="Actualizar justificación", id=id)
         form.exec()
-        
         self._cargar_tabla()
-        self.setGraphicsEffect(None)
-
+        
     def _crear_justificacion(self):
-        blur_effect = QGraphicsBlurEffect(self)
-        blur_effect.setBlurRadius(10)
-        self.setGraphicsEffect(blur_effect)
+        if not self.permisoUsuario.crear:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
         
         form = formJustificacion()
         form.exec()
         self._cargar_tabla()
-        self.setGraphicsEffect(None)

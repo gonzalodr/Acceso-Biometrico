@@ -5,7 +5,6 @@ from Utils.Utils        import *
 from functools          import partial
 
 from services.empleadoServices  import EmpleadoServices
-from services.usuarioService    import UsuarioServices
 from services.rolService        import RolServices
 from services.departamentoService import DepartamentoServices
 from services.personaService    import PersonaServices
@@ -13,12 +12,14 @@ from services.rolService        import RolServices
 from services.perfilService     import PerfilServices
 from services.telefonoServices  import TelefonoServices
 from services.ZKService        import ZKServices 
+from services.huellaService import HuellaService
 from settings.logger         import logger
 from UI.DialogoEmergente import DialogoEmergente
 
-from models.usuario     import Usuario
+
 from models.persona     import Persona
 from models.telefono    import Telefono
+from settings.config    import ZKTECA_CONFIG
 
 from datetime import datetime
 import time
@@ -27,8 +28,9 @@ import re
 class formEmpleado(QDialog):
     idEmpleado  = None
     fotografia  = None
-    idUsuario   = None
     idPersona   = None
+    nombre_original = None  
+    cedula_original = None 
 
     emplServices = EmpleadoServices()
     depaServices = DepartamentoServices()
@@ -36,12 +38,14 @@ class formEmpleado(QDialog):
     perServices  = PersonaServices()
     perfilServices = PerfilServices()
     telServices  = TelefonoServices()
+    HueServices = HuellaService()
 
     def __init__(self, parent = None, titulo = 'Registrar empleado', id_empleado = None):
         super().__init__(parent)
         self.setObjectName('form')
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setMinimumSize(QSize(1050,700))
+        self.layoutPrinUsuario = QVBoxLayout()
         
         cargar_estilos('claro','formEm.css',self)
         
@@ -190,7 +194,7 @@ class formEmpleado(QDialog):
         self.lblEstCivil = QLabel('Estado civil')
         self.inEstCivil = QComboBox()
         self.inEstCivil.addItems(["Soltero/a", "Casado/a", "Divorciado/a", "Viudo/a"])
-        self.errEstCivil = QLabel('Error estado civil')
+        self.errEstCivil = QLabel()
         #Direccion
         self.lblDireccion = QLabel('Direccion')
         self.inDireccion = QTextEdit()
@@ -315,6 +319,11 @@ class formEmpleado(QDialog):
 
         #input para tipo de contacto
         lblTipo = QLabel(text='Tipo de contacto')
+        
+        cmbTipoTel = QComboBox()
+        cmbTipoTel.addItem("Casa")   
+        cmbTipoTel.addItem("Oficina")
+        cmbTipoTel.addItem("Celular")
 
         #input para ingresar el tipo de telefono
         inputTipo = QLineEdit()
@@ -338,6 +347,7 @@ class formEmpleado(QDialog):
         if telefono:##cargar datos de los telefonos
             inputTelefono.setText(telefono.numero)
             inputTipo.setText(telefono.tipo)
+            cmbTipoTel.setCurrentText(telefono.tipo)
             layoutInputsTelefonos.setProperty('id_telefono',telefono.id)
             inputTelefono.setEnabled(False)
             inputTipo.setEnabled(False)
@@ -350,7 +360,8 @@ class formEmpleado(QDialog):
         layoutInputsTelefonos.addWidget(lblTelefono,0)
         layoutInputsTelefonos.addWidget(inputTelefono,1)
         layoutInputsTelefonos.addWidget(lblTipo,2,)
-        layoutInputsTelefonos.addWidget(inputTipo,3)
+        # layoutInputsTelefonos.addWidget(inputTipo,3)
+        layoutInputsTelefonos.addWidget(cmbTipoTel,3)
         layoutInputsTelefonos.addWidget(lblError,4)
         layoutInputsTelefonos.addWidget(btnEliminar,5)
         self.layoutInputTel.addLayout(layoutInputsTelefonos)
@@ -388,7 +399,7 @@ class formEmpleado(QDialog):
         if len(result['listaDepa']) == 0:
             self.inDep.setItemText(0,'No hay departamentos registrados.')
             return
-
+        self.inDep.setItemText(0,'No seleccionado')
         for depa in result['listaDepa']:
             self.inDep.addItem(depa.nombre,depa.id)
             
@@ -401,7 +412,7 @@ class formEmpleado(QDialog):
         if len(result['data']['listaRoles']) == 0:
             self.inRol.setItemText(0,'No hay roles registrados.')
             return
-
+        self.inRol.setItemText(0,'No seleccionado.')
         for rol in result['data']['listaRoles']:
             self.inRol.addItem(rol.nombre, rol.id)
 
@@ -487,7 +498,6 @@ class formEmpleado(QDialog):
 
         listaTelefonos  = self.extraerTelefonos()
 
-
         datos = {
             'persona'       : persona,
             'listaTelefonos': listaTelefonos,
@@ -506,7 +516,8 @@ class formEmpleado(QDialog):
             if isinstance(item,QVBoxLayout):
                 id          = item.property('id_telefono')
                 numero      = item.itemAt(1).widget().text()
-                tipoCont    = item.itemAt(3).widget().text()
+                # tipoCont    = item.itemAt(3).widget().text()
+                tipoCont    = item.itemAt(3).widget().currentText()
                 if numero.strip() and tipoCont.strip():
                     telefono = Telefono(
                         numero        = numero,
@@ -529,12 +540,12 @@ class formEmpleado(QDialog):
 
         datos   = result.get('empleado')
         persona:Persona = datos.get('persona')  #objeto Persona
-        usuario:Usuario = datos.get('usuario')  #objeto Usuario
-        dictPerfil = datos.get('pefilUsuario')  #diccionario
         dictRolEmp = datos.get('rolEmpleado')   #diccionario
         departamen = datos.get('departamento')  #int
-        listaTelef = datos.get('listaTelefonos')#telefonos del usuario
+        listaTelef = datos.get('listaTelefonos')#telefonos del 
 
+        self.nombre_original = persona.nombre
+        self.cedula_original = persona.cedula
         self.idPersona = persona.id
         self.fotografia = persona.foto
 
@@ -563,12 +574,12 @@ class formEmpleado(QDialog):
         
         ##cargar departamento y rol
         index = self.inDep.findData(departamen)
-        self.inDep.setCurrentIndex(index if index >= 0 else -1)
+        self.inDep.setCurrentIndex(index if index >= 0 else 0)
 
 
         if dictRolEmp:
             index = self.inRol.findData(dictRolEmp.get('id_rol'))
-            self.inRol.setCurrentIndex(index if index >= 0 else None)
+            self.inRol.setCurrentIndex(index if index >= 0 else 0)
 
 
 
@@ -597,7 +608,6 @@ class formEmpleado(QDialog):
             self.errCorreo.setText("El correo es obligatorio.")
             return False
     
-
     #validar numeros de telefonos
     def validar_listaTelefonos(self):
         valido = True
@@ -610,7 +620,7 @@ class formEmpleado(QDialog):
                 tipoCont            = item.itemAt(3).widget().text().strip()
                 lblError: QLabel    = item.itemAt(4).widget()
 
-                # Validar si el usuario ingresó algo en alguno de los inputs
+
                 if numero or tipoCont:
                     if not numero:
                         lblError.setText('Debes agregar un número telefónico.')
@@ -848,96 +858,215 @@ class formEmpleado(QDialog):
             self.reject()
     
     """
+
+    def obtenerHuella(self, id_empleado: int):
+        result = self.HueServices.buscar_huellas_por_empleado(id_empleado)
+
+        if not result["success"]:
+            dial = DialogoEmergente("", "Error al obtener la huella del empleado.", "Error", True)
+            dial.exec()
+            return None
+
+        if result["exists"]:
+            return result["id_huella"]  # Retorna el ID de la huella
+        else:
+            return None
     
     def registrarDatos(self):
-        """Maneja el registro completo del empleado incluyendo huella digital"""
         try:
-            # 1. Validar todos los campos obligatorios
+
             if not self.validar_datos_personales():
                 DialogoEmergente('', 'Complete todos los campos obligatorios', 'Error', True).exec()
                 return
 
-            # 2. Extraer datos del formulario
+       
             datos = self.extraerDatosEmpleados()
-            
-            # 3. Mostrar diálogo de confirmación
-            confirmacion = DialogoEmergente(
-                'Confirmar Registro',
-                '¿Desea registrar al empleado y capturar su huella digital?',
-                'Question',
-                True,
-                True
-            )
-            
-            if confirmacion.exec() != QDialog.Accepted:
-                return
 
-            # 4. Mostrar diálogo de progreso (sin intentar modificar lblMensaje)
+  
             dialogo_progreso = DialogoEmergente(
                 'Procesando Registro',
-                'Guardando datos del empleado...',
+                'Procesando datos del empleado...',
                 'Info',
                 False
             )
             dialogo_progreso.show()
             QApplication.processEvents()
 
-            # 5. Registrar datos básicos en la base de datos
-            if self.idEmpleado:
+            if self.idEmpleado:  
+   
+                zk_service = ZKServices()
+                dispositivo_conectado = zk_service.verificar_conexion()
+                
+                if not dispositivo_conectado:
+
+                    DialogoEmergente('', 'El dispositivo de huella dactilar está desconectado', 'Error', True).exec()
+                
+
+                tiene_huella = False
+                if dispositivo_conectado:
+                    nombre_completo = self.nombre_original + "-" + self.cedula_original
+                    tiene_huella = zk_service.verificar_huella_por_nombre(nombre_completo)
+                    
+                    if not tiene_huella:
+
+                        dialogo_progreso.close()
+                        confirmacion = DialogoEmergente(
+                            'Captura de Huella',
+                            'El empleado no tiene huella registrada. ¿Desea registrar una ahora?',
+                            'Question',
+                            True,
+                            True
+                        )
+                        
+                        if confirmacion.exec() == QDialog.Accepted:
+                            dialogo_huella = DialogoEmergente(
+                                'Captura de Huella',
+                                'Por favor, coloque el dedo en el lector biométrico...',
+                                'Info',
+                                False
+                            )
+                            dialogo_huella.show()
+                            QApplication.processEvents()
+                            
+                         
+                            resultado_huella = zk_service.registrar_empleado_simple(
+                                nombre_completo, 
+                                self.idEmpleado, 
+                                True
+                            )
+                            
+                            dialogo_huella.close()
+                            
+                            if not resultado_huella['success']:
+                                DialogoEmergente(
+                                    'Error en Huella',
+                                    f"Error al registrar huella: {resultado_huella['message']}",
+                                    'Error',
+                                    True
+                                ).exec()
+                    
+                
+
                 resultado_db = self.emplServices.actualizar_empleado(self.idEmpleado, datos)
-            else:
-                resultado_db = self.emplServices.crear_empleado(datos)
-
-            if not resultado_db['success']:
+                
                 dialogo_progreso.close()
-                DialogoEmergente('', f"Error en registro: {resultado_db['message']}", 'Error', True).exec()
-                return
+                
+                if not resultado_db['success']:
+                    DialogoEmergente('', f"Error al actualizar: {resultado_db['message']}", 'Error', True).exec()
+                    return
+                
 
-            # 6. Crear nuevo diálogo para captura de huella (evitando modificar lblMensaje)
-            dialogo_progreso.close()
-            dialogo_huella = DialogoEmergente(
-                'Captura de Huella',
-                'Por favor, coloque el dedo en el lector biométrico...',
-                'Info',
-                False
-            )
-            dialogo_huella.show()
-            QApplication.processEvents()
-
-            # 7. Registrar huella digital
-            zk_service = ZKServices()
-            nombre_completo = datos['persona'].nombre  # Solo el nombre, sin apellidos
-
-
-            
-            resultado_huella = zk_service.registrar_empleado_simple(nombre_completo, self.emplServices.obtener_id_empleado())
-
-            # 8. Manejar resultados
-            dialogo_huella.close()
-            
-            if not resultado_huella['success']:
+                if dispositivo_conectado:
+                    if tiene_huella:
+                        mensaje = "Empleado actualizado correctamente"
+                    else:
+                        if 'resultado_huella' in locals() and resultado_huella.get('huella_registrada', False):
+                            mensaje = "Empleado actualizado con nueva huella digital"
+                        else:
+                            mensaje = "Empleado actualizado pero sin registrar huella digital"
+                else:
+                    mensaje = "Empleado actualizado correctamente (dispositivo de huella no conectado)"
+                    
                 DialogoEmergente(
-                    'Error en Huella',
-                    f"Empleado registrado pero error en huella: {resultado_huella['message']}",
-                    'Error',
-                    True
-                ).exec()
-            elif resultado_huella.get('huella_registrada', False):
-                DialogoEmergente(
-                    'Registro Exitoso',
-                    'Empleado registrado con huella digital correctamente',
+                    'Actualización Exitosa',
+                    mensaje,
                     'Check',
                     True
                 ).exec()
                 self.reject()
-            else:
-                DialogoEmergente(
-                    'Registro Parcial',
-                    'Empleado registrado pero no se capturó huella digital',
-                    'Warning',
+                
+            else: 
+                zk_service = ZKServices()
+                if not zk_service.verificar_conexion():
+                    DialogoEmergente('', 'El dispositivo de huella dactilar está desconectado', 'Error', True).exec()
+                    
+
+                    resultado_db = self.emplServices.crear_empleado(datos)
+                    if not resultado_db['success']:
+                        DialogoEmergente('', f"Error en registro: {resultado_db['message']}", 'Error', True).exec()
+                        return
+                    
+                    DialogoEmergente(
+                        'Registro Exitoso',
+                        'Empleado registrado correctamente pero sin huella digital',
+                        'Check',
+                        True
+                    ).exec()
+                    self.reject()
+                    return
+
+                dialogo_progreso.close()
+                nombre_completo = datos['persona'].nombre + "-" + datos['persona'].cedula
+                confirmacion = DialogoEmergente(
+                    'Confirmar Registro',
+                    '¿Desea registrar al empleado y capturar su huella digital?',
+                    'Question',
+                    True,
                     True
-                ).exec()
-                self.reject()
+                )
+                
+                if confirmacion.exec() != QDialog.Accepted:
+                    return
+
+                dialogo_progreso = DialogoEmergente(
+                    'Procesando Registro',
+                    'Guardando datos del empleado...',
+                    'Info',
+                    False
+                )
+                dialogo_progreso.show()
+                QApplication.processEvents()
+                
+                resultado_db = self.emplServices.crear_empleado(datos)
+
+                if not resultado_db['success']:
+                    dialogo_progreso.close()
+                    DialogoEmergente('', f"Error en registro: {resultado_db['message']}", 'Error', True).exec()
+                    return
+
+                dialogo_progreso.close()
+                dialogo_huella = DialogoEmergente(
+                    'Captura de Huella',
+                    'Por favor, coloque el dedo en el lector biométrico...',
+                    'Info',
+                    False
+                )
+                dialogo_huella.show()
+                QApplication.processEvents()
+
+                resultado_huella = zk_service.registrar_empleado_simple(
+                    nombre_completo, 
+                    self.emplServices.obtener_id_empleado(), 
+                    False
+                )
+
+                dialogo_huella.close()
+                
+                if not resultado_huella['success']:
+                    DialogoEmergente(
+                        'Error en Huella',
+                        f"Empleado registrado pero error en huella: {resultado_huella['message']}",
+                        'Error',
+                        True
+                    ).exec()
+
+                    DialogoEmergente(
+                        'Registro Parcial',
+                        'Empleado registrado pero no se capturó huella digital',
+                        'Warning',
+                        True
+                    ).exec()
+         
+                    self.reject()
+                    return
+                elif resultado_huella.get('huella_registrada', False):
+                    DialogoEmergente(
+                        'Registro Exitoso',
+                        'Empleado registrado con huella digital correctamente',
+                        'Check',
+                        True
+                    ).exec()
+                    self.reject()
 
         except Exception as e:
             if 'dialogo_progreso' in locals():
@@ -951,6 +1080,3 @@ class formEmpleado(QDialog):
                 'Error',
                 True
             ).exec()
-
-
-   

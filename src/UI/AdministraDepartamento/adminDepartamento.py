@@ -3,6 +3,7 @@ from PySide6.QtCore import *
 from Utils.Utils import *
 from UI.AdministraDepartamento.formDepartamento import *
 from services.departamentoService import *
+from models.permiso_perfil import Permiso_Perfil
 
 class AdminDepartament(QWidget):
     cerrar_adminD = Signal()
@@ -12,10 +13,10 @@ class AdminDepartament(QWidget):
     busqueda = None
     Pservices = DepartamentoServices()
     
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None, permiso =None) -> None:
         super().__init__(parent)
         self.setObjectName("admin")
-    
+        self.permisoUsuario:Permiso_Perfil = permiso
         # add_Style(carpeta="css", archivoQSS="adminDepartamento.css", QObjeto=self)
         cargar_estilos('claro','admin.css',self)
         
@@ -295,36 +296,38 @@ class AdminDepartament(QWidget):
             self._cargar_tabla()
 
     def _eliminarRegistro(self, idx):
-            dial = DialogoEmergente("Confirmación", "¿Seguro que quieres eliminar este registro?","Confirmation",True,True)
-            
-            if dial.exec() == QDialog.Accepted:
-                result = self.Pservices.eliminarDepartamento(idx)
-                if result["success"]:
-                    dial = DialogoEmergente("Éxito","Se elimino el registro correctamente.","Check")
-                    dial.exec()
-                    self._cargar_tabla()
-                else:
-                    dial = DialogoEmergente("","Hubo un error al eliminar este registro.","Error")
-                    dial.exec()
+        if not self.permisoUsuario.eliminar:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
+        
+        dial = DialogoEmergente("Confirmación", "¿Seguro que quieres eliminar este registro?","Confirmation",True,True)
+        if dial.exec() == QDialog.Accepted:
+            result = self.Pservices.eliminarDepartamento(idx)
+            if result["success"]:
+                dial = DialogoEmergente("Éxito","Se elimino el registro correctamente.","Check")
+                dial.exec()
+                self._cargar_tabla()
+            else:
+                dial = DialogoEmergente("","Hubo un error al eliminar este registro.","Error")
+                dial.exec()
 
     def _editar_Departamento(self,id):
-        blur_effect = QGraphicsBlurEffect(self)
-        blur_effect.setBlurRadius(10)  # Ajusta el radio de desenfoque según sea necesario
-        self.setGraphicsEffect(blur_effect)
+        if not self.permisoUsuario.editar:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
         
         form = formDepartamento(titulo="Actualizar departamento",id=id)
         form.exec()
-        
         self._cargar_tabla()
-        self.setGraphicsEffect(None)
 
     def _crear_departamento(self):
-        blur_effect = QGraphicsBlurEffect(self)
-        blur_effect.setBlurRadius(10)  # Ajusta el radio de desenfoque según sea necesario
-        self.setGraphicsEffect(blur_effect)
-        
+        if not self.permisoUsuario.crear:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
         form = formDepartamento()
         form.exec()
         self._cargar_tabla()
-        self.setGraphicsEffect(None)
         

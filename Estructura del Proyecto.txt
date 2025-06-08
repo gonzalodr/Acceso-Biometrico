@@ -9,6 +9,15 @@ Acceso-Biometrico/           #Estructura para organizar el proyecto
 │   │   └── db.py            # Archivo para manejar la conexión y operaciones con la DB 
 │   │
 │   ├── ui/                  # Carpeta para las interfaces gráficas
+│   │   ├──css/
+│   │   │   ├── claro/
+│   │   │   │   └── main_window.css
+│   │   │   └── oscuro/
+│   │   │       └── main_window.css
+│   │   │
+│   │   ├──iconos/
+│   │   │   └─mi_icono.png
+│   │   │
 │   │   ├── __init__.py      # Hace que ui sea un paquete
 │   │   ├── main_window.py   # Ventana principal de la aplicación
 │   │   └── widgets.py       # Widgets personalizados (si los necesitas)

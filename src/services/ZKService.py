@@ -390,48 +390,46 @@ class ZKServices:
         except:
             return 1  # Valor por defecto seguro
 
-    def registrar_empleado_simple(self, nombre: str, id_empleado: int):
+    def registrar_empleado_simple(self, nombre: str, id_empleado: int, bandera: bool):
+        if bandera: 
+                self.eliminar_huella_por_nombre(nombre)
+        conn = None
         try:
+            logger.info("Intentando conectar y habilitar el dispositivo.")
             conn = self.zk.connect()
             conn.enable_device()
+            logger.info("Dispositivo habilitado.")
 
-            # Paso 1: Obtener usuarios actuales para saber el siguiente ID disponible
-            usuarios = conn.get_users()
-            uids = [u.uid for u in usuarios]
-            next_uid = max(uids) + 1 if uids else 1
+            
 
-            # Paso 2: Registrar al usuario con el nuevo ID y nombre
+            # Registrar al usuario
             conn.set_user(uid=id_empleado, name=nombre)
+            time.sleep(1)  # Esperar para asegurar el registro
 
-            # Paso 3: Pedir huella para ese uid
+            # Intentar registrar huella
             conn.enroll_user(uid=id_empleado)
 
-            # Esperamos hasta 30s a que el registro de huella se complete
+            # Esperar hasta 30 segundos por la huella
             start_time = time.time()
             while time.time() - start_time < 30:
                 templates = conn.get_templates()
-                huella = list(filter(lambda t: t.uid == id_empleado, templates)) or None
+                huella = next((t for t in templates if t.uid == id_empleado), None)
                 if huella:
                     conn.test_voice(0)
                     nueva_huella = Huella(id_empleado, id_empleado=id_empleado)
                     self.huellaService.insertarHuella(nueva_huella)
-                    conn.disconnect()
                     return {
                         "success": True,
                         "huella_registrada": True,
-                        "user_id": id_empleado,
-                        "huella_info": str(nueva_huella),
-                        "huella": nueva_huella,
-                        "message": "Empleado registrado con éxito.",
+                        "message": "Huella registrada con éxito.",
                     }
                 time.sleep(0.5)
 
-            conn.disconnect()
+            # Si llegamos aquí es que no se registró la huella
             return {
                 "success": True,
                 "huella_registrada": False,
-                "user_id": id_empleado,
-                "message": "Empleado registrado pero sin huella.",
+                "message": "Empleado registrado pero no se capturó huella digital",
             }
 
         except Exception as e:
@@ -440,3 +438,80 @@ class ZKServices:
                 "success": False,
                 "message": str(e),
             }
+        finally:
+            if conn:
+                try:
+                    conn.disconnect()
+                except:
+                    pass
+        
+    def verificar_conexion(self) -> bool:
+        try:
+            # Intenta conectar al dispositivo
+            conexion = self.zk.connect()
+            # Si la conexión es exitosa, desconectar y retornar True
+            conexion.disconnect()
+            return True
+        except Exception as e:
+            # Si ocurre un error, registrar el error y retornar False
+            logger.error(f"Error al verificar conexión: {e}")
+            return False
+        
+    def verificar_huella_por_nombre(self, nombre: str) -> bool:
+        try:
+            conn = self.zk.connect(timeout=5)
+            
+            # Obtener todos los usuarios
+            usuarios = conn.get_users()
+            
+            # Buscar usuario por nombre (el nombre en ZKTeco suele estar en formato "nombre-cedula")
+            usuario = next((u for u in usuarios if nombre.lower() in u.name.lower()), None)
+            
+            if not usuario:
+                return False
+                
+            # Obtener todas las huellas
+            huellas = conn.get_templates()
+            
+            # Verificar si hay huellas para este usuario
+            tiene_huella = any(h.uid == usuario.uid for h in huellas)
+            
+            return tiene_huella
+            
+        except Exception as e:
+            logger.error(f"Error al verificar huella por nombre: {str(e)}")
+            return False
+        finally:
+            if 'conn' in locals():
+                conn.disconnect()
+
+    def eliminar_huella_por_nombre(self, nombre: str) -> bool:
+        try:
+            conn = self.zk.connect(timeout=5)
+            conn.enable_device()
+            
+            # Buscar usuario
+            usuario = next((u for u in conn.get_users() if nombre.lower() in u.name.lower()), None)
+            if not usuario:
+                return False
+            
+            # Eliminar huellas solo si existen
+            huellas_usuario = [h for h in conn.get_templates() if h.uid == usuario.uid]
+            if huellas_usuario:
+                for huella in huellas_usuario:
+                    conn.delete_user_template(uid=usuario.uid, temp_id=huella.fid)
+            
+            # Eliminar usuario (esto funciona aunque no tenga huellas)
+            conn.delete_user(uid=usuario.uid)
+            conn.refresh_data()
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error eliminando usuario {nombre}: {str(e)}")
+            return False
+        finally:
+            if 'conn' in locals():
+                conn.disconnect()
+                
+            

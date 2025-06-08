@@ -138,39 +138,43 @@ class vistaPrincipal(QWidget):
         #     self.listaOpciones.append((index, "Administrar Persona",'employees.png'))
 
         if self.PermisoAModulo("Administrar horario"):
-            adminHorario = AdminHorario(parent=self)
+            getpermiso = next(filter(lambda per: per.tabla == ACCESO_TABLE["Administrar horario"], self.permisos),None)
+            adminHorario = AdminHorario(parent = self, permiso = getpermiso)
             adminHorario.cerrar_adminH.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminHorario)
             self.listaOpciones.append((index, "Administrar Horarios", "weekly.png"))
 
         if self.PermisoAModulo("Administrar empleados"):
-            adminempleado = AdminEmpleado(parent=self)
+            getpermiso = next(filter(lambda per: per.tabla == ACCESO_TABLE["Administrar empleados"], self.permisos),None)
+            adminempleado = AdminEmpleado(parent=self,permiso = getpermiso)
             adminempleado.signalCerrar.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminempleado)
             self.listaOpciones.append((index, "Admin. Empleados", "employees.png"))
 
         if self.PermisoAModulo("Administrar usuarios"):
-            adminUsuario = AdminUsuario(parent=self)
+            getpermiso = next(filter(lambda per: per.tabla == ACCESO_TABLE["Administrar usuarios"], self.permisos),None)
+            adminUsuario = AdminUsuario(parent=self, permiso = getpermiso)
             adminUsuario.cerrar_adminU.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminUsuario)
             self.listaOpciones.append((index, "Administrar Usuarios", "management.png"))
 
         if self.PermisoAModulo("Administrar departamentos"):
-            AdminDepart = AdminDepartament(parent=self)
+            getpermiso = next(filter(lambda per: per.tabla == ACCESO_TABLE["Administrar departamentos"], self.permisos),None)  
+            AdminDepart = AdminDepartament(parent=self, permiso = getpermiso)
             AdminDepart.cerrar_adminD.connect(self._salir_crud)
             index = self.stackVistas.addWidget(AdminDepart)
-            self.listaOpciones.append(
-                (index, "Admin. Departamento", "company-department.png")
-            )
+            self.listaOpciones.append((index, "Admin. Departamento", "company-department.png"))
 
         if self.PermisoAModulo("Administrar justificaciones"):
-            adminJusficacion = AdminJustificacion()
+            getpermiso = next(filter(lambda per: per.tabla == ACCESO_TABLE["Administrar justificaciones"], self.permisos),None)
+            adminJusficacion = AdminJustificacion(permiso=getpermiso)
             adminJusficacion.cerrar_adminJ.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminJusficacion)
             self.listaOpciones.append((index, "Admin.Justificacion", "division.png"))
 
         if self.PermisoAModulo("Administrar permisos empleado"):
-            adminSoliPermiso = AdminSoliPermiso()
+            getpermiso = next(filter(lambda per: per.tabla == ACCESO_TABLE["Administrar permisos empleado"], self.permisos),None) 
+            adminSoliPermiso = AdminSoliPermiso(permiso= getpermiso)
             adminSoliPermiso.cerrar_admin_soli_permiso.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminSoliPermiso)
             self.listaOpciones.append((index, "Admin Solicitud Permisos", "management.png"))
@@ -181,27 +185,24 @@ class vistaPrincipal(QWidget):
         #     index = self.stackVistas.addWidget(adminrol)
         #     self.listaOpciones.append((index,"Administrar rol",'workforce.png'))
 
-        # if True:
-        #     adminpermisos = AdminPermisosRol()
-        #     adminpermisos.cerrar_adminP.connect(self._salir_crud)
-        #     index = self.stackVistas.addWidget(adminpermisos)
-        #     self.listaOpciones.append((index,"Admin. permisos rol",'access-control-list.png'))
-
         if self.PermisoAModulo("Administrar perfiles"):
-            adminpermisosperfil = AdminPermisosPerfil()
+            getpermiso = next(filter(lambda per: per.tabla ==ACCESO_TABLE["Administrar perfiles"], self.permisos),None)
+            
+            adminpermisosperfil = AdminPermisosPerfil(permiso=getpermiso)
             adminpermisosperfil.cerrar_adminP.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminpermisosperfil)
             self.listaOpciones.append( (index, "Perfiles de usuario", "access-control-list.png"))
         
         if self.PermisoAModulo("Administrar reportes"):
-            adminreporte = AdminReporte()
+            getpermiso = next(filter(lambda per: per.tabla == ACCESO_TABLE["Administrar reportes"], self.permisos),None)
+            adminreporte = AdminReporte(permiso=getpermiso)
             adminreporte.signalCerrar.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminreporte)
             self.listaOpciones.append((index,"Admin. reportes",'online-survey.png'))
-            
-                     
+                         
         if self.PermisoAModulo("Administrar reportes"):
-            adminasistencia = AdminAsistencia()
+            getpermiso = next(filter(lambda per: per.tabla ==ACCESO_TABLE["Administrar reportes"], self.permisos),None)
+            adminasistencia = AdminAsistencia(permiso= getpermiso)
             adminasistencia.cerrar_adminA.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminasistencia)
             self.listaOpciones.append((index,"Admin. Asistencia",'access-control-list.png'))

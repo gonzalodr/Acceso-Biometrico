@@ -707,7 +707,7 @@ class EmpleadoData:
                             "usuario": usuario,
                             "pefilUsuario": perfilUsuario,
                             "rolEmpleado": rolEmpleado,
-                            "departamento": departamento.nombre if departamento else "Sin departamento asignado",
+                            "departamento": departamento.id if departamento else None,
                             "listaTelefonos": listaTelefonos,
                         },
                         "success": True,

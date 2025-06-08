@@ -20,9 +20,10 @@ class AdminAsistencia(QWidget):
     asistenciaServices = AsistenciaServices()
     empleadoServices = EmpleadoServices()
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None, permiso = None) -> None:
         super().__init__(parent)
         self.setObjectName("admin")
+        self.permisoUsuario = permiso
 
         cargar_estilos("claro", "admin.css", self)
 
@@ -323,6 +324,10 @@ class AdminAsistencia(QWidget):
         self._cargar_tabla()
 
     def _crear_asistencia(self):
+        if not self.permisoUsuario.crear:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
         blur_effect = QGraphicsBlurEffect(self)
         blur_effect.setBlurRadius(10)
         self.setGraphicsEffect(blur_effect)
@@ -332,6 +337,11 @@ class AdminAsistencia(QWidget):
         self.setGraphicsEffect(None)
 
     def _eliminarRegistro(self, id_asistencia):
+        if not self.permisoUsuario.eliminar:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
+        
         dial = DialogoEmergente(
             "¿Seguro que quieres eliminar este registro?", "Question", True, True
         )
@@ -350,6 +360,10 @@ class AdminAsistencia(QWidget):
                 dial.exec()
 
     def _editar_Asistencia(self, id_asistencia):
+        if not self.permisoUsuario.editar:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
         blur_effect = QGraphicsBlurEffect(self)
         blur_effect.setBlurRadius(10)
         self.setGraphicsEffect(blur_effect)  # Aplicar efecto de desenfoque

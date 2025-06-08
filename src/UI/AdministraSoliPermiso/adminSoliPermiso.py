@@ -5,6 +5,7 @@ from UI.DialogoEmergente import DialogoEmergente
 from services.solicitudPermisoService import SolicitudPermisoService
 from datetime import datetime
 from UI.AdministraSoliPermiso.formSoliPermiso import FormSolicitudPermisoAdmin
+from models.permiso_perfil import Permiso_Perfil
 
 
 class AdminSoliPermiso(QWidget):
@@ -14,11 +15,11 @@ class AdminSoliPermiso(QWidget):
     busqueda = None
     permiso_service = SolicitudPermisoService()
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None, permiso= None) -> None:
         super().__init__(parent)
         self.setObjectName("admin")
         cargar_estilos("claro", "admin.css", self)
-
+        self.permisoUsuario:Permiso_Perfil = permiso
         layout = QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
 
@@ -286,13 +287,20 @@ class AdminSoliPermiso(QWidget):
             self._cargar_tabla()
 
     def _crear_permiso(self):
-
+        if not self.permisoUsuario.crear:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
         form = FormSolicitudPermisoAdmin()
         if form.exec() == QDialog.Accepted:
             self._cargar_tabla()
             self.setGraphicsEffect(None)
 
     def _editar_permiso(self, id):
+        if not self.permisoUsuario.editar:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
         form = FormSolicitudPermisoAdmin(titulo="Editar Solicitud", id_solicitud=id)
         form.exec()
         self._cargar_tabla()
@@ -304,6 +312,10 @@ class AdminSoliPermiso(QWidget):
         Args:
             id_solicitud (int): ID de la solicitud a eliminar
         """
+        if not self.permisoUsuario.editar:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
         dial = DialogoEmergente(
             "Confirmación",
             "¿Estás seguro de eliminar esta solicitud de permiso?",
