@@ -12,7 +12,7 @@ on:
   workflow_dispatch: {} 
 
 jobs:
-  build:
+   build-and-test:
     runs-on: ubuntu-latest
     
     # --- CONFIGURACIÓN DEL SERVICIO MYSQL ---
@@ -137,19 +137,113 @@ jobs:
         path: output/
     # Si los tests pasaron y estamos en una de las ramas de trabajo,
     # fusionamos automáticamente en main
-    - name: Auto-merge to main
-      if: >
-        success() &&
-        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/DEVJAVIER-QA')
-      uses: actions/github-script@v6
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const branch = context.ref.replace('refs/heads/', '');
-          console.log(Merging '${branch}' into 'main'…);
-          await github.rest.repos.merge({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            base: 'main',
-            head: branch
-          });
+  merge-and-deploy:
+      needs: build-and-test
+      runs-on: ubuntu-latest
+      if: github.ref == 'refs/heads/main' || success()
+
+      steps:
+      - name: Merge automático Maikel a MAIN
+        if: success()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            try {
+              await github.rest.pulls.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: 'Merge automático Maikel a MAIN',
+                head: 'DEV-QA',
+                base: 'main',
+                body: 'Merge automático después de pruebas exitosas',
+                maintainer_can_modify: true
+              });
+              
+              // Aprobar el pull request automáticamente
+              const pulls = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                head: 'DEV-QA',
+                base: 'main'
+              });
+              
+              if (pulls.data.length > 0) {
+                await github.rest.pulls.merge({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pulls.data[0].number
+                });
+              }
+            } catch (error) {
+              console.error('Error en merge automático:', error);
+              core.setFailed('Falló el merge automático');
+            }
+
+      - name: Enviar correo de éxito
+        if: success()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USER }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: '✅ Éxito en CI/CD - Merge completado'
+          body: 'Las pruebas fueron exitosas y el merge de Maikel a MAIN se completó correctamente.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          to: ${{ secrets.NOTIFICATION_EMAIL }}
+          from: GitHub Actions
+          content_type: text/plain
+
+      - name: Desplegar a producción via FTP
+        if: success()
+        uses: SamKirkland/FTP-Deploy-Action@4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./deploy/
+          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+
+      notify-failure:
+        needs: build-and-test
+        if: failure()
+        runs-on: ubuntu-latest
+        
+        steps:
+        - name: Descargar resultados de pruebas
+          uses: actions/download-artifact@v3
+          with:
+            name: resultados-pruebas
+
+        - name: Enviar correo de error
+          uses: dawidd6/action-send-mail@v3
+          with:
+            server_address: smtp.gmail.com
+            server_port: 465
+            username: ${{ secrets.EMAIL_USER }}
+            password: ${{ secrets.EMAIL_PASSWORD }}
+            subject: '❌ Fallo en CI/CD - Pruebas no pasaron'
+            body: 'Las pruebas fallaron. Por favor revisa los detalles.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\nErrores encontrados:\n$(cat output/resultados_failures.csv 2>/dev/null || echo "No se encontró archivo de errores")'
+            to: ${{ secrets.NOTIFICATION_EMAIL }}
+            from: GitHub Actions
+            content_type: text/plain
+
+        # Si los tests pasaron y estamos en una de las ramas de trabajo,
+        # fusionamos automáticamente en main
+        - name: Auto-merge to main
+          if: >
+            success() &&
+            (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/Maikel' ||
+            github.ref == 'refs/heads/Javier' || github.ref == 'refs/heads/Yeiler')
+          uses: actions/github-script@v6
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            script: |
+              const branch = context.ref.replace('refs/heads/', '');
+              console.log(Merging '${branch}' into 'main'…);
+              await github.rest.repos.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                base: 'main',
+                head: branch
+              });
