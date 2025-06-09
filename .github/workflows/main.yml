@@ -127,8 +127,9 @@ jobs:
         fi
 
     - name: Guardar resultados de Locust
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: resultados-locust
         path: output/
+
 
