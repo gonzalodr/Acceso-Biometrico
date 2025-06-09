@@ -1,48 +1,53 @@
-name: Pruebas Python
+name: CI/CD Pipeline Python
 
 on:
   push:
     branches:
-      - main
       - Gonzalo
       - Javier
-      - Maikel
       - Yeiler
-  workflow_dispatch: {} 
+      - Maikel
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     
-    # --- CONFIGURACIÓN DEL SERVICIO MYSQL ---
     services:
       mysql:
-        image: mysql:8.0 # Usa una imagen Docker de MySQL. Puedes usar otras versiones como mysql:5.7
+        image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }} # Contraseña para el usuario 'root' del MySQL en el CI
-          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }} # Nombre de tu base de datos de prueba
-          MYSQL_USER: ${{ secrets.MYSQL_USER }} # Usuario que usará tu aplicación
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }} # Contraseña para el usuario de tu aplicación
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         ports:
-          - 3306:3306 # Mapea el puerto del contenedor (3306) al host (VM de GitHub Actions, 3306)
-        options: >- # Opciones para el chequeo de salud del contenedor
+          - 3306:3306
+        options: >-
           --health-cmd="mysqladmin ping -h 127.0.0.1"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
-    # ----------------------------------------
 
     steps:
     - uses: actions/checkout@v4
+    
     - name: Configurar Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12' # Asegúrate de que sea la versión correcta de Python
+        python-version: '3.12'
 
-    - name: Instalar dependencias del sistema para GUI
+    - name: Instalar dependencias del sistema
       run: |
         sudo apt-get update
-        sudo apt-get install -y libgl1 mesa-utils mysql-client # mysql-client es necesario para interactuar con la BD
+        sudo apt-get install -y libgl1 mesa-utils mysql-client
 
     - name: Instalar dependencias de Python
       run: |
@@ -51,8 +56,6 @@ jobs:
 
     - name: Esperar a que MySQL esté listo
       run: |
-        # Este script espera a que el servicio MySQL esté realmente disponible
-        # antes de intentar conectar o importar datos.
         for i in $(seq 1 30); do
           if mysql -h 127.0.0.1 -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e "SELECT 1;" 2>/dev/null; then
             echo "MySQL está listo."
@@ -61,30 +64,27 @@ jobs:
           echo "Esperando a MySQL... ($i/30)"
           sleep 2
         done
-        # Si MySQL no está listo después de 60 segundos, fallará
         if [ $i -eq 30 ]; then
           echo "Error: MySQL no se inició a tiempo."
           exit 1
         fi
 
     - name: Importar base de datos desde backup SQL
-      env: # Estas variables de entorno se usan solo en este paso
+      env:
         DB_HOST: 127.0.0.1
         DB_USER: ${{ secrets.MYSQL_USER }}
         DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
-        DB_BACKUP_FILE="backup/accesobiometrico_v5.0.sql"
+        DB_BACKUP_FILE="backup/accesobiometrico_v5.1.sql"
         
         if [ ! -f "$DB_BACKUP_FILE" ]; then
           echo "Error: El archivo de backup SQL '$DB_BACKUP_FILE' no se encontró en el repositorio."
-          echo "Asegúrate de que la ruta es correcta y el archivo está commiteado."
           exit 1
         fi
         
         echo "Importando '$DB_BACKUP_FILE' a la base de datos '${{ secrets.MYSQL_DATABASE }}'"
         mysql -h "${DB_HOST}" -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_DATABASE}" < "${DB_BACKUP_FILE}"
-        echo "Importación de base de datos completada."
 
     - name: Ejecutar Tests con Pytest
       env: 
@@ -93,7 +93,6 @@ jobs:
         DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
-        ## aqui colocan el comando de prueba testing
         pytest -v -s tests/unitarias/test_perfil_acceso.py
         pytest -v -s tests/seguridad/test_perfil_acceso_vulnerabilidad.py
 
@@ -105,7 +104,6 @@ jobs:
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
         mkdir -p output
-        # aqui  colocan el comando de prueba de carga de locus con su archivo
         locust -f tests/rendimiento/test_rendimiento_perfil.py --headless -u 150 -r 10 --run-time 1m30s --csv=output/resultados
 
     - name: Verificar errores en Locust
@@ -118,7 +116,7 @@ jobs:
           echo "✅ No se encontraron errores en la prueba de carga."
         fi
 
-    - name: Validar rendimiento (tiempo promedio)
+    - name: Validar rendimiento
       run: |
         avg_response_time=$(awk -F',' '$1 ~ /Insertar Perfil/ {print $5}' output/resultados_stats.csv | tail -n1)
         echo "⏱ Tiempo promedio de 'Insertar Perfil': $avg_response_time ms"
@@ -127,10 +125,10 @@ jobs:
           exit 1
         fi
 
-    - name: Guardar resultados de Locust
+    - name: Guardar resultados de pruebas
       uses: actions/upload-artifact@v4
       with:
-        name: resultados-locust
+        name: resultados-pruebas
         path: output/
 
   merge-and-deploy:
@@ -150,7 +148,7 @@ jobs:
     - name: Auto-merge to main
       if: >
         success() &&
-        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/Javier' || github.ref == 'refs/heads/Yeiler')
+        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/Javier' || github.ref == 'refs/heads/Yeiler' || github.ref == 'refs/heads/Maikel')
       uses: actions/github-script@v6
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
