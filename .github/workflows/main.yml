@@ -174,23 +174,6 @@ jobs:
         to: ${{ secrets.NOTIFICATION_EMAIL }}
         from: GitHub Actions
 
-    - name: Preparar archivos para despliegue
-      run: |
-        mkdir -p deploy
-        cp -r src/ deploy/
-        cp requirements.txt deploy/
-        # Agrega aquí otros archivos necesarios para producción
-
-    - name: Desplegar a producción via FTP
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-      with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: ./deploy/
-        server-dir: ${{ secrets.FTP_REMOTE_DIR }}
-        dangerous-clean-slate: true
-
   notify-failure:
     needs: build-and-test
     if: failure()
