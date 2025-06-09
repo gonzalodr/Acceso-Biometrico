@@ -95,5 +95,5 @@ jobs:
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
         # aqui colocan el comando de prueba testing
-        locust -f tests/rendimiento/test_rendimiento.py
-        unitarias pytest tests/unitarias -v
+        pytest tests/unitarias -v
+        pytest -s tests\rendimiento\test_rendimiento.py
