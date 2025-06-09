@@ -96,6 +96,7 @@ jobs:
       run: |
         ## aqui colocan el comando de prueba testing
         pytest tests/test_perfil_acceso.py
+        pytest tests/test_perfil_acceso_vulnerabilidad.py
 
     - name: Ejecutar pruebas de carga con Locust
       env:
