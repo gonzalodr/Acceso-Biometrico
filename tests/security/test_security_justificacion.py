@@ -29,6 +29,7 @@ def test_sql_injection_motivo(justificacion_service):
     # Ejecutar el método de inserción
     result = servicio.insertarJustificacion(justificacion)
     
-    # Verificar que la validación rechace el input malicioso
-    assert not result["success"]
-    assert "El motivo contiene caracteres inválidos." in result["message"]
+    if result["success"]:
+        raise AssertionError("La validación no falló como se esperaba.")
+    if "El motivo contiene caracteres inválidos." not in result["message"]:
+        raise AssertionError("El mensaje de error esperado no está presente.")
