@@ -94,8 +94,8 @@ jobs:
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
         ## aqui colocan el comando de prueba testing
-        pytest tests/unitarias/test_perfil_acceso.py
-        pytest tests/seguridad/test_perfil_acceso_vulnerabilidad.py
+        pytest -v -s tests/unitarias/test_perfil_acceso.py
+        pytest -v -s tests/seguridad/test_perfil_acceso_vulnerabilidad.py
 
     - name: Ejecutar pruebas de carga con Locust
       env:

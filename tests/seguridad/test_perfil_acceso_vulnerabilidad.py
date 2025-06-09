@@ -1,12 +1,8 @@
 import sys
 import os
 
-# Calculamos la ruta absoluta de la carpeta raíz del proyecto (dos niveles arriba de este archivo)
 proyecto_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-# Construimos la ruta completa a la carpeta src dentro de la raíz
 ruta_src = os.path.join(proyecto_root, 'src')
-
-# Insertamos src/ al comienzo de sys.path para poder hacer import src.<algo>
 if ruta_src not in sys.path:
     sys.path.insert(0,ruta_src)
 
@@ -16,14 +12,11 @@ from models.perfil import Perfil
 from models.permiso_perfil import Permiso_Perfil
 import random
 import string
-import time # Para pruebas de inyección de tiempo
+import time
 
 # --- Fixture para la instancia del servicio ---
 @pytest.fixture
 def perfil_service_instance():
-    # ¡IMPORTANTE! Asegúrate de que esta instancia se conecta a una DB de PRUEBA aislada.
-    # No uses tu DB de desarrollo o producción para tests de inyección.
-    # Se recomienda usar un contenedor Docker para la DB de prueba que se reinicie para cada test.
     service = PerfilServices()
     return service
 
@@ -55,10 +48,6 @@ def test_insertar_perfil_sql_injection_nombre_store_check(perfil_service_instanc
 
 
 def test_insertar_perfil_sql_injection_descripcion_store_check(perfil_service_instance):
-    """
-    Intenta insertar una descripción con un payload SQL Injection.
-    Verifica que la descripción se almacene LITERALMENTE y que la DB NO sea afectada.
-    """
     service = perfil_service_instance
     malicious_description = "Descripción válida; INSERT INTO users (username, password) VALUES ('hacker', 'pwned'); --"
     
@@ -71,7 +60,6 @@ def test_insertar_perfil_sql_injection_descripcion_store_check(perfil_service_in
         retrieved_data = service.obtenerPerfilPorId(inserted_id)
         assert retrieved_data["success"] is True
         assert retrieved_data["data"]["perfil"].descripcion == malicious_description
-
 
 def test_modificar_perfil_sql_injection_nombre_store_check(perfil_service_instance):
     service = perfil_service_instance
@@ -94,11 +82,8 @@ def test_modificar_perfil_sql_injection_nombre_store_check(perfil_service_instan
         assert retrieved_data["success"] is True
         assert retrieved_data["data"]["perfil"].nombre == malicious_name
 
+
 def test_modificar_perfil_sql_injection_descripcion_store_check(perfil_service_instance):
-    """
-    Intenta modificar la descripción de un perfil con un payload SQL Injection.
-    Verifica que la descripción se actualice LITERALMENTE y que la DB NO sea afectada.
-    """
     service = perfil_service_instance
     
     initial_name = generate_unique_name("ModificarDescSQL")
@@ -123,39 +108,20 @@ def test_modificar_perfil_sql_injection_descripcion_store_check(perfil_service_i
     retrieved_data = service.obtenerPerfilPorId(inserted_id)
     assert retrieved_data["success"] is True
     assert retrieved_data["data"]["perfil"].descripcion == malicious_description, \
-           "La descripción modificada con el payload debería haberse almacenado literalmente."
+               "La descripción modificada con el payload debería haberse almacenado literalmente."
+
 
 # --- Test para Inyección SQL en OBTENER LISTA Perfil (Búsqueda y Paginación) ---
 def test_obtener_lista_perfil_sql_injection_busqueda(perfil_service_instance):
-    """
-    Intenta inyectar SQL en el parámetro 'busqueda' al listar perfiles.
-    La prueba PASS si la inyección NO causa error de DB o alteración de datos.
-    """
     service = perfil_service_instance
-    
-    # Insertar un perfil con un nombre "limpio" para buscarlo
     clean_name = generate_unique_name("BuscarLimpiamente")
     service.insertarPerfil(Perfil(nombre=clean_name, descripcion="Desc limpia"), [])
-    
-    # Payload que podría intentar alterar la consulta SQL
     malicious_search = "' OR 1=1 --" 
-    
-    # Esperamos que la consulta se ejecute sin error y que el resultado no sea "inesperado"
-    # Un ORM bien configurado tratará esto como una cadena de búsqueda literal.
     result = service.obtenerListaPerfil(pagina=1, tam_pagina=10, busqueda=malicious_search)
-    
     assert result["success"] is True, "La búsqueda con SQL Injection debería ser exitosa (tratada como literal)."
     assert "listaPerfiles" in result["data"]
-    # Lo más importante: asegurar que no se hayan devuelto TODOS los perfiles (si 'OR 1=1' se ejecutó)
-    # ni que haya habido un error de SQL.
-    # Podrías verificar que 'clean_name' NO esté en los resultados, ya que la búsqueda literal
-    # no coincidiría con el nombre original. O si se esperaba un error, entonces el test falla.
-    
-    # Si 'busqueda' es parametrizada, `malicious_search` se buscará como una cadena literal.
-    # Por lo tanto, el número de resultados debería ser 0 o muy pocos, no todos los perfiles.
-    # Este assert es más sobre la ausencia de un error de DB y la ausencia de resultados inesperados.
     assert len(result["data"]["listaPerfiles"]) < 100, "La inyección no debería devolver una cantidad inesperada de perfiles."
-    # Si tu DB es pequeña, podrías hacer: assert len(result["data"]["listaPerfiles"]) == 0
+
 
 def test_obtener_lista_perfil_sql_injection_orden_por_check_time(perfil_service_instance):
 
@@ -182,7 +148,6 @@ def test_obtener_perfil_por_id_sql_injection_error_check(perfil_service_instance
     malicious_id = "1' OR 1=1 --" 
     result = service.obtenerPerfilPorId(malicious_id)
     assert result["success"] is True, "La obtención por ID con SQL Injection no debería ser exitosa."
-
 
 # --- Tests para ELIMINAR Perfil por ID (Verificar que el ID malicioso no elimine nada real) ---
 def test_eliminar_perfil_sql_injection_id_no_deletion(perfil_service_instance):

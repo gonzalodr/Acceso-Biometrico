@@ -100,8 +100,7 @@ def test_existe_nombre_registrado_con_id_excluido(perfil_service_instance):
     # Verificar que el nombre NO exista cuando se excluye su propio ID
     result = service.existeNombreRegistrado(unique_name, idPerfil=insert_result["id_perfil"])
     assert result["success"] is True
-    assert result["exists"] is False # Debería ser False si solo existe ese perfil con ese nombre
-
+    assert result["exists"] is False 
 
 # --- Tests para insertarPerfil (CRUD) ---
 def test_insertar_perfil_success(perfil_service_instance):
@@ -122,7 +121,6 @@ def test_insertar_perfil_success(perfil_service_instance):
     assert retrieved_data["success"] is True
     assert retrieved_data["data"]["perfil"].nombre == unique_name
     assert len(retrieved_data["data"]["listaPermisos"]) == 2
-
 
 def test_insertar_perfil_invalid_name(perfil_service_instance):
     service = perfil_service_instance
@@ -218,7 +216,7 @@ def test_obtener_lista_perfil_cb_success(perfil_service_instance):
     result = service.obtenerListaPerfilCB(pagina=1, tam_pagina=10, ordenar_por="nombre", tipo_orden="ASC")
     assert result["success"] is True
     assert "listaPerfiles" in result["data"]
-    assert len(result["data"]["listaPerfiles"]) >= 1 # Al menos el insertado
+    assert len(result["data"]["listaPerfiles"]) >= 1 
 
 # --- Tests para obtenerPerfilPorId (CRUD - Obtener por ID) ---
 def test_obtener_perfil_por_id_found(perfil_service_instance):
@@ -244,8 +242,7 @@ def test_obtener_perfil_por_id_not_found(perfil_service_instance):
 def test_obtener_todo_perfiles_success(perfil_service_instance):
     service = perfil_service_instance
     service.insertarPerfil(Perfil(nombre=generate_unique_name("Todo_"), descripcion="Desc Todo"), [])
-    result = service.obtener_todo_perfiles()    
+    result = service.obtener_todo_perfiles()     
     assert result["success"] is True
     assert "listaPerfiles" in result["data"]
     assert len(result["data"]["listaPerfiles"]) >= 1
-
