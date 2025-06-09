@@ -13,7 +13,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     # --- CONFIGURACIÓN DEL SERVICIO MYSQL ---
     services:
       mysql:
@@ -42,7 +42,7 @@ jobs:
     - name: Instalar dependencias del sistema para GUI
       run: |
         sudo apt-get update
-        sudo apt-get install -y libgl1 mesa-utils mysql-client xvfb # mysql-client es necesario para interactuar con la BD
+        sudo apt-get install -y libgl1 mesa-utils mysql-client # mysql-client es necesario para interactuar con la BD
 
     - name: Instalar dependencias de Python
       run: |
@@ -94,14 +94,35 @@ jobs:
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
         ## aqui colocan el comando de prueba testing
-        pytest tests/unitarias/test_perfil_acceso.py
-        pytest tests/seguridad/test_perfil_acceso_vulnerabilidad.py
-        #xvfb-run -a pytest tests/gui/test_perfil_acceso_gui.py
-        #xvfb-run -a bash -c "sleep 2 && pytest tests/gui/test_perfil_acceso_gui.py"
-        xvfb-run -a bash -c "sleep 2 && pytest tests/gui/test_perfil_acceso_gui.py"
-
+        pytest tests/test_perfil_acceso.py
+        pytest tests/test_perfil_acceso_vulnerabilidad.py
 
     - name: Ejecutar pruebas de carga con Locust
+      env:
+        DB_HOST: 127.0.0.1
+        DB_USER: ${{ secrets.MYSQL_USER }}
+        DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+      run: |
+        mkdir -p output
+        # aqui  colocan el comando de prueba de carga de locus con su archivo
+        locust -f tests/test_rendimiento_perfil.py --headless -u 150 -r 10 --run-time 1m30s --csv=output/resultados
+
+    - name: Verificar errores en Locust
+      run: |
+        if [ -f output/resultados_failures.csv ] && grep -q '[1-9]' output/resultados_failures.csv; then
+          echo "❌ Se encontraron errores durante la prueba de carga."
+          cat output/resultados_failures.csv
+          exit 1
+        else
+          echo "✅ No se encontraron errores en la prueba de carga."
+        fi
+
+    - name: Validar rendimiento (tiempo promedio)
+      run: |
+        avg_response_time=$(awk -F',' '$1 ~ /Insertar Perfil/ {print $5}' output/resultados_stats.csv | tail -n1)
+        echo "⏱ Tiempo promedio de 'Insertar Perfil': $avg_response_time ms"
+        if (( $(echo "$avg_response_time > 500" | bc -l) )); then
           echo "❌ El tiempo de respuesta promedio supera el umbral permitido (500 ms)"
           exit 1
         fi
@@ -111,19 +132,9 @@ jobs:
       with:
         name: resultados-locust
         path: output/
-    # Si los tests pasaron y estamos en una de las ramas de trabajo,
-    # fusionamos automáticamente en main
-    - name: Auto-merge to main
-      if: >
-        success() &&
-        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/DEVJAVIER-QA')
-      uses: actions/github-script@v6
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const branch = context.ref.replace('refs/heads/', '');
           console.log(`Merging '${branch}' into 'main'...`);
-          console.log(Merging '${branch}' into 'main'…);
           await github.rest.repos.merge({
             owner: context.repo.owner,
             repo: context.repo.repo,
