@@ -307,9 +307,10 @@ CREATE TABLE `reporte` (
 
 
 CREATE TABLE `rol` (
-  `Id` int(11) NOT NULL,
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Nombre` varchar(50) NOT NULL,
-  `Descripcion` varchar(100) DEFAULT NULL
+  `Descripcion` varchar(100) DEFAULT NULL,
+   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
