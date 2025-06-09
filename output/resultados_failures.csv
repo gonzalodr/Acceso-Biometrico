@@ -1,0 +1,2 @@
+Method,Name,Error,Occurrences
+DB,Consultar Lista Departamentos (DB),Exception('Ocurrió un error al cargar la lista de departamentos.'),1
