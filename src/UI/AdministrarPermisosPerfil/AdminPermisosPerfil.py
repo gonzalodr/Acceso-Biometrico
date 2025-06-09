@@ -7,10 +7,7 @@ from services.permisosPerfilServices import *
 from services.perfilService import *
 
 from settings.config import *
-
-from settings.config import *
-
-from settings.config import *
+from models.permiso_perfil import Permiso_Perfil
 
 class AdminPermisosPerfil(QWidget):
     cerrar_adminP = Signal()
@@ -23,7 +20,7 @@ class AdminPermisosPerfil(QWidget):
     def __init__(self, parent=None, permiso=None) -> None:
         super().__init__(parent)
         self.setObjectName("admin")
-        self.permisoUsuario = permiso
+        self.permisoUsuario:Permiso_Perfil = permiso
         cargar_estilos("claro", "admin.css", self)
 
         # layout = QBoxLayout()
@@ -332,6 +329,10 @@ class AdminPermisosPerfil(QWidget):
             self.cargarTablaPerfiles()
 
     def eliminarPerfil(self, id):
+        if not self.permisoUsuario.eliminar:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
         dial = DialogoEmergente(
             "",
             "¿Esta seguro que quieres eliminar este registro?",
@@ -351,11 +352,19 @@ class AdminPermisosPerfil(QWidget):
             self.cargarTablaPerfiles()
 
     def editarPerfil(self, id):
+        if not self.permisoUsuario.editar:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
         form = FormularioPerfilAccesos(id_perfil=id)
         form.exec()
         self.cargarTablaPerfiles()
 
     def crearPerfil(self):
+        if not self.permisoUsuario.crear:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
+            dial.exec()
+            return
         form = FormularioPerfilAccesos()
         form.exec()
         self.cargarTablaPerfiles()

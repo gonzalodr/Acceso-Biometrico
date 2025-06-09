@@ -5,8 +5,11 @@ from UI.AdministrarEmpleado.formEmpleado import formEmpleado
 from UI.AdministrarEmpleado.imformacionEmpleado import informacionEmpleado
 from UI.DialogoEmergente import DialogoEmergente
 from services.empleadoServices import EmpleadoServices
+from services.huellaService import HuellaService
+from services.ZKService        import ZKServices 
 from models.persona import Persona
 from datetime import datetime
+from models.permiso_perfil import Permiso_Perfil
 
 class AdminEmpleado(QWidget):
     signalCerrar = Signal()
@@ -14,12 +17,13 @@ class AdminEmpleado(QWidget):
     ultimaPagina = 1
     busqueda = None
     EmpServices = EmpleadoServices()
+    HueServices = HuellaService()
 
 
     def __init__(self, parent= None, permiso= None) -> None:
         super().__init__(parent)
         self.setObjectName("admin")
-        self.permisoUsuario = permiso
+        self.permisoUsuario:Permiso_Perfil = permiso
         cargar_estilos('claro','admin.css',self)
 
         layout = QVBoxLayout()
@@ -176,13 +180,14 @@ class AdminEmpleado(QWidget):
             self.addItemTable(index,4,persona.estado_civil)
             self.addItemTable(index,5,persona.direccion)
 
+            nombre = persona.nombre+"-"+persona.cedula
             #contenedor de los botones.
             layout = QHBoxLayout()
             layout.addWidget(self.crearBtnAccion('Mas info','btnInfo',id_empleado,self.verMasInformacion))
             layout.addSpacing(15)
             layout.addWidget(self.crearBtnAccion('Editar','btneditar',id_empleado,self.editarEmpleado))
             layout.addSpacing(15)
-            layout.addWidget(self.crearBtnAccion('Eliminar','btneliminar',id_empleado,self.eliminarEmpleado))
+            layout.addWidget(self.crearBtnAccion('Eliminar', 'btneliminar', id_empleado, self.eliminarEmpleado, f'{persona.nombre}-{persona.cedula}'))
             layout.setContentsMargins(10, 0, 10,0)
             #widget para el layout de los botones.
             button_widget = QWidget()
@@ -196,13 +201,15 @@ class AdminEmpleado(QWidget):
         dato_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # No editable
         self.tbPersona.setItem(row, colum, dato_item)
 
-    def crearBtnAccion(self,text:str,objectName:str,id_empleado:int,functionAction):
-        boton = QPushButton(text,parent=self.tbPersona)
+    def crearBtnAccion(self, text: str, objectName: str, id_empleado: int, functionAction, *args):
+        boton = QPushButton(text, parent=self.tbPersona)
         boton.setObjectName(objectName)
-        boton.setMinimumSize(QSize(80,35))
+        boton.setMinimumSize(QSize(80, 35))
         boton.setMaximumWidth(100)
-        boton.clicked.connect(lambda: functionAction(id_empleado))
+        # Pass additional arguments to the lambda
+        boton.clicked.connect(lambda: functionAction(id_empleado, *args))
         return boton
+
 
     def actualizarLabelPagina(self,numPagina, totalPagina):
         self.lblNumPagina.setText(f"Pagina {numPagina} de {totalPagina} ")
@@ -244,34 +251,70 @@ class AdminEmpleado(QWidget):
             self.cargarTabla()
 
     def verMasInformacion(self, id_empleado:int):
-        print(f'\n\neliminar id {id_empleado}\n\n')
         inf = informacionEmpleado(id_empleado)
         inf.exec()
 
-    def eliminarEmpleado(self, id_empleado:int):
-        texto = "Se eliminaran todos los datos asociados a este empleado."
+
+    def obtenerHuella(self, id_empleado: int):
+        result = self.HueServices.buscar_huellas_por_empleado(id_empleado)
+
+        if not result["success"]:
+            dial = DialogoEmergente("", "Error al obtener la huella del empleado.", "Error", True)
+            dial.exec()
+            return None
+
+        if result["exists"]:
+            return result["id_huella"]  # Retorna el ID de la huella
+        else:
+            return None
+
+    def eliminarEmpleado(self, id_empleado: int, nombre_completo: str):
+        texto = f"Se eliminarán todos los datos asociados a este empleado."
         texto += "\n¿Quieres eliminar este empleado?"
-        dial = DialogoEmergente("¡Advertencia!",texto,"Warning",True,True)
-        print(f'id empleado: {id_empleado}')
+        dial = DialogoEmergente("¡Advertencia!", texto, "Warning", True, True)
+
         if dial.exec() == QDialog.Accepted:
+            # Obtener la huella del empleado antes de eliminarlo
+            id_huella = self.obtenerHuella(id_empleado)
+                        # Si el empleado fue eliminado, eliminar su huella si existe
+            if id_huella is not None:
+                result_huella = self.HueServices.eliminarHuella(id_huella)
+                if not result_huella['success']:
+                    dial = DialogoEmergente("", "Empleado eliminado, pero no se pudo eliminar la huella.", "Error", True)
+                    dial.exec()
+            zk_service = ZKServices()
+            zk_service.eliminar_huella_por_nombre(nombre_completo)
+
+            # Eliminar al empleado
             result = self.EmpServices.eliminar_empleado(id_empleado)
 
             if not result['success']:
-                dial = DialogoEmergente("",texto,"Error",True)
+                dial = DialogoEmergente("", result['message'], "Error", True)
                 dial.exec()
                 return
-            dial = DialogoEmergente("",result['message'],"Check",True)
+
+            # Confirmación final
+            dial = DialogoEmergente("", result['message'], "Check", True)
             dial.exec()
+
         self.cargarTabla()
+
     
     def editarEmpleado(self,id_empleado:int):
-        print(f'\n\nEditar id {id_empleado}\n\n')
+        if not self.permisoUsuario.editar:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta accion.","Error",True,False)
+            dial.exec()
+            return
         form = formEmpleado(titulo='Editar empleado',id_empleado = id_empleado)
         form.finished.connect(form.deleteLater)
         form.exec()
         self.cargarTabla()
 
     def crearEmpleado(self):
+        if not self.permisoUsuario.crear:
+            dial = DialogoEmergente("","No tienes permiso para realizar esta accion.","Error",True,False)
+            dial.exec()
+            return
         form = formEmpleado()
         form.finished.connect(form.deleteLater)
         form.exec()

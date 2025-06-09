@@ -1,10 +1,3 @@
-# DATABASE_CONFIG = {
-#     "host": "localhost",
-#     "user": "root",
-#     "password": "",
-#     "database": "accesobiometrico",
-# }
-
 import os
 
 DATABASE_CONFIG = {
@@ -18,13 +11,23 @@ DATABASE_CONFIG = {
 ZKTECA_CONFIG = {"host": "192.168.1.201", "port": 4370}
 
 # array accesos para los usuarios
+# Utils/Utils.py
+
 ACCESO_TABLE = {
-    "administrar personas": "persona",
-    "administrar departamentos": "departamentos",
-    "administrar rol": "rol",
-    "administrar perfil": "permiso_perfil",
-    "administrar justificacion": "justificaciones",
+    "Administrar personas":         "persona",
+    "Administrar departamentos":    "departamento",
+    "Administrar roles":            "rol",
+    "Administrar perfiles":         "perfil",
+    "Administrar justificaciones":  "justificacion",
+    "Administrar horario":          "horario",
+    "Administrar empleados":        "empleado",
+    "Administrar usuarios":         "usuario",
+    "Administrar asistencias":      "asistencia",
+    "Administrar reportes":         "reporte",
+    "Administrar permisos empleado": "permisosEmpleado",
+    "Administrar permisos perfil":  "permiso_perfil",
 }
+
 
 MODULOS_ACCESO = [
     ("Administrar empleados", "empleado"),

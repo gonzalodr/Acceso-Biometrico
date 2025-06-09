@@ -48,7 +48,7 @@ class GenerarReporte(QDialog):
         boton_box.button(QDialogButtonBox.Ok).setMinimumSize(150, 30)
 
         boton_box.accepted.connect(self.generaReporte)
-        boton_box.rejected.connect(self.reject())
+        boton_box.rejected.connect(self.reject)
 
         # Centrar los botones
         boton_layout = QHBoxLayout()
@@ -59,6 +59,10 @@ class GenerarReporte(QDialog):
         self.layout.addLayout(boton_layout)
         self.setLayout(self.layout)
 
+    def cerrarForm(self):
+        print("cerrando form")
+        self.reject()
+        
     def grupoSeleccionEmpleado(self):
         groupEmpleado = QGroupBox("Selección de Empleado")
         layoutEmpleado = QVBoxLayout()

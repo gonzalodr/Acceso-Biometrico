@@ -150,4 +150,3 @@ jobs:
             base: 'main',
             head: branch
           });
-
