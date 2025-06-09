@@ -5,9 +5,7 @@ on:
   push:
     branches:
       - main
-      - Gonzalo
-      - Javier
-      - 
+      - Maikel
 
   workflow_dispatch: {} 
 
