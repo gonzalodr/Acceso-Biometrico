@@ -7,8 +7,8 @@ on:
       - main
       - Gonzalo
       - Javier
-      - 
-
+      - Maikel
+      - Yeiler
   workflow_dispatch: {} 
 
 jobs:
@@ -94,7 +94,7 @@ jobs:
         DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
-        # aqui colocan el comando de prueba testing
+        ## aqui colocan el comando de prueba testing
         pytest tests/test_perfil_acceso.py
 
     - name: Ejecutar pruebas de carga con Locust
@@ -105,6 +105,7 @@ jobs:
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
         mkdir -p output
+        # aqui  colocan el comando de prueba de carga de locus con su archivo
         locust -f tests/test_rendimiento.py --headless -u 150 -r 10 --run-time 1m30s --csv=output/resultados
 
     - name: Verificar errores en Locust
@@ -131,5 +132,22 @@ jobs:
       with:
         name: resultados-locust
         path: output/
-
+    # Si los tests pasaron y estamos en una de las ramas de trabajo,
+    # fusionamos automáticamente en main
+    - name: Auto-merge to main
+      if: >
+        success() &&
+        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/DEVJAVIER-QA')
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const branch = context.ref.replace('refs/heads/', '');
+          console.log(Merging '${branch}' into 'main'…);
+          await github.rest.repos.merge({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            base: 'main',
+            head: branch
+          });
 
