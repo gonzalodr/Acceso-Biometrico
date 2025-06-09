@@ -133,42 +133,32 @@ jobs:
     if: github.ref == 'refs/heads/main' || success()
 
     steps:
-    - name: Merge automático Maikel a MAIN
+    - name: Merge automático a MAIN desde rama activa
       if: success()
       uses: actions/github-script@v6
       with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          try {
-            await github.rest.pulls.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: 'Merge automático Maikel a MAIN',
-              head: 'DEV-QA',
-              base: 'main',
-              body: 'Merge automático después de pruebas exitosas',
-              maintainer_can_modify: true
-            });
-            
-            // Aprobar el pull request automáticamente
-            const pulls = await github.rest.pulls.list({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              head: 'DEV-QA',
-              base: 'main'
-            });
-            
-            if (pulls.data.length > 0) {
-              await github.rest.pulls.merge({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: pulls.data[0].number
-              });
-            }
-          } catch (error) {
-            console.error('Error en merge automático:', error);
-            core.setFailed('Falló el merge automático');
-          }
+          const sourceBranch = context.ref.replace('refs/heads/', '');
+          const targetBranch = 'main';
+
+          console.log(`Creando Pull Request de '${sourceBranch}' hacia '${targetBranch}'`);
+
+          const { data: pr } = await github.rest.pulls.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `Merge automático ${sourceBranch} a ${targetBranch}`,
+            head: sourceBranch,
+            base: targetBranch,
+            body: 'Merge automático después de pruebas exitosas',
+            maintainer_can_modify: true
+          });
+
+          await github.rest.pulls.merge({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: pr.number
+          });
 
     - name: Enviar correo de éxito
       if: success()
@@ -186,7 +176,8 @@ jobs:
 
     - name: Desplegar a producción via FTP
       if: success()
-      uses: SamKirkland/FTP-Deploy-Action@v4
+      uses: SamKirkland/ftp-deploy-action@v4
+
       with:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
@@ -218,22 +209,4 @@ jobs:
         from: GitHub Actions
         content_type: text/plain
 
-  # Si los tests pasaron y estamos en una de las ramas de trabajo,
-  # fusionamos automáticamente en main
-    - name: Auto-merge to main
-      if: >
-        success() &&
-        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/Maikel' ||
-         github.ref == 'refs/heads/Javier' || github.ref == 'refs/heads/Yeiler')
-      uses: actions/github-script@v6
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const branch = context.ref.replace('refs/heads/', '');
-          console.log(`Merging '${branch}' into 'main'…`);
-          await github.rest.repos.merge({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            base: 'main',
-            head: branch
-          });
+  
