@@ -304,6 +304,17 @@ CREATE TABLE `reporte` (
 --
 -- Estructura de tabla para la tabla `rol`
 --
+INSERT INTO `rol` (`Nombre`, `Descripcion`) VALUES
+('Asistente', 'Rol para usuarios que asisten a los supervisores'),
+('Operador', 'Rol con permisos para operar el sistema en horario laboral'),
+('Invitado', 'Rol con acceso limitado al sistema'),
+('Gerente', 'Rol con acceso a estadísticas y reportes avanzados'),
+('Recepcionista', 'Rol encargado del registro inicial de empleados'),
+('Tecnico', 'Rol con acceso a herramientas de mantenimiento'),
+('Auditor', 'Rol para auditorías internas de control de acceso'),
+('Seguridad', 'Rol para personal de vigilancia'),
+('Recursos Humanos', 'Rol para gestión de empleados y asistencia'),
+('Soporte', 'Rol técnico para solución de problemas y tickets');
 
 CREATE TABLE `rol` (
   `Id` int(11) NOT NULL,
