@@ -43,7 +43,7 @@ jobs:
     - name: Instalar dependencias del sistema para GUI
       run: |
         sudo apt-get update
-        sudo apt-get install -y libgl1 mesa-utils mysql-client # mysql-client es necesario para interactuar con la BD
+        sudo apt-get install -y libgl1 mesa-utils mysql-client xvfb # mysql-client es necesario para interactuar con la BD
 
     - name: Instalar dependencias de Python
       run: |
@@ -97,7 +97,7 @@ jobs:
         ## aqui colocan el comando de prueba testing
         pytest tests/unitarias/test_perfil_acceso.py
         pytest tests/seguridad/test_perfil_acceso_vulnerabilidad.py
-        pytest tests/gui/test_perfil_acceso_gui.py
+        xvfb-run -a pytest tests/gui/test_perfil_acceso_gui.py
 
     - name: Ejecutar pruebas de carga con Locust
       env:
