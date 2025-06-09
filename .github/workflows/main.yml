@@ -105,7 +105,7 @@ jobs:
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
         mkdir -p output
-        locust -f tests/test_rendimiento.py -u 150 -r 10 --run-time 1m0s --csv=output/resultados
+        locust -f tests/test_rendimiento.py --headless -u 150 -r 10 --run-time 1m30s --csv=output/resultados
 
     - name: Verificar errores en Locust
       run: |
