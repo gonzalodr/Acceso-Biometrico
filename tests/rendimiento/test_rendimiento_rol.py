@@ -22,7 +22,11 @@ from services.rolService import RolServices
 from models.rol import Rol
 
 def generate_unique_name():
-    return f"Rol_{uuid.uuid4().hex[:8]}"
+    # Solo letras y espacios (opcional)
+    letras = string.ascii_letters
+    nombre = ''.join(random.choices(letras, k=8))
+    return f"Rol{nombre}"
+
 
 class RolBehavior(SequentialTaskSet):
     def on_start(self):
