@@ -112,7 +112,7 @@ jobs:
       run: |
         mkdir -p output
         # aqui  colocan el comando de prueba de carga de locus con su archivo
-        locust -f tests/rendimiento --headless -u 150 -r 10 --run-time 1m --csv=output/resultados
+        locust -f tests/rendimiento/test_rendimiento_rol.py --headless -u 150 -r 10 --run-time 1m --csv=output/resultados
 
     - name: Verificar errores en Locust
       run: |
