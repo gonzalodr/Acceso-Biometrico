@@ -97,7 +97,9 @@ jobs:
         ## aqui colocan el comando de prueba testing
         pytest tests/unitarias/test_perfil_acceso.py
         pytest tests/seguridad/test_perfil_acceso_vulnerabilidad.py
-        xvfb-run -a pytest tests/gui/test_perfil_acceso_gui.py
+        #xvfb-run -a pytest tests/gui/test_perfil_acceso_gui.py
+        xvfb-run -a bash -c "sleep 2 && pytest tests/gui/test_perfil_acceso_gui.py"
+
 
     - name: Ejecutar pruebas de carga con Locust
       env:
