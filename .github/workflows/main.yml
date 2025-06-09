@@ -137,13 +137,13 @@ jobs:
       with:
         server_address: smtp.gmail.com
         server_port: 465
+        secure: true  # Explicitly set secure to true for SSL
         username: ${{ secrets.EMAIL_USER }}
         password: ${{ secrets.EMAIL_PASSWORD }}
         subject: '✅ Éxito en CI/CD - Merge completado'
         body: 'Las pruebas fueron exitosas y el merge de DEV-QA a MAIN se completó correctamente.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
         to: ${{ secrets.NOTIFICATION_EMAIL }}
         from: GitHub Actions
-        content_type: text/plain
 
     - name: Desplegar a producción via FTP
       if: success()
@@ -166,18 +166,19 @@ jobs:
       with:
         name: resultados-pruebas
 
-    - name: Enviar correo de error
+    - name: Enviar correo de éxito
+      if: success()
       uses: dawidd6/action-send-mail@v3
       with:
         server_address: smtp.gmail.com
         server_port: 465
+        secure: true  # Explicitly set secure to true for SSL
         username: ${{ secrets.EMAIL_USER }}
         password: ${{ secrets.EMAIL_PASSWORD }}
-        subject: '❌ Fallo en CI/CD - Pruebas no pasaron'
-        body: 'Las pruebas fallaron. Por favor revisa los detalles.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\nErrores encontrados:\n$(cat output/resultados_failures.csv 2>/dev/null || echo "No se encontró archivo de errores")'
+        subject: '✅ Éxito en CI/CD - Merge completado'
+        body: 'Las pruebas fueron exitosas y el merge de DEV-QA a MAIN se completó correctamente.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
         to: ${{ secrets.NOTIFICATION_EMAIL }}
         from: GitHub Actions
-        content_type: text/plain
 
   # Si los tests pasaron y estamos en una de las ramas de trabajo,
   # fusionamos automáticamente en main
