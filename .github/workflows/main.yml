@@ -3,13 +3,12 @@ name: CI/CD Pipeline Python
 on:
   push:
     branches:
+      - main
       - Gonzalo
-      - Javier
+      - DEVJAVIER-QA
       - Yeiler
       - Maikel
-  pull_request:
-    branches:
-      - main
+
   workflow_dispatch: {}
 
 jobs:
@@ -127,47 +126,33 @@ jobs:
         name: resultados-pruebas
         path: output/
 
-  merge-and-deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || success()
-
-    steps:
-    - name: Merge automático Yeiler a MAIN
-      if: success()
+  # fusionamos automáticamente en main
+    - name: Auto-merge to main
+      if: >
+        success() &&
+        (
+          github.ref == 'refs/heads/Gonzalo' ||
+          github.ref == 'refs/heads/DEVJAVIER-QA' ||
+          github.ref == 'refs/heads/Yeiler' ||
+          github.ref == 'refs/heads/Maikel'
+        )
       uses: actions/github-script@v6
+      continue-on-error: true
       with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
+          const branch = context.ref.replace('refs/heads/', '');
           try {
-            await github.rest.pulls.create({
+            console.log(`Merging '${branch}' into 'main'…`);
+            await github.rest.repos.merge({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: 'Merge automático Yeiler a MAIN',
-              head: 'DEV-QA',
               base: 'main',
-              body: 'Merge automático después de pruebas exitosas',
-              maintainer_can_modify: true
+              head: branch
             });
-            
-            // Aprobar el pull request automáticamente
-            const pulls = await github.rest.pulls.list({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              head: 'DEV-QA',
-              base: 'main'
-            });
-            
-            if (pulls.data.length > 0) {
-              await github.rest.pulls.merge({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: pulls.data[0].number
-              });
-            }
+            console.log(`✅ Merge ${branch} → main OK`);
           } catch (error) {
-            console.error('Error en merge automático:', error);
-            core.setFailed('Falló el merge automático');
+            console.log('⚠️ Merge conflict:', error.message);
           }
 
     - name: Enviar correo de éxito
