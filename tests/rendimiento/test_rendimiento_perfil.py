@@ -1,10 +1,11 @@
-
 import sys
 import os
 
+# Ir dos niveles arriba desde este archivo (de tests/rendimiento/ a la raíz)
 current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.join(current_dir, os.pardir)
-sys.path.insert(0, os.path.abspath(os.path.join(parent_dir, 'src')))
+root_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))
+src_dir = os.path.join(root_dir, 'src')
+sys.path.insert(0, src_dir)
 
 # locustfile.py
 import random
