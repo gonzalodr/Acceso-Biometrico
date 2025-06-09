@@ -502,7 +502,7 @@ class formEmpleado(QDialog):
             'persona'       : persona,
             'listaTelefonos': listaTelefonos,
             'id_departamento':self.inDep.currentData(),
-            'id_rol'        : self.inRol.currentData(),
+            'id_rol'        : self.inRol.currentData()
         }
 
         return datos
@@ -527,7 +527,7 @@ class formEmpleado(QDialog):
                     listaTelefonos.append(telefono)
         return listaTelefonos
 
- 
+    #extraer usuarios
     
 
     #precargando formulario en caso de que se este actualizando
@@ -608,7 +608,6 @@ class formEmpleado(QDialog):
             self.errCorreo.setText("El correo es obligatorio.")
             return False
     
-        
     #validar numeros de telefonos
     def validar_listaTelefonos(self):
         valido = True
@@ -649,8 +648,8 @@ class formEmpleado(QDialog):
                                 lblError.setText('')  # Limpiar el mensaje de error si todo está bien
 
         return valido
-    
 
+   
 
     #validar datos personales
     def validar_datos_personales(self):

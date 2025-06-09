@@ -1,5 +1,3 @@
-# tests/unitarias/test_departamento_services.py
-
 import pytest
 import sys, os
 
@@ -16,37 +14,32 @@ from src.models.departamento          import Departamento
 
 class DummyDataLayer:
     """
-    Simula la capa DepartamentoData sin tocar la base real.
-    Lleva contadores para insert, update y delete.
+    Simula la capa de datos para Departamento.
     """
     def __init__(self):
         self.insert_count = 0
         self.update_count = 0
         self.delete_count = 0
 
-    def create_departamento(self, departamento: Departamento):
-        # Simula “duplicado” si el nombre es exactamente "DUPLICADO"
+    def create_departamento(self, departamento):
         if departamento.nombre.upper() == "DUPLICADO":
             return {"success": False, "message": "El departamento ya existe y no puede ser creado nuevamente."}
         self.insert_count += 1
-        return {"success": True, "message": "El departamento se guardó correctamente."}
+        return {"success": True, "message": "Departamento creado con éxito."}
 
-    def update_departamento(self, departamento: Departamento):
-        # Simula error si id <= 0
+    def update_departamento(self, departamento):
         if departamento.id <= 0:
             return {"success": False, "message": "ID inválido para actualizar."}
-        # Simula duplicado si nombre es exactamente "DUPLICADO"
         if departamento.nombre.upper() == "DUPLICADO":
             return {"success": False, "message": "El departamento ya existe, intente actualizar con un nombre distinto."}
         self.update_count += 1
-        return {"success": True, "message": "Departamento actualizado exitosamente."}
+        return {"success": True, "message": "Departamento actualizado con éxito."}
 
     def delete_departamento(self, departamento_id):
-        # Simula error si id <=0; éxito en otro caso
         if departamento_id <= 0:
             return {"success": False, "message": "ID inválido para eliminar."}
         self.delete_count += 1
-        return {"success": True, "message": "El departamento se eliminó correctamente."}
+        return {"success": True, "message": "Departamento eliminado con éxito."}
 
 
 @pytest.fixture
