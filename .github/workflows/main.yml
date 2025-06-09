@@ -18,7 +18,7 @@ jobs:
     - name: Instalar dependencias del sistema para GUI
       run: |
         sudo apt-get update
-        sudo apt-get install -y libgl1-mesa-glx
+        sudo apt-get install -y libgl1 mesa-utils
 
     - name: Instalar dependencias
       run: |
