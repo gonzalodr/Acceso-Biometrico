@@ -1,3 +1,173 @@
+name: CI/CD Pipeline Python
+
+on:
+  push:
+    branches:
+      - Gonzalo
+      - Javier
+      - Yeiler
+      - Maikel
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Configurar Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Instalar dependencias del sistema
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgl1 mesa-utils mysql-client
+
+    - name: Instalar dependencias de Python
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Esperar a que MySQL esté listo
+      run: |
+        for i in $(seq 1 30); do
+          if mysql -h 127.0.0.1 -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e "SELECT 1;" 2>/dev/null; then
+            echo "MySQL está listo."
+            break
+          fi
+          echo "Esperando a MySQL... ($i/30)"
+          sleep 2
+        done
+        if [ $i -eq 30 ]; then
+          echo "Error: MySQL no se inició a tiempo."
+          exit 1
+        fi
+
+    - name: Importar base de datos desde backup SQL
+      env:
+        DB_HOST: 127.0.0.1
+        DB_USER: ${{ secrets.MYSQL_USER }}
+        DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+      run: |
+        DB_BACKUP_FILE="backup/accesobiometrico_v5.0.sql"
+        
+        if [ ! -f "$DB_BACKUP_FILE" ]; then
+          echo "Error: El archivo de backup SQL '$DB_BACKUP_FILE' no se encontró en el repositorio."
+          exit 1
+        fi
+        
+        echo "Importando '$DB_BACKUP_FILE' a la base de datos '${{ secrets.MYSQL_DATABASE }}'"
+        mysql -h "${DB_HOST}" -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_DATABASE}" < "${DB_BACKUP_FILE}"
+
+    - name: Ejecutar Tests con Pytest
+      env: 
+        DB_HOST: 127.0.0.1
+        DB_USER: ${{ secrets.MYSQL_USER }}
+        DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+      run: |
+        pytest tests/unitarias
+        pytest tests/seguridad
+
+    - name: Ejecutar pruebas de carga con Locust
+      env:
+        DB_HOST: 127.0.0.1
+        DB_USER: ${{ secrets.MYSQL_USER }}
+        DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+      run: |
+        mkdir -p output
+        locust -f tests/rendimiento/test_rendimiento_justificacion.py --headless -u 150 -r 10 --run-time 1m30s --csv=output/resultados
+
+    - name: Verificar errores en Locust
+      run: |
+        if [ -f output/resultados_failures.csv ] && grep -q '[1-9]' output/resultados_failures.csv; then
+          echo "❌ Se encontraron errores durante la prueba de carga."
+          cat output/resultados_failures.csv
+          exit 1
+        else
+          echo "✅ No se encontraron errores en la prueba de carga."
+        fi
+
+    - name: Validar rendimiento
+      run: |
+        avg_response_time=$(awk -F',' '$1 ~ /Insertar Perfil/ {print $5}' output/resultados_stats.csv | tail -n1)
+        echo "⏱ Tiempo promedio de 'Insertar Perfil': $avg_response_time ms"
+        if (( $(echo "$avg_response_time > 500" | bc -l) )); then
+          echo "❌ El tiempo de respuesta promedio supera el umbral permitido (500 ms)"
+          exit 1
+        fi
+
+    - name: Guardar resultados de pruebas
+      uses: actions/upload-artifact@v4
+      with:
+        name: resultados-pruebas
+        path: output/
+
+  merge-and-deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || success()
+
+    steps:
+    - name: Merge automático Yeiler a MAIN
+      if: success()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          try {
+            await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Merge automático Yeiler a MAIN',
+              head: 'DEV-QA',
+              base: 'main',
+              body: 'Merge automático después de pruebas exitosas',
+              maintainer_can_modify: true
+            });
+            
+            // Aprobar el pull request automáticamente
+            const pulls = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: 'DEV-QA',
+              base: 'main'
+            });
+            
+            if (pulls.data.length > 0) {
+              await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pulls.data[0].number
+              });
+            }
+          } catch (error) {
+            console.error('Error en merge automático:', error);
+            core.setFailed('Falló el merge automático');
           }
 
     - name: Enviar correo de éxito
@@ -21,4 +191,3 @@
       with:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
-
