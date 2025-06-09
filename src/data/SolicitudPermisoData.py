@@ -15,7 +15,7 @@ class SolicitudPermisoData:
             solicitud (SolicitudPermiso): Objeto con los datos de la solicitud
 
         Returns:
-            dict: Diccionario con el resultado de la operación
+            dict: Diccionario con el resultado de la operación d
         """
         conexion, resultado = conection()
         if not resultado["success"]:
