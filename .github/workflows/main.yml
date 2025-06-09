@@ -144,18 +144,16 @@ jobs:
         ref: 'main'
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    -  Si los tests pasaron y estamos en una de las ramas de trabajo,
-    # fusionamos automáticamente en main
     - name: Auto-merge to main
       if: >
         success() &&
-        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/Yeiler')
+        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/Javier' || github.ref == 'refs/heads/Yeiler')
       uses: actions/github-script@v6
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const branch = context.ref.replace('refs/heads/', '');
-          console.log(Merging '${branch}' into 'main'…);
+          console.log(`Merging '${branch}' into 'main'…`);
           await github.rest.repos.merge({
             owner: context.repo.owner,
             repo: context.repo.repo,
