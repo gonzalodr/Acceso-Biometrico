@@ -256,7 +256,7 @@ class JustificacionData:
                     P.{TBPERSONA_APELLIDOS} AS apellido_empleado,
                     A.{TBASISTENCIA_FECHA} AS fecha_asistencia
                     FROM {TBJUSTIFICACION} J
-                    LEFT JOIN EMPLEADO E ON J.{TBJUSTIFICACION_ID_EMPLEADO} = E.ID
+                    LEFT JOIN empleado E ON J.{TBJUSTIFICACION_ID_EMPLEADO} = E.ID
                     LEFT JOIN {TBPERSONA} P ON E.ID_PERSONA = P.{TBPERSONA_ID}
                     LEFT JOIN {TBASISTENCIA} A ON J.{TBJUSTIFICACION_ID_ASISTENCIA} = A.{TBASISTENCIA_ID}
                     WHERE J.{TBJUSTIFICACION_ID} = %s"""  # nosec B608
