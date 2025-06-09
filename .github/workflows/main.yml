@@ -132,66 +132,70 @@ jobs:
       with:
         name: resultados-locust
         path: output/
-    # fusionamos automáticamente en main
+
+  merge-and-deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      deployments: write
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: 'main'
+        token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Auto-merge to main
       if: >
         success() &&
-        (
-          github.ref == 'refs/heads/Gonzalo' ||
-          github.ref == 'refs/heads/DEVJAVIER-QA' ||
-          github.ref == 'refs/heads/Yeiler' ||
-          github.ref == 'refs/heads/Maikel'
-        )
+        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/Javier' || github.ref == 'refs/heads/Yeiler')
       uses: actions/github-script@v6
-      continue-on-error: true
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           const branch = context.ref.replace('refs/heads/', '');
-          try {
-            console.log(`Merging '${branch}' into 'main'…`);
-            await github.rest.repos.merge({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              base: 'main',
-              head: branch
-            });
-            console.log(`✅ Merge ${branch} → main OK`);
-          } catch (error) {
-            console.log('⚠️ Merge conflict:', error.message);
-          }
+          console.log(`Merging '${branch}' into 'main'…`);
+          await github.rest.repos.merge({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            base: 'main',
+            head: branch
+          });
+
     - name: Enviar correo de éxito
       if: success()
       uses: dawidd6/action-send-mail@v3
       with:
-            server_address: smtp.gmail.com
-            server_port: 465
-            username: ${{ secrets.EMAIL_USER }}
-            password: ${{ secrets.EMAIL_PASSWORD }}
-            subject: '✅ Éxito en CI/CD - Merge completado'
-            body: 'Las pruebas fueron exitosas y el merge de DEV-QA a MAIN se completó correctamente.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-            to: ${{ secrets.NOTIFICATION_EMAIL }}
-            from: GitHub Actions
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.EMAIL_USER }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: '✅ Éxito en CI/CD - Merge completado'
+        body: 'Las pruebas fueron exitosas y el merge de DEV-QA a MAIN se completó correctamente.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+        to: ${{ secrets.NOTIFICATION_EMAIL }}
+        from: GitHub Actions
 
-      notify-failure:
-        needs: build-and-test
-        if: failure()
-        runs-on: ubuntu-latest
-        
-        steps:
-        - name: Descargar resultados de pruebas
-          uses: actions/download-artifact@v3
-          with:
-            name: resultados-pruebas
+  notify-failure:
+    needs: build-and-test
+    if: failure()
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Descargar resultados de pruebas
+      uses: actions/download-artifact@v3
+      with:
+        name: resultados-pruebas
 
-        - name: Enviar correo de error
-          uses: dawidd6/action-send-mail@v3
-          with:
-            server_address: smtp.gmail.com
-            server_port: 465
-            username: ${{ secrets.EMAIL_USER }}
-            password: ${{ secrets.EMAIL_PASSWORD }}
-            subject: '❌ Fallo en CI/CD - Pruebas no pasaron'
-            body: 'Las pruebas fallaron. Por favor revisa los detalles.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\nErrores encontrados:\n$(cat output/resultados_failures.csv 2>/dev/null || echo "No se encontró archivo de errores")'
-            to: ${{ secrets.NOTIFICATION_EMAIL }}
-            from: GitHub Actions
+    - name: Enviar correo de error
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.EMAIL_USER }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: '❌ Fallo en CI/CD - Pruebas no pasaron'
+        body: 'Las pruebas fallaron. Por favor revisa los detalles.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\nErrores encontrados:\n$(cat output/resultados_failures.csv 2>/dev/null || echo "No se encontró archivo de errores")'
+        to: ${{ secrets.NOTIFICATION_EMAIL }}
+        from: GitHub Actions
