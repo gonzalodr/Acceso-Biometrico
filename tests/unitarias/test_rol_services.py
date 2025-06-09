@@ -22,7 +22,7 @@ class DummyRolData:
         if rol.nombre.upper() == "DUPLICADO":
             return {"success": False, "message": "El rol ya existe y no puede ser creado nuevamente."}
         self.insert_count += 1
-        return {"success": True, "message": "Rol guardado correctamente."}
+        return {"success": True, "message": "El Rol se guardó correctamente."}
 
     def update_rol(self, rol: Rol):
         if rol.id <= 0:
