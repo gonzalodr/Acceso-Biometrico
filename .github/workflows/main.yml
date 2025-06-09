@@ -12,6 +12,10 @@ on:
       - main
   workflow_dispatch: {}
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -127,53 +131,9 @@ jobs:
         name: resultados-pruebas
         path: output/
 
-  permissions:
-    contents: write
-    pull-requests: write
 
-  merge-and-deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || success()
 
-    steps:
-    - name: Merge automático Yeiler a MAIN
-      if: success()
-      uses: actions/github-script@v6
-      with:
-        script: |
-          try {
-            await github.rest.pulls.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: 'Merge automático Yeiler a MAIN',
-              head: 'DEV-QA',
-              base: 'main',
-              body: 'Merge automático después de pruebas exitosas',
-              maintainer_can_modify: true
-            });
-            
-            // Aprobar el pull request automáticamente
-            const pulls = await github.rest.pulls.list({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              head: 'DEV-QA',
-              base: 'main'
-            });
-            
-            if (pulls.data.length > 0) {
-              await github.rest.pulls.merge({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: pulls.data[0].number
-              });
-            }
-          } catch (error) {
-            console.error('Error en merge automático:', error);
-            core.setFailed('Falló el merge automático');
-          }
-
+  
     - name: Enviar correo de éxito
       if: success()
       uses: dawidd6/action-send-mail@v3
