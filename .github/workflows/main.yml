@@ -95,4 +95,4 @@ jobs:
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
         # aqui colocan el comando de prueba testing
-        pytest tests/unitarias-v  
+        pytest tests/unitarias
