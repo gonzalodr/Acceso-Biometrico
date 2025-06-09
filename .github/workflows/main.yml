@@ -11,6 +11,10 @@ on:
       - main
   workflow_dispatch: {}
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -129,16 +133,24 @@ jobs:
   merge-and-deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || success()
+    permissions:
+      contents: write
+      pull-requests: write
+      deployments: write
 
     steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: 'main'
+        token: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Merge automático DEV-QA a MAIN
-      if: success()
       uses: actions/github-script@v6
       with:
         script: |
           try {
-            await github.rest.pulls.create({
+            // Crear el pull request
+            const createResponse = await github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: 'Merge automático DEV-QA a MAIN',
@@ -148,24 +160,37 @@ jobs:
               maintainer_can_modify: true
             });
             
-            // Aprobar el pull request automáticamente
-            const pulls = await github.rest.pulls.list({
+            const prNumber = createResponse.data.number;
+            console.log(`Pull request #${prNumber} creado`);
+            
+            // Esperar un momento para que GitHub procese la creación del PR
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            
+            // Aprobar el pull request
+            await github.rest.pulls.createReview({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              state: 'open',
-              head: 'DEV-QA',
-              base: 'main'
+              pull_number: prNumber,
+              event: 'APPROVE',
+              body: 'Aprobado automáticamente por CI/CD'
             });
             
-            if (pulls.data.length > 0) {
-              await github.rest.pulls.merge({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: pulls.data[0].number
-              });
-            }
+            console.log('Pull request aprobado');
+            
+            // Fusionar el pull request
+            const mergeResponse = await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              merge_method: 'merge'
+            });
+            
+            console.log('Merge completado exitosamente:', mergeResponse.data.message);
           } catch (error) {
             console.error('Error en merge automático:', error);
+            if (error.response && error.response.data) {
+              console.error('Detalles del error:', error.response.data);
+            }
             core.setFailed('Falló el merge automático');
           }
 
@@ -183,8 +208,14 @@ jobs:
         from: GitHub Actions
         content_type: text/plain
 
+    - name: Preparar archivos para despliegue
+      run: |
+        mkdir -p deploy
+        cp -r src/ deploy/
+        cp requirements.txt deploy/
+        # Agrega aquí otros archivos necesarios para producción
+
     - name: Desplegar a producción via FTP
-      if: success()
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
         server: ${{ secrets.FTP_SERVER }}
@@ -192,6 +223,7 @@ jobs:
         password: ${{ secrets.FTP_PASSWORD }}
         local-dir: ./deploy/
         server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+        dangerous-clean-slate: true
 
   notify-failure:
     needs: build-and-test
