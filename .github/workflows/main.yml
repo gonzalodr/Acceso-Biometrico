@@ -131,9 +131,6 @@ jobs:
         name: resultados-pruebas
         path: output/
 
-
-
-  
     - name: Enviar correo de éxito
       if: success()
       uses: dawidd6/action-send-mail@v3
@@ -143,7 +140,7 @@ jobs:
         username: ${{ secrets.EMAIL_USER }}
         password: ${{ secrets.EMAIL_PASSWORD }}
         subject: '✅ Éxito en CI/CD - Merge completado'
-        body: 'Las pruebas fueron exitosas y el merge de Maikel a MAIN se completó correctamente.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+        body: 'Las pruebas fueron exitosas y el merge de DEV-QA a MAIN se completó correctamente.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
         to: ${{ secrets.NOTIFICATION_EMAIL }}
         from: GitHub Actions
         content_type: text/plain
