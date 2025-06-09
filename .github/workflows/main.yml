@@ -90,7 +90,7 @@ jobs:
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
         pytest tests/unitarias
-        pytest tests/security
+        pytest tests/seguridad
 
     - name: Ejecutar pruebas de carga con Locust
       env:
@@ -100,7 +100,7 @@ jobs:
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
         mkdir -p output
-        locust -f tests/rendimiento/test_rendimiento_justificacion.py --headless -u 150 -r 10 --run-time 1m30s --csv=output/resultados
+        locust -f tests/rendimiento/test_rendimiento_rol.py --headless -u 150 -r 10 --run-time 1m30s --csv=output/resultados
 
     - name: Verificar errores en Locust
       run: |
@@ -133,7 +133,7 @@ jobs:
     if: github.ref == 'refs/heads/main' || success()
 
     steps:
-    - name: Merge automático DEV-QA a MAIN
+    - name: Merge automático Maikel a MAIN
       if: success()
       uses: actions/github-script@v6
       with:
@@ -142,7 +142,7 @@ jobs:
             await github.rest.pulls.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: 'Merge automático DEV-QA a MAIN',
+              title: 'Merge automático Maikel a MAIN',
               head: 'DEV-QA',
               base: 'main',
               body: 'Merge automático después de pruebas exitosas',
@@ -217,3 +217,23 @@ jobs:
         to: ${{ secrets.NOTIFICATION_EMAIL }}
         from: GitHub Actions
         content_type: text/plain
+
+  # Si los tests pasaron y estamos en una de las ramas de trabajo,
+  # fusionamos automáticamente en main
+    - name: Auto-merge to main
+      if: >
+        success() &&
+        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/Maikel' ||
+         github.ref == 'refs/heads/Javier' || github.ref == 'refs/heads/Yeiler')
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const branch = context.ref.replace('refs/heads/', '');
+          console.log(`Merging '${branch}' into 'main'…`);
+          await github.rest.repos.merge({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            base: 'main',
+            head: branch
+          });
