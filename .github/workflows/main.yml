@@ -144,55 +144,24 @@ jobs:
         ref: 'main'
         token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Merge automático DEV-QA a MAIN
+    -  Si los tests pasaron y estamos en una de las ramas de trabajo,
+    # fusionamos automáticamente en main
+    - name: Auto-merge to main
+      if: >
+        success() &&
+        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/Yeiler')
       uses: actions/github-script@v6
       with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          try {
-            // Crear el pull request
-            const createResponse = await github.rest.pulls.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: 'Merge automático DEV-QA a MAIN',
-              head: 'DEV-QA',
-              base: 'main',
-              body: 'Merge automático después de pruebas exitosas',
-              maintainer_can_modify: true
-            });
-            
-            const prNumber = createResponse.data.number;
-            console.log(`Pull request #${prNumber} creado`);
-            
-            // Esperar un momento para que GitHub procese la creación del PR
-            await new Promise(resolve => setTimeout(resolve, 5000));
-            
-            // Aprobar el pull request
-            await github.rest.pulls.createReview({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: prNumber,
-              event: 'APPROVE',
-              body: 'Aprobado automáticamente por CI/CD'
-            });
-            
-            console.log('Pull request aprobado');
-            
-            // Fusionar el pull request
-            const mergeResponse = await github.rest.pulls.merge({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: prNumber,
-              merge_method: 'merge'
-            });
-            
-            console.log('Merge completado exitosamente:', mergeResponse.data.message);
-          } catch (error) {
-            console.error('Error en merge automático:', error);
-            if (error.response && error.response.data) {
-              console.error('Detalles del error:', error.response.data);
-            }
-            core.setFailed('Falló el merge automático');
-          }
+          const branch = context.ref.replace('refs/heads/', '');
+          console.log(Merging '${branch}' into 'main'…);
+          await github.rest.repos.merge({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            base: 'main',
+            head: branch
+          });
 
     - name: Enviar correo de éxito
       if: success()
