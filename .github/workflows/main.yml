@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - main
+      - Gonzalo
+      - Javier
+      - Yeiler
       - Maikel
 
   workflow_dispatch: {} 
@@ -73,7 +76,7 @@ jobs:
         DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
-        DB_BACKUP_FILE="backup/accesobiometrico_v5.0.sql"
+        DB_BACKUP_FILE="backup/accesobiometrico_v5.1.sql"
         
         if [ ! -f "$DB_BACKUP_FILE" ]; then
           echo "Error: El archivo de backup SQL '$DB_BACKUP_FILE' no se encontró en el repositorio."
@@ -93,4 +96,40 @@ jobs:
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
         # aqui colocan el comando de prueba testing
-        pytest tests/unitarias/test_rol_services.py
+        pytest tests/unitarias
+        pytest tests/security
+    - name: Ejecutar pruebas de carga con Locust
+      env:
+        DB_HOST: 127.0.0.1
+        DB_USER: ${{ secrets.MYSQL_USER }}
+        DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+      run: |
+        mkdir -p output
+        # aqui  colocan el comando de prueba de carga de locus con su archivo
+        locust -f tests/rendimiento/test_rendimiento_justificacion.py --headless -u 150 -r 10 --run-time 1m30s --csv=output/resultados
+
+    - name: Verificar errores en Locust
+      run: |
+        if [ -f output/resultados_failures.csv ] && grep -q '[1-9]' output/resultados_failures.csv; then
+          echo "❌ Se encontraron errores durante la prueba de carga."
+          cat output/resultados_failures.csv
+          exit 1
+        else
+          echo "✅ No se encontraron errores en la prueba de carga."
+        fi
+
+    - name: Validar rendimiento (tiempo promedio)
+      run: |
+        avg_response_time=$(awk -F',' '$1 ~ /Insertar Perfil/ {print $5}' output/resultados_stats.csv | tail -n1)
+        echo "⏱ Tiempo promedio de 'Insertar Perfil': $avg_response_time ms"
+        if (( $(echo "$avg_response_time > 500" | bc -l) )); then
+          echo "❌ El tiempo de respuesta promedio supera el umbral permitido (500 ms)"
+          exit 1
+        fi
+
+    - name: Guardar resultados de Locust
+      uses: actions/upload-artifact@v4
+      with:
+        name: resultados-locust
+        path: output/
