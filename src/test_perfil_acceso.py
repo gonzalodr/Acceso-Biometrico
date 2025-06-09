@@ -9,20 +9,12 @@ import string
 # --- Fixture para la instancia del servicio ---
 @pytest.fixture
 def perfil_service_instance():
-    """
-    Proporciona una instancia real de PerfilServices.
-    Las pruebas con esta instancia interactuarán con la base de datos real.
-    """
+    #se crea una instancia de perfilservices
     service = PerfilServices()
     return service
 
 # Función de ayuda para generar nombres y descripciones únicas para evitar conflictos
 def generate_unique_name(prefix="Test_Perfil_"):
-    """
-    Genera un nombre único con un sufijo aleatorio, usando SOLO letras mayúsculas.
-    Esto cumple con la validación de _validarNombre (solo letras y espacios).
-    """
-    # Se genera un sufijo usando solo letras mayúsculas
     suffix = ''.join(random.choices(string.ascii_uppercase, k=6))
     return f"{prefix}{suffix}"
 
@@ -71,12 +63,9 @@ def test_existe_nombre_registrado_true(perfil_service_instance):
     service = perfil_service_instance
     unique_name = generate_unique_name("nombre")
     # Insertar un perfil para que exista
-    print(unique_name)
     perfil = Perfil(nombre=unique_name, descripcion="Desc para verificar existencia")
     insetReq =service.insertarPerfil(perfil, []) # Insertar sin permisos inicialmente
-    print(insetReq)
     result = service.existeNombreRegistrado(unique_name)
-    print(result)
     assert result["success"] is True
     assert result["exists"] is True
 
@@ -94,7 +83,6 @@ def test_existe_nombre_registrado_con_id_excluido(perfil_service_instance):
     # Insertar el perfil que luego excluiremos
     perfil_existente = Perfil(nombre=unique_name, descripcion="Desc para exclusión")
     insert_result = service.insertarPerfil(perfil_existente, [])
-    print(insert_result)
     assert insert_result["success"] is True
     
     # Verificar que el nombre NO exista cuando se excluye su propio ID
@@ -187,17 +175,11 @@ def test_eliminar_perfil_success(perfil_service_instance):
     # Insertar un perfil para eliminarlo
     perfil_a_eliminar = Perfil(nombre=generate_unique_name("EliminarPerfil"), descripcion="Perfil a borrar")
     insert_result = service.insertarPerfil(perfil_a_eliminar, [])
-    print(insert_result)
     assert insert_result["success"] is True
     inserted_id = insert_result["id_perfil"]
-
     result = service.eliminarPerfil(inserted_id)
-    print(result)
     assert result["success"] is True
-
-    # Verificar que el perfil ya no existe
     check_result = service.obtenerPerfilPorId(inserted_id)
-    print(check_result)
     assert check_result["success"] is True # La capa de datos retorna success=True y exists=False
     assert check_result["exists"] is False
 
@@ -205,33 +187,23 @@ def test_eliminar_perfil_success(perfil_service_instance):
 # --- Tests para obtenerListaPerfil (CRUD - Listar con paginación) ---
 def test_obtener_lista_perfil_success(perfil_service_instance):
     service = perfil_service_instance
-    
-    # Insertar algunos perfiles para asegurarnos de que la lista no esté vacía
     service.insertarPerfil(Perfil(nombre=generate_unique_name("L1"), descripcion="Desc L1"), [])
     service.insertarPerfil(Perfil(nombre=generate_unique_name("L2"), descripcion="Desc L2"), [])
-
     result = service.obtenerListaPerfil(pagina=1, tam_pagina=5, ordenar_por="nombre", tipo_orden="ASC", busqueda="Test_Perfil_L")
-    
     assert result["success"] is True
     assert "listaPerfiles" in result["data"]
 
 def test_obtener_lista_perfil_empty(perfil_service_instance):
     service = perfil_service_instance
-    # Buscar un término que probablemente no exista
     result = service.obtenerListaPerfil(busqueda="UNLIKELY_NON_EXISTENT_SEARCH_STRING_12345")
-    
     assert result["success"] is True
     assert len(result["data"]["listaPerfiles"]) == 0
 
 # --- Tests para obtenerListaPerfilCB (CRUD - Listar para ComboBox) ---
 def test_obtener_lista_perfil_cb_success(perfil_service_instance):
     service = perfil_service_instance
-    
-    # Insertar al menos un perfil para que aparezca en la lista
     service.insertarPerfil(Perfil(nombre=generate_unique_name("CB_"), descripcion="Desc CB"), [])
-
     result = service.obtenerListaPerfilCB(pagina=1, tam_pagina=10, ordenar_por="nombre", tipo_orden="ASC")
-    
     assert result["success"] is True
     assert "listaPerfiles" in result["data"]
     assert len(result["data"]["listaPerfiles"]) >= 1 # Al menos el insertado
@@ -246,9 +218,7 @@ def test_obtener_perfil_por_id_found(perfil_service_instance):
     insert_result = service.insertarPerfil(perfil_a_buscar, [])
     assert insert_result["success"] is True
     inserted_id = insert_result["id_perfil"]
-
     result = service.obtenerPerfilPorId(inserted_id)
-    
     assert result["success"] is True
     assert result["exists"] is True
 
@@ -261,7 +231,6 @@ def test_obtener_perfil_por_id_not_found(perfil_service_instance):
 # --- Tests para obtener_todo_perfiles (CRUD - Obtener todos) ---
 def test_obtener_todo_perfiles_success(perfil_service_instance):
     service = perfil_service_instance
-    
     service.insertarPerfil(Perfil(nombre=generate_unique_name("Todo_"), descripcion="Desc Todo"), [])
     result = service.obtener_todo_perfiles()    
     assert result["success"] is True

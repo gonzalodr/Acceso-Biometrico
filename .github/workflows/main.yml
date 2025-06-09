@@ -1,11 +1,14 @@
-# .github/workflows/python-app.yml
+# .github/workflows/main.yml
 name: Pruebas Python
 
 on:
   push:
     branches:
       - main
-      - Gonzalo 
+      - Gonzalo
+      - Javier
+      - 
+
   workflow_dispatch: {} 
 
 jobs:
@@ -91,4 +94,5 @@ jobs:
         DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
+        # aqui colocan el comando de prueba testing
         pytest src/test_perfil_acceso.py
