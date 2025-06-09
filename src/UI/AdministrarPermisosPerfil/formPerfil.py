@@ -15,6 +15,7 @@ class FormularioPerfilAccesos(QDialog):
     idPerfil = None
     perfilServices  = PerfilServices()
     permisoServices = PermisosPerfilServices()
+    response = None
     
     def __init__(self, parent=None, id_perfil:int=None):
         super().__init__(parent)
@@ -434,13 +435,24 @@ class FormularioPerfilAccesos(QDialog):
             return
    
         else:               ## se procede a crear y mostrar mensaje de confirmacion.
-            result = self.perfilServices.insertarPerfil(perfil, listaPermisos)
+            self.response = result = self.perfilServices.insertarPerfil(perfil, listaPermisos)
             if not result['success']:
-                dial = DialogoEmergente('',result['message'],'Error',True)
-                dial.exec()
-                return
+                dial = DialogoEmergente('', result['message'], 'Error', True)
+                timer_error = QTimer(self)
+                timer_error.setSingleShot(True)
+                timer_error.timeout.connect(dial.close) 
+                timer_error.start(2000) 
+                
+                dial.exec() 
+                return 
             
-            dial = DialogoEmergente('','Se creo el nuevo perfil correctamente','Check',True)
-            dial.exec()
+            # Si la operación fue exitosa
+            dial = DialogoEmergente('', 'Se creó el nuevo perfil correctamente', 'Check', True)
+          
+            timer_success = QTimer(self)
+            timer_success.setSingleShot(True)
+            timer_success.timeout.connect(dial.close)
+            timer_success.start(2000)
+            
+            dial.exec() 
             self.reject()
-            return
