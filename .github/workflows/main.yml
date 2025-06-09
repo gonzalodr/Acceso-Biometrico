@@ -76,7 +76,7 @@ jobs:
         DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
-        DB_BACKUP_FILE="backup/accesobiometrico_v5.1.sql"
+        DB_BACKUP_FILE="backup/accesobiometrico_v5.0.sql"
         
         if [ ! -f "$DB_BACKUP_FILE" ]; then
           echo "Error: El archivo de backup SQL '$DB_BACKUP_FILE' no se encontró en el repositorio."
@@ -97,7 +97,7 @@ jobs:
       run: |
         # aqui colocan el comando de prueba testing
         pytest tests/unitarias
-        pytest tests/security
+        pytest tests/seguridad
     - name: Ejecutar pruebas de carga con Locust
       env:
         DB_HOST: 127.0.0.1
@@ -107,7 +107,7 @@ jobs:
       run: |
         mkdir -p output
         # aqui  colocan el comando de prueba de carga de locus con su archivo
-        locust -f tests/rendimiento/test_rendimiento_justificacion.py --headless -u 150 -r 10 --run-time 1m30s --csv=output/resultados
+        locust -f tests/rendimiento/test_rendimiento_rol.py --headless -u 150 -r 10 --run-time 1m30s --csv=output/resultados
 
     - name: Verificar errores en Locust
       run: |
@@ -133,3 +133,23 @@ jobs:
       with:
         name: resultados-locust
         path: output/
+    
+    # Si los tests pasaron y estamos en una de las ramas de trabajo,
+    # fusionamos automáticamente en main
+    - name: Auto-merge to main
+      if: >
+        success() &&
+        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/DEVJAVIER-QA')
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const branch = context.ref.replace('refs/heads/', '');
+          console.log(`Merging '${branch}' into 'main'…`);
+          await github.rest.repos.merge({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            base: 'main',
+            head: branch
+          });
+  
