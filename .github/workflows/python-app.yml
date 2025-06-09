@@ -3,7 +3,7 @@ name: Pruebas Python
 on:
   push:
     branches:
-      #- main     # Si aún quieres que se ejecute en main
+      - main     # Si aún quieres que se ejecute en main
       - gonzalo  # ¡Añade tu rama aquí!
 
   # pull_request:  # Opción 1: Eliminar completamente la sección pull_request
