@@ -1,197 +1,24 @@
-name: CI/CD Pipeline Python
-
-on:
-  push:
-    branches:
-      - Gonzalo
-      - Javier
-      - Yeiler
-      - DEV-QA
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch: {}
-
-# Permisos globales para todo el workflow
-permissions:
-  contents: write
-  pull-requests: write
-  checks: write
-  statuses: write
-
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-          MYSQL_USER: ${{ secrets.MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Configurar Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
-
-    - name: Instalar dependencias del sistema
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libgl1 mesa-utils mysql-client
-
-    - name: Instalar dependencias de Python
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-
-    - name: Esperar a que MySQL esté listo
-      run: |
-        for i in $(seq 1 30); do
-          if mysql -h 127.0.0.1 -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e "SELECT 1;" 2>/dev/null; then
-            echo "MySQL está listo."
-            break
-          fi
-          echo "Esperando a MySQL... ($i/30)"
-          sleep 2
-        done
-        if [ $i -eq 30 ]; then
-          echo "Error: MySQL no se inició a tiempo."
-          exit 1
-        fi
-
-    - name: Importar base de datos desde backup SQL
-      env:
-        DB_HOST: 127.0.0.1
-        DB_USER: ${{ secrets.MYSQL_USER }}
-        DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-        DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-      run: |
-        DB_BACKUP_FILE="backup/accesobiometrico_v5.1.sql"
-        [ -f "$DB_BACKUP_FILE" ] || { echo "Error: Archivo de backup no encontrado"; exit 1; }
-        mysql -h "${DB_HOST}" -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_DATABASE}" < "${DB_BACKUP_FILE}"
-
-    - name: Ejecutar Tests
-      env: 
-        DB_HOST: 127.0.0.1
-        DB_USER: ${{ secrets.MYSQL_USER }}
-        DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-        DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-      run: |
-        pytest tests/unitarias tests/security
-
-    - name: Pruebas de carga con Locust
-      env:
-        DB_HOST: 127.0.0.1
-        DB_USER: ${{ secrets.MYSQL_USER }}
-        DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-        DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-      run: |
-        mkdir -p output
-        locust -f tests/rendimiento/test_rendimiento_justificacion.py --headless -u 150 -r 10 --run-time 1m30s --csv=output/resultados
-        [ ! -f output/resultados_failures.csv ] || (cat output/resultados_failures.csv && exit 1)
-
-    - name: Guardar resultados
-      uses: actions/upload-artifact@v4
-      with:
-        name: resultados-pruebas
-        path: output/
-
-  merge-to-main:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      checks: write
-      statuses: write
-
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Merge DEV-QA a MAIN (usando CLI)
-      run: |
-        # Configurar git
-        git config --global user.name "GitHub Actions"
-        git config --global user.email "actions@github.com"
-        
-        # Obtener ambas ramas
-        git fetch origin main
-        git fetch origin DEV-QA
-        
-        # Hacer merge
-        git checkout main
-        git merge --no-ff DEV-QA -m "Merge automático DEV-QA a MAIN [skip ci]"
-        
-        # Empujar los cambios
-        git push origin main
+          }
 
     - name: Enviar correo de éxito
+      if: success()
       uses: dawidd6/action-send-mail@v3
       with:
         server_address: smtp.gmail.com
         server_port: 465
         username: ${{ secrets.EMAIL_USER }}
         password: ${{ secrets.EMAIL_PASSWORD }}
-        subject: '✅ Merge completado: DEV-QA → MAIN'
-        body: 'Merge automático completado exitosamente.\n\nDetalles: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+        subject: '✅ Éxito en CI/CD - Merge completado'
+        body: 'Las pruebas fueron exitosas y el merge de Maikel a MAIN se completó correctamente.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
         to: ${{ secrets.NOTIFICATION_EMAIL }}
         from: GitHub Actions
+        content_type: text/plain
 
-  deploy-prod:
-    needs: merge-to-main
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Preparar archivos
-      run: |
-        mkdir -p deploy
-        cp -r src/ deploy/
-        cp requirements.txt deploy/
-
-    - name: Desplegar vía FTP
-      uses: SamKirkland/FTP-Deploy-Action@v4
+    - name: Desplegar a producción via FTP
+      if: success()
+      uses: SamKirkland/FTP-Deploy-Action@4.3.4
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        local-dir: ./deploy/
-        server-dir: ${{ secrets.FTP_REMOTE_DIR }}
 
-  notify-failure:
-    needs: build-and-test
-    if: failure()
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/download-artifact@v3
-      with:
-        name: resultados-pruebas
-
-    - name: Enviar correo de error
-      uses: dawidd6/action-send-mail@v3
-      with:
-        server_address: smtp.gmail.com
-        server_port: 465
-        username: ${{ secrets.EMAIL_USER }}
-        password: ${{ secrets.EMAIL_PASSWORD }}
-        subject: '❌ Fallo en CI/CD'
-        body: 'Las pruebas fallaron. Revisa los detalles.\n\nWorkflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-        to: ${{ secrets.NOTIFICATION_EMAIL }}
