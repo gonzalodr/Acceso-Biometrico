@@ -127,6 +127,10 @@ jobs:
         name: resultados-pruebas
         path: output/
 
+  permissions:
+    contents: write
+    pull-requests: write
+
   merge-and-deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
@@ -223,14 +227,13 @@ jobs:
     - name: Auto-merge to main
       if: >
         success() &&
-        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/Maikel' ||
-         github.ref == 'refs/heads/Javier' || github.ref == 'refs/heads/Yeiler')
+        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/Javier' || github.ref == 'refs/heads/Yeiler')
       uses: actions/github-script@v6
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Cambia a tu token personal
         script: |
           const branch = context.ref.replace('refs/heads/', '');
-          console.log(Merging '${branch}' into 'main'…);
+          console.log(`Merging '${branch}' into 'main'…`);
           await github.rest.repos.merge({
             owner: context.repo.owner,
             repo: context.repo.repo,
