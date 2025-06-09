@@ -276,7 +276,7 @@ class AdminEmpleado(QWidget):
         if dial.exec() == QDialog.Accepted:
             # Obtener la huella del empleado antes de eliminarlo
             id_huella = self.obtenerHuella(id_empleado)
-                        # Si el empleado fue eliminado, eliminar su huella si existe
+                        # Si el empleado fue eliminado, eliminar su huella si existe prueba
             if id_huella is not None:
                 result_huella = self.HueServices.eliminarHuella(id_huella)
                 if not result_huella['success']:
