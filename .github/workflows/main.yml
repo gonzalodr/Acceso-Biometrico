@@ -1,50 +1,49 @@
-# .github/workflows/main.yml
-name: Pruebas Python
+name: CI/CD Pipeline Python
 
 on:
   push:
     branches:
-      - main
       - Gonzalo
       - Javier
       - Yeiler
       - Maikel
-
-  workflow_dispatch: {} 
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: {}
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     
-    # --- CONFIGURACIÓN DEL SERVICIO MYSQL ---
     services:
       mysql:
-        image: mysql:8.0 # Usa una imagen Docker de MySQL. Puedes usar otras versiones como mysql:5.7
+        image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }} # Contraseña para el usuario 'root' del MySQL en el CI
-          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }} # Nombre de tu base de datos de prueba
-          MYSQL_USER: ${{ secrets.MYSQL_USER }} # Usuario que usará tu aplicación
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }} # Contraseña para el usuario de tu aplicación
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         ports:
-          - 3306:3306 # Mapea el puerto del contenedor (3306) al host (VM de GitHub Actions, 3306)
-        options: >- # Opciones para el chequeo de salud del contenedor
+          - 3306:3306
+        options: >-
           --health-cmd="mysqladmin ping -h 127.0.0.1"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
-    # ----------------------------------------
 
     steps:
     - uses: actions/checkout@v4
+    
     - name: Configurar Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12' # Asegúrate de que sea la versión correcta de Python
+        python-version: '3.12'
 
-    - name: Instalar dependencias del sistema para GUI
+    - name: Instalar dependencias del sistema
       run: |
         sudo apt-get update
-        sudo apt-get install -y libgl1 mesa-utils mysql-client # mysql-client es necesario para interactuar con la BD
+        sudo apt-get install -y libgl1 mesa-utils mysql-client
 
     - name: Instalar dependencias de Python
       run: |
@@ -53,8 +52,6 @@ jobs:
 
     - name: Esperar a que MySQL esté listo
       run: |
-        # Este script espera a que el servicio MySQL esté realmente disponible
-        # antes de intentar conectar o importar datos.
         for i in $(seq 1 30); do
           if mysql -h 127.0.0.1 -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e "SELECT 1;" 2>/dev/null; then
             echo "MySQL está listo."
@@ -63,30 +60,27 @@ jobs:
           echo "Esperando a MySQL... ($i/30)"
           sleep 2
         done
-        # Si MySQL no está listo después de 60 segundos, fallará
         if [ $i -eq 30 ]; then
           echo "Error: MySQL no se inició a tiempo."
           exit 1
         fi
 
     - name: Importar base de datos desde backup SQL
-      env: # Estas variables de entorno se usan solo en este paso
+      env:
         DB_HOST: 127.0.0.1
         DB_USER: ${{ secrets.MYSQL_USER }}
         DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
-        DB_BACKUP_FILE="backup/accesobiometrico_v5.0.sql"
+        DB_BACKUP_FILE="backup/accesobiometrico_v5.1.sql"
         
         if [ ! -f "$DB_BACKUP_FILE" ]; then
           echo "Error: El archivo de backup SQL '$DB_BACKUP_FILE' no se encontró en el repositorio."
-          echo "Asegúrate de que la ruta es correcta y el archivo está commiteado."
           exit 1
         fi
         
         echo "Importando '$DB_BACKUP_FILE' a la base de datos '${{ secrets.MYSQL_DATABASE }}'"
         mysql -h "${DB_HOST}" -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_DATABASE}" < "${DB_BACKUP_FILE}"
-        echo "Importación de base de datos completada."
 
     - name: Ejecutar Tests con Pytest
       env: 
@@ -95,9 +89,9 @@ jobs:
         DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
-        # aqui colocan el comando de prueba testing
         pytest tests/unitarias
-        pytest tests/seguridad
+        pytest tests/security
+
     - name: Ejecutar pruebas de carga con Locust
       env:
         DB_HOST: 127.0.0.1
@@ -106,8 +100,7 @@ jobs:
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
         mkdir -p output
-        # aqui  colocan el comando de prueba de carga de locus con su archivo
-        locust -f tests/rendimiento/test_rendimiento_rol.py --headless -u 150 -r 10 --run-time 1m30s --csv=output/resultados
+        locust -f tests/rendimiento/test_rendimiento_justificacion.py --headless -u 150 -r 10 --run-time 1m30s --csv=output/resultados
 
     - name: Verificar errores en Locust
       run: |
@@ -119,7 +112,7 @@ jobs:
           echo "✅ No se encontraron errores en la prueba de carga."
         fi
 
-    - name: Validar rendimiento (tiempo promedio)
+    - name: Validar rendimiento
       run: |
         avg_response_time=$(awk -F',' '$1 ~ /Insertar Perfil/ {print $5}' output/resultados_stats.csv | tail -n1)
         echo "⏱ Tiempo promedio de 'Insertar Perfil': $avg_response_time ms"
@@ -128,28 +121,99 @@ jobs:
           exit 1
         fi
 
-    - name: Guardar resultados de Locust
+    - name: Guardar resultados de pruebas
       uses: actions/upload-artifact@v4
       with:
-        name: resultados-locust
+        name: resultados-pruebas
         path: output/
-    
-    # Si los tests pasaron y estamos en una de las ramas de trabajo,
-    # fusionamos automáticamente en main
-    - name: Auto-merge to main
-      if: >
-        success() &&
-        (github.ref == 'refs/heads/Gonzalo' || github.ref == 'refs/heads/DEVJAVIER-QA')
+
+  merge-and-deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || success()
+
+    steps:
+    - name: Merge automático DEV-QA a MAIN
+      if: success()
       uses: actions/github-script@v6
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const branch = context.ref.replace('refs/heads/', '');
-          console.log(`Merging '${branch}' into 'main'…`);
-          await github.rest.repos.merge({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            base: 'main',
-            head: branch
-          });
-  
+          try {
+            await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Merge automático DEV-QA a MAIN',
+              head: 'DEV-QA',
+              base: 'main',
+              body: 'Merge automático después de pruebas exitosas',
+              maintainer_can_modify: true
+            });
+            
+            // Aprobar el pull request automáticamente
+            const pulls = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: 'DEV-QA',
+              base: 'main'
+            });
+            
+            if (pulls.data.length > 0) {
+              await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pulls.data[0].number
+              });
+            }
+          } catch (error) {
+            console.error('Error en merge automático:', error);
+            core.setFailed('Falló el merge automático');
+          }
+
+    - name: Enviar correo de éxito
+      if: success()
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.EMAIL_USER }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: '✅ Éxito en CI/CD - Merge completado'
+        body: 'Las pruebas fueron exitosas y el merge de Maikel a MAIN se completó correctamente.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+        to: ${{ secrets.NOTIFICATION_EMAIL }}
+        from: GitHub Actions
+        content_type: text/plain
+
+    - name: Desplegar a producción via FTP
+      if: success()
+      uses: SamKirkland/FTP-Deploy-Action@4.3.4
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./deploy/
+        server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+
+  notify-failure:
+    needs: build-and-test
+    if: failure()
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Descargar resultados de pruebas
+      uses: actions/download-artifact@v3
+      with:
+        name: resultados-pruebas
+
+    - name: Enviar correo de error
+      uses: dawidd6/action-send-mail@v3
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.EMAIL_USER }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: '❌ Fallo en CI/CD - Pruebas no pasaron'
+        body: 'Las pruebas fallaron. Por favor revisa los detalles.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\nErrores encontrados:\n$(cat output/resultados_failures.csv 2>/dev/null || echo "No se encontró archivo de errores")'
+        to: ${{ secrets.NOTIFICATION_EMAIL }}
+        from: GitHub Actions
+        content_type: text/plain

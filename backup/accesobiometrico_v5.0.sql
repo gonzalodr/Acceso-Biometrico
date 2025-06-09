@@ -528,7 +528,7 @@ ALTER TABLE `reporte`
 -- Indices de la tabla `rol`
 --
 ALTER TABLE `rol`
-  ADD PRIMARY KEY (`Id`),
+  
   ADD UNIQUE KEY `Nombre` (`Nombre`);
 
 --
