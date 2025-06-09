@@ -1,10 +1,11 @@
-DATABASE_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": "",
-    "database": "accesobiometrico",
-}
+import os
 
+DATABASE_CONFIG = {
+    "host": os.getenv("DB_HOST", "localhost"), # Leer de la variable de entorno DB_HOST o usar localhost
+    "user": os.getenv("DB_USER", "root"), # tu_usuario_local es el usuario de tu BD local
+    "password": os.getenv("DB_PASSWORD", ""), # tu_password_local es la contraseña de tu BD local
+    "database": os.getenv("DB_DATABASE", "accesobiometrico") # tu_db_local es el nombre de tu BD local
+}
 ZKTECA_CONFIG = {"host": "192.168.1.201", "port": 4370}
 
 # array accesos para los usuarios

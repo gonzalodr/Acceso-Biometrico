@@ -1,0 +1,98 @@
+# .github/workflows/main.yml
+name: Pruebas Python
+
+on:
+  push:
+    branches:
+      - main
+      - Gonzalo
+      - Javier
+      - Yeiler
+
+  workflow_dispatch: {} 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    # --- CONFIGURACIÓN DEL SERVICIO MYSQL ---
+    services:
+      mysql:
+        image: mysql:8.0 # Usa una imagen Docker de MySQL. Puedes usar otras versiones como mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }} # Contraseña para el usuario 'root' del MySQL en el CI
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }} # Nombre de tu base de datos de prueba
+          MYSQL_USER: ${{ secrets.MYSQL_USER }} # Usuario que usará tu aplicación
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }} # Contraseña para el usuario de tu aplicación
+        ports:
+          - 3306:3306 # Mapea el puerto del contenedor (3306) al host (VM de GitHub Actions, 3306)
+        options: >- # Opciones para el chequeo de salud del contenedor
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    # ----------------------------------------
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Configurar Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12' # Asegúrate de que sea la versión correcta de Python
+
+    - name: Instalar dependencias del sistema para GUI
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgl1 mesa-utils mysql-client # mysql-client es necesario para interactuar con la BD
+
+    - name: Instalar dependencias de Python
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Esperar a que MySQL esté listo
+      run: |
+        # Este script espera a que el servicio MySQL esté realmente disponible
+        # antes de intentar conectar o importar datos.
+        for i in $(seq 1 30); do
+          if mysql -h 127.0.0.1 -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }} -e "SELECT 1;" 2>/dev/null; then
+            echo "MySQL está listo."
+            break
+          fi
+          echo "Esperando a MySQL... ($i/30)"
+          sleep 2
+        done
+        # Si MySQL no está listo después de 60 segundos, fallará
+        if [ $i -eq 30 ]; then
+          echo "Error: MySQL no se inició a tiempo."
+          exit 1
+        fi
+
+    - name: Importar base de datos desde backup SQL
+      env: # Estas variables de entorno se usan solo en este paso
+        DB_HOST: 127.0.0.1
+        DB_USER: ${{ secrets.MYSQL_USER }}
+        DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+      run: |
+        DB_BACKUP_FILE="backup/accesobiometrico_v5.0.sql"
+        
+        if [ ! -f "$DB_BACKUP_FILE" ]; then
+          echo "Error: El archivo de backup SQL '$DB_BACKUP_FILE' no se encontró en el repositorio."
+          echo "Asegúrate de que la ruta es correcta y el archivo está commiteado."
+          exit 1
+        fi
+        
+        echo "Importando '$DB_BACKUP_FILE' a la base de datos '${{ secrets.MYSQL_DATABASE }}'"
+        mysql -h "${DB_HOST}" -u"${DB_USER}" -p"${DB_PASSWORD}" "${DB_DATABASE}" < "${DB_BACKUP_FILE}"
+        echo "Importación de base de datos completada."
+
+    - name: Ejecutar Tests con Pytest
+      env: 
+        DB_HOST: 127.0.0.1
+        DB_USER: ${{ secrets.MYSQL_USER }}
+        DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+      run: |
+        # aqui colocan el comando de prueba testing
+        pytest src/test_perfil_acceso.py
