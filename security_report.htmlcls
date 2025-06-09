@@ -1,0 +1,3957 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+    Bandit Report
+</title>
+
+<style>
+
+html * {
+    font-family: "Arial", sans-serif;
+}
+
+pre {
+    font-family: "Monaco", monospace;
+}
+
+.bordered-box {
+    border: 1px solid black;
+    padding-top:.5em;
+    padding-bottom:.5em;
+    padding-left:1em;
+}
+
+.metrics-box {
+    font-size: 1.1em;
+    line-height: 130%;
+}
+
+.metrics-title {
+    font-size: 1.5em;
+    font-weight: 500;
+    margin-bottom: .25em;
+}
+
+.issue-description {
+    font-size: 1.3em;
+    font-weight: 500;
+}
+
+.candidate-issues {
+    margin-left: 2em;
+    border-left: solid 1px; LightGray;
+    padding-left: 5%;
+    margin-top: .2em;
+    margin-bottom: .2em;
+}
+
+.issue-block {
+    border: 1px solid LightGray;
+    padding-left: .5em;
+    padding-top: .5em;
+    padding-bottom: .5em;
+    margin-bottom: .5em;
+}
+
+.issue-sev-high {
+    background-color: Pink;
+}
+
+.issue-sev-medium {
+    background-color: NavajoWhite;
+}
+
+.issue-sev-low {
+    background-color: LightCyan;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="metrics">
+    <div class="metrics-box bordered-box">
+        <div class="metrics-title">
+            Metrics:<br>
+        </div>
+        Total lines of code: <span id="loc">15737</span><br>
+        Total lines skipped (#nosec): <span id="nosec">0</span>
+    </div>
+</div>
+
+
+
+
+<br>
+<div id="results">
+    
+<div id="issue-0">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\EmpleadoData.py" target="_blank">src/data\EmpleadoData.py</a><br>
+    <b>Line number: </b>192<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+191	                # actualizar empleado (persona, departamento)
+192	                queryEmpleado = f&quot;&quot;&quot;UPDATE {TBEMPLEADO} SET
+193	                    {TBEMPLEADO_DEPARTAMENTO} = %s
+194	                    WHERE {TBEMPLEADO_ID} = %s
+195	                &quot;&quot;&quot;
+196	                cursor.execute(queryEmpleado, (id_dep, id_empledo))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-1">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\EmpleadoData.py" target="_blank">src/data\EmpleadoData.py</a><br>
+    <b>Line number: </b>491<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+490	                # Construcción de la consulta base
+491	                query_base = f&quot;&quot;&quot;
+492	                    SELECT 
+493	                        EMP.{TBEMPLEADO_ID} AS EMPLEADO_ID,
+494	                        P.{TBPERSONA_ID} AS PERSONA_ID,
+495	                        P.{TBPERSONA_NOMBRE}, 
+496	                        P.{TBPERSONA_APELLIDOS}, 
+497	                        P.{TBPERSONA_NACIMIENTO}, 
+498	                        P.{TBPERSONA_CEDULA}, 
+499	                        P.{TBPERSONA_ESTADO_CIVIL}, 
+500	                        P.{TBPERSONA_CORREO}, 
+501	                        P.{TBPERSONA_DIRECCION}
+502	                    FROM {TBPERSONA} P
+503	                    INNER JOIN {TBEMPLEADO} EMP ON EMP.{TBEMPLEADO_PERSONA} = P.{TBPERSONA_ID}
+504	                &quot;&quot;&quot;
+505	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-2">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\EmpleadoData.py" target="_blank">src/data\EmpleadoData.py</a><br>
+    <b>Line number: </b>519<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+518	                # Obtener el total de registros que cumplen la condición
+519	                query_count = f&quot;&quot;&quot;
+520	                    SELECT COUNT(*) as total FROM {TBPERSONA} P
+521	                    INNER JOIN {TBEMPLEADO} EMP ON EMP.{TBEMPLEADO_PERSONA} = P.{TBPERSONA_ID}
+522	                    {condicion}
+523	                &quot;&quot;&quot;
+524	                cursor.execute(query_count, valores)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-3">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\EmpleadoData.py" target="_blank">src/data\EmpleadoData.py</a><br>
+    <b>Line number: </b>590<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+589	            with conexion.cursor(dictionary=True) as cursor:
+590	                query = f&quot;&quot;&quot;
+591	                    SELECT 
+592	                        EMP.{TBEMPLEADO_ID} AS EMPLEADO_ID,
+593	                        P.{TBPERSONA_ID} AS PERSONA_ID,
+594	                        P.{TBPERSONA_NOMBRE}, 
+595	                        P.{TBPERSONA_APELLIDOS}, 
+596	                        P.{TBPERSONA_NACIMIENTO}, 
+597	                        P.{TBPERSONA_CEDULA}, 
+598	                        P.{TBPERSONA_ESTADO_CIVIL}, 
+599	                        P.{TBPERSONA_CORREO}, 
+600	                        P.{TBPERSONA_DIRECCION}
+601	                    FROM {TBPERSONA} P
+602	                    INNER JOIN {TBEMPLEADO} EMP ON EMP.{TBEMPLEADO_PERSONA} = P.{TBPERSONA_ID}
+603	                &quot;&quot;&quot;
+604	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-4">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\EmpleadoData.py" target="_blank">src/data\EmpleadoData.py</a><br>
+    <b>Line number: </b>639<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+638	            with conexion.cursor(dictionary=True) as cursor:
+639	                query = f&quot;&quot;&quot;SELECT 
+640	                                {TBEMPLEADO_ID},
+641	                                {TBEMPLEADO_PERSONA},
+642	                                {TBEMPLEADO_DEPARTAMENTO}
+643	                            FROM {TBEMPLEADO}
+644	                            WHERE {TBEMPLEADO_ID} = %s
+645	                &quot;&quot;&quot;
+646	                cursor.execute(query, (id_empleado,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-5">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\EmpleadoData.py" target="_blank">src/data\EmpleadoData.py</a><br>
+    <b>Line number: </b>741<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+740	            with conexion.cursor(dictionary=True) as cursor:
+741	                query = f&quot;&quot;&quot;
+742	                        SELECT 
+743	                            {TBEMPLEADO_ID},
+744	                            {TBEMPLEADO_PERSONA},
+745	                            {TBEMPLEADO_DEPARTAMENTO}
+746	                        FROM {TBEMPLEADO} 
+747	                        WHERE {TBEMPLEADO_ID} = %s
+748	                        &quot;&quot;&quot;
+749	                cursor.execute(query, (id_empleado,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-6">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\EmpleadoData.py" target="_blank">src/data\EmpleadoData.py</a><br>
+    <b>Line number: </b>777<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+776	            with conexion.cursor(dictionary=True) as cursor:
+777	                query = f&quot;SELECT * FROM {TBEMPLEADO}&quot;
+778	                cursor.execute(query)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-7">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\EmpleadoData.py" target="_blank">src/data\EmpleadoData.py</a><br>
+    <b>Line number: </b>822<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+821	            with conexion.cursor(dictionary=True) as cursor:
+822	                query = f&quot;&quot;&quot;
+823	                    SELECT 
+824	                        e.{TBEMPLEADO_ID}, 
+825	                        e.{TBEMPLEADO_PERSONA}, 
+826	                        e.{TBEMPLEADO_DEPARTAMENTO}, 
+827	                        p.{TBPERSONA_NOMBRE} AS nombre_persona  -- Obtener el nombre de la persona
+828	                    FROM {TBEMPLEADO} e
+829	                    INNER JOIN {TBPERSONA} p ON e.{TBEMPLEADO_PERSONA} = p.{TBPERSONA_ID}
+830	                &quot;&quot;&quot;
+831	                cursor.execute(query)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-8">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\EmpleadoData.py" target="_blank">src/data\EmpleadoData.py</a><br>
+    <b>Line number: </b>872<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+871	            with conexion.cursor() as cursor:
+872	                query = f&quot;&quot;&quot;
+873	                SELECT 
+874	                    e.{TBEMPLEADO_ID},
+875	                    CONCAT(p.{TBPERSONA_NOMBRE}, &#x27; &#x27;, p.{TBPERSONA_APELLIDOS}) AS nombre_completo
+876	                FROM {TBEMPLEADO} e
+877	                INNER JOIN {TBPERSONA} p 
+878	                ON e.{TBEMPLEADO_PERSONA} = p.{TBPERSONA_ID}
+879	                &quot;&quot;&quot;
+880	                cursor.execute(query)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-9">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\EmpleadoData.py" target="_blank">src/data\EmpleadoData.py</a><br>
+    <b>Line number: </b>916<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+915	            with conexion.cursor() as cursor:
+916	                query = f&quot;SELECT MAX({TBEMPLEADO_ID}) FROM {TBEMPLEADO}&quot;
+917	                cursor.execute(query)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-10">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\SolicitudPermisoData.py" target="_blank">src/data\SolicitudPermisoData.py</a><br>
+    <b>Line number: </b>29<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+28	
+29	                query = f&quot;&quot;&quot;
+30	                    INSERT INTO {TBSOLICITUD_PERMISO} 
+31	                    ({TBSOLICITUD_PERMISO_ID_EMPLEADO}, {TBSOLICITUD_PERMISO_TIPO}, 
+32	                     {TBSOLICITUD_PERMISO_FECHA_INICIO}, {TBSOLICITUD_PERMISO_FECHA_FIN}, 
+33	                     {TBSOLICITUD_PERMISO_DESCRIPCION}, {TBSOLICITUD_PERMISO_ESTADO}) 
+34	                    VALUES (%s, %s, %s, %s, %s, %s)
+35	                &quot;&quot;&quot;
+36	                valores = (
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-11">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\SolicitudPermisoData.py" target="_blank">src/data\SolicitudPermisoData.py</a><br>
+    <b>Line number: </b>99<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+98	
+99	                query = f&quot;&quot;&quot;
+100	                    DELETE FROM {TBSOLICITUD_PERMISO} 
+101	                    WHERE {TBSOLICITUD_PERMISO_ID} = %s
+102	                &quot;&quot;&quot;
+103	                cursor.execute(query, (id_solicitud,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-12">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\SolicitudPermisoData.py" target="_blank">src/data\SolicitudPermisoData.py</a><br>
+    <b>Line number: </b>162<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+161	                # Consulta base con JOIN para traer nombre del empleado
+162	                query = f&quot;&quot;&quot;
+163	                SELECT 
+164	                    sp.{TBSOLICITUD_PERMISO_ID},
+165	                    sp.{TBSOLICITUD_PERMISO_TIPO},
+166	                    sp.{TBSOLICITUD_PERMISO_FECHA_INICIO},
+167	                    sp.{TBSOLICITUD_PERMISO_FECHA_FIN},
+168	                    sp.{TBSOLICITUD_PERMISO_DESCRIPCION},
+169	                    sp.{TBSOLICITUD_PERMISO_ESTADO},
+170	                    p.{TBPERSONA_NOMBRE} AS nombre_empleado,
+171	                    p.{TBPERSONA_APELLIDOS} AS apellidos_empleado
+172	                FROM {TBSOLICITUD_PERMISO} sp
+173	                LEFT JOIN {TBEMPLEADO} e ON sp.{TBSOLICITUD_PERMISO_ID_EMPLEADO} = e.{TBEMPLEADO_ID}
+174	                LEFT JOIN {TBPERSONA} p ON e.{TBEMPLEADO_PERSONA} = p.{TBPERSONA_ID}
+175	                &quot;&quot;&quot;
+176	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-13">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\SolicitudPermisoData.py" target="_blank">src/data\SolicitudPermisoData.py</a><br>
+    <b>Line number: </b>207<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+206	                # Obtener el total de registros
+207	                cursor.execute(f&quot;SELECT COUNT(*) as total FROM {TBSOLICITUD_PERMISO}&quot;)
+208	                total_registros = cursor.fetchone()[&quot;total&quot;]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-14">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\asistenciaData.py" target="_blank">src/data\asistenciaData.py</a><br>
+    <b>Line number: </b>24<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+23	            cursor = conexion.cursor()
+24	            query = f&quot;&quot;&quot;INSERT INTO {TBASISTENCIA}(
+25	            {TBASISTENCIA_ID_EMPLEADO},
+26	            {TBASISTENCIA_FECHA},
+27	            {TBASISTENCIA_ESTADO_ASISTENCIA})
+28	            VALUES (%s, %s, %s)&quot;&quot;&quot;
+29	            
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-15">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\asistenciaData.py" target="_blank">src/data\asistenciaData.py</a><br>
+    <b>Line number: </b>65<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+64	            #consulta SQL para actualizar un reporte en la tabla TBREPORTE
+65	            query = f&quot;&quot;&quot;UPDATE {TBASISTENCIA} SET
+66	            {TBASISTENCIA_ID_EMPLEADO} = %s,
+67	            {TBASISTENCIA_FECHA} = %s,
+68	            {TBASISTENCIA_ESTADO_ASISTENCIA} = %s
+69	            WHERE {TBASISTENCIA_ID} = %s&quot;&quot;&quot;
+70	            
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-16">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\asistenciaData.py" target="_blank">src/data\asistenciaData.py</a><br>
+    <b>Line number: </b>106<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+105	            #define la consulta SQL, pasando el ID del reporte a eliminar
+106	            query = f&quot;DELETE FROM {TBASISTENCIA} WHERE {TBASISTENCIA_ID} = %s&quot;
+107	            # Ejecuta la consulta SQL pasando el ID del reporte a eliminar
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-17">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\asistenciaData.py" target="_blank">src/data\asistenciaData.py</a><br>
+    <b>Line number: </b>144<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+143	            
+144	            query = f&quot;&quot;&quot;SELECT 
+145	                    a.*,
+146	                    p.{TBPERSONA_NOMBRE} AS nombre_persona
+147	                FROM {TBASISTENCIA} a
+148	                INNER JOIN {TBEMPLEADO} e ON a.{TBASISTENCIA_ID_EMPLEADO} = e.{TBEMPLEADO_ID}
+149	                INNER JOIN {TBPERSONA} p ON e.{TBEMPLEADO_PERSONA} = p.{TBPERSONA_ID}&quot;&quot;&quot;
+150	            valores = []
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-18">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\asistenciaData.py" target="_blank">src/data\asistenciaData.py</a><br>
+    <b>Line number: </b>172<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+171	            
+172	            cursor.execute(f&quot;SELECT COUNT(*) as total FROM {TBASISTENCIA}&quot;) #TBROL
+173	            total_registros = cursor.fetchone()[&quot;total&quot;]  # Se obtiene el número total de registros
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-19">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\asistenciaData.py" target="_blank">src/data\asistenciaData.py</a><br>
+    <b>Line number: </b>203<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+202	              # Consulta SQL para obtener el perfil por su ID
+203	            query = f&quot;&quot;&quot;SELECT
+204	                            {TBASISTENCIA_ID_EMPLEADO}, 
+205	                            {TBASISTENCIA_FECHA}, 
+206	                            {TBASISTENCIA_ESTADO_ASISTENCIA}, 
+207	                            {TBASISTENCIA_ID} 
+208	                        FROM {TBASISTENCIA} 
+209	                        WHERE {TBASISTENCIA_ID} = %s&quot;&quot;&quot;
+210	            
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-20">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\asistenciaData.py" target="_blank">src/data\asistenciaData.py</a><br>
+    <b>Line number: </b>242<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+241	            with conexion.cursor(dictionary=True) as cursor:
+242	                query = f&quot;SELECT * FROM {TBASISTENCIA}&quot;
+243	                cursor.execute(query)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-21">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\asistenciaData.py" target="_blank">src/data\asistenciaData.py</a><br>
+    <b>Line number: </b>281<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+280	            with conexion.cursor(dictionary=True) as cursor:
+281	                query = f&#x27;&#x27;&#x27;
+282	                SELECT Id, Id_Empleado, Fecha, Estado_Asistencia 
+283	                FROM Asistencia 
+284	                WHERE Id_Empleado = %s 
+285	                AND (Estado_Asistencia = &#x27;Ausente&#x27; OR Id = %s)
+286	                ORDER BY Fecha DESC
+287	            &#x27;&#x27;&#x27;
+288	                cursor.execute(query, (id_empleado, id_asistencia))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-22">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\asistenciaData.py" target="_blank">src/data\asistenciaData.py</a><br>
+    <b>Line number: </b>436<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+435	                    # Verificar si ya existe un registro de asistencia para ese día y empleado
+436	                    cursor.execute(f&#x27;&#x27;&#x27;
+437	                        SELECT * FROM {TBASISTENCIA}
+438	                        WHERE {TBASISTENCIA_FECHA} = %s
+439	                        AND {TBASISTENCIA_ID_EMPLEADO} = %s;
+440	                    &#x27;&#x27;&#x27;, (asistencia.fecha, asistencia.id_empleado))
+441	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-23">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\asistenciaData.py" target="_blank">src/data\asistenciaData.py</a><br>
+    <b>Line number: </b>447<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+446	                        # Buscar detalle de asistencia
+447	                        cursor.execute(f&#x27;&#x27;&#x27;
+448	                            SELECT * FROM {TBDETALLEASISTENCIA}
+449	                            WHERE {TBDETALLEASISTENCIA_ID_ASISTENCIA} = %s;
+450	                        &#x27;&#x27;&#x27;, (asistencia.id,))
+451	                        
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-24">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\asistenciaData.py" target="_blank">src/data\asistenciaData.py</a><br>
+    <b>Line number: </b>481<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+480	                            # Actualizar detalle
+481	                            cursor.execute(f&#x27;&#x27;&#x27;
+482	                                UPDATE {TBDETALLEASISTENCIA}
+483	                                SET
+484	                                    {TBDETALLEASISTENCIA_HORA_ENTRADA} = %s,
+485	                                    {TBDETALLEASISTENCIA_HORA_SALIDA} = %s,
+486	                                    {TBDETALLEASISTENCIA_HORAS_TRABAJADAS} = %s
+487	                                WHERE {TBDETALLEASISTENCIA_ID} = %s;
+488	                            &#x27;&#x27;&#x27;, (
+489	                                detalle.hora_entrada,
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-25">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\asistenciaData.py" target="_blank">src/data\asistenciaData.py</a><br>
+    <b>Line number: </b>497<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+496	                        # Insertar nuevo registro en asistencia
+497	                        cursor.execute(f&#x27;&#x27;&#x27;
+498	                            INSERT INTO {TBASISTENCIA} (
+499	                                {TBASISTENCIA_ID_EMPLEADO},
+500	                                {TBASISTENCIA_FECHA},
+501	                                {TBASISTENCIA_ESTADO_ASISTENCIA}
+502	                            ) VALUES (%s, %s, %s);
+503	                        &#x27;&#x27;&#x27;, (
+504	                            asistencia.id_empleado,
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-26">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\asistenciaData.py" target="_blank">src/data\asistenciaData.py</a><br>
+    <b>Line number: </b>511<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+510	                        # Insertar nuevo detalle de asistencia con hora de entrada
+511	                        cursor.execute(f&#x27;&#x27;&#x27;
+512	                            INSERT INTO {TBDETALLEASISTENCIA} (
+513	                                {TBDETALLEASISTENCIA_ID_ASISTENCIA},
+514	                                {TBDETALLEASISTENCIA_HORA_ENTRADA}
+515	                            ) VALUES (%s, %s);
+516	                        &#x27;&#x27;&#x27;, (id_asistencia, hora))
+517	                conexion.commit()
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-27">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\empleado_RolData.py" target="_blank">src/data\empleado_RolData.py</a><br>
+    <b>Line number: </b>80<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+79	            with conexion.cursor() as cursor:
+80	                query = f&quot;&quot;&quot;UPDATE {TBROLEMPLEADO} SET
+81	                        {TBROLEMPLEADO_ID_ROL} =%s,
+82	                        {TBROLEMPLEADO_ID_EMPLEADO} = %s
+83	                        WHERE {TBROLEMPLEADO_ID} = %s
+84	                        &quot;&quot;&quot;
+85	                cursor.execute(query, (id_rol, id_empleado, id_rolEmpleado))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-28">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\empleado_RolData.py" target="_blank">src/data\empleado_RolData.py</a><br>
+    <b>Line number: </b>111<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+110	            with conexion.cursor() as cursor:
+111	                query = f&quot;&quot;&quot;DELETE FROM {TBROLEMPLEADO} WHERE {TBROLEMPLEADO_ID} = %s&quot;&quot;&quot;
+112	                cursor.execute(query, (id_rolempleado,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-29">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\empleado_RolData.py" target="_blank">src/data\empleado_RolData.py</a><br>
+    <b>Line number: </b>139<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+138	            with conexion.cursor(dictionary=True) as cursor:
+139	                query = f&quot;&quot;&quot;SELECT 
+140	                        {TBROLEMPLEADO_ID},
+141	                        {TBROLEMPLEADO_ID_ROL},
+142	                        {TBROLEMPLEADO_ID_EMPLEADO}
+143	                        FROM {TBROLEMPLEADO}
+144	                        WHERE {TBROLEMPLEADO_ID} = %s&quot;&quot;&quot;
+145	                cursor.execute(query, (id_rolempleado,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-30">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\empleado_RolData.py" target="_blank">src/data\empleado_RolData.py</a><br>
+    <b>Line number: </b>183<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+182	            with conexion.cursor(dictionary=True) as cursor:
+183	                query = f&quot;&quot;&quot;SELECT 
+184	                        re.{TBROLEMPLEADO_ID},
+185	                        re.{TBROLEMPLEADO_ID_ROL},
+186	                        re.{TBROLEMPLEADO_ID_EMPLEADO},
+187	                        r.{TBROL_NOMBRE} as Nombre_rol
+188	                        FROM {TBROLEMPLEADO} re
+189	                        JOIN {TBROL} r ON r.{TBROL_ID} = re.{TBROLEMPLEADO_ID_ROL}
+190	                        WHERE re.{TBROLEMPLEADO_ID_EMPLEADO} = %s&quot;&quot;&quot;
+191	                cursor.execute(query, (id_empleado,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-31">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\horarioData.py" target="_blank">src/data\horarioData.py</a><br>
+    <b>Line number: </b>40<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+39	            with self.conn.cursor() as cursor:
+40	                consulta = f&quot;SELECT COUNT(*) FROM {TBROL} WHERE {TBROL_ID} = %s;&quot;
+41	                cursor.execute(consulta, (id_rol,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-32">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\horarioData.py" target="_blank">src/data\horarioData.py</a><br>
+    <b>Line number: </b>124<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+123	                # Construcción de la consulta base
+124	                consulta = f&quot;&quot;&quot;
+125	                SELECT COUNT(*) FROM {TBHORARIO}
+126	                WHERE {TBHORARIO_NOMBRE_HORARIO} = %s
+127	                AND {TBHORARIO_DIAS_SEMANALES} = %s 
+128	                AND {TBHORARIO_TIPO_JORNADA} = %s
+129	            &quot;&quot;&quot;
+130	                valores = [nombre_horario, dias_semanales, tipo_jornada]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-33">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\horarioData.py" target="_blank">src/data\horarioData.py</a><br>
+    <b>Line number: </b>178<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+177	            with self.conn.cursor() as cursor:
+178	                query = f&quot;&quot;&quot;
+179	            UPDATE {TBHORARIO} SET
+180	                {TBHORARIO_NOMBRE_HORARIO} = %s,
+181	                {TBHORARIO_DIAS_SEMANALES} = %s,
+182	                {TBHORARIO_TIPO_JORNADA} = %s,
+183	                {TBHORARIO_HORA_INICIO} = %s,
+184	                {TBHORARIO_HORA_FIN} = %s,
+185	                {TBHORARIO_DESCRIPCION} = %s
+186	            WHERE {TBHORARIO_ID} = %s
+187	            &quot;&quot;&quot;
+188	                # Ejecutar la consulta de actualización
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-34">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\horarioData.py" target="_blank">src/data\horarioData.py</a><br>
+    <b>Line number: </b>201<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+200	                )
+201	                query_rol_horario = f&quot;&quot;&quot;
+202	                UPDATE {TBROLHORARIO} 
+203	                SET {TBROLHORARIO_ID_ROL} = %s
+204	                WHERE {TBROLHORARIO_ID_HORARIO} = %s
+205	                &quot;&quot;&quot;
+206	                cursor.execute(
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-35">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\horarioData.py" target="_blank">src/data\horarioData.py</a><br>
+    <b>Line number: </b>247<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+246	                # Insertar el horario en la tabla horario
+247	                query_horario = f&quot;&quot;&quot;
+248	            INSERT INTO {TBHORARIO} (
+249	                {TBHORARIO_NOMBRE_HORARIO},
+250	                {TBHORARIO_DIAS_SEMANALES},
+251	                {TBHORARIO_TIPO_JORNADA},
+252	                {TBHORARIO_HORA_INICIO},
+253	                {TBHORARIO_HORA_FIN},
+254	                {TBHORARIO_DESCRIPCION}
+255	            ) VALUES (%s, %s, %s, %s, %s, %s)
+256	            &quot;&quot;&quot;
+257	                cursor.execute(
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-36">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\horarioData.py" target="_blank">src/data\horarioData.py</a><br>
+    <b>Line number: </b>273<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+272	                # Inserta la relación en la tabla rol_horario
+273	                query_rol_horario = f&quot;&quot;&quot;
+274	                INSERT INTO {TBROLHORARIO} (
+275	                    {TBROLHORARIO_ID_ROL},
+276	                    {TBROLHORARIO_ID_HORARIO}
+277	                ) VALUES (%s, %s)
+278	                &quot;&quot;&quot;
+279	                cursor.execute(query_rol_horario, (id_rol, id_horario))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-37">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\horarioData.py" target="_blank">src/data\horarioData.py</a><br>
+    <b>Line number: </b>326<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+325	                # Construcción de la consulta base con JOIN
+326	                query = f&quot;&quot;&quot;
+327	                SELECT 
+328	                    h.{TBHORARIO_ID},
+329	                    h.{TBHORARIO_NOMBRE_HORARIO},
+330	                    r.{TBROL_NOMBRE} AS nombre_rol,
+331	                    h.{TBHORARIO_DIAS_SEMANALES},
+332	                    h.{TBHORARIO_TIPO_JORNADA},
+333	                    h.{TBHORARIO_HORA_INICIO},
+334	                    h.{TBHORARIO_HORA_FIN},
+335	                    h.{TBHORARIO_DESCRIPCION}
+336	                FROM {TBHORARIO} h
+337	                LEFT JOIN {TBROLHORARIO} rh ON h.{TBHORARIO_ID} = rh.{TBROLHORARIO_ID_HORARIO}
+338	                LEFT JOIN {TBROL} r ON rh.{TBROLHORARIO_ID_ROL} = r.{TBROL_ID}
+339	                &quot;&quot;&quot;
+340	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-38">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\horarioData.py" target="_blank">src/data\horarioData.py</a><br>
+    <b>Line number: </b>376<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+375	                # Obtener el total de registros para calcular el número total de páginas
+376	                cursor.execute(f&quot;SELECT COUNT(*) as total FROM {TBHORARIO}&quot;)
+377	                total_registros = cursor.fetchone()[&quot;total&quot;]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-39">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\horarioData.py" target="_blank">src/data\horarioData.py</a><br>
+    <b>Line number: </b>410<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+409	
+410	                query = f&quot;DELETE FROM {TBHORARIO} WHERE {TBHORARIO_ID} = %s&quot;
+411	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-40">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\horarioData.py" target="_blank">src/data\horarioData.py</a><br>
+    <b>Line number: </b>438<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+437	            with conexion.cursor(dictionary=True) as cursor:
+438	                query = f&quot;&quot;&quot;
+439	                SELECT 
+440	                    h.*,
+441	                    r.{TBROL_ID} AS rol_id,
+442	                    r.{TBROL_NOMBRE} AS rol_nombre
+443	                FROM {TBHORARIO} h
+444	                LEFT JOIN {TBROLHORARIO} rh ON h.{TBHORARIO_ID} = rh.{TBROLHORARIO_ID_HORARIO}
+445	                LEFT JOIN {TBROL} r ON rh.{TBROLHORARIO_ID_ROL} = r.{TBROL_ID}
+446	                WHERE h.{TBHORARIO_ID} = %s
+447	                &quot;&quot;&quot;
+448	                cursor.execute(query, (horario_id,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-41">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\horarioData.py" target="_blank">src/data\horarioData.py</a><br>
+    <b>Line number: </b>486<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+485	            cursor = self.conn.cursor(dictionary=True)
+486	            query = f&quot;&quot;&quot;
+487	        SELECT * FROM {TBHORARIO} 
+488	        WHERE {TBHORARIO_NOMBRE_HORARIO} = %s 
+489	        AND {TBHORARIO_DIAS_SEMANALES} = %s 
+490	        AND {TBHORARIO_TIPO_JORNADA} = %s
+491	        LIMIT 1
+492	        &quot;&quot;&quot;
+493	            cursor.execute(query, (nombre_horario, dias_semanales, tipo_jornada))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-42">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\horarioData.py" target="_blank">src/data\horarioData.py</a><br>
+    <b>Line number: </b>525<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+524	                # 1. Primero eliminamos las relaciones en rol_horario del horario asociado
+525	                delete_relaciones = f&quot;&quot;&quot;
+526	                DELETE FROM {TBROLHORARIO} 
+527	                WHERE {TBROLHORARIO_ID_HORARIO} = %s
+528	                &quot;&quot;&quot;
+529	                cursor.execute(delete_relaciones, (horario_id,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-43">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\horarioData.py" target="_blank">src/data\horarioData.py</a><br>
+    <b>Line number: </b>532<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+531	                # 2. Luego eliminamos el horario de horario
+532	                delete_horario = f&quot;&quot;&quot;
+533	                DELETE FROM {TBHORARIO} 
+534	                WHERE {TBHORARIO_ID} = %s
+535	                &quot;&quot;&quot;
+536	                cursor.execute(delete_horario, (horario_id,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-44">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\horarioData.py" target="_blank">src/data\horarioData.py</a><br>
+    <b>Line number: </b>558<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+557	            with conexion.cursor(dictionary=True) as cursor:
+558	                cursor.execute(f&#x27;&#x27;&#x27;
+559	                    SELECT 
+560	                        H.{TBHORARIO_ID},
+561	                        H.{TBHORARIO_NOMBRE_HORARIO},
+562	                        H.{TBHORARIO_DESCRIPCION},
+563	                        H.{TBHORARIO_DIAS_SEMANALES},
+564	                        H.{TBHORARIO_TIPO_JORNADA},
+565	                        H.{TBHORARIO_HORA_INICIO},
+566	                        H.{TBHORARIO_HORA_FIN}
+567	                    FROM {TBEMPLEADO} E
+568	                    INNER JOIN {TBROLEMPLEADO}  RE ON RE.{TBROLEMPLEADO_ID_EMPLEADO} = E.{TBEMPLEADO_ID}
+569	                    INNER JOIN {TBROLHORARIO}   RH ON RH.{TBROLHORARIO_ID_ROL} = RE.{TBROLEMPLEADO_ID_ROL}
+570	                    INNER JOIN {TBHORARIO}      H  ON H.{TBHORARIO_ID} = RH.{TBROLHORARIO_ID_HORARIO}
+571	                    WHERE E.{TBEMPLEADO_ID} = %s
+572	                &#x27;&#x27;&#x27;, (id_empleado,))
+573	                data = cursor.fetchall()
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-45">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\huellaData.py" target="_blank">src/data\huellaData.py</a><br>
+    <b>Line number: </b>55<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+54	            with conexion.cursor() as cursor:
+55	                query = f&quot;&quot;&quot;INSERT INTO {TBHUELLA}(
+56	                {TBHUELLA_ID_EMPLEADO},
+57	                {TBHUELLA_HUELLA})
+58	                VALUES (%s, %s)&quot;&quot;&quot;
+59	                
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-46">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\huellaData.py" target="_blank">src/data\huellaData.py</a><br>
+    <b>Line number: </b>96<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+95	                # Construcción de la consulta base
+96	                query = f&quot;&quot;&quot;
+97	                    SELECT {TBHUELLA_ID}, {TBHUELLA_ID_EMPLEADO}, {TBHUELLA_HUELLA}
+98	                    FROM {TBHUELLA}
+99	                &quot;&quot;&quot;
+100	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-47">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\huellaData.py" target="_blank">src/data\huellaData.py</a><br>
+    <b>Line number: </b>129<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+128	                # Obtener el total de registros para calcular el número total de páginas
+129	                cursor.execute(f&quot;SELECT COUNT(*) as total FROM {TBHUELLA}&quot;)
+130	                total_registros = cursor.fetchone()[&quot;total&quot;]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-48">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\huellaData.py" target="_blank">src/data\huellaData.py</a><br>
+    <b>Line number: </b>160<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+159	            with conexion.cursor(dictionary=True) as cursor:
+160	                query = f&quot;&quot;&quot;
+161	                    SELECT {TBHUELLA_ID}, {TBHUELLA_ID_EMPLEADO}, {TBHUELLA_HUELLA}
+162	                    FROM {TBHUELLA}
+163	                    WHERE {TBHUELLA_ID} = %s
+164	                &quot;&quot;&quot;
+165	                cursor.execute(query, (id_huella,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-49">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\huellaData.py" target="_blank">src/data\huellaData.py</a><br>
+    <b>Line number: </b>196<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+195	            with conexion.cursor(dictionary=True) as cursor:
+196	                query = f&quot;&quot;&quot;
+197	                    SELECT {TBHUELLA_ID}, {TBHUELLA_ID_EMPLEADO}, {TBHUELLA_HUELLA}
+198	                    FROM {TBHUELLA}
+199	                    WHERE {TBHUELLA_ID_EMPLEADO} = %s
+200	                    LIMIT 1
+201	                &quot;&quot;&quot;
+202	                cursor.execute(query, (id_empleado,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-50">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\huellaData.py" target="_blank">src/data\huellaData.py</a><br>
+    <b>Line number: </b>236<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+235	            with conexion.cursor() as cursor:
+236	                query = f&quot;DELETE FROM {TBHUELLA} WHERE {TBHUELLA_ID} = %s&quot;
+237	                cursor.execute(query, (id_huella,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-51">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\justificacionData.py" target="_blank">src/data\justificacionData.py</a><br>
+    <b>Line number: </b>16<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+15	            with conexion.cursor() as cursor:
+16	                query = f&quot;&quot;&quot;INSERT INTO {TBJUSTIFICACION}(
+17	                {TBJUSTIFICACION_ID_EMPLEADO},
+18	                {TBJUSTIFICACION_ID_ASISTENCIA},
+19	                {TBJUSTIFICACION_MOTIVO},
+20	                {TBJUSTIFICACION_DESCRIPCION},
+21	                {TBJUSTIFICACION_TIPO})
+22	                VALUES (%s, %s, %s, %s, %s)&quot;&quot;&quot;
+23	                
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-52">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\justificacionData.py" target="_blank">src/data\justificacionData.py</a><br>
+    <b>Line number: </b>33<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+32	                # Actualiza el estado de la asistencia correspondiente a &quot;Justificado&quot;
+33	                query_update = f&quot;&quot;&quot;
+34	                UPDATE {TBASISTENCIA}
+35	                SET {TBASISTENCIA_ESTADO_ASISTENCIA} = %s
+36	                WHERE {TBASISTENCIA_ID} = %s
+37	                &quot;&quot;&quot;
+38	                cursor.execute(query_update, (
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-53">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\justificacionData.py" target="_blank">src/data\justificacionData.py</a><br>
+    <b>Line number: </b>62<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+61	            if old_id_asistencia:
+62	                query_old_asistencia = f&quot;&quot;&quot;
+63	                UPDATE {TBASISTENCIA} 
+64	                SET {TBASISTENCIA_ESTADO_ASISTENCIA} = &#x27;Ausente&#x27; 
+65	                WHERE {TBASISTENCIA_ID} = %s
+66	                &quot;&quot;&quot;
+67	                cursor.execute(query_old_asistencia, (old_id_asistencia,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-54">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\justificacionData.py" target="_blank">src/data\justificacionData.py</a><br>
+    <b>Line number: </b>71<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+70	            if justificacion.id_asistencia:
+71	                query_new_asistencia = f&quot;&quot;&quot;
+72	                UPDATE {TBASISTENCIA} 
+73	                SET {TBASISTENCIA_ESTADO_ASISTENCIA} = &#x27;Justificado&#x27; 
+74	                WHERE {TBASISTENCIA_ID} = %s
+75	                &quot;&quot;&quot;
+76	                cursor.execute(query_new_asistencia, (justificacion.id_asistencia,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-55">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\justificacionData.py" target="_blank">src/data\justificacionData.py</a><br>
+    <b>Line number: </b>79<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+78	            # Actualizar la justificación
+79	            query = f&quot;&quot;&quot;UPDATE {TBJUSTIFICACION} SET 
+80	            {TBJUSTIFICACION_ID_EMPLEADO} = %s,
+81	            {TBJUSTIFICACION_ID_ASISTENCIA} = %s,
+82	            {TBJUSTIFICACION_MOTIVO} = %s,
+83	            {TBJUSTIFICACION_DESCRIPCION} = %s,
+84	            {TBJUSTIFICACION_TIPO} = %s
+85	            WHERE {TBJUSTIFICACION_ID} = %s&quot;&quot;&quot;
+86	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-56">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\justificacionData.py" target="_blank">src/data\justificacionData.py</a><br>
+    <b>Line number: </b>115<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+114	            with conexion.cursor() as cursor:
+115	                query = f&quot;DELETE FROM {TBJUSTIFICACION} WHERE {TBJUSTIFICACION_ID} = %s&quot;
+116	                cursor.execute(query, (justificacion_id,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-57">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\justificacionData.py" target="_blank">src/data\justificacionData.py</a><br>
+    <b>Line number: </b>152<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+151	                # Construcción de la consulta base
+152	                query = f&quot;&quot;&quot;
+153	                    SELECT J.*, P.{TBPERSONA_NOMBRE} AS nombre_empleado, P.{TBPERSONA_APELLIDOS} AS apellido_empleado, 
+154	                        A.{TBASISTENCIA_FECHA} AS fecha_asistencia
+155	                    FROM {TBJUSTIFICACION} J
+156	                    INNER JOIN EMPLEADO E ON J.{TBJUSTIFICACION_ID_EMPLEADO} = E.ID
+157	                    INNER JOIN {TBPERSONA} P ON E.ID_PERSONA = P.{TBPERSONA_ID}
+158	                    LEFT JOIN {TBASISTENCIA} A ON J.{TBJUSTIFICACION_ID_ASISTENCIA} = A.{TBASISTENCIA_ID}
+159	                &quot;&quot;&quot;
+160	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-58">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\justificacionData.py" target="_blank">src/data\justificacionData.py</a><br>
+    <b>Line number: </b>200<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+199	                # Obtener el total de registros para calcular el número total de páginas
+200	                cursor.execute(f&quot;SELECT COUNT(*) as total FROM {TBJUSTIFICACION}&quot;)
+201	                total_registros = cursor.fetchone()[&quot;total&quot;]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-59">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\justificacionData.py" target="_blank">src/data\justificacionData.py</a><br>
+    <b>Line number: </b>234<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+233	            with conexion.cursor() as cursor:
+234	                query = f&quot;&quot;&quot;SELECT
+235	                                J.{TBJUSTIFICACION_ID_EMPLEADO},
+236	                                J.{TBJUSTIFICACION_ID_ASISTENCIA},
+237	                                J.{TBJUSTIFICACION_FECHA} AS fecha_realizado,
+238	                                J.{TBJUSTIFICACION_MOTIVO},
+239	                                J.{TBJUSTIFICACION_DESCRIPCION},
+240	                                J.{TBJUSTIFICACION_TIPO},
+241	                                J.{TBJUSTIFICACION_ID},
+242	                                P.{TBPERSONA_NOMBRE} AS nombre_empleado,
+243	                                P.{TBPERSONA_APELLIDOS} AS apellido_empleado,  -- Agregar apellido
+244	                                A.{TBASISTENCIA_FECHA} AS fecha_asistencia
+245	                            FROM {TBJUSTIFICACION} J
+246	                            LEFT JOIN EMPLEADO E ON J.{TBJUSTIFICACION_ID_EMPLEADO} = E.ID
+247	                            LEFT JOIN {TBPERSONA} P ON E.ID_PERSONA = P.{TBPERSONA_ID}
+248	                            LEFT JOIN {TBASISTENCIA} A ON J.{TBJUSTIFICACION_ID_ASISTENCIA} = A.{TBASISTENCIA_ID}
+249	                            WHERE J.{TBJUSTIFICACION_ID} = %s&quot;&quot;&quot;
+250	                
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-60">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\perfilData.py" target="_blank">src/data\perfilData.py</a><br>
+    <b>Line number: </b>24<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+23	                    # Consulta que excluye el perfil que se está actualizando
+24	                    query = f&quot;&quot;&quot;
+25	                            SELECT 
+26	                                COUNT(*) 
+27	                            FROM  {TBPERFIL} 
+28	                            WHERE {TBPERFIL_NOMBRE} = %s 
+29	                            AND {TBPERFIL_ID} != %s&quot;&quot;&quot;
+30	                    cursor.execute(query, (nombre_perfil, id_perfil_excluir))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-61">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\perfilData.py" target="_blank">src/data\perfilData.py</a><br>
+    <b>Line number: </b>33<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+32	                    # Consulta normal para creación de nuevo perfil
+33	                    query = f&quot;&quot;&quot;
+34	                            SELECT 
+35	                                COUNT(*) 
+36	                            FROM {TBPERFIL} 
+37	                            WHERE {TBPERFIL_NOMBRE} = %s&quot;&quot;&quot;
+38	                    cursor.execute(query, (nombre_perfil,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-62">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\perfilData.py" target="_blank">src/data\perfilData.py</a><br>
+    <b>Line number: </b>66<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+65	            with conexion.cursor() as cursor:  # se utiliza el cursor para las consultas a la base de datos
+66	                query = f&quot;&quot;&quot;INSERT INTO {TBPERFIL}(
+67	                {TBPERFIL_NOMBRE},
+68	                {TBPERFIL_DESCRIPCION})
+69	                VALUES (%s, %s)&quot;&quot;&quot;  # campos o posciones
+70	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-63">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\perfilData.py" target="_blank">src/data\perfilData.py</a><br>
+    <b>Line number: </b>110<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+109	                conexion.start_transaction()
+110	                query = f&quot;&quot;&quot;UPDATE {TBPERFIL} SET 
+111	                {TBPERFIL_NOMBRE} = %s,
+112	                {TBPERFIL_DESCRIPCION} = %s
+113	                WHERE {TBPERFIL_ID} = %s&quot;&quot;&quot;
+114	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-64">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\perfilData.py" target="_blank">src/data\perfilData.py</a><br>
+    <b>Line number: </b>159<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+158	                cursor.execute(
+159	                    f&quot;&quot;&quot;SELECT 1
+160	                                FROM {TBUSUARIOPERFIL} 
+161	                                WHERE {TBUSUARIOPERFIL_ID_PERF} = %s&quot;&quot;&quot;,
+162	                    (perfil_id,),
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-65">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\perfilData.py" target="_blank">src/data\perfilData.py</a><br>
+    <b>Line number: </b>173<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+172	                cursor.execute(
+173	                    f&quot;DELETE FROM {TBPERMISOPERFIL} WHERE {TBPERMISOPERFIL_PERFIL_ID} = %s&quot;,
+174	                    (perfil_id,),
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-66">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\perfilData.py" target="_blank">src/data\perfilData.py</a><br>
+    <b>Line number: </b>179<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+178	                cursor.execute(
+179	                    f&quot;DELETE FROM {TBPERFIL} WHERE {TBPERFIL_ID} = %s&quot;, (perfil_id,)
+180	                )
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-67">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\perfilData.py" target="_blank">src/data\perfilData.py</a><br>
+    <b>Line number: </b>223<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+222	
+223	                query = f&quot;SELECT * FROM {TBPERFIL}&quot;
+224	                valores = []
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-68">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\perfilData.py" target="_blank">src/data\perfilData.py</a><br>
+    <b>Line number: </b>250<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+249	
+250	                cursor.execute(f&quot;SELECT COUNT(*) as total FROM {TBPERFIL}&quot;)
+251	                total_registros = cursor.fetchone()[&quot;total&quot;]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-69">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\perfilData.py" target="_blank">src/data\perfilData.py</a><br>
+    <b>Line number: </b>303<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+302	
+303	            query = f&quot;SELECT * FROM {TBPERFIL}&quot;
+304	            valores = []
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-70">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\perfilData.py" target="_blank">src/data\perfilData.py</a><br>
+    <b>Line number: </b>327<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+326	
+327	            cursor.execute(f&quot;SELECT COUNT(*) as total FROM {TBPERFIL}&quot;)  # TBROL
+328	            total_registros = cursor.fetchone()[
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-71">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\perfilData.py" target="_blank">src/data\perfilData.py</a><br>
+    <b>Line number: </b>360<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+359	                # Consulta SQL para obtener el perfil por su ID
+360	                query = f&quot;&quot;&quot;SELECT
+361	                            {TBPERFIL_NOMBRE}, 
+362	                            {TBPERFIL_DESCRIPCION}, 
+363	                            {TBPERFIL_ID} 
+364	                        FROM {TBPERFIL} 
+365	                        WHERE {TBPERFIL_ID} = %s&quot;&quot;&quot;
+366	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-72">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\perfilData.py" target="_blank">src/data\perfilData.py</a><br>
+    <b>Line number: </b>414<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+413	            with conexion.cursor(dictionary=True) as cursor:
+414	                query = f&quot;SELECT * FROM {TBPERFIL}&quot;
+415	                cursor.execute(query)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-73">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosPerfilData.py" target="_blank">src/data\permisosPerfilData.py</a><br>
+    <b>Line number: </b>15<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+14	            with conexion.cursor() as cursor:
+15	                query = f&quot;SELECT COUNT(*) FROM {TBPERMISOPERFIL} WHERE {TBPERMISOPERFIL_ID} = %s AND {TBPERMISOPERFIL_TABLA} = %s &quot;
+16	               # Consulta SQL para contar cuántos permisos existen con el perfil y la tabla especificados.
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-74">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosPerfilData.py" target="_blank">src/data\permisosPerfilData.py</a><br>
+    <b>Line number: </b>37<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+36	            with conexion.cursor() as cursor:
+37	                query = f&quot;&quot;&quot;INSERT INTO {TBPERMISOPERFIL} (
+38	                    {TBPERMISOPERFIL_PERFIL_ID}, 
+39	                    {TBPERMISOPERFIL_TABLA},  
+40	                    {TBPERMISOPERFIL_VER},
+41	                    {TBPERMISOPERFIL_INSERTAR},
+42	                    {TBPERMISOPERFIL_EDITAR},
+43	                    {TBPERMISOPERFIL_ELIMINAR}
+44	                ) VALUES (%s, %s, %s, %s, %s, %s)&quot;&quot;&quot;
+45	                cursor.execute(query, (
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-75">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosPerfilData.py" target="_blank">src/data\permisosPerfilData.py</a><br>
+    <b>Line number: </b>106<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+105	            with conexion.cursor() as cursor:
+106	                query = f&quot;&quot;&quot;UPDATE {TBPERMISOPERFIL} SET 
+107	                {TBPERMISOPERFIL_PERFIL_ID} = %s,
+108	                {TBPERMISOPERFIL_TABLA} = %s,
+109	                {TBPERMISOPERFIL_VER} = %s,
+110	                {TBPERMISOPERFIL_INSERTAR} = %s,
+111	                {TBPERMISOPERFIL_EDITAR} = %s,
+112	                {TBPERMISOPERFIL_ELIMINAR} = %s 
+113	                WHERE {TBPERMISOPERFIL_ID} = %s&quot;&quot;&quot;
+114	                
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-76">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosPerfilData.py" target="_blank">src/data\permisosPerfilData.py</a><br>
+    <b>Line number: </b>140<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+139	            cursor = conexion.cursor()
+140	            query = f&quot;DELETE FROM {TBPERMISOPERFIL} WHERE {TBPERMISOPERFIL_ID} = %s &quot;
+141	            
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-77">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosPerfilData.py" target="_blank">src/data\permisosPerfilData.py</a><br>
+    <b>Line number: </b>180<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+179	                # Construcción de la consulta base
+180	                query = f&quot;SELECT * FROM {TBPERMISOPERFIL} &quot;
+181	                
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-78">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosPerfilData.py" target="_blank">src/data\permisosPerfilData.py</a><br>
+    <b>Line number: </b>211<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+210	                # Obtener el total de registros para calcular el número total de páginas
+211	                cursor.execute(f&quot;SELECT COUNT(*) as total FROM {TBPERMISOPERFIL}&quot;)
+212	                total_registros = cursor.fetchone()[&quot;total&quot;]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-79">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosPerfilData.py" target="_blank">src/data\permisosPerfilData.py</a><br>
+    <b>Line number: </b>239<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+238	            with conexion.cursor() as cursor:
+239	                query = f&quot;&quot;&quot;SELECT
+240	                                {TBPERMISOPERFIL_PERFIL_ID}, 
+241	                                {TBPERMISOPERFIL_TABLA}, 
+242	                                {TBPERMISOPERFIL_VER},
+243	                                {TBPERMISOPERFIL_INSERTAR}, 
+244	                                {TBPERMISOPERFIL_EDITAR}, 
+245	                                {TBPERMISOPERFIL_ELIMINAR}, 
+246	                                {TBPERMISOPERFIL_ID} 
+247	                            FROM {TBPERMISOPERFIL} 
+248	                            WHERE id = %s&quot;&quot;&quot;
+249	                
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-80">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosPerfilData.py" target="_blank">src/data\permisosPerfilData.py</a><br>
+    <b>Line number: </b>282<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+281	            with conexion.cursor() as cursor:
+282	                query = f&quot;&quot;&quot;SELECT
+283	                                {TBPERMISOPERFIL_PERFIL_ID}, 
+284	                                {TBPERMISOPERFIL_TABLA}, 
+285	                                {TBPERMISOPERFIL_VER},
+286	                                {TBPERMISOPERFIL_INSERTAR}, 
+287	                                {TBPERMISOPERFIL_EDITAR}, 
+288	                                {TBPERMISOPERFIL_ELIMINAR}, 
+289	                                {TBPERMISOPERFIL_ID} 
+290	                            FROM {TBPERMISOPERFIL} 
+291	                            WHERE {TBPERMISOPERFIL_PERFIL_ID} = %s&quot;&quot;&quot;
+292	                
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-81">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosPerfilData.py" target="_blank">src/data\permisosPerfilData.py</a><br>
+    <b>Line number: </b>324<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+323	            cursor = conexion.cursor()
+324	            query = f&quot;DELETE FROM {TBPERMISOPERFIL} WHERE {TBPERMISOPERFIL_PERFIL_ID} = %s &quot;
+325	            
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-82">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosRolData.py" target="_blank">src/data\permisosRolData.py</a><br>
+    <b>Line number: </b>13<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+12	            with conexion.cursor() as cursor:
+13	                query = f&quot;SELECT COUNT(*) FROM {TBPERMISOROL} WHERE {TBPERMISOROL_ROL_ID} = %s AND {TBPERMISOROL_TABLA} = %s &quot;
+14	                if id is not None and id &gt; 0:
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-83">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosRolData.py" target="_blank">src/data\permisosRolData.py</a><br>
+    <b>Line number: </b>39<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+38	            with conexion.cursor() as cursor:
+39	                query = f&quot;&quot;&quot;INSERT INTO {TBPERMISOROL} (
+40	                    {TBPERMISOROL_ROL_ID}, 
+41	                    {TBPERMISOROL_TABLA},  
+42	                    {TBPERMISOROL_VER},
+43	                    {TBPERMISOROL_INSERTAR},
+44	                    {TBPERMISOROL_EDITAR},
+45	                    {TBPERMISOROL_ELIMINAR}
+46	                ) VALUES (%s, %s, %s, %s, %s, %s)&quot;&quot;&quot;
+47	                cursor.execute(query, (
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-84">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosRolData.py" target="_blank">src/data\permisosRolData.py</a><br>
+    <b>Line number: </b>108<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+107	            with conexion.cursor() as cursor:
+108	                query = f&quot;&quot;&quot;UPDATE {TBPERMISOROL} SET 
+109	                {TBPERMISOROL_ROL_ID} = %s,
+110	                {TBPERMISOROL_TABLA} = %s,
+111	                {TBPERMISOROL_VER} = %s,
+112	                {TBPERMISOROL_INSERTAR} = %s,
+113	                {TBPERMISOROL_EDITAR} = %s,
+114	                {TBPERMISOROL_ELIMINAR} = %s 
+115	                WHERE {TBPERMISOROL_ID} = %s&quot;&quot;&quot;
+116	                
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-85">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosRolData.py" target="_blank">src/data\permisosRolData.py</a><br>
+    <b>Line number: </b>144<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+143	            cursor = conexion.cursor()
+144	            query = f&quot;DELETE FROM {TBPERMISOROL} WHERE {TBPERMISOROL_ID} = %s &quot;
+145	            
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-86">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosRolData.py" target="_blank">src/data\permisosRolData.py</a><br>
+    <b>Line number: </b>184<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+183	                # Construcción de la consulta base
+184	                query = f&quot;SELECT * FROM {TBPERMISOROL} &quot;
+185	                
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-87">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosRolData.py" target="_blank">src/data\permisosRolData.py</a><br>
+    <b>Line number: </b>215<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+214	                # Obtener el total de registros para calcular el número total de páginas
+215	                cursor.execute(f&quot;SELECT COUNT(*) as total FROM {TBPERMISOROL}&quot;)
+216	                total_registros = cursor.fetchone()[&quot;total&quot;]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-88">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\permisosRolData.py" target="_blank">src/data\permisosRolData.py</a><br>
+    <b>Line number: </b>243<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+242	            with conexion.cursor() as cursor:
+243	                query = f&quot;&quot;&quot;SELECT
+244	                                {TBPERMISOROL_ROL_ID}, 
+245	                                {TBPERMISOROL_TABLA}, 
+246	                                {TBPERMISOROL_VER},
+247	                                {TBPERMISOROL_INSERTAR}, 
+248	                                {TBPERMISOROL_EDITAR}, 
+249	                                {TBPERMISOROL_ELIMINAR}, 
+250	                                {TBPERMISOROL_ID} 
+251	                            FROM {TBPERMISOROL} 
+252	                            WHERE id = %s&quot;&quot;&quot;
+253	                
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-89">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\personaData.py" target="_blank">src/data\personaData.py</a><br>
+    <b>Line number: </b>19<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+18	            # Consulta para verificar la existencia de la cédula
+19	            query = f&quot;SELECT COUNT(*) FROM {TBPERSONA} WHERE {TBPERSONA_CEDULA} = %s&quot;
+20	            
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-90">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\personaData.py" target="_blank">src/data\personaData.py</a><br>
+    <b>Line number: </b>49<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+48	            # Consulta para verificar la existencia del correo
+49	            query = f&quot;SELECT COUNT(*) FROM {TBPERSONA} WHERE {TBPERSONA_CORREO} = %s&quot;
+50	            # Agregamos una cláusula para ignorar el ID proporcionado
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-91">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\personaData.py" target="_blank">src/data\personaData.py</a><br>
+    <b>Line number: </b>77<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+76	            with conexion.cursor() as cursor:
+77	                query = f&quot;&quot;&quot;INSERT INTO {TBPERSONA} (
+78	                    {TBPERSONA_FOTO} , 
+79	                    {TBPERSONA_NOMBRE} ,  
+80	                    {TBPERSONA_APELLIDOS} ,
+81	                    {TBPERSONA_NACIMIENTO} ,
+82	                    {TBPERSONA_CEDULA} ,
+83	                    {TBPERSONA_ESTADO_CIVIL} ,
+84	                    {TBPERSONA_CORREO} , 
+85	                    {TBPERSONA_DIRECCION}) 
+86	                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)&quot;&quot;&quot;
+87	        
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-92">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\personaData.py" target="_blank">src/data\personaData.py</a><br>
+    <b>Line number: </b>122<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+121	            with conexion.cursor() as cursor:
+122	                query = f&quot;&quot;&quot;UPDATE {TBPERSONA} SET 
+123	                {TBPERSONA_FOTO} = %s,
+124	                {TBPERSONA_NOMBRE} = %s,
+125	                {TBPERSONA_APELLIDOS} = %s,
+126	                {TBPERSONA_NACIMIENTO} = %s,
+127	                {TBPERSONA_CEDULA} = %s,
+128	                {TBPERSONA_ESTADO_CIVIL} = %s,
+129	                {TBPERSONA_CORREO} = %s,
+130	                {TBPERSONA_DIRECCION} = %s
+131	                WHERE {TBPERSONA_ID} = %s&quot;&quot;&quot;
+132	                
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-93">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\personaData.py" target="_blank">src/data\personaData.py</a><br>
+    <b>Line number: </b>164<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+163	            with conexion.cursor() as cursor:
+164	                query = f&quot;DELETE FROM {TBPERSONA} WHERE {TBPERSONA_ID} = %s &quot;
+165	                cursor.execute(query, (persona_id,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-94">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\personaData.py" target="_blank">src/data\personaData.py</a><br>
+    <b>Line number: </b>206<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+205	            # Construcción de la consulta base
+206	            query = f&quot;SELECT * FROM {TBPERSONA} &quot;
+207	            
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-95">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\personaData.py" target="_blank">src/data\personaData.py</a><br>
+    <b>Line number: </b>245<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+244	            # Obtener el total de registros para calcular el número total de páginas
+245	            cursor.execute(f&quot;SELECT COUNT(*) as total FROM {TBPERSONA}&quot;)
+246	            total_registros = cursor.fetchone()[&quot;total&quot;]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-96">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\personaData.py" target="_blank">src/data\personaData.py</a><br>
+    <b>Line number: </b>277<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+276	            with conexion.cursor() as cursor:
+277	                query = f&quot;&quot;&quot;SELECT
+278	                                {TBPERSONA_FOTO}, 
+279	                                {TBPERSONA_NOMBRE}, 
+280	                                {TBPERSONA_APELLIDOS}, 
+281	                                {TBPERSONA_NACIMIENTO}, 
+282	                                {TBPERSONA_CEDULA}, 
+283	                                {TBPERSONA_ESTADO_CIVIL}, 
+284	                                {TBPERSONA_CORREO}, 
+285	                                {TBPERSONA_DIRECCION},
+286	                                {TBPERSONA_ID} 
+287	                            FROM {TBPERSONA} 
+288	                            WHERE id = %s&quot;&quot;&quot;
+289	                
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-97">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\personaData.py" target="_blank">src/data\personaData.py</a><br>
+    <b>Line number: </b>329<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+328	            # Consulta para obtener los nombres y el ID de las personas que no tienen un usuario
+329	            query = f&quot;&quot;&quot;
+330	                SELECT 
+331	                    {TBPERSONA_ID}, 
+332	                    {TBPERSONA_NOMBRE}, 
+333	                    {TBPERSONA_APELLIDOS} 
+334	                FROM {TBPERSONA} 
+335	                WHERE {TBPERSONA_ID} NOT IN (SELECT {TBUSUARIO_ID_PERSONA} FROM {TBUSUARIO})
+336	            &quot;&quot;&quot;
+337	            
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-98">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\personaData.py" target="_blank">src/data\personaData.py</a><br>
+    <b>Line number: </b>352<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+351	                # Consulta para obtener la persona específica
+352	                query_persona = f&quot;&quot;&quot;
+353	                    SELECT 
+354	                        {TBPERSONA_ID}, 
+355	                        {TBPERSONA_NOMBRE}, 
+356	                        {TBPERSONA_APELLIDOS} 
+357	                    FROM {TBPERSONA} 
+358	                    WHERE {TBPERSONA_ID} = %s
+359	                &quot;&quot;&quot;
+360	                cursor.execute(query_persona, (id_persona,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-99">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\reporteData.py" target="_blank">src/data\reporteData.py</a><br>
+    <b>Line number: </b>34<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+33	            cursor = conexion.cursor()
+34	            query = f&quot;&quot;&quot;INSERT INTO {TBREPORTE}(
+35	            {TBREPORTE_ID_EMPLEADO},
+36	            {TBREPORTE_FECHA_GENERACION},
+37	            {TBREPORTE_TIPO_REPORTE},
+38	            {TBREPORTE_CONTENIDO})
+39	            VALUES (%s, %s, %s, %s)&quot;&quot;&quot;
+40	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-100">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\reporteData.py" target="_blank">src/data\reporteData.py</a><br>
+    <b>Line number: </b>80<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+79	            # consulta SQL para actualizar un reporte en la tabla TBREPORTE
+80	            query = f&quot;&quot;&quot;UPDATE {TBREPORTE} SET
+81	            {TBREPORTE_ID_EMPLEADO} = %s,
+82	            {TBREPORTE_FECHA_GENERACION} = %s,
+83	            {TBREPORTE_TIPO_REPORTE} = %s,
+84	            {TBREPORTE_CONTENIDO} = %s
+85	            WHERE {TBREPORTE_ID} = %s&quot;&quot;&quot;
+86	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-101">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\reporteData.py" target="_blank">src/data\reporteData.py</a><br>
+    <b>Line number: </b>126<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+125	            # define la consulta SQL, pasando el ID del reporte a eliminar
+126	            query = f&quot;DELETE FROM {TBREPORTE} WHERE {TBREPORTE_ID} = %s&quot;
+127	            # Ejecuta la consulta SQL pasando el ID del reporte a eliminar
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-102">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\reporteData.py" target="_blank">src/data\reporteData.py</a><br>
+    <b>Line number: </b>174<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+173	
+174	            query = f&quot;&quot;&quot;SELECT 
+175	                    r.*,
+176	                    p.{TBPERSONA_NOMBRE} AS nombre_persona
+177	                FROM {TBREPORTE} r
+178	                INNER JOIN {TBEMPLEADO} e ON r.{TBREPORTE_ID_EMPLEADO} = e.{TBEMPLEADO_ID}
+179	                INNER JOIN {TBPERSONA} p ON e.{TBEMPLEADO_PERSONA} = p.{TBPERSONA_ID}&quot;&quot;&quot;
+180	            valores = []
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-103">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\reporteData.py" target="_blank">src/data\reporteData.py</a><br>
+    <b>Line number: </b>217<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+216	
+217	            cursor.execute(f&quot;SELECT COUNT(*) as total FROM {TBREPORTE}&quot;)  # TBROL
+218	            total_registros = cursor.fetchone()[
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-104">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\reporteData.py" target="_blank">src/data\reporteData.py</a><br>
+    <b>Line number: </b>250<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+249	            # Consulta SQL para obtener el perfil por su ID
+250	            query = f&quot;&quot;&quot;SELECT
+251	                            {TBREPORTE_ID_EMPLEADO}, 
+252	                            {TBREPORTE_FECHA_GENERACION}, 
+253	                            {TBREPORTE_TIPO_REPORTE}, 
+254	                            {TBREPORTE_CONTENIDO},
+255	                            {TBREPORTE_ID} 
+256	                        FROM {TBREPORTE} 
+257	                        WHERE {TBREPORTE_ID} = %s&quot;&quot;&quot;
+258	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-105">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\reporteData.py" target="_blank">src/data\reporteData.py</a><br>
+    <b>Line number: </b>293<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+292	            with conexion.cursor(dictionary=True) as cursor:
+293	                query = f&quot;SELECT * FROM {TBREPORTE}&quot;
+294	                cursor.execute(query)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-106">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\reporteData.py" target="_blank">src/data\reporteData.py</a><br>
+    <b>Line number: </b>429<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+428	                # Construcción de la consulta
+429	                query = f&#x27;&#x27;&#x27;SELECT 
+430	                            E.{TBEMPLEADO_ID}       AS EmpleadoId,
+431	                            P.{TBPERSONA_CEDULA}    AS CedulaPersona,
+432	                            P.{TBPERSONA_NOMBRE}    AS NombrePersona,
+433	                            P.{TBPERSONA_APELLIDOS} AS ApellidosPersona,
+434	                                
+435	                            {&#x27;,\n&#x27;.join(datosSelect) if datosSelect else &#x27;&#x27;} 
+436	                            FROM {TBEMPLEADO} E 
+437	                            INNER JOIN {TBPERSONA} P ON P.{TBPERSONA_ID} = E.{TBEMPLEADO_PERSONA}
+438	                            {&#x27;\n&#x27;.join(leftJoin)}&#x27;&#x27;&#x27;
+439	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-107">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\reporteData.py" target="_blank">src/data\reporteData.py</a><br>
+    <b>Line number: </b>543<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+542	            # Consulta SQL para obtener el perfil por su ID
+543	            query = f&quot;&quot;&quot;SELECT
+544	                            {TBREPORTE_ID_EMPLEADO}, 
+545	                            {TBREPORTE_FECHA_GENERACION}, 
+546	                            {TBREPORTE_TIPO_REPORTE}, 
+547	                            {TBREPORTE_CONTENIDO},
+548	                            {TBREPORTE_ID} 
+549	                        FROM {TBREPORTE} 
+550	                        WHERE {TBREPORTE_ID} = %s&quot;&quot;&quot;
+551	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-108">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\rolData.py" target="_blank">src/data\rolData.py</a><br>
+    <b>Line number: </b>16<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+15	            with conexion.cursor() as cursor:
+16	                query = f&quot;&quot;&quot;INSERT INTO {TBROL}( {TBROL_NOMBRE}, {TBROL_DESCRIPCION} ) VALUES (%s, %s)&quot;&quot;&quot;
+17	                cursor.execute(query, (rol.nombre, rol.descripcion))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-109">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\rolData.py" target="_blank">src/data\rolData.py</a><br>
+    <b>Line number: </b>37<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+36	            with conexion.cursor() as cursor:
+37	                query = f&quot;&quot;&quot;UPDATE {TBROL} SET {TBROL_NOMBRE} = %s, {TBROL_DESCRIPCION} = %s
+38	                        WHERE {TBROL_ID} = %s&quot;&quot;&quot;
+39	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-110">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\rolData.py" target="_blank">src/data\rolData.py</a><br>
+    <b>Line number: </b>63<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+62	            with conexion.cursor() as cursor:
+63	                query = f&quot;DELETE FROM {TBROL} WHERE {TBROL_ID} = %s&quot;
+64	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-111">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\rolData.py" target="_blank">src/data\rolData.py</a><br>
+    <b>Line number: </b>102<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+101	
+102	                query = f&quot;SELECT * FROM {TBROL}&quot;
+103	                valores = []
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-112">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\rolData.py" target="_blank">src/data\rolData.py</a><br>
+    <b>Line number: </b>123<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+122	
+123	                cursor.execute(f&quot;SELECT COUNT(*) as total FROM {TBROL}&quot;)
+124	                total_registros = cursor.fetchone()[&quot;total&quot;]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-113">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\rolData.py" target="_blank">src/data\rolData.py</a><br>
+    <b>Line number: </b>152<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+151	            with conexion.cursor() as cursor:
+152	                query = f&quot;&quot;&quot;SELECT
+153	                                {TBROL_NOMBRE}, 
+154	                                {TBROL_DESCRIPCION}, 
+155	                                {TBROL_ID} 
+156	                            FROM {TBROL} 
+157	                            WHERE {TBROL_ID} = %s&quot;&quot;&quot;
+158	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-114">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\rolData.py" target="_blank">src/data\rolData.py</a><br>
+    <b>Line number: </b>191<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+190	            with conexion.cursor(dictionary=True) as cursor:
+191	                query = f&quot;SELECT * FROM {TBROL}&quot;
+192	                cursor.execute(query)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-115">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\rolData.py" target="_blank">src/data\rolData.py</a><br>
+    <b>Line number: </b>228<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+227	            with conexion.cursor() as cursor:
+228	                query = f&quot;&quot;&quot;
+229	                SELECT
+230	                    {TBROL_NOMBRE}, 
+231	                    {TBROL_ID} 
+232	                FROM {TBROL}
+233	            &quot;&quot;&quot;
+234	                cursor.execute(query)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-116">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\telefonoData.py" target="_blank">src/data\telefonoData.py</a><br>
+    <b>Line number: </b>28<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+27	                query = (
+28	                    f&quot;SELECT COUNT(*) FROM {TBTELEFONO} WHERE {TBTELEFONO_NUMERO} = %s &quot;
+29	                )
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-117">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\telefonoData.py" target="_blank">src/data\telefonoData.py</a><br>
+    <b>Line number: </b>53<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+52	            with conexion.cursor() as cursor:
+53	                query = f&quot;&quot;&quot; INSERT INTO {TBTELEFONO} (
+54	                            {TBTELEFONO_ID_PERSONA},
+55	                            {TBTELEFONO_NUMERO},
+56	                            {TBTELEFONO_TIPO_CONTACTO}
+57	                            ) VALUES (%s,%s,%s)&quot;&quot;&quot;
+58	                cursor.execute(
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-118">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\telefonoData.py" target="_blank">src/data\telefonoData.py</a><br>
+    <b>Line number: </b>86<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+85	            with conexion.cursor() as cursor:
+86	                query = f&quot;&quot;&quot;UPDATE {TBTELEFONO} SET
+87	                        {TBTELEFONO_ID_PERSONA} = %s,
+88	                        {TBTELEFONO_NUMERO} = %s,
+89	                        {TBTELEFONO_TIPO_CONTACTO} = %s
+90	                        WHERE {TBTELEFONO_ID} = %s &quot;&quot;&quot;
+91	                cursor.execute(
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-119">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\telefonoData.py" target="_blank">src/data\telefonoData.py</a><br>
+    <b>Line number: </b>120<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+119	            with conexion.cursor() as cursor:
+120	                query = f&quot;&quot;&quot;DELETE FROM {TBTELEFONO} WHERE {TBTELEFONO_ID} = %s &quot;&quot;&quot;
+121	                cursor.execute(query, (id_telefono,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-120">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\telefonoData.py" target="_blank">src/data\telefonoData.py</a><br>
+    <b>Line number: </b>144<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+143	            with conexion.cursor(dictionary=True) as cursor:
+144	                query = f&quot;&quot;&quot;SELECT 
+145	                    {TBTELEFONO_ID},
+146	                    {TBTELEFONO_ID_PERSONA},
+147	                    {TBTELEFONO_NUMERO},
+148	                    {TBTELEFONO_TIPO_CONTACTO}
+149	                    FROM {TBTELEFONO}
+150	                    WHERE {TBTELEFONO_ID} = %s
+151	                &quot;&quot;&quot;
+152	                cursor.execute(query, (id_telefono,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-121">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\telefonoData.py" target="_blank">src/data\telefonoData.py</a><br>
+    <b>Line number: </b>194<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+193	            with conexion.cursor(dictionary=True) as cursor:
+194	                query = f&quot;&quot;&quot;SELECT 
+195	                        {TBTELEFONO_ID},
+196	                        {TBTELEFONO_ID_PERSONA},
+197	                        {TBTELEFONO_NUMERO},
+198	                        {TBTELEFONO_TIPO_CONTACTO}
+199	                        FROM {TBTELEFONO}
+200	                        WHERE {TBTELEFONO_ID_PERSONA} = %s
+201	                    &quot;&quot;&quot;
+202	                cursor.execute(query, (id_persona,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-122">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuarioData.py" target="_blank">src/data\usuarioData.py</a><br>
+    <b>Line number: </b>23<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+22	            # Consulta para verificar la existencia de la cédula
+23	            query = f&quot;SELECT COUNT(*) FROM {TBUSUARIO} WHERE {TBUSUARIO_USUARIO} = %s&quot;
+24	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-123">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuarioData.py" target="_blank">src/data\usuarioData.py</a><br>
+    <b>Line number: </b>54<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+53	            with conexion.cursor() as cursor:
+54	                query = f&quot;&quot;&quot;INSERT INTO {TBUSUARIO}(
+55	                {TBUSUARIO_ID_PERSONA},
+56	                {TBUSUARIO_USUARIO},
+57	                {TBUSUARIO_CONTRASENA}
+58	                )VALUES (%s, %s, %s)&quot;&quot;&quot;
+59	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-124">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuarioData.py" target="_blank">src/data\usuarioData.py</a><br>
+    <b>Line number: </b>94<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+93	                if usuario.contrasena is None:
+94	                    query = f&quot;&quot;&quot;UPDATE {TBUSUARIO} SET 
+95	                                {TBUSUARIO_USUARIO} = %s,
+96	                                {TBUSUARIO_ID_PERSONA} = %s
+97	                                WHERE {TBUSUARIO_ID} = %s&quot;&quot;&quot;
+98	                    params = (usuario.usuario, usuario.id_persona, usuario.id)
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-125">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuarioData.py" target="_blank">src/data\usuarioData.py</a><br>
+    <b>Line number: </b>100<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+99	                else:
+100	                    query = f&quot;&quot;&quot;UPDATE {TBUSUARIO} SET 
+101	                                {TBUSUARIO_USUARIO} = %s,
+102	                                {TBUSUARIO_ID_PERSONA} = %s,
+103	                                {TBUSUARIO_CONTRASENA} = %s
+104	                                WHERE {TBUSUARIO_ID} = %s&quot;&quot;&quot;
+105	                    params = (
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-126">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuarioData.py" target="_blank">src/data\usuarioData.py</a><br>
+    <b>Line number: </b>140<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+139	                cursor.execute(
+140	                    f&quot;DELETE FROM {TBUSUARIOPERFIL} WHERE {TBUSUARIOPERFIL_ID_USER} = %s&quot;,
+141	                    (usuario_id,),
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-127">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuarioData.py" target="_blank">src/data\usuarioData.py</a><br>
+    <b>Line number: </b>144<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+143	                cursor.execute(
+144	                    f&quot;DELETE FROM {TBUSUARIO} WHERE {TBUSUARIO_ID} = %s &quot;, (usuario_id,)
+145	                )
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-128">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuarioData.py" target="_blank">src/data\usuarioData.py</a><br>
+    <b>Line number: </b>192<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+191	                # Construcción de la consulta base con INNER JOIN para obtener el nombre de la persona y el perfil
+192	                query = f&quot;&quot;&quot;
+193	                    SELECT 
+194	                        U.id AS id_usuario, 
+195	                        U.usuario, 
+196	                        P.nombre AS nombre_persona, 
+197	                        P.apellidos AS apellido_persona, 
+198	                        UP.{TBUSUARIOPERFIL_ID} AS id_usuario_perfil,  -- ID de la tabla usuario_perfil
+199	                        UP.{TBUSUARIOPERFIL_ID_PERF} AS id_perfil,  -- ID del perfil (llave foránea)
+200	                        PF.nombre AS nombre_perfil 
+201	                    FROM 
+202	                        {TBUSUARIO} U 
+203	                    INNER JOIN 
+204	                        {TBPERSONA} P ON U.id_persona = P.id 
+205	                    LEFT JOIN 
+206	                        {TBUSUARIOPERFIL} UP ON U.id = UP.{TBUSUARIOPERFIL_ID_USER} 
+207	                    LEFT JOIN 
+208	                        {TBPERFIL} PF ON UP.{TBUSUARIOPERFIL_ID_PERF} = PF.id 
+209	                &quot;&quot;&quot;
+210	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-129">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuarioData.py" target="_blank">src/data\usuarioData.py</a><br>
+    <b>Line number: </b>256<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+255	                # Obtener el total de registros para calcular el número total de páginas
+256	                cursor.execute(f&quot;SELECT COUNT(*) as total FROM {TBUSUARIO}&quot;)
+257	                total_registros = cursor.fetchone()[&quot;total&quot;]
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-130">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuarioData.py" target="_blank">src/data\usuarioData.py</a><br>
+    <b>Line number: </b>289<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+288	            with conexion.cursor(dictionary=True) as cursor:
+289	                query = f&quot;&quot;&quot;
+290	                    SELECT
+291	                        U.{TBUSUARIO_ID},
+292	                        U.{TBUSUARIO_ID_PERSONA},
+293	                        U.{TBUSUARIO_USUARIO},
+294	                        UP.{TBUSUARIOPERFIL_ID_PERF} AS id_perfil
+295	                    FROM {TBUSUARIO} U
+296	                    LEFT JOIN {TBUSUARIOPERFIL} UP ON U.{TBUSUARIO_ID} = UP.{TBUSUARIOPERFIL_ID_USER}
+297	                    WHERE U.{TBUSUARIO_ID} = %s  -- Cambiar a buscar por id_usuario
+298	                &quot;&quot;&quot;
+299	                cursor.execute(query, (id_usuario,))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-131">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuarioData.py" target="_blank">src/data\usuarioData.py</a><br>
+    <b>Line number: </b>339<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+338	            with conexion.cursor(dictionary=True) as cursor:
+339	                query = f&quot;&quot;&quot;
+340	                        SELECT 
+341	                            U.{TBUSUARIO_ID} as usuario_id,
+342	                            U.{TBUSUARIO_USUARIO},
+343	                            U.{TBUSUARIO_CONTRASENA},
+344	                            P.{TBPERSONA_ID}
+345	                        FROM {TBUSUARIO} U
+346	                        INNER JOIN {TBPERSONA} P ON P.{TBPERSONA_ID} =  U.{TBUSUARIO_ID_PERSONA}
+347	                        WHERE
+348	                            P.{TBPERSONA_CORREO} = %s OR U.{TBUSUARIO_USUARIO} = %s 
+349	                        &quot;&quot;&quot;
+350	                cursor.execute(
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-132">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuarioData.py" target="_blank">src/data\usuarioData.py</a><br>
+    <b>Line number: </b>358<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+357	                    usuario = Usuario(usuario=usuarioPass[TBUSUARIO_USUARIO], id_persona=usuarioPass[TBPERSONA_ID])
+358	                    queryPerfil = f&quot;&quot;&quot;SELECT 
+359	                    PF.{TBPERFIL_ID} as perfil_id,
+360	                    PF.{TBPERFIL_NOMBRE},
+361	                    PF.{TBPERFIL_DESCRIPCION},
+362	                    PP.{TBPERMISOPERFIL_ID} as permisoperfil_id,
+363	                    PP.{TBPERMISOPERFIL_PERFIL_ID},
+364	                    PP.{TBPERMISOPERFIL_TABLA},
+365	                    PP.{TBPERMISOPERFIL_VER},
+366	                    PP.{TBPERMISOPERFIL_INSERTAR},
+367	                    PP.{TBPERMISOPERFIL_EDITAR},
+368	                    PP.{TBPERMISOPERFIL_ELIMINAR}
+369	                    
+370	                    FROM {TBPERFIL} PF
+371	                    INNER JOIN {TBUSUARIOPERFIL} UP ON UP.{TBUSUARIOPERFIL_ID_PERF} = PF.{TBPERFIL_ID}
+372	                    INNER JOIN {TBPERMISOPERFIL} PP ON PP.{TBPERMISOPERFIL_PERFIL_ID} = PF.{TBPERFIL_ID}
+373	                    WHERE UP.{TBUSUARIOPERFIL_ID_USER} = %s
+374	                    &quot;&quot;&quot;
+375	                    cursor.execute(queryPerfil,(usuarioPass[&quot;usuario_id&quot;],))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-133">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuario_PerfilData.py" target="_blank">src/data\usuario_PerfilData.py</a><br>
+    <b>Line number: </b>29<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+28	            with conexion.cursor() as cursor:
+29	                query = f&quot;&quot;&quot; INSERT INTO {TBUSUARIOPERFIL} (
+30	                            {TBUSUARIOPERFIL_ID_PERF},
+31	                            {TBUSUARIOPERFIL_ID_USER}
+32	                            ) VALUES ( %s , %s )
+33	                        &quot;&quot;&quot;
+34	                cursor.execute(query, (id_perfil, id_usuario))
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-134">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuario_PerfilData.py" target="_blank">src/data\usuario_PerfilData.py</a><br>
+    <b>Line number: </b>63<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+62	            with conexion.cursor() as cursor:
+63	                query = f&quot;&quot;&quot; UPDATE {TBUSUARIOPERFIL} SET
+64	                        {TBUSUARIOPERFIL_ID_PERF} = %s,
+65	                        {TBUSUARIOPERFIL_ID_USER} = %s
+66	                        WHERE {TBUSUARIOPERFIL_ID} = %s &quot;&quot;&quot;
+67	                cursor.execute(
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-135">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuario_PerfilData.py" target="_blank">src/data\usuario_PerfilData.py</a><br>
+    <b>Line number: </b>100<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+99	                query = (
+100	                    f&quot;&quot;&quot;DELETE FROM {TBUSUARIOPERFIL} WHERE {TBUSUARIOPERFIL_ID} = %s&quot;&quot;&quot;
+101	                )
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-136">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuario_PerfilData.py" target="_blank">src/data\usuario_PerfilData.py</a><br>
+    <b>Line number: </b>127<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+126	            with conexion.cursor() as cursor:
+127	                query = f&quot;&quot;&quot;SELECT 
+128	                        {TBUSUARIOPERFIL_ID},
+129	                        {TBUSUARIOPERFIL_ID_PERF},
+130	                        {TBUSUARIOPERFIL_ID_USER}
+131	                        FROM {TBUSUARIOPERFIL}
+132	                        WHERE {TBUSUARIOPERFIL_ID} = %s&quot;&quot;&quot;
+133	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-137">
+<div class="issue-block issue-sev-medium">
+    <b>hardcoded_sql_expressions: </b> Possible SQL injection vector through string-based query construction.<br>
+    <b>Test ID:</b> B608<br>
+    <b>Severity: </b>MEDIUM<br>
+    <b>Confidence: </b>LOW<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank">CWE-89</a><br>
+    <b>File: </b><a href="src/data\usuario_PerfilData.py" target="_blank">src/data\usuario_PerfilData.py</a><br>
+    <b>Line number: </b>172<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b608_hardcoded_sql_expressions.html</a><br>
+
+<div class="code">
+<pre>
+171	            with conexion.cursor() as cursor:
+172	                query = f&quot;&quot;&quot;SELECT 
+173	                        up.{TBUSUARIOPERFIL_ID},
+174	                        up.{TBUSUARIOPERFIL_ID_PERF},
+175	                        up.{TBUSUARIOPERFIL_ID_USER},
+176	                        p.{TBPERFIL_NOMBRE} AS nombre_perfil
+177	                        FROM {TBUSUARIOPERFIL} up
+178	                        INNER JOIN {TBPERFIL} p ON up.{TBUSUARIOPERFIL_ID_PERF} = p.{TBPERFIL_ID}
+179	                        WHERE up.{TBUSUARIOPERFIL_ID_USER} = %s&quot;&quot;&quot;
+180	
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-138">
+<div class="issue-block issue-sev-low">
+    <b>hardcoded_password_funcarg: </b> Possible hardcoded password: ''<br>
+    <b>Test ID:</b> B106<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/259.html" target="_blank">CWE-259</a><br>
+    <b>File: </b><a href="src/services\ZKService.py" target="_blank">src/services\ZKService.py</a><br>
+    <b>Line number: </b>340<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b106_hardcoded_password_funcarg.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b106_hardcoded_password_funcarg.html</a><br>
+
+<div class="code">
+<pre>
+339	            # 1. Registrar usuario básico
+340	            conn.set_user(
+341	                uid=id_empleado,
+342	                name=f&quot;{nombre} ({cedula})&quot;,  # Nombre y cédula
+343	                privilege=0,  # Usuario normal
+344	                password=&quot;&quot;,
+345	                group_id=0,
+346	                user_id=id_empleado,
+347	            )
+348	            time.sleep(1)  # Pausa para asegurar registro
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-139">
+<div class="issue-block issue-sev-low">
+    <b>try_except_pass: </b> Try, Except, Pass detected.<br>
+    <b>Test ID:</b> B110<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>HIGH<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/703.html" target="_blank">CWE-703</a><br>
+    <b>File: </b><a href="src/services\ZKService.py" target="_blank">src/services\ZKService.py</a><br>
+    <b>Line number: </b>445<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b110_try_except_pass.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b110_try_except_pass.html</a><br>
+
+<div class="code">
+<pre>
+444	                    conn.disconnect()
+445	                except:
+446	                    pass
+447	        
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-140">
+<div class="issue-block issue-sev-low">
+    <b>start_process_with_no_shell: </b> Starting a process without a shell.<br>
+    <b>Test ID:</b> B606<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/78.html" target="_blank">CWE-78</a><br>
+    <b>File: </b><a href="src/services\reporteService.py" target="_blank">src/services\reporteService.py</a><br>
+    <b>Line number: </b>157<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b606_start_process_with_no_shell.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b606_start_process_with_no_shell.html</a><br>
+
+<div class="code">
+<pre>
+156	        pdf.output(rutaFichero)
+157	        os.startfile(rutaFichero)
+158	        return {&#x27;success&#x27;: True, &#x27;message&#x27;: &#x27;Se creó el reporte exitosamente.&#x27;}
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-141">
+<div class="issue-block issue-sev-low">
+    <b>start_process_with_no_shell: </b> Starting a process without a shell.<br>
+    <b>Test ID:</b> B606<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/78.html" target="_blank">CWE-78</a><br>
+    <b>File: </b><a href="src/services\reporteService.py" target="_blank">src/services\reporteService.py</a><br>
+    <b>Line number: </b>226<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b606_start_process_with_no_shell.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b606_start_process_with_no_shell.html</a><br>
+
+<div class="code">
+<pre>
+225	        doc.save(rutaFichero)
+226	        os.startfile(rutaFichero)
+227	        return {&#x27;success&#x27;: True, &#x27;message&#x27;: &#x27;Se creó el reporte exitosamente.&#x27;}
+</pre>
+</div>
+
+
+</div>
+</div>
+
+<div id="issue-142">
+<div class="issue-block issue-sev-low">
+    <b>start_process_with_no_shell: </b> Starting a process without a shell.<br>
+    <b>Test ID:</b> B606<br>
+    <b>Severity: </b>LOW<br>
+    <b>Confidence: </b>MEDIUM<br>
+    <b>CWE: </b><a href="https://cwe.mitre.org/data/definitions/78.html" target="_blank">CWE-78</a><br>
+    <b>File: </b><a href="src/services\reporteService.py" target="_blank">src/services\reporteService.py</a><br>
+    <b>Line number: </b>261<br>
+    <b>More info: </b><a href="https://bandit.readthedocs.io/en/1.8.3/plugins/b606_start_process_with_no_shell.html" target="_blank">https://bandit.readthedocs.io/en/1.8.3/plugins/b606_start_process_with_no_shell.html</a><br>
+
+<div class="code">
+<pre>
+260	        
+261	        os.startfile(rutaFichero)
+262	        return {&#x27;success&#x27;:True,&#x27;message&#x27;:&#x27;Se creo el reporte exitosamente.&#x27;}
+</pre>
+</div>
+
+
+</div>
+</div>
+
+</div>
+
+</body>
+</html>

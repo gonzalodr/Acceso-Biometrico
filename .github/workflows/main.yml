@@ -76,7 +76,7 @@ jobs:
         DB_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         DB_DATABASE: ${{ secrets.MYSQL_DATABASE }}
       run: |
-        DB_BACKUP_FILE="backup/accesobiometrico_v5.1.sql"
+        DB_BACKUP_FILE="backup/accesobiometrico_v5.0.sql"
         
         if [ ! -f "$DB_BACKUP_FILE" ]; then
           echo "Error: El archivo de backup SQL '$DB_BACKUP_FILE' no se encontró en el repositorio."
