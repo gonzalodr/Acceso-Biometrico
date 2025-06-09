@@ -132,12 +132,12 @@ jobs:
       with:
         name: resultados-locust
         path: output/
-      script: |
-        const branch = context.ref.replace('refs/heads/', '');
-        console.log(`Merging '${branch}' into 'main'...`);
-        await github.rest.repos.merge({
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-          base: 'main',
-          head: branch
-        });
+        script: |
+          const branch = context.ref.replace('refs/heads/', '');
+          console.log(`Merging '${branch}' into 'main'...`);
+          await github.rest.repos.merge({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            base: 'main',
+            head: branch
+          });
