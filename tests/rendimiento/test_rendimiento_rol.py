@@ -17,7 +17,7 @@ from locust import User, task, between, SequentialTaskSet, events
 import uuid
 from locust import HttpUser
 
-# Asegúrate de que las siguientes importaciones apunten a tus clases reales
+
 from services.rolService import RolServices
 from models.rol import Rol
 

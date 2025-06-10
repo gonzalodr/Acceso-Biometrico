@@ -171,7 +171,7 @@ jobs:
         username: ${{ secrets.EMAIL_USER }}
         password: ${{ secrets.EMAIL_PASSWORD }}
         subject: '✅ Éxito en CI/CD - Merge completado'
-        body: 'Las pruebas fueron exitosas y el merge de DEV-QA a MAIN se completó correctamente.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+        body: 'Las pruebas fueron exitosas y el merge de Maik a MAIN se completó correctamente.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
         to: ${{ secrets.NOTIFICATION_EMAIL }}
         from: GitHub Actions
 

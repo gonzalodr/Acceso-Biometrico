@@ -2,15 +2,26 @@ import re
 from models.rol import Rol
 from data.rolData import RolData
 
+def contiene_sql_injection(texto: str) -> bool:
+        patrones = [
+            r"(--|\b(drop|select|insert|delete|update|union|alter|create|truncate)\b)",
+            r"'.*--", r"\".*--"
+        ]
+        for patron in patrones:
+            if re.search(patron, texto, re.IGNORECASE):
+                return True
+        return False
 
 class RolServices:
     def __init__(self):
         self.rolData = RolData()
+        
 
     ##
     # Métodos privados de validación
     ##
 
+    
     def _validarNombre(self, nombre):
         # Validar que el nombre no esté vacío y cumpla con un patrón (solo letras y espacios, hasta 100 caracteres)
         patron = r"^[A-Za-z\s]{1,100}$"
@@ -40,6 +51,10 @@ class RolServices:
         result = self._validarDescripcion(rol.descripcion)
         if not result["success"]:
             return result
+
+        if  contiene_sql_injection(rol.descripcion):
+            return {"success": False, "message": "La descripción no es válida."}
+
 
         # Inserción en la capa de datos
         return self.rolData.create_rol(rol)

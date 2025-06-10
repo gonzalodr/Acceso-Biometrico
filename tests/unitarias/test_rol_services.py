@@ -133,7 +133,7 @@ def test_obtener_rol_por_id_forward(servicio_con_dummy):
     assert resultado == dummy_return
 
 def test_obtener_lista_roles_forward(servicio_con_dummy):
-    servicio, _ = servicio_con_dummy  # No usamos dummy, así que _ basta
+    servicio, _ = servicio_con_dummy 
     dummy_return = {"success": True, "data": ["Admin", "User"]}
     servicio.rolData.list_roles = lambda *args, **kwargs: dummy_return
 
