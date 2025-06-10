@@ -65,6 +65,7 @@ class UserBehavior(SequentialTaskSet):
             context={"user_id": self.user_session_id}
         )
 
+
     @task(1)
     def upload_documento(self):
         operation_name = "Upload Documento (IO)"
