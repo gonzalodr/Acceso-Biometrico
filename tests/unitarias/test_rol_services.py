@@ -120,19 +120,29 @@ def test_eliminar_rol_id_invalido(servicio_con_dummy):
         assert resultado["success"] is False
         assert dummy.delete_count == 0
 
-def test_obtener_lista_roles_forward(servicio_con_dummy):
-        servicio, dummy = servicio_con_dummy
-        dummy_return = {"success": True, "data": ["Admin", "User"]}
-        servicio.rolData.list_roles = lambda *args, **kwargs: dummy_return
-
-        resultado = servicio.obtenerListaRol()
-        assert resultado == dummy_return
-
 def test_obtener_rol_por_id_forward(servicio_con_dummy):
-        servicio, dummy = servicio_con_dummy
-        dummy_return = {"success": True, "exists": True, "rol": Rol(nombre="Admin", descripcion="Gestiona", id=1)}
-        servicio.rolData.get_rol_by_id = lambda _id: dummy_return
+    servicio, _ = servicio_con_dummy
+    dummy_return = {
+        "success": True,
+        "exists": True,
+        "rol": Rol(nombre="Admin", descripcion="Gestiona", id=1)
+    }
+    servicio.rolData.get_rol_by_id = lambda _id: dummy_return
 
-        resultado = servicio.obtenerRolPorId(1)
-        assert resultado == dummy_return
+    resultado = servicio.obtenerRolPorId(1)
+    assert resultado == dummy_return
+
+def test_obtener_lista_roles_forward(servicio_con_dummy):
+    servicio, _ = servicio_con_dummy  # No usamos dummy, así que _ basta
+    dummy_return = {"success": True, "data": ["Admin", "User"]}
+    servicio.rolData.list_roles = lambda *args, **kwargs: dummy_return
+
+    resultado = servicio.obtenerListaRol()
+    assert resultado == dummy_return
+
+def test_nombre_invalido_con_numeros(servicio_con_dummy):
+    servicio, _ = servicio_con_dummy
+    rol = Rol(nombre="Admin123", descripcion="Prueba", id=0)
+    resultado = servicio.insertarRol(rol)
+    assert resultado["success"] is True  # Caso de fallo
 

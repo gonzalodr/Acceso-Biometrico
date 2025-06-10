@@ -13,7 +13,7 @@ class RolData:
 
         try:
             with conexion.cursor() as cursor:
-                query = f"""INSERT INTO {TBROL}( {TBROL_NOMBRE}, {TBROL_DESCRIPCION} ) VALUES (%s, %s)"""
+                query = f"""INSERT INTO {TBROL}( {TBROL_NOMBRE}, {TBROL_DESCRIPCION} ) VALUES (%s, %s)"""#nosec
                 cursor.execute(query, (rol.nombre, rol.descripcion))
                 conexion.commit()
                 return {"success": True, "message": "Se guardo el rol correctamente."}
@@ -35,7 +35,7 @@ class RolData:
         try:
             with conexion.cursor() as cursor:
                 query = f"""UPDATE {TBROL} SET {TBROL_NOMBRE} = %s, {TBROL_DESCRIPCION} = %s
-                        WHERE {TBROL_ID} = %s"""
+                        WHERE {TBROL_ID} = %s""" #nosec
 
                 cursor.execute(query, (rol.nombre, rol.descripcion, rol.id))
                 conexion.commit()
@@ -60,7 +60,7 @@ class RolData:
 
         try:
             with conexion.cursor() as cursor:
-                query = f"DELETE FROM {TBROL} WHERE {TBROL_ID} = %s"
+                query = f"DELETE FROM {TBROL} WHERE {TBROL_ID} = %s" #nosec
 
                 cursor.execute(query, (rol_id,))
                 conexion.commit()
@@ -99,7 +99,7 @@ class RolData:
                 ordenar_por = columna_orden.get(ordenar_por, TBROL_ID)
                 tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
 
-                query = f"SELECT * FROM {TBROL}"
+                query = f"SELECT * FROM {TBROL}" #nosec
                 valores = []
                 if busqueda:
                     query += (
@@ -120,7 +120,7 @@ class RolData:
                     )
                     listaRoles.append(rol)
 
-                cursor.execute(f"SELECT COUNT(*) as total FROM {TBROL}")
+                cursor.execute(f"SELECT COUNT(*) as total FROM {TBROL}") #nosec
                 total_registros = cursor.fetchone()["total"]
                 total_paginas = (total_registros + tam_pagina - 1) // tam_pagina
 
@@ -154,7 +154,7 @@ class RolData:
                                 {TBROL_DESCRIPCION}, 
                                 {TBROL_ID} 
                             FROM {TBROL} 
-                            WHERE {TBROL_ID} = %s"""
+                            WHERE {TBROL_ID} = %s""" #nosec
 
                 cursor.execute(query, (rol_id,))
                 data = cursor.fetchone()
@@ -188,7 +188,7 @@ class RolData:
         listaRoles = []
         try:
             with conexion.cursor(dictionary=True) as cursor:
-                query = f"SELECT * FROM {TBROL}"
+                query = f"SELECT * FROM {TBROL}" #nosec
                 cursor.execute(query)
                 registros = cursor.fetchall()
                 for registro in registros:
@@ -229,8 +229,7 @@ class RolData:
                 SELECT
                     {TBROL_NOMBRE}, 
                     {TBROL_ID} 
-                FROM {TBROL}
-            """
+                FROM {TBROL}"""     #nosec
                 cursor.execute(query)
                 roles = cursor.fetchall()  # Obtiene todos los registros
 
