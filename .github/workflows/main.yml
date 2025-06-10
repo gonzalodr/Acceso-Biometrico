@@ -196,4 +196,3 @@ jobs:
         body: 'Las pruebas fallaron. Por favor revisa los detalles.\n\nDetalles del workflow: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\nErrores encontrados:\n$(cat output/resultados_failures.csv 2>/dev/null || echo "No se encontró archivo de errores")'
         to: ${{ secrets.NOTIFICATION_EMAIL }}
         from: GitHub Actions
-        content_type: text/plain
