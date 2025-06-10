@@ -11,3 +11,4 @@ prueba*.*
 loggers/
 *.bin
 *.log
+.vscode/settings.json
