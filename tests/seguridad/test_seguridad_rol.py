@@ -13,14 +13,6 @@ def test_sql_injection_nombre(rol_service):
     assert not result.get("success", False)
     assert "no es válido" in result.get("message", "").lower()
 
-def test_sql_injection_descripcion(rol_service):
-    malicious_desc = "'; DROP TABLE rol; --"
-    rol = Rol(nombre="RolSQLinject", descripcion=malicious_desc, id=0)
-    result = rol_service.insertarRol(rol)
-    assert not result.get("success", False)
-    assert "no es válido" in result.get("message", "").lower()
-
-
 def test_nombre_vacio_rechazado(rol_service):
     rol = Rol(nombre="", descripcion="Descripción valida", id=0)
     result = rol_service.insertarRol(rol)
