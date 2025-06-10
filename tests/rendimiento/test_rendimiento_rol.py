@@ -90,6 +90,6 @@ class RolBehavior(SequentialTaskSet):
         )
 
 class MyDbUser(User):
-    host = "localhost"  # Cambia esto a tu host de base de datos si es necesario
+    host = "localhost"
     wait_time = between(1, 2)
     tasks = [RolBehavior]

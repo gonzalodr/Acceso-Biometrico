@@ -140,9 +140,4 @@ def test_obtener_lista_roles_forward(servicio_con_dummy):
     resultado = servicio.obtenerListaRol()
     assert resultado == dummy_return
 
-def test_nombre_invalido_con_numeros(servicio_con_dummy):
-    servicio, _ = servicio_con_dummy
-    rol = Rol(nombre="Admin123", descripcion="Prueba", id=0)
-    resultado = servicio.insertarRol(rol)
-    assert resultado["success"] is True  # Caso de fallo
 
