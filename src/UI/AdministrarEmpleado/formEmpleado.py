@@ -773,7 +773,11 @@ class formEmpleado(QDialog):
         try:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+            # 1. Validar campos obligatorios
+>>>>>>> parent of bc060e5 (Correcciones)
 =======
             # 1. Validar campos obligatorios
 >>>>>>> parent of bc060e5 (Correcciones)
@@ -784,6 +788,7 @@ class formEmpleado(QDialog):
                 DialogoEmergente('', 'Complete todos los campos obligatorios', 'Error', True).exec()
                 return
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
        
@@ -1048,6 +1053,64 @@ class formEmpleado(QDialog):
             # 7. Captura de huella si es alta nueva o si desea actualizarla
             if not self.idEmpleado or actualizar_huella:
 >>>>>>> parent of bc060e5 (Correcciones)
+=======
+            # 2. Extraer datos
+            datos = self.extraerDatosEmpleados()
+
+            # 3. Confirmar acción principal
+            modo = "actualizar" if self.idEmpleado else "registrar"
+            titulo = f"Confirmar {modo.capitalize()}"
+            confirm = DialogoEmergente(
+                titulo,
+                f"¿Desea {modo} al empleado y capturar su huella digital?",
+                'Question',
+                True,
+                True
+            )
+            if confirm.exec() != QDialog.Accepted:
+                return
+
+            # 4. Verificar conexión con ZKT antes de tocar la BD
+            if not is_device_reachable(ZKTECA_CONFIG["host"], ZKTECA_CONFIG["port"]):
+                DialogoEmergente(
+                    'Error',
+                    'No hay conexión con el dispositivo biométrico ZKT.\n'
+                    'No se pudo completar la operación.',
+                    'Error',
+                    True
+                ).exec()
+                return
+
+            # 5. Guardar en BD
+            if self.idEmpleado:
+                resultado_db = self.emplServices.actualizar_empleado(self.idEmpleado, datos)
+            else:
+                resultado_db = self.emplServices.crear_empleado(datos)
+
+            if not resultado_db['success']:
+                return  # si falla BD, salimos silenciosos
+
+            empleado_id = resultado_db.get('id') or self.idEmpleado
+
+            # 6. Si estamos actualizando, preguntar sobre huella existente
+            actualizar_huella = True
+            if self.idEmpleado:
+                zk = ZKServices()
+                if zk.contar_huellas_empleado(empleado_id) > 0:
+                    pregunta = DialogoEmergente(
+                        'Huella Registrada',
+                        'Este empleado ya tiene huella registrada.\n'
+                        '¿Desea actualizarla?',
+                        'Question',
+                        True,
+                        True
+                    )
+                    if pregunta.exec() != QDialog.Accepted:
+                        actualizar_huella = False
+
+            # 7. Captura de huella si es alta nueva o si desea actualizarla
+            if not self.idEmpleado or actualizar_huella:
+>>>>>>> parent of bc060e5 (Correcciones)
                 dialogo_huella = DialogoEmergente(
                     'Captura de Huella',
                     'Por favor, coloque el dedo en el lector biométrico...',
@@ -1059,12 +1122,18 @@ class formEmpleado(QDialog):
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 resultado_huella = zk_service.registrar_empleado_simple(
                     nombre_completo, 
                     self.emplServices.obtener_id_empleado(), 
                     False
                 )
 
+=======
+                zk = ZKServices()
+                nombre = datos['persona'].nombre
+                res = zk.registrar_empleado_simple(nombre, empleado_id)
+>>>>>>> parent of bc060e5 (Correcciones)
 =======
                 zk = ZKServices()
                 nombre = datos['persona'].nombre
@@ -1086,6 +1155,7 @@ class formEmpleado(QDialog):
                     ).exec()
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
                     DialogoEmergente(
                         'Registro Parcial',
@@ -1095,6 +1165,8 @@ class formEmpleado(QDialog):
                     ).exec()
          
                     self.reject()
+=======
+>>>>>>> parent of bc060e5 (Correcciones)
 =======
 >>>>>>> parent of bc060e5 (Correcciones)
 =======
@@ -1130,11 +1202,14 @@ class formEmpleado(QDialog):
             ).exec()
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
                 
 >>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
 =======
+=======
+>>>>>>> parent of bc060e5 (Correcciones)
 =======
 >>>>>>> parent of bc060e5 (Correcciones)
 
@@ -1143,6 +1218,10 @@ class formEmpleado(QDialog):
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+   
+>>>>>>> parent of bc060e5 (Correcciones)
+=======
    
 >>>>>>> parent of bc060e5 (Correcciones)
 =======
