@@ -52,7 +52,6 @@ class AdminDepartament(QWidget):
         self.inputBuscar.setClearButtonEnabled(True)  # Activamos el botón de limpiar
         self.inputBuscar.setPlaceholderText("Buscar departamento por nombre o descripción.")  # Texto de marcador
         self.inputBuscar.setFixedSize(QSize(500, 30))  # Establecemos tamaño fijo
-        self.inputBuscar.installEventFilter(self)
         self.inputBuscar.textChanged.connect(self._cargar_tabla)
         Sombrear(self.inputBuscar, 20, 0, 0)  # Aplicamos efecto de sombreado
         
@@ -296,6 +295,7 @@ class AdminDepartament(QWidget):
             self._cargar_tabla()
 
     def _eliminarRegistro(self, idx):
+<<<<<<< HEAD
         if not self.permisoUsuario.eliminar:
             dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
             dial.exec()
@@ -311,6 +311,18 @@ class AdminDepartament(QWidget):
             else:
                 dial = DialogoEmergente("","Hubo un error al eliminar este registro.","Error")
                 dial.exec()
+=======
+            dial = DialogoEmergente("¿?","¿Seguro que quieres eliminar este registro?","Question",True,True)
+            if dial.exec() == QDialog.Accepted:
+                result = self.Pservices.eliminarDepartamento(idx)
+                if result["success"]:
+                    dial = DialogoEmergente("","Se elimino el registro correctamente.","Check")
+                    dial.exec()
+                    self._cargar_tabla()
+                else:
+                    dial = DialogoEmergente("","Hubo un error al eliminar este registro.","Error")
+                    dial.exec()
+>>>>>>> parent of 1433986 (Merge branch 'main' into Gonzalo)
 
     def _editar_Departamento(self,id):
         if not self.permisoUsuario.editar:

@@ -9,5 +9,3 @@ prueba*.*
 *prueba*.*
 *.log
 loggers/
-*.bin
-*.log

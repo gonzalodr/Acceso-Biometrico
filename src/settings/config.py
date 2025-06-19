@@ -5,7 +5,7 @@ DATABASE_CONFIG = {
     "database": "accesobiometrico",
 }
 
-ZKTECA_CONFIG = {"host": "192.168.1.201", "port": 4370}
+ZKTECA_CONFIG = {"host": "192.168.1.201", "port": "4370"}
 
 # array accesos para los usuarios
 ACCESO_TABLE = {
@@ -40,6 +40,18 @@ TBASISTENCIA_ID_EMPLEADO = "Id_Empleado"
 TBASISTENCIA_FECHA = "Fecha"
 TBASISTENCIA_ESTADO_ASISTENCIA = "Estado_Asistencia"
 
+# Tabla persona y sus campos
+TBPERSONA = "persona"
+TBPERSONA_ID = "Id"
+TBPERSONA_FOTO = "Foto"
+TBPERSONA_NOMBRE = "Nombre"
+TBPERSONA_APELLIDOS = "Apellidos"
+TBPERSONA_APELLIDO2 = "Apellido2"
+TBPERSONA_NACIMIENTO = "Fecha_Nacimiento"
+TBPERSONA_CEDULA = "Cedula"
+TBPERSONA_ESTADO_CIVIL = "Estado_Civil"
+TBPERSONA_CORREO = "Correo"
+TBPERSONA_DIRECCION = "Direccion"
 
 # Tabla departamento  y sus campos
 TBDEPARTAMENTO = "departamento"

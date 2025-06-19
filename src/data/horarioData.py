@@ -222,11 +222,8 @@ class HorarioData:
             conexion.close()
 
     def create_horario(self, horario: Horario, id_rol: int):
-        conexion, resultado = conection()
-        if not resultado["success"]:
-            return resultado
         """
-        Inserta un nuevo horario en la base de datos y su relación con el rol.
+        Inserta un nuevo horario en la base de datos.
         """
         # Validar los datos antes de la inserción
         datos_validos, mensaje = self.validar_datos_horario(horario)
@@ -239,12 +236,8 @@ class HorarioData:
             return {"success": False, "message": mensaje_rol}
 
         try:
-
-            conexion.start_transaction()
-            with conexion.cursor() as cursor:
-
-                # Insertar el horario en la tabla horario
-                query_horario = f"""
+            cursor = self.conn.cursor()
+            query = f"""
             INSERT INTO {TBHORARIO} (
                 {TBHORARIO_NOMBRE_HORARIO},
                 {TBHORARIO_DIAS_SEMANALES},
@@ -252,149 +245,149 @@ class HorarioData:
                 {TBHORARIO_HORA_INICIO},
                 {TBHORARIO_HORA_FIN},
                 {TBHORARIO_DESCRIPCION}
-            ) VALUES (%s, %s, %s, %s, %s, %s)
+            ) VALUES (%s, %s, %s, %s, %s,%s)
             """
-                cursor.execute(
-                    query_horario,
-                    (
-                        horario.nombre_horario,
-                        horario.dias_semanales,
-                        horario.tipo_jornada,
-                        horario.hora_inicio,
-                        horario.hora_fin,
-                        horario.descripcion,
-                    ),
-                )
+            # Ejecutar la consulta de inserción
+            cursor.execute(
+                query,
+                (
+                    horario.nombre_horario,
+                    horario.dias_semanales,
+                    horario.tipo_jornada,
+                    horario.hora_inicio,
+                    horario.hora_fin,
+                    horario.descripcion,
+                ),
+            )
+            self.conn.commit()  # Confirmar los cambios en la base de datos
 
-                # Obtiene el ID del horario recién insertado
-                id_horario = cursor.lastrowid
+            # Obtener el ID del último registro insertado
+            id_horario = cursor.lastrowid
 
-                # Inserta la relación en la tabla rol_horario
-                query_rol_horario = f"""
-                INSERT INTO {TBROLHORARIO} (
-                    {TBROLHORARIO_ID_ROL},
-                    {TBROLHORARIO_ID_HORARIO}
-                ) VALUES (%s, %s)
-                """
-                cursor.execute(query_rol_horario, (id_rol, id_horario))
-                conexion.commit()
+            # Inserta la relación en la tabla rol_horario
+            query_rol_horario = f"""
+            INSERT INTO {TBROLHORARIO} (
+            {TBROLHORARIO_ID_ROL},
+            {TBROLHORARIO_ID}
+               ) VALUES (%s, %s)"""
 
-                return {
-                    "success": True,
-                    "message": "Horario creado exitosamente.",
-                    "id_horario": id_horario,
-                }
+            cursor.execute(query_rol_horario, (id_rol, id_horario))
+            self.conn.commit()
+
+            # Cierra el cursor
+            cursor.close()
+
+            return {
+                "success": True,
+                "message": "Horario creado exitosamente.",
+                "id_horario": id_horario,
+            }
 
         except Exception as e:
-            # rollback
-            conexion.rollback()
             return {"success": False, "message": f"Error al crear horario: {e}"}
-        finally:
-            conexion.close()
 
     def list_horarios(
         self,
         pagina=1,
         tam_pagina=10,
         ordenar_por=TBHORARIO_ID,
-        tipo_orden="DESC",
+        tipo_orden="ASC",
         busqueda=None,
     ):
-        conexion, resultado = conection()
-        if not resultado["success"]:
-            return resultado
 
         try:
-            with conexion.cursor(dictionary=True) as cursor:
+            cursor = self.conn.cursor(
+                dictionary=True
+            )  # Para devolver resultados como diccionarios
 
-                # Validación de la columna por la cual ordenar
-                columnas_validas = {
-                    "id": TBHORARIO_ID,
-                    "nombre": TBHORARIO_NOMBRE_HORARIO,
-                    "rol": TBROL_NOMBRE,  # Permitir ordenar por el nombre del rol
-                    "dias": TBHORARIO_DIAS_SEMANALES,
-                    "tipo": TBHORARIO_TIPO_JORNADA,
-                    "inicio": TBHORARIO_HORA_INICIO,
-                    "fin": TBHORARIO_HORA_FIN,
+            # Validación de la columna por la cual ordenar
+            columnas_validas = {
+                "id": TBHORARIO_ID,
+                "nombre": TBHORARIO_NOMBRE_HORARIO,
+                "rol": TBROL_NOMBRE,  # Permitir ordenar por el nombre del rol
+                "dias": TBHORARIO_DIAS_SEMANALES,
+                "tipo": TBHORARIO_TIPO_JORNADA,
+                "inicio": TBHORARIO_HORA_INICIO,
+                "fin": TBHORARIO_HORA_FIN,
+            }
+            ordenar_por = columnas_validas.get(ordenar_por, TBHORARIO_ID)
+
+            if tipo_orden not in ["ASC", "DESC"]:
+                tipo_orden = "DESC"  # Valor por defecto si no es válido
+
+            # Construcción de la consulta base con JOIN
+            query = f"""
+            SELECT 
+                h.{TBHORARIO_ID},
+                h {TBHORARIO_NOMBRE_HORARIO},
+                r.{TBROL_NOMBRE} AS nombre_rol  # Nombre del rol asociado al horario
+                h.{TBHORARIO_DIAS_SEMANALES},
+                h.{TBHORARIO_TIPO_JORNADA},
+                h.{TBHORARIO_HORA_INICIO},
+                h.{TBHORARIO_HORA_FIN},
+                h.{TBHORARIO_DESCRIPCION},
+            FROM {TBHORARIO} h
+            LEFT JOIN {TBROLHORARIO} rh ON h.{TBHORARIO_ID} = rh.{TBROLHORARIO_ID}
+            LEFT JOIN {TBROL} r ON rh.{TBROLHORARIO_ID_ROL} = r.{TBROL_ID}
+            """
+
+            # Añadir cláusula de búsqueda si se proporciona
+            valores = []
+            if busqueda:
+                query += f"""
+                WHERE h.{TBHORARIO_DIAS_SEMANALES} LIKE %s 
+                OR h.{TBHORARIO_TIPO_JORNADA} LIKE %s
+                OR r.{TBROL_NOMBRE} LIKE %s
+            """
+                valores = [
+                    f"%{busqueda}%"
+                ] * 3  # Para usar el valor de búsqueda en las columnas
+
+            # Añadir la cláusula ORDER BY y LIMIT/OFFSET
+            query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
+            valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
+
+            cursor.execute(query, valores)
+
+            # Leyendo los registros de la consulta
+            registros = cursor.fetchall()
+            lista_horarios = []
+            for registro in registros:
+                horario = {
+                    "id": registro[TBHORARIO_ID],
+                    "nombre_horario": registro[TBHORARIO_NOMBRE_HORARIO],
+                    "nombre_rol": registro["nombre_rol"],  # Nombre del rol asociado
+                    "dias_semanales": registro[TBHORARIO_DIAS_SEMANALES],
+                    "tipo_jornada": registro[TBHORARIO_TIPO_JORNADA],
+                    "hora_inicio": registro[TBHORARIO_HORA_INICIO],
+                    "hora_fin": registro[TBHORARIO_HORA_FIN],
+                    "descripcion": registro[TBHORARIO_DESCRIPCION],
                 }
-                ordenar_por = columnas_validas.get(ordenar_por, TBHORARIO_ID)
+                lista_horarios.append(horario)
 
-                if tipo_orden not in ["ASC", "DESC"]:
-                    tipo_orden = "DESC"  # Valor por defecto si no es válido
+            # Obtener el total de registros para calcular el número total de páginas
+            cursor.execute(f"SELECT COUNT(*) as total FROM {TBHORARIO}")
+            total_registros = cursor.fetchone()["total"]
+            total_paginas = (
+                total_registros + tam_pagina - 1
+            ) // tam_pagina  # Redondeo hacia arriba
 
-                # Construcción de la consulta base con JOIN
-                query = f"""
-                SELECT 
-                    h.{TBHORARIO_ID},
-                    h.{TBHORARIO_NOMBRE_HORARIO},
-                    r.{TBROL_NOMBRE} AS nombre_rol,
-                    h.{TBHORARIO_DIAS_SEMANALES},
-                    h.{TBHORARIO_TIPO_JORNADA},
-                    h.{TBHORARIO_HORA_INICIO},
-                    h.{TBHORARIO_HORA_FIN},
-                    h.{TBHORARIO_DESCRIPCION}
-                FROM {TBHORARIO} h
-                LEFT JOIN {TBROLHORARIO} rh ON h.{TBHORARIO_ID} = rh.{TBROLHORARIO_ID_HORARIO}
-                LEFT JOIN {TBROL} r ON rh.{TBROLHORARIO_ID_ROL} = r.{TBROL_ID}
-                """
+            cursor.close()
 
-                # Añadir cláusula de búsqueda si se proporciona
-                valores = []
-                if busqueda:
-                    query += f"""
-                    WHERE h.{TBHORARIO_DIAS_SEMANALES} LIKE %s 
-                    OR h.{TBHORARIO_TIPO_JORNADA} LIKE %s
-                    OR r.{TBROL_NOMBRE} LIKE %s
-                """
-                    valores = [
-                        f"%{busqueda}%"
-                    ] * 3  # Para usar el valor de búsqueda en las columnas
-
-                # Añadir la cláusula ORDER BY y LIMIT/OFFSET
-                query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
-                valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
-
-                cursor.execute(query, valores)
-
-                # Leyendo los registros de la consulta
-                registros = cursor.fetchall()
-                lista_horarios = []
-                for registro in registros:
-                    horario = {
-                        "id": registro[TBHORARIO_ID],
-                        "nombre_horario": registro[TBHORARIO_NOMBRE_HORARIO],
-                        "nombre_rol": registro["nombre_rol"],  # Nombre del rol asociado
-                        "dias_semanales": registro[TBHORARIO_DIAS_SEMANALES],
-                        "tipo_jornada": registro[TBHORARIO_TIPO_JORNADA],
-                        "hora_inicio": registro[TBHORARIO_HORA_INICIO],
-                        "hora_fin": registro[TBHORARIO_HORA_FIN],
-                        "descripcion": registro[TBHORARIO_DESCRIPCION],
-                    }
-                    lista_horarios.append(horario)
-
-                # Obtener el total de registros para calcular el número total de páginas
-                cursor.execute(f"SELECT COUNT(*) as total FROM {TBHORARIO}")
-                total_registros = cursor.fetchone()["total"]
-                total_paginas = (
-                    total_registros + tam_pagina - 1
-                ) // tam_pagina  # Redondeo hacia arriba
-
-                return {
-                    "success": True,
-                    "data": {
-                        "listaHorarios": lista_horarios,
-                        "pagina_actual": pagina,
-                        "tam_pagina": tam_pagina,
-                        "total_paginas": total_paginas,
-                        "total_registros": total_registros,
-                    },
-                    "message": "Horarios listados exitosamente.",
-                }
+            return {
+                "success": True,
+                "data": {
+                    "listaHorarios": lista_horarios,
+                    "pagina_actual": pagina,
+                    "tam_pagina": tam_pagina,
+                    "total_paginas": total_paginas,
+                    "total_registros": total_registros,
+                },
+                "message": "Horarios listados exitosamente.",
+            }
 
         except Exception as e:
             return {"success": False, "message": f"Error al listar horarios: {e}"}
-        finally:
-            conexion.close()
 
     def delete_horario(self, horario_id):
         """

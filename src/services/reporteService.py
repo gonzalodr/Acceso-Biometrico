@@ -16,7 +16,6 @@ class ReporteServices:
         self.reporteData = ReporteData()
         
     def insertarReporte(self, reporte: Reporte):
-        reporte.fecha_generacion = QDate.currentDate().toString("yyyy-MM-dd")
         return self.reporteData.create_reporte(reporte)
     
     def modificarReporte(self, reporte: Reporte):

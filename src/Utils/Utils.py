@@ -2,11 +2,11 @@ from PySide6.QtWidgets import QGraphicsDropShadowEffect, QLabel,QPushButton
 from PySide6.QtGui import QPixmap, QPainter,QIcon
 from PySide6.QtSvg import QSvgRenderer
 from PySide6.QtCore import QSize, Qt
-from datetime import date, time, datetime
-import re
+from datetime import date, time
 import os
 import inspect
 import socket
+
 
 def Sombrear(QObjeto,shadow:int=0,xOffset:int=0,yOffset:int=0, color:str=None):
     sombra = QGraphicsDropShadowEffect(QObjeto)

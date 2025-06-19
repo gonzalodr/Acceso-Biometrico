@@ -301,7 +301,7 @@ class ReporteData:
                         fecha_generacion=registro[TBREPORTE_FECHA_GENERACION],
                         tipo_reporte=registro[TBREPORTE_TIPO_REPORTE],
                         contenido=registro[TBREPORTE_CONTENIDO],
-                        id=registro[TBREPORTE_ID],
+                        id=registro[TBPERFIL_ID]
                     )
                     listaReportes.append(reporte)
 

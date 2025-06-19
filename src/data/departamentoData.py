@@ -14,22 +14,12 @@ class DepartamentoData:
         
         try:
             with conexion.cursor() as cursor:
+                query = f"""INSERT INTO {TBDEPARTAMENTO}(
+                {TBDEPARTAMENTO_NOMBRE},
+                {TBDEPARTAMENTO_DESCRIPCION})
+                VALUES (%s, %s)"""
                 
-                # Primero verificamos si el departamento ya existe
-                check_query = f"""SELECT COUNT(*) FROM {TBDEPARTAMENTO} 
-                                 WHERE {TBDEPARTAMENTO_NOMBRE} = %s"""
-                cursor.execute(check_query, (departamento.nombre,))
-                count = cursor.fetchone()[0]
-            
-                if count > 0:
-                    return {'success': False, 'message': 'El departamento ya existe y no puede ser creado nuevamente.'}
-                
-                insert_query = f"""INSERT INTO {TBDEPARTAMENTO}(
-                                {TBDEPARTAMENTO_NOMBRE},
-                                {TBDEPARTAMENTO_DESCRIPCION})
-                                VALUES (%s, %s)"""
-                
-                cursor.execute(insert_query, (
+                cursor.execute(query, (
                     departamento.nombre,
                     departamento.descripcion
                 ))
@@ -49,22 +39,12 @@ class DepartamentoData:
             return resultado
         try:
             with conexion.cursor() as cursor:
-                  # Primero verificamos si el departamento ya existe
-                check_query = f"""SELECT COUNT(*) FROM {TBDEPARTAMENTO} 
-                                 WHERE {TBDEPARTAMENTO_NOMBRE} = %s
-                                 AND {TBDEPARTAMENTO_ID} != %s"""  # Excluir el mismo ID
-                cursor.execute(check_query, (departamento.nombre, departamento.id))
-                count = cursor.fetchone()[0]
-                
-                if count > 0:
-                    return {'success': False, 'message': 'El departamento ya existe, intente actualizar con un nombre distinto.'}
-                
-                update_query = f"""UPDATE {TBDEPARTAMENTO} SET 
+                query = f"""UPDATE {TBDEPARTAMENTO} SET 
                 {TBDEPARTAMENTO_NOMBRE} = %s,
                 {TBDEPARTAMENTO_DESCRIPCION} = %s
                 WHERE {TBDEPARTAMENTO_ID} = %s"""
             
-                cursor.execute(update_query, (
+                cursor.execute(query, (
                     departamento.nombre,
                     departamento.descripcion,
                     departamento.id

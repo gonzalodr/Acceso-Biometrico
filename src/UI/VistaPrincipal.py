@@ -3,7 +3,6 @@ from PySide6.QtCore import *
 from Utils.Utils import *
 from UI.slideBar import *
 from UI.AdministrarHorario.adminHorario import *
-from UI.AdministrarJustificacion.adminJustificacion import *
 from UI.AdministraPersona.adminPersona import *
 from UI.AdministraDepartamento.adminDepartamento import *  # Importa la clase AdminDepartamento
 from UI.AdministrarRol.adminRol import *
@@ -171,6 +170,7 @@ class vistaPrincipal(QWidget):
                 (index, "Admin. Departamento", "company-department.png")
             )
 
+<<<<<<< HEAD
         if self.PermisoAModulo("Administrar justificaciones"):
             getpermiso = next(filter(lambda per: per.tabla == ACCESO_TABLE["Administrar justificaciones"], self.permisos),None)
             
@@ -187,6 +187,8 @@ class vistaPrincipal(QWidget):
             index = self.stackVistas.addWidget(adminSoliPermiso)
             self.listaOpciones.append((index, "Admin Solicitud Permisos", "management.png"))
 
+=======
+>>>>>>> parent of 1433986 (Merge branch 'main' into Gonzalo)
         # if True:
         #     adminrol = AdminRol()
         #     adminrol.cerrar_adminR.connect(self._salir_crud)

@@ -765,7 +765,6 @@ class EmpleadoData:
         finally:
             if conexion and conexionEx:
                 conexion.close()
-
     def obtener_todo_empleados(self):
         conexion, resultado = conection()
         if not resultado["success"]:

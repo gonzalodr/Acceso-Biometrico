@@ -16,14 +16,20 @@ class JustificacionData:
                 query = f"""INSERT INTO {TBJUSTIFICACION}(
                 {TBJUSTIFICACION_ID_EMPLEADO},
                 {TBJUSTIFICACION_ID_ASISTENCIA},
+                {TBJUSTIFICACION_FECHA},
                 {TBJUSTIFICACION_MOTIVO},
+<<<<<<< HEAD
                 {TBJUSTIFICACION_DESCRIPCION},
                 {TBJUSTIFICACION_TIPO})
+=======
+                {TBJUSTIFICACION_DESCRIPCION})
+>>>>>>> parent of 1433986 (Merge branch 'main' into Gonzalo)
                 VALUES (%s, %s, %s, %s, %s)"""
                 
                 cursor.execute(query, (
                     justificacion.id_empleado,
                     justificacion.id_asistencia,
+                    justificacion.fecha,
                     justificacion.motivo,
                     justificacion.descripcion,
                     justificacion.tipo
@@ -161,13 +167,11 @@ class JustificacionData:
                 # Añadir cláusula de búsqueda si se proporciona
                 valores = []
                 if busqueda:
-                    query += f"""
-                        WHERE J.{TBJUSTIFICACION_MOTIVO} LIKE %s 
-                        OR J.{TBJUSTIFICACION_DESCRIPCION} LIKE %s
-                        OR J.{TBJUSTIFICACION_ID_EMPLEADO} LIKE %s
-                        OR J.{TBJUSTIFICACION_ID_ASISTENCIA} LIKE %s
-                        OR P.{TBPERSONA_NOMBRE} LIKE %s
-                        OR P.{TBPERSONA_APELLIDOS} LIKE %s
+                    query += """
+                        WHERE MOTIVO LIKE %s 
+                        OR DESCRIPCION LIKE %s
+                        OR ID_EMPLEADO LIKE %s
+                        OR ID_ASISTENCIA LIKE %s
                     """
                     valores = [f"%{busqueda}%"] * 6
 
@@ -208,19 +212,29 @@ class JustificacionData:
                     "total_paginas": total_paginas,
                     "total_registros": total_registros
                 }
-                resultado["success"] = True
-                resultado["message"] = "Justificaciones listadas exitosamente."
-                return resultado
+                listaJustificaciones.append(justificacion)
+
+            # Obtener el total de registros para calcular el número total de páginas
+            cursor.execute("SELECT COUNT(*) as total FROM TBJUSTIFICACION")
+            total_registros = cursor.fetchone()["total"]
+            total_paginas = (total_registros + tam_pagina - 1) // tam_pagina  # Redondear hacia arriba
+
+            resultado["data"] = {
+                "listaJustificaciones": listaJustificaciones,
+                "pagina_actual": pagina,
+                "tam_pagina": tam_pagina,
+                "total_paginas": total_paginas,
+                "total_registros": total_registros
+            }
+            resultado["success"] = True
+            resultado["message"] = "Justificaciones listadas exitosamente."
+            return resultado
         except Error as e:
-            logger.error(f'Error al cargar la lista de justificaciones: {e}')  # Mensaje de error específico
-            return {'success': False, 'message': f'Ocurrió un error al cargar la lista de justificaciones: {str(e)}'}
-        except Exception as e:
-            logger.error(f'Error inesperado: {e}')  # Captura de errores inesperados
-            return {'success': False, 'message': f'Ocurrió un error inesperado: {str(e)}'}
+            logger.error(f'Error: {e}')
+            return {'success': False, 'message': 'Ocurrió un error al cargar la lista de justificaciones.'}
         finally:
             if conexion:
                 conexion.close()
-
 
 
     
@@ -255,22 +269,13 @@ class JustificacionData:
                     justificacion = Justificacion(
                         id_empleado=data[0],
                         id_asistencia=data[1],
-                        fecha=data[2],  
+                        fecha=data[2],
                         motivo=data[3],
                         descripcion=data[4],
                         tipo=data[5],
                         id_justificacion=data[6]
                     )
-                    # Agregar el nombre completo del empleado y la fecha de asistencia al resultado
-                    nombre_completo_empleado = f"{data[6]} {data[7]}"  # Unir nombre y apellido
-                    return {
-                        'success': True,
-                        'exists': True,
-                        'justificacion': justificacion,
-                        'nombre_completo_empleado': nombre_completo_empleado,  # Usar el nombre completo
-                        'fecha_asistencia': data[8],  # Esta es la fecha de asistencia
-                        'fecha_realizado': data[2]  # Esta es la fecha de realización
-                    }
+                    return {'success': True, 'exists': True, 'justificacion': justificacion}
                 else:
                     return {'success': True, 'exists': False, 'message': 'No se encontró la justificación.'}
         except Error as e:
