@@ -295,7 +295,6 @@ class AsistenciaData:
         finally:
             if conexion:
                 conexion.close()
-<<<<<<< HEAD
 
     # def registrar_asistencia(self, lista):
     #     conexion, resultado = conection()
@@ -510,5 +509,3 @@ class AsistenciaData:
             return {'success': False, 'message': 'Ocurrió un error al registrar la asistencia.'}
         finally:
             if conexion: conexion.close()
-=======
->>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)

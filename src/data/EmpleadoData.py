@@ -534,21 +534,11 @@ class EmpleadoData:
                     result = self.depaService.obtenerDepartamentoPorId(departamento_id)
                     if not result['success']:
                         return result
-<<<<<<< HEAD
-                    departamento = result.get("departamento", None)
-
-                    # extraer la persona
-                    result = self.personadata.get_persona_by_id(
-                        data[TBEMPLEADO_PERSONA], conexion
-                    )
-                    if not result["success"]:
-=======
                     departamento = result['departamento']
                     
                     #extraer la persona
                     result = self.personadata.get_persona_by_id(data[TBEMPLEADO_PERSONA],conexion)
                     if not result['success']:
->>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
                         return result
                     if not result['exists']:
                         return {'success':False, 'message':'No se obtuvieron los datos personales exitosamente'}
@@ -584,15 +574,6 @@ class EmpleadoData:
 
                     
                     return {
-<<<<<<< HEAD
-                        "empleado": {
-                            "persona": persona,
-                            "usuario": usuario,
-                            "pefilUsuario": perfilUsuario,
-                            "rolEmpleado": rolEmpleado,
-                            "departamento": departamento.id if departamento else None,
-                            "listaTelefonos": listaTelefonos,
-=======
                         'empleado':{
                             'persona':persona,
                             'usuario':usuario,
@@ -600,7 +581,6 @@ class EmpleadoData:
                             'rolEmpleado':rolEmpleado,
                             'departamento':departamento.nombre,
                             'listaTelefonos':listaTelefonos
->>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
                         },
                         'success':True,
                         'exists':True,
