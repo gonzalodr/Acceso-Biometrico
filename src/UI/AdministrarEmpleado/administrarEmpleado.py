@@ -179,14 +179,13 @@ class AdminEmpleado(QWidget):
             self.addItemTable(index,4,persona.estado_civil)
             self.addItemTable(index,5,persona.direccion)
 
-            nombre = persona.nombre+"-"+persona.cedula
             #contenedor de los botones.
             layout = QHBoxLayout()
             layout.addWidget(self.crearBtnAccion('Mas info','btnInfo',id_empleado,self.verMasInformacion))
             layout.addSpacing(15)
             layout.addWidget(self.crearBtnAccion('Editar','btneditar',id_empleado,self.editarEmpleado))
             layout.addSpacing(15)
-            layout.addWidget(self.crearBtnAccion('Eliminar', 'btneliminar', id_empleado, self.eliminarEmpleado, f'{persona.nombre}-{persona.cedula}'))
+            layout.addWidget(self.crearBtnAccion('Eliminar','btneliminar',id_empleado,self.eliminarEmpleado))
             layout.setContentsMargins(10, 0, 10,0)
             #widget para el layout de los botones.
             button_widget = QWidget()
@@ -200,15 +199,13 @@ class AdminEmpleado(QWidget):
         dato_item.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)  # No editable
         self.tbPersona.setItem(row, colum, dato_item)
 
-    def crearBtnAccion(self, text: str, objectName: str, id_empleado: int, functionAction, *args):
-        boton = QPushButton(text, parent=self.tbPersona)
+    def crearBtnAccion(self,text:str,objectName:str,id_empleado:int,functionAction):
+        boton = QPushButton(text,parent=self.tbPersona)
         boton.setObjectName(objectName)
-        boton.setMinimumSize(QSize(80, 35))
+        boton.setMinimumSize(QSize(80,35))
         boton.setMaximumWidth(100)
-        # Pass additional arguments to the lambda
-        boton.clicked.connect(lambda: functionAction(id_empleado, *args))
+        boton.clicked.connect(lambda: functionAction(id_empleado))
         return boton
-
 
     def actualizarLabelPagina(self,numPagina, totalPagina):
         self.lblNumPagina.setText(f"Pagina {numPagina} de {totalPagina} ")
@@ -269,26 +266,35 @@ class AdminEmpleado(QWidget):
         else:
             return None
 
+<<<<<<< HEAD
     def eliminarEmpleado(self, id_empleado: int, nombre_completo: str):
         texto = f"Se eliminarán todos los datos asociados a este empleado."
 =======
     def eliminarEmpleado(self, id_empleado:int):
         texto = "Se eliminaran todos los datos asociados a este empleado."
 >>>>>>> parent of 373e4d9 (17-5-2025 (Todos))
+=======
+    def eliminarEmpleado(self, id_empleado: int):
+        texto = "Se eliminarán todos los datos asociados a este empleado."
+>>>>>>> parent of bc060e5 (Correcciones)
         texto += "\n¿Quieres eliminar este empleado?"
         dial = DialogoEmergente("¡Advertencia!", texto, "Warning", True, True)
 
         if dial.exec() == QDialog.Accepted:
             # Obtener la huella del empleado antes de eliminarlo
             id_huella = self.obtenerHuella(id_empleado)
+<<<<<<< HEAD
                         # Si el empleado fue eliminado, eliminar su huella si existe prueba
             if id_huella is not None:
                 result_huella = self.HueServices.eliminarHuella(id_huella)
                 if not result_huella['success']:
                     dial = DialogoEmergente("", "Empleado eliminado, pero no se pudo eliminar la huella.", "Error", True)
                     dial.exec()
+=======
+>>>>>>> parent of bc060e5 (Correcciones)
             zk_service = ZKServices()
-            zk_service.eliminar_huella_por_nombre(nombre_completo)
+            zk_service.eliminar_huella(id_huella)
+
 
             # Eliminar al empleado
             result = self.EmpServices.eliminar_empleado(id_empleado)
@@ -298,12 +304,19 @@ class AdminEmpleado(QWidget):
                 dial.exec()
                 return
 
+            # Si el empleado fue eliminado, eliminar su huella si existe
+            if id_huella is not None:
+
+                result_huella = self.HueServices.eliminarHuella(id_huella)
+                if not result_huella['success']:
+                    dial = DialogoEmergente("", "Empleado eliminado, pero no se pudo eliminar la huella.", "Error", True)
+                    dial.exec()
+
             # Confirmación final
             dial = DialogoEmergente("", result['message'], "Check", True)
             dial.exec()
 
         self.cargarTabla()
-
     
     def editarEmpleado(self,id_empleado:int):
         print(f'\n\nEditar id {id_empleado}\n\n')
