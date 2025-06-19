@@ -1,16 +1,10 @@
-from models.asistencia          import Asistencia
-from models.detalle_asistencia  import DetalleAsistencia
-
+from models.asistencia import Asistencia #importa la clase de reportes 
 from data.data import conection # importa la funcion de conection para crear la conexion enla base de datos
 from settings.config import * 
 from mysql.connector import Error
 from settings.logger import logger
-from datetime        import datetime, timedelta
-from data.horarioData import HorarioData
 
 class AsistenciaData:
-    def __init__(self):
-        self.horarioData = HorarioData()
     
     def create_asistencia(self, asistencia: Asistencia):
         conexion, resultado = conection() 
@@ -48,7 +42,8 @@ class AsistenciaData:
             if conexion:
                 conexion.close()
         return resultado 
-
+    
+    
     #metodo para actualizar el reporte
     def update_asistencia(self, asistencia: Asistencia):
         #llama a la funcion conection para tener conexion a la base datos
@@ -122,7 +117,7 @@ class AsistenciaData:
                 conexion.close()
         return resultado
     
-    def list_asistencias(self, pagina=1, tam_pagina=10, ordenar_por=TBASISTENCIA_ID, tipo_orden="ASC", busqueda=None):
+    def list_asistencias(self, pagina=1, tam_pagina=10, ordenar_por=TBREPORTE_ID, tipo_orden="ASC", busqueda=None):
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
@@ -141,18 +136,11 @@ class AsistenciaData:
             #se ajusta
             tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
             
-            query = f"""SELECT 
-                    a.*,
-                    p.{TBPERSONA_NOMBRE} AS nombre_persona
-                FROM {TBASISTENCIA} a
-                INNER JOIN {TBEMPLEADO} e ON a.{TBASISTENCIA_ID_EMPLEADO} = e.{TBEMPLEADO_ID}
-                INNER JOIN {TBPERSONA} p ON e.{TBEMPLEADO_PERSONA} = p.{TBPERSONA_ID}"""
+            query = f"SELECT * FROM {TBASISTENCIA}"
             valores = []
             
             if busqueda:
-                query += f""" WHERE {TBASISTENCIA_ID_EMPLEADO} LIKE %s 
-                              OR {TBASISTENCIA_FECHA} LIKE %s
-                              OR {TBASISTENCIA_ESTADO_ASISTENCIA} LIKE %s """
+                query += f" WHERE {TBASISTENCIA_ID_EMPLEADO} LIKE %s OR {TBASISTENCIA_FECHA} LIKE %s OR {TBASISTENCIA_ESTADO_ASISTENCIA} LIKE %s"
                 valores = [f"%{busqueda}%", f"%{busqueda}%", f"%{busqueda}%"]
             
             query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
@@ -167,7 +155,7 @@ class AsistenciaData:
                     estado_asistencia=registro[TBASISTENCIA_ESTADO_ASISTENCIA],
                     id=registro[TBASISTENCIA_ID]
                 )
-                listaAsistencias.append({'asistencia': asistencia, 'nombre_empleado': registro['nombre_persona']})# Se añade el perfil a la lista
+                listaAsistencias.append(asistencia)# Se añade el perfil a la lista
             
             cursor.execute(f"SELECT COUNT(*) as total FROM {TBASISTENCIA}") #TBROL
             total_registros = cursor.fetchone()["total"]  # Se obtiene el número total de registros
@@ -270,7 +258,7 @@ class AsistenciaData:
         return resultado
 
 
-    def listar_asistencia_por_empleado(self, id_empleado: int, id_asistencia: int):
+    def listar_asistencia_por_empleado(self, id_empleado: int):
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
@@ -279,13 +267,12 @@ class AsistenciaData:
         try:
             with conexion.cursor(dictionary=True) as cursor:
                 query = f'''
-                SELECT Id, Id_Empleado, Fecha, Estado_Asistencia 
-                FROM Asistencia 
-                WHERE Id_Empleado = %s 
-                AND (Estado_Asistencia = 'Ausente' OR Id = %s)
-                ORDER BY Fecha DESC
-            '''
-                cursor.execute(query, (id_empleado, id_asistencia))
+                    SELECT Id, Id_Empleado, Fecha, Estado_Asistencia 
+                    FROM Asistencia 
+                    WHERE Id_Empleado = %s AND Estado_Asistencia = 'No_Justificada'
+                    ORDER BY Fecha DESC
+                '''
+                cursor.execute(query, (id_empleado,))
                 registros = cursor.fetchall()
                 
                 for data in registros:
@@ -308,6 +295,7 @@ class AsistenciaData:
         finally:
             if conexion:
                 conexion.close()
+<<<<<<< HEAD
 
     # def registrar_asistencia(self, lista):
     #     conexion, resultado = conection()
@@ -522,3 +510,5 @@ class AsistenciaData:
             return {'success': False, 'message': 'Ocurrió un error al registrar la asistencia.'}
         finally:
             if conexion: conexion.close()
+=======
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)

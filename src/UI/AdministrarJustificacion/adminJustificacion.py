@@ -5,9 +5,12 @@ from UI.AdministrarJustificacion.formJustificacion import *
 from services.justificacionService import *
 from functools import partial
 from .infoJustificacion import InfoJustificacion
+<<<<<<< HEAD
 import locale
 from datetime import datetime
 from models.permiso_perfil import Permiso_Perfil
+=======
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
 
 class AdminJustificacion(QWidget):
     cerrar_adminJ = Signal()
@@ -23,9 +26,7 @@ class AdminJustificacion(QWidget):
         self.permisoUsuario:Permiso_Perfil = permiso
         
         cargar_estilos('claro', 'admin.css', self)
-
-        locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
-
+        
         layout = QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
     
@@ -85,9 +86,9 @@ class AdminJustificacion(QWidget):
         
         # Tabla Justificaciones
         self.tbJustificacion = QTableWidget()
-        if (self.tbJustificacion.columnCount() < 7):
-            self.tbJustificacion.setColumnCount(7)  # Se añaden 2 columnas más
-        header_labels = ["Motivo", "Descripción", "Tipo", "Empleado", "Asistencia", "Fecha Realizada", "Acciones"]
+        if (self.tbJustificacion.columnCount() < 6):
+            self.tbJustificacion.setColumnCount(6)  # Se añaden 2 columnas más
+        header_labels = ["Motivo", "Descripción", "Empleado", "Asistencia", "Fecha Realizada", "Acciones"]
         self.tbJustificacion.setHorizontalHeaderLabels(header_labels)
         
         self.tbJustificacion.horizontalHeader().setFixedHeight(40)
@@ -199,39 +200,30 @@ class AdminJustificacion(QWidget):
                     item_descripcion.setTextAlignment(Qt.AlignCenter)  
                     self.tbJustificacion.setItem(index, 1, item_descripcion)
 
-                    # Tipo
-                    item_tipo = QTableWidgetItem(justificacion["tipo"])
-                    item_tipo.setTextAlignment(Qt.AlignCenter)  
-                    self.tbJustificacion.setItem(index, 2, item_tipo)
-
                     # Nombre del empleado
                     item_nombre_empleado = QTableWidgetItem(justificacion["nombre_completo_empleado"])
                     item_nombre_empleado.setTextAlignment(Qt.AlignCenter) 
-                    self.tbJustificacion.setItem(index, 3, item_nombre_empleado)
+                    self.tbJustificacion.setItem(index, 2, item_nombre_empleado)
 
                     # Fecha de asistencia
                     fecha_Asistencia = justificacion["fecha_asistencia"]
-                    fecha_str = fecha_Asistencia.strftime("%d de %B del %Y")  # Cambiado a %d
-                    dia = int(fecha_str.split(" ")[0])  # Convertir el día a entero para eliminar ceros a la izquierda
-                    fecha_str = f"{dia} de {fecha_Asistencia.strftime('%B')} del {fecha_Asistencia.strftime('%Y')}"
+                    fecha_str = fecha_Asistencia.strftime("%Y-%m-%d")
                     item_fecha_Asistencia = QTableWidgetItem(fecha_str)
                     item_fecha_Asistencia.setTextAlignment(Qt.AlignCenter) 
-                    self.tbJustificacion.setItem(index, 4, item_fecha_Asistencia)
+                    self.tbJustificacion.setItem(index, 3, item_fecha_Asistencia)
 
                     # Fecha realizado
                     fecha_Realizado = justificacion["fecha_realizado"]
-                    fecha_str = fecha_Realizado.strftime("%d de %B del %Y a las %H:%M:%S")  # Cambiado a %d
-                    dia = int(fecha_str.split(" ")[0])
-                    fecha_str = f"{dia} de {fecha_Realizado.strftime('%B')} del {fecha_Realizado.strftime('%Y')} a las {fecha_Realizado.strftime('%H:%M:%S')}"
+                    fecha_str = fecha_Realizado.strftime("%Y-%m-%d %H:%M:%S")
                     item_fecha_Realizado = QTableWidgetItem(fecha_str)
                     item_fecha_Realizado.setTextAlignment(Qt.AlignCenter)
-                    self.tbJustificacion.setItem(index, 5, item_fecha_Realizado)
+                    self.tbJustificacion.setItem(index, 4, item_fecha_Realizado)
 
                     # Creación de un contenedor para los botones
                     contenedor_botones = QWidget()
                     layout_botones = QHBoxLayout()
                     layout_botones.setContentsMargins(0, 0, 0, 0)
-                    layout_botones.setSpacing(6)
+                    layout_botones.setSpacing(5)
 
                     # Botón Más info
                     btnInfo = QPushButton("Más info")
@@ -269,7 +261,7 @@ class AdminJustificacion(QWidget):
                     contenedor_botones.setLayout(layout_botones)
 
 
-                    self.tbJustificacion.setCellWidget(index, 6, contenedor_botones)
+                    self.tbJustificacion.setCellWidget(index, 5, contenedor_botones)
 
             else:
                 print("No se encontraron justificaciones.")  # Mensaje de depuración

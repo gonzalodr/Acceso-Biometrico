@@ -71,7 +71,7 @@ class JustificacionServices:
         # Inserción en la capa de datos
         return self.justificacionData.create_justificacion(justificacion)
 
-    def modificarJustificacion(self, justificacion: Justificacion, old_asistencia_id):
+    def modificarJustificacion(self, justificacion: Justificacion):
         # Validar datos antes de actualizar en la capa de datos
         result = self._validarMotivo(justificacion.motivo)
         if not result["success"]:
@@ -86,7 +86,7 @@ class JustificacionServices:
             return result
 
         # Actualización en la capa de datos
-        return self.justificacionData.update_justificacion(justificacion, old_asistencia_id)
+        return self.justificacionData.update_justificacion(justificacion)
 
     def eliminarJustificacion(self, id_justificacion):
         return self.justificacionData.delete_justificacion(id_justificacion)

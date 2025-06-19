@@ -16,6 +16,7 @@ class AdminReporte(QWidget):
     busqueda = None
     reporteServices = ReporteServices()
     empleadoServices = EmpleadoServices()
+<<<<<<< HEAD
 
     def __init__(self, parent=None, permiso = None) -> None:
         super().__init__(parent)
@@ -25,25 +26,35 @@ class AdminReporte(QWidget):
         cargar_estilos("claro", "admin.css", self)
 
         # layout = QBoxLayout()
+=======
+    
+    def __init__(self, parent= None) -> None:
+        super().__init__(parent)
+        self.setObjectName("admin")
+    
+        cargar_estilos('claro','admin.css',self)
+    
+        #layout = QBoxLayout()
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
         layout = QBoxLayout(QBoxLayout.TopToBottom)
-        layout.setContentsMargins(10, 10, 10, 10)
-
+        layout.setContentsMargins(10,10,10,10)
+    
         frame = QFrame()
         self.layoutFrame = QVBoxLayout()
-        self.layoutFrame.setContentsMargins(0, 0, 0, 0)
+        self.layoutFrame.setContentsMargins(0,0,0,0)
         self.layoutFrame.setSpacing(0)
-
+    
         titulo = QLabel(text="Administrar reportes")
         titulo.setObjectName("titulo")
         titulo.setMinimumHeight(50)
         titulo.setAlignment(Qt.AlignCenter)
         self.layoutFrame.addWidget(titulo)
-
+    
         layoutTop = QHBoxLayout()
-        layoutTop.setContentsMargins(30, 30, 30, 30)
+        layoutTop.setContentsMargins(30,30,30,30)
         layoutTop.setSpacing(5)
         layoutTop.setAlignment(Qt.AlignCenter)
-        minimoTamBtn = QSize(120, 40)
+        minimoTamBtn = QSize(120,40)
 
         ##botones de arriba
         self.inputBuscar = QLineEdit()
@@ -57,25 +68,20 @@ class AdminReporte(QWidget):
         layoutTop.addSpacing(25)
         layoutTop.addWidget(self.crearBoton('Cerrar',minimoTamBtn,self.cerrarAdminReporte))
         layoutTop.addStretch(1)
-        layoutTop.addWidget(self.inputBuscar, 2)
+        layoutTop.addWidget(self.inputBuscar,2)
         layoutTop.addSpacing(10)
         layoutTop.addWidget(self.crearBoton('Buscar',minimoTamBtn,self.buscarRegistro))
         layoutTop.addStretch(1)
         layoutTop.addWidget(self.crearBoton('Generar Reporte',minimoTamBtn,self.crearReporte))
         layoutTop.addStretch(5)
         self.layoutFrame.addLayout(layoutTop)
-
-        # Tabla Rol
-        self.tbReporte = QTableWidget()  # Crea la tabla para mostrar los perfiles
-        if self.tbReporte.columnCount() < 5:  # Si la tabla no tiene 3 columnas
-            self.tbReporte.setColumnCount(5)  # Establece 3 columnas
-        header_labels = [
-            "Empleado",
-            "Fecha Generación",
-            "Tipo Reporte",
-            "Contenido",
-            "Acciones",
-        ]
+        
+        
+         # Tabla Rol
+        self.tbReporte = QTableWidget()# Crea la tabla para mostrar los perfiles
+        if self.tbReporte.columnCount() < 5:# Si la tabla no tiene 3 columnas
+            self.tbReporte.setColumnCount(5)# Establece 3 columnas
+        header_labels = ["Empleado", "Fecha Generación", "Tipo Reporte", "Contenido", "Acciones"]
         self.tbReporte.setHorizontalHeaderLabels(header_labels)
         self.tbReporte.horizontalHeader().setFixedHeight(40) # Establece una altura fija para los encabezados
         self.tbReporte.verticalHeader().setVisible(False)# Oculta los encabezados verticales
@@ -90,13 +96,9 @@ class AdminReporte(QWidget):
         self.layoutFrame.addLayout(layoutTb)
 
         # Layout para los botones de paginación
-        layoutButtom = (
-            QHBoxLayout()
-        )  # Crea un layout horizontal para los botones de paginación
+        layoutButtom = QHBoxLayout()  # Crea un layout horizontal para los botones de paginación
         layoutButtom.setAlignment(Qt.AlignCenter)  # Centra los botones en el layout
-        layoutButtom.setContentsMargins(
-            10, 10, 10, 40
-        )  # Establece márgenes alrededor de los botones
+        layoutButtom.setContentsMargins(10, 10, 10, 40)  # Establece márgenes alrededor de los botones
         layoutButtom.setSpacing(5)  # Define el espacio entre los botones
 
         # Etiqueta para mostrar el número de la página actual
@@ -119,12 +121,11 @@ class AdminReporte(QWidget):
         layoutButtom.addSpacing(10)
         layoutButtom.addWidget(self.btnUltimaPagina)
 
-        self.layoutFrame.addLayout(
-            layoutButtom
-        )  # Añadir el layout de los botones al layout principal
-        frame.setLayout(self.layoutFrame)  # Establecer el layout del frame principal
-        layout.addWidget(frame)  # Añadir el frame al layout principal
-        self.setLayout(layout)  # Establecer el layout del widget
+
+        self.layoutFrame.addLayout(layoutButtom)# Añadir el layout de los botones al layout principal
+        frame.setLayout(self.layoutFrame) # Establecer el layout del frame principal
+        layout.addWidget(frame) # Añadir el frame al layout principal
+        self.setLayout(layout)# Establecer el layout del widget
         Sombrear(self, 30, 0, 0)
         self.cargarTabla()
 
@@ -234,7 +235,7 @@ class AdminReporte(QWidget):
             message="¿Seguro que quieres eliminar este registro?",
             Icono="Question",
             show_accept_button=True,
-            show_cancel_button=True,
+            show_cancel_button=True
         )
         if dial.exec() == QDialog.Accepted:
                 result = self.reporteServices.eliminarReporte(id_reporte)

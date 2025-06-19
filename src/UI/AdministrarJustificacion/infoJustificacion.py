@@ -32,7 +32,6 @@ class InfoJustificacion(QDialog):
             f"<b>Fecha Realizada:</b><br> {self.justificacion.fecha}<br><br>"
             f"<b>Motivo:</b><br> {self.justificacion.motivo}<br><br>"
             f"<b>Descripción:</b><br> {self.justificacion.descripcion}<br><br>"
-            f"<b>Tipo:</b><br> {self.justificacion.tipo}<br><br>"
         )
 
         info_label = QLabel(info_text)

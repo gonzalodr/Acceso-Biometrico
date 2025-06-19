@@ -1,14 +1,11 @@
 import bcrypt 
-from models.usuario import Usuario
-from models.usuario_perfil import Usuario_Perfil
+from models.usuario import Usuario #llamando modulo `models` y a un archivo `usuario` para importar la clase `Usuario`
 from data.usuarioData import UsuarioData
-from data.usuario_PerfilData import UsuarioPerfilData
 import re
 
 class UsuarioServices:
     def __init__(self):
-        self.UserData = UsuarioData()
-        self.UserProfileData = UsuarioPerfilData() 
+        self.UserData = UsuarioData() 
 
     def verificarUsuario(self,usuario:str,id_usuario:int = None):
         return self.UserData.verificar_usuario(usuario, id_usuario)
@@ -35,60 +32,22 @@ class UsuarioServices:
         contrasena_hash = bcrypt.hashpw(contrasena,bcrypt.gensalt())
         return contrasena_hash
         
-    def insertarUsuario(self, usuario: Usuario, id_perfil: int):
+    def insertarUsuario(self, usuario: Usuario):
         contrasena = self._contrasenaHash(usuario.contrasena)
         usuario.contrasena = contrasena
-        
-        # Crear el usuario
-        resultado_usuario = self.UserData.create_usuario(usuario)
-        
-        if resultado_usuario['success']:
-            id_usuario = resultado_usuario['id_usuario']  # Suponiendo que el método devuelve el id del usuario creado
-            
-            # Asignar el perfil al usuario
-            resultado_perfil = self.UserProfileData.create_usuario_perfil(id_usuario, id_perfil)
-            
-            if not resultado_perfil['success']:
-                # Manejo de error si no se pudo asignar el perfil
-                return {'success': False, 'message': 'Usuario creado, pero no se pudo asignar el perfil.'}
-            
-            return {'success': True, 'message': 'Usuario creado y perfil asignado correctamente.'}
-        
-        return resultado_usuario  # Retornar el resultado del intento de creación del usuario
+        return self.UserData.create_usuario(usuario)
 
+    def modificarUsuario(self, usuario: Usuario):
+        return self.UserData.update_usuario(usuario)
 
-    def modificarUsuario(self, usuario: Usuario, usuario_perfil: Usuario_Perfil):
-        # Crear el usuario
-        resultado_usuario = self.UserData.update_usuario(usuario)
-        
-        if resultado_usuario['success']:
-            
-            # Asignar el perfil al usuario
-            resultado_perfil = self.UserProfileData.update_usuario_perfil(usuario_perfil)
-            
-            if not resultado_perfil['success']:
-                # Manejo de error si no se pudo asignar el perfil
-                return {'success': False, 'message': 'Usuario modificado, pero no se pudo asignar el perfil.'}
-            
-            return {'success': True, 'message': 'Usuario creado y perfil modificado correctamente.'}
-        
-        return resultado_usuario  # Retornar el resultado del intento de creación del usuario
-
-    def eliminarUsuario(self, id_usuario, id_usuario_perfil):
-        resultado_perfil = self.UserProfileData.delete_usuario_perfil(id_usuario_perfil)
-        
-        if not resultado_perfil['success']:
-            return {'success': False, 'message': 'No se pudo eliminar el perfil del usuario antes de eliminar el usuario.'}
-        
-        resultado_usuario = self.UserData.delete_usuario(id_usuario)
-        
-        return resultado_usuario 
+    def eliminarUsuario(self, id_usuario):
+        return self.UserData.delete_usuario(id_usuario)
 
     def obtenerListaUsuarios(self, pagina=1, tam_pagina=10, ordenar_por="Id", tipo_orden="ASC", busqueda=None):
         return self.UserData.list_usuarios(pagina, tam_pagina, ordenar_por, tipo_orden, busqueda)
 
     def obtenerUsuarioPorId(self, id_usuario):
-        return self.UserData.get_usuario_by_id(id_usuario)
+        pass
 
     def iniciar_sesion(self, identificador, contrasena):
         resultado = self.UserData.verificar_usuario_contrasena(identificador, contrasena)

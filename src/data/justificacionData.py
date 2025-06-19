@@ -31,16 +31,26 @@ class JustificacionData:
         try:
             with conexion.cursor() as cursor:
                 query = f"""INSERT INTO {TBJUSTIFICACION}(
+<<<<<<< HEAD
                     {TBJUSTIFICACION_ID_EMPLEADO},
                     {TBJUSTIFICACION_ID_ASISTENCIA},
                     {TBJUSTIFICACION_MOTIVO},
                     {TBJUSTIFICACION_DESCRIPCION},
                     {TBJUSTIFICACION_TIPO})
                     VALUES (%s, %s, %s, %s, %s)"""  # nosec B608
+=======
+                {TBJUSTIFICACION_ID_EMPLEADO},
+                {TBJUSTIFICACION_ID_ASISTENCIA},
+                {TBJUSTIFICACION_MOTIVO},
+                {TBJUSTIFICACION_DESCRIPCION})
+                VALUES (%s, %s, %s, %s)"""
+                
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
                 cursor.execute(query, (
                     justificacion.id_empleado,
                     justificacion.id_asistencia,
                     justificacion.motivo,
+<<<<<<< HEAD
                     justificacion.descripcion,
                     justificacion.tipo
                 ))
@@ -53,6 +63,9 @@ class JustificacionData:
                 cursor.execute(query_update, (
                     "Justificado",
                     justificacion.id_asistencia
+=======
+                    justificacion.descripcion
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
                 ))
                 conexion.commit()
                 return {'success': True, 'message': 'La justificación se guardó correctamente.'}
@@ -62,6 +75,7 @@ class JustificacionData:
         finally:
             if conexion:
                 conexion.close()
+<<<<<<< HEAD
 
     def update_justificacion(self, justificacion: Justificacion, old_id_asistencia: int):
         # Validaciones adicionales
@@ -74,11 +88,15 @@ class JustificacionData:
         if justificacion.tipo not in self.ALLOWED_TYPES:
             return {'success': False, 'message': 'Tipo de justificación no permitido.'}
 
+=======
+    
+    def update_justificacion(self, justificacion: Justificacion):
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
         conexion, resultado = conection()
         if not resultado["success"]:
             return resultado
-
         try:
+<<<<<<< HEAD
             cursor = conexion.cursor()
             if old_id_asistencia:
                 query_old_asistencia = f"""
@@ -114,13 +132,36 @@ class JustificacionData:
 
             conexion.commit()
             return {'success': True, 'message': 'Justificación actualizada exitosamente.'}
+=======
+            with conexion.cursor() as cursor:
+                query = f"""UPDATE {TBJUSTIFICACION} SET 
+                {TBJUSTIFICACION_ID_EMPLEADO} = %s,
+                {TBJUSTIFICACION_ID_ASISTENCIA} = %s,
+                {TBJUSTIFICACION_MOTIVO} = %s,
+                {TBJUSTIFICACION_DESCRIPCION} = %s
+                WHERE {TBJUSTIFICACION_ID} = %s"""
+            
+                cursor.execute(query, (
+                    justificacion.id_empleado,
+                    justificacion.id_asistencia,
+                    justificacion.motivo,
+                    justificacion.descripcion,
+                    justificacion.id_justificacion
+                ))
+                conexion.commit()
+                return {'success': True, 'message': 'Justificación actualizada exitosamente.'}
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
         except Error as e:
             logger.error(f'Error: {e}')
             return {'success': False, 'message': 'Ocurrió un error al actualizar la justificación.'}
         finally:
             if conexion:
                 conexion.close()
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
     def delete_justificacion(self, justificacion_id):
         if not isinstance(justificacion_id, int):
             return {'success': False, 'message': 'ID de justificación debe ser un entero.'}
@@ -162,10 +203,16 @@ class JustificacionData:
                     "descripcion": TBJUSTIFICACION_DESCRIPCION,
                     "id_empleado": TBJUSTIFICACION_ID_EMPLEADO,
                     "id_asistencia": TBJUSTIFICACION_ID_ASISTENCIA,
+<<<<<<< HEAD
                     "nombre_empleado": TBPERSONA_NOMBRE,
                     "apellido_empleado": TBPERSONA_APELLIDOS,
                     "fecha": TBJUSTIFICACION_FECHA,
                     "tipo": TBJUSTIFICACION_TIPO
+=======
+                    "nombre_empleado": TBPERSONA_NOMBRE,  # Para ordenar por nombre del empleado
+                    "apellido_empleado": TBPERSONA_APELLIDOS,  # Para ordenar por apellido del empleado
+                    "fecha": TBJUSTIFICACION_FECHA  # Para ordenar por fecha
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
                 }
                 ordenar_por = columna_orden.get(ordenar_por, TBJUSTIFICACION_FECHA)
                 tipo_orden = "DESC" if tipo_orden != "ASC" else "ASC"
@@ -191,9 +238,17 @@ class JustificacionData:
                     """
                     valores = [f"%{busqueda}%"] * 6
 
+<<<<<<< HEAD
                 query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
                 valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
 
+=======
+                # Añadir la cláusula ORDER BY y LIMIT/OFFSET
+                query += f" ORDER BY {ordenar_por} {tipo_orden} LIMIT %s OFFSET %s"
+                valores.extend([tam_pagina, (pagina - 1) * tam_pagina])
+
+                # Ejecutar la consulta con los parámetros de forma segura
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
                 cursor.execute(query, valores)
                 registros = cursor.fetchall()
                 for registro in registros:
@@ -201,7 +256,6 @@ class JustificacionData:
                         "id_justificacion": registro[TBJUSTIFICACION_ID],
                         "motivo": registro[TBJUSTIFICACION_MOTIVO],
                         "descripcion": registro[TBJUSTIFICACION_DESCRIPCION],
-                        "tipo": registro[TBJUSTIFICACION_TIPO],
                         "id_empleado": registro[TBJUSTIFICACION_ID_EMPLEADO],
                         "id_asistencia": registro[TBJUSTIFICACION_ID_ASISTENCIA],
                         "nombre_completo_empleado": f"{registro['nombre_empleado']} {registro['apellido_empleado']}",
@@ -245,6 +299,7 @@ class JustificacionData:
         try:
             with conexion.cursor() as cursor:
                 query = f"""SELECT
+<<<<<<< HEAD
                     J.{TBJUSTIFICACION_ID_EMPLEADO},
                     J.{TBJUSTIFICACION_ID_ASISTENCIA},
                     J.{TBJUSTIFICACION_FECHA} AS fecha_realizado,
@@ -260,6 +315,22 @@ class JustificacionData:
                     LEFT JOIN {TBPERSONA} P ON E.ID_PERSONA = P.{TBPERSONA_ID}
                     LEFT JOIN {TBASISTENCIA} A ON J.{TBJUSTIFICACION_ID_ASISTENCIA} = A.{TBASISTENCIA_ID}
                     WHERE J.{TBJUSTIFICACION_ID} = %s"""  # nosec B608
+=======
+                                J.{TBJUSTIFICACION_ID_EMPLEADO},
+                                J.{TBJUSTIFICACION_ID_ASISTENCIA},
+                                J.{TBJUSTIFICACION_FECHA} AS fecha_realizado,
+                                J.{TBJUSTIFICACION_MOTIVO},
+                                J.{TBJUSTIFICACION_DESCRIPCION},
+                                J.{TBJUSTIFICACION_ID},
+                                P.{TBPERSONA_NOMBRE} AS nombre_empleado,
+                                P.{TBPERSONA_APELLIDOS} AS apellido_empleado,  -- Agregar apellido
+                                A.{TBASISTENCIA_FECHA} AS fecha_asistencia
+                            FROM {TBJUSTIFICACION} J
+                            LEFT JOIN EMPLEADO E ON J.{TBJUSTIFICACION_ID_EMPLEADO} = E.ID
+                            LEFT JOIN {TBPERSONA} P ON E.ID_PERSONA = P.{TBPERSONA_ID}
+                            LEFT JOIN {TBASISTENCIA} A ON J.{TBJUSTIFICACION_ID_ASISTENCIA} = A.{TBASISTENCIA_ID}
+                            WHERE J.{TBJUSTIFICACION_ID} = %s"""
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
                 
                 cursor.execute(query, (justificacion_id,))
                 data = cursor.fetchone()
@@ -271,8 +342,7 @@ class JustificacionData:
                         fecha=data[2],
                         motivo=data[3],
                         descripcion=data[4],
-                        tipo=data[5],
-                        id_justificacion=data[6]
+                        id_justificacion=data[5]
                     )
                     nombre_completo_empleado = f"{data[7]} {data[8]}"  # Corregir índices
                     return {

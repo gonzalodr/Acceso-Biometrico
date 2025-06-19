@@ -213,7 +213,7 @@ class formHorario(QDialog):
         boton_box.button(QDialogButtonBox.Ok).setMinimumSize(QSize(100, 30))
 
         boton_box.accepted.connect(self._accion_horario)
-        boton_box.rejected.connect(self._cancelar_registro)
+        boton_box.rejected.connect(self.reject)
 
         # Centrar los botones
         boton_layout = QHBoxLayout()
@@ -459,19 +459,18 @@ class formHorario(QDialog):
             return False
 
     def _cancelar_registro(self):
-        """Muestra diálogo de confirmación al cancelar si hay datos ingresados"""
+        """Si se encuentra inputs con datos entonces pregunta si esta seguro retirarse"""
         if self._validar_inputs_sin_con_datos():
             dialEmergente = DialogoEmergente(
-                "Confirmar cancelación",
-                "¿Estás seguro que deseas cancelar? Se perderán los cambios no guardados.",
-                "Question",
-                True,  # Mostrar botones Sí/No
-                True,  # Activar modo pregunta
+                "¿?", "¿Estas seguro que que quieres cancelar?", "Question", True, True
             )
-            if dialEmergente.exec() == QDialog.Accepted:
+            opcion = dialEmergente.exec()
+            if opcion == QDialog.Accepted:
                 self.reject()
-        else:
-            self.reject()
+            elif opcion == QDialog.Rejected:
+                pass
+        else:  ##si los inputs estan sin datos entonces se cierra el formulario de manera normal
+            self.reject()  ##cerrar la ventana
 
     def cargar_roles(self):
         """

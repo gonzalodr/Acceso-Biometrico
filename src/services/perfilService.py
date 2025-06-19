@@ -67,14 +67,9 @@ class PerfilServices:
         # Obtener lista de roles con paginación y opciones de ordenamiento
         return self.perfilData.list_perfiles(pagina, tam_pagina, ordenar_por, tipo_orden, busqueda)
 
-    def obtenerListaPerfilCB(self, pagina=1, tam_pagina=10, ordenar_por="id", tipo_orden="ASC", busqueda=None):
-        # Obtener lista de roles con paginación y opciones de ordenamiento
-        return self.perfilData.list_perfilesComboBox(pagina, tam_pagina, ordenar_por, tipo_orden, busqueda)
-    
     def obtenerPerfilPorId(self, id):
         # Obtener rol por ID
         return self.perfilData.get_perfil_by_id(id)
 
     def obtener_todo_perfiles(self):
         return self.perfilData.obtener_todo_perfiles()
-    

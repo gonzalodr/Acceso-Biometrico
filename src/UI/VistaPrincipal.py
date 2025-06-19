@@ -13,7 +13,6 @@ from UI.AdministrarPermisosPerfil.AdminPermisosPerfil import *
 from UI.AdministrarEmpleado.administrarEmpleado import *
 from UI.AdministrarAsistencia.AdminAsistencia import *
 from UI.AdministrarUsuario.adminUsuario import *
-from UI.AdministraSoliPermiso.adminSoliPermiso import *
 from models.usuario import *
 import sys
 
@@ -151,12 +150,20 @@ class vistaPrincipal(QWidget):
             index = self.stackVistas.addWidget(adminempleado)
             self.listaOpciones.append((index, "Admin. Empleados", "employees.png"))
 
+<<<<<<< HEAD
         if self.PermisoAModulo("Administrar usuarios"):
             getpermiso = next(filter(lambda per: per.tabla == ACCESO_TABLE["Administrar usuarios"], self.permisos),None)
             adminUsuario = AdminUsuario(parent=self, permiso = getpermiso)
             adminUsuario.cerrar_adminU.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminUsuario)
             self.listaOpciones.append((index, "Administrar Usuarios", "management.png"))
+=======
+        if True:
+           adminUsuario = AdminUsuario(parent=self)
+           adminUsuario.cerrar_adminU.connect(self._salir_crud)
+           index = self.stackVistas.addWidget(adminUsuario)
+           self.listaOpciones.append((index, "Administrar Usuarios", "management.png"))
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
 
         if self.PermisoAModulo("Administrar departamentos"):
             getpermiso = next(filter(lambda per: per.tabla == ACCESO_TABLE["Administrar departamentos"], self.permisos),None)  
@@ -170,6 +177,7 @@ class vistaPrincipal(QWidget):
             adminJusficacion = AdminJustificacion(permiso=getpermiso)
             adminJusficacion.cerrar_adminJ.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminJusficacion)
+<<<<<<< HEAD
             self.listaOpciones.append((index, "Admin.Justificacion", "division.png"))
 
         if self.PermisoAModulo("Administrar permisos empleado"):
@@ -178,6 +186,9 @@ class vistaPrincipal(QWidget):
             adminSoliPermiso.cerrar_admin_soli_permiso.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminSoliPermiso)
             self.listaOpciones.append((index, "Admin Solicitud Permisos", "management.png"))
+=======
+            self.listaOpciones.append((index,"Admin.Justificacion",'division.png'))
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
 
         # if True:
         #     adminrol = AdminRol()
@@ -191,11 +202,19 @@ class vistaPrincipal(QWidget):
             adminpermisosperfil = AdminPermisosPerfil(permiso=getpermiso)
             adminpermisosperfil.cerrar_adminP.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminpermisosperfil)
+<<<<<<< HEAD
             self.listaOpciones.append( (index, "Perfiles de usuario", "access-control-list.png"))
         
         if self.PermisoAModulo("Administrar reportes"):
             getpermiso = next(filter(lambda per: per.tabla == ACCESO_TABLE["Administrar reportes"], self.permisos),None)
             adminreporte = AdminReporte(permiso=getpermiso)
+=======
+            self.listaOpciones.append((index,"Perfiles de usuario",'access-control-list.png'))
+            
+                 
+        if True:
+            adminreporte = AdminReporte()
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
             adminreporte.signalCerrar.connect(self._salir_crud)
             index = self.stackVistas.addWidget(adminreporte)
             self.listaOpciones.append((index,"Admin. reportes",'online-survey.png'))

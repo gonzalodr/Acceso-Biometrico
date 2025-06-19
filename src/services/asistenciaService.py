@@ -1,10 +1,6 @@
 import re
-from models.asistencia          import Asistencia
-from models.detalle_asistencia  import DetalleAsistencia
-from data.asistenciaData        import AsistenciaData
-from datetime                   import date,datetime
-from typing                     import Optional, List, Union, Tuple
-from .ZKService                 import ZKServices
+from models.asistencia import Asistencia
+from data.asistenciaData import AsistenciaData
 
 class AsistenciaServices:
     def __init__(self):

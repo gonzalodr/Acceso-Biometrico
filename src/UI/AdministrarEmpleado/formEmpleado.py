@@ -11,9 +11,13 @@ from services.personaService    import PersonaServices
 from services.rolService        import RolServices
 from services.perfilService     import PerfilServices
 from services.telefonoServices  import TelefonoServices
+<<<<<<< HEAD
 from services.ZKService        import ZKServices 
 from services.huellaService import HuellaService
 from settings.logger         import logger
+=======
+
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
 from UI.DialogoEmergente import DialogoEmergente
 
 
@@ -22,7 +26,7 @@ from models.telefono    import Telefono
 from settings.config    import ZKTECA_CONFIG
 
 from datetime import datetime
-import time
+
 import re
 
 class formEmpleado(QDialog):
@@ -216,29 +220,6 @@ class formEmpleado(QDialog):
         self.errRol = QLabel()
         self.llenarComboboxRol()
         
-        # Botón para registrar huella - CAMBIO IMPORTANTE
-        #self.btnRegistrarHuella = QPushButton('Registrar huella')
-        #self.btnRegistrarHuella.setObjectName('btnHuella')
-        #self.btnRegistrarHuella.setMinimumHeight(40)
-        #self.btnRegistrarHuella.setStyleSheet("""
-        #QPushButton {
-         #   background-color: #4CAF50;
-          #  color: white;
-           # border: none;
-            #border-radius: 5px;
-            #padding: 8px;
-            #font-size: 14px;
-        #}
-        #QPushButton:hover {
-         #   background-color: #45a049;
-        #}
-    #""")
-     #   self.btnRegistrarHuella.clicked.connect(self.registrar_huella)
-    
-    # Layout contenedor para el botón (para mejor espaciado)
-       # layoutHuella = QVBoxLayout()
-       # layoutHuella.setContentsMargins(10, 10, 10, 10)
-       # layoutHuella.addWidget(self.btnRegistrarHuella)  
         #asignando al layoutIzq
         self.layoutIzq.addWidget(tituloIzq)
         self.layoutIzq.addLayout(self.layoutFoto)
@@ -250,9 +231,12 @@ class formEmpleado(QDialog):
         self.layoutIzq.addLayout(self.contenedor(self.lblTelefonos,self.layoutTelPrinc,self.errTelefono))
         self.layoutIzq.addLayout(self.contenedor(self.lblEstCivil,self.inEstCivil,self.errEstCivil))
         self.layoutIzq.addLayout(self.contenedor(self.lblDireccion,self.inDireccion,self.errDireccion))
+<<<<<<< HEAD
         self.layoutIzq.addLayout(self.contenedor(self.lblDep,self.inDep,self.errDep))
         self.layoutIzq.addLayout(self.contenedor(self.lblRol,self.inRol,self.errRol))
         #self.layoutIzq.addLayout(layoutHuella)  
+=======
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
     
     #layout para la foto
     def llenarLayoutFoto(self):
@@ -740,72 +724,8 @@ class formEmpleado(QDialog):
         cargar_Icono(self.foto, 'userPerson.png')
         self.btnFoto.setText("Seleccionar foto")
         self.fotografia = None
-        
-    """def registrar_huella(self):
-        #Maneja el registro de huella usando solo el nombre
-        try:
-            # Validar que se ingresó el nombre
-            nombre = self.inNombre.text().strip()
-            if not nombre:
-                self.errNombre.setText("El nombre es obligatorio")
-                DialogoEmergente(
-                    'Datos incompletos',
-                    'Debe ingresar el nombre del empleado',
-                    'Warning',
-                    True
-                ).exec()
-                return
-
-            # Mostrar diálogo de espera
-            dialogo_espera = DialogoEmergente(
-                'Registro de Huella',
-                'Preparando dispositivo...\n\nPor favor espere',
-                'Info',
-                False
-            )
-            dialogo_espera.show()
-            QApplication.processEvents()
-
-            # Llamar al servicio simplificado que genera el ID automáticamente
-            zk_service = ZKServices()
-            resultado = zk_service.registrar_empleado_simple(nombre)
-
-            # Cerrar diálogo de espera
-            dialogo_espera.close()
-
-            # Mostrar resultados
-            if resultado['success']:
-                if resultado['huella_registrada']:
-                    DialogoEmergente(
-                        'Registro Exitoso',
-                        f'Empleado registrado:\n\nNombre: {nombre}\nID: {resultado["user_id"]}',
-                        'Check',
-                        True
-                    ).exec()
-                else:
-                    DialogoEmergente(
-                        'Registro Parcial',
-                        f'Usuario registrado pero sin huella:\n\nNombre: {nombre}',
-                        'Warning',
-                        True
-                    ).exec()
-            else:
-                raise Exception(resultado['message'])
-
-        except Exception as e:
-            DialogoEmergente(
-                'Error',
-                f'Error durante el registro:\n\n{str(e)}',
-                'Error',
-                True
-            ).exec()
-    """
-
-            
-            
-            
-            
-    """def registrarDatos(self):
+    
+    def registrarDatos(self):
         if not self.validar_datos_personales():
             dial = DialogoEmergente('','Asegurece de llenar todos los datos personales','Error',True)
             dial.exec()
@@ -856,6 +776,7 @@ class formEmpleado(QDialog):
             dial = DialogoEmergente('',result['message'],'Check',True)
             dial.exec()
             self.reject()
+<<<<<<< HEAD
     
     """
 
@@ -1080,3 +1001,7 @@ class formEmpleado(QDialog):
                 'Error',
                 True
             ).exec()
+=======
+
+                
+>>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
