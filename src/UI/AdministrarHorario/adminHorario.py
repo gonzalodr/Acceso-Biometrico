@@ -4,7 +4,6 @@ from Utils.Utils import *
 from UI.AdministrarHorario.formHorario import *
 from services.horarioService import *
 from datetime import datetime
-from models.permiso_perfil import Permiso_Perfil
 
 
 class AdminHorario(QWidget):
@@ -16,7 +15,7 @@ class AdminHorario(QWidget):
 
     def __init__(self, parent=None,permiso = None) -> None:
         super().__init__(parent)
-        self.permisoUsuario:Permiso_Perfil = permiso
+        self.permisoUsuario = permiso
         
         self.setObjectName("admin")
 
@@ -184,7 +183,12 @@ class AdminHorario(QWidget):
     def _cargar_tabla(self):
 
         self.tbHorario.setRowCount(0)
-        result = self.Hservices.obtenerListaHorarios( pagina=self.paginaActual,tam_pagina=10,tipo_orden="DESC",busqueda=self.busqueda, )
+        result = self.Hservices.obtenerListaHorarios(
+            pagina=self.paginaActual,
+            tam_pagina=10,
+            tipo_orden="DESC",
+            busqueda=self.busqueda,
+        )
         if result["success"]:
             listaHorarios = result["data"]["listaHorarios"]
             if listaHorarios:
@@ -224,7 +228,9 @@ class AdminHorario(QWidget):
 
     def _agregar_acciones(self, index, horario_id):
         btnEliminar = QPushButton(text="Eliminar")
-        btnEliminar.clicked.connect( lambda checked, idx=horario_id: self._eliminarRegistro(idx))
+        btnEliminar.clicked.connect(
+            lambda checked, idx=horario_id: self._eliminarRegistro(idx)
+        )
         btnEliminar.setMinimumSize(QSize(80, 35))
         btnEliminar.setMaximumWidth(100)
         btnEliminar.setStyleSheet(
@@ -285,13 +291,9 @@ class AdminHorario(QWidget):
         self._cargar_tabla()
 
     def _eliminarRegistro(self, idx):
-        if not self.permisoUsuario.eliminar:
-            dial = DialogoEmergente("","No tienes permiso para realizar esta accion.","Error",True,False)
-            dial.exec()
-            return
-        
-        
-        dial = DialogoEmergente("¿?", "¿Seguro que quieres eliminar este registro?", "Question", True, True)
+        dial = DialogoEmergente(
+            "¿?", "¿Seguro que quieres eliminar este registro?", "Question", True, True
+        )
         if dial.exec() == QDialog.Accepted:
             result = self.Hservices.eliminarHorario(idx)
             mensaje = (
@@ -305,19 +307,34 @@ class AdminHorario(QWidget):
             self._cargar_tabla()
 
     def _crear_horario(self):
-        if not self.permisoUsuario.crear:
-            dial = DialogoEmergente("","No tienes permiso para realizar esta accion.","Error",True,False)
-            dial.exec()
-            return
+        blur_effect = QGraphicsBlurEffect(self)
+        blur_effect.setBlurRadius(10)
+        self.setGraphicsEffect(blur_effect)
+
         form = formHorario()
-        if (form.exec() == QDialog.Accepted):  # Verifica si el formulario se cerró correctamente
+        if (
+            form.exec() == QDialog.Accepted
+        ):  # Verifica si el formulario se cerró correctamente
             self._cargar_tabla()
-            
+        self.setGraphicsEffect(None)
+
     def _editar_horario(self, id):
-        if not self.permisoUsuario.editar:
-            dial = DialogoEmergente("","No tienes permiso para realizar esta accion.","Error",True,False)
-            dial.exec()
-            return
         form = formHorario(titulo="Actualizar Horario", id=id)
         form.exec()
         self._cargar_tabla()
+
+    def eliminarRegistro(self, idx):
+        dial = DialogoEmergente(
+            "¿?", "¿Seguro que quieres eliminar este registro?", "Question", True, True
+        )
+        if dial.exec() == QDialog.Accepted:
+            result = self.Hservices.eliminarHorario(idx)
+            mensaje = (
+                "Se eliminó el registro correctamente."
+                if result["success"]
+                else "Hubo un error al eliminar este registro."
+            )
+            DialogoEmergente(
+                "", mensaje, "Check" if result["success"] else "Error"
+            ).exec()
+            self._cargar_tabla()

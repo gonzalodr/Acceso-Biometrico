@@ -222,10 +222,6 @@ class AdminReporte(QWidget):
             self.cargarTabla()
         
     def crearReporte(self):
-        if not self.permisoUsuario.crear:
-            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
-            dial.exec()
-            return
         reporteForm = GenerarReporte()
         reporteForm.exec()
         # reporte_form = formReporte()
@@ -233,11 +229,6 @@ class AdminReporte(QWidget):
         self.cargarTabla()
 
     def _eliminarRegistro(self, id_reporte):
-        if not self.permisoUsuario.eliminar:
-            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
-            dial.exec()
-            return
-        
         dial = DialogoEmergente(
             title="Confirmación",
             message="¿Seguro que quieres eliminar este registro?",
@@ -254,12 +245,9 @@ class AdminReporte(QWidget):
                 else:
                     dial = DialogoEmergente("","Hubo un error al eliminar este registro.","Error")
                     dial.exec()
-                                   
+                    
+                    
     def editarReporte(self, id_reporte):
-        if not self.permisoUsuario.editar:
-            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
-            dial.exec()
-            return
         reporte_form = formReporte(id=id_reporte)# Abrir el formulario de edición
         reporte_form.exec()
         self.cargarTabla()

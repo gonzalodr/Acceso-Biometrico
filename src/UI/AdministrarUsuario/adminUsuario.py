@@ -5,7 +5,6 @@ from Utils.Utils import *
 from services.usuarioService import *
 from UI.AdministrarUsuario.formUsuario import *
 from functools import partial
-from models.permiso_perfil import Permiso_Perfil
 
 class AdminUsuario(QWidget):
     cerrar_adminU = Signal()
@@ -18,7 +17,7 @@ class AdminUsuario(QWidget):
         super().__init__(parent )
         self.setObjectName("admin")
         cargar_estilos('claro','admin.css',self)
-        self.permisoUsuario:Permiso_Perfil = permiso
+        self.permisoUsuario = permiso
         layout = QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
 
@@ -297,11 +296,6 @@ class AdminUsuario(QWidget):
             self._cargar_tabla() 
 
     def _eliminarRegistro(self, usuario_id, usuario_perfil_id):
-        if not self.permisoUsuario.eliminar:
-            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
-            dial.exec()
-            return
-        
         dial = DialogoEmergente("¿?", "¿Seguro que quieres eliminar este registro?", "Question", True, True)
         if dial.exec() == QDialog.Accepted:
             result = self.Uservices.eliminarUsuario(usuario_id, usuario_perfil_id)
@@ -314,19 +308,22 @@ class AdminUsuario(QWidget):
                 dial.exec()
 
     def _editar_Usuario(self, id, id_usuario_perfil):
-        if not self.permisoUsuario.editar:
-            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
-            dial.exec()
-            return
+        blur_effect = QGraphicsBlurEffect(self)
+        blur_effect.setBlurRadius(10)
+        self.setGraphicsEffect(blur_effect)
+        
         form = formUsuario(titulo="Actualizar usuario", id=id, id_usuario_perfil=id_usuario_perfil)
         form.exec()
+        
         self._cargar_tabla()
+        self.setGraphicsEffect(None)
 
     def _crear_usuario(self):
-        if not self.permisoUsuario.crear:
-            dial = DialogoEmergente("","No tienes permiso para realizar esta acción.","Error",True,False)
-            dial.exec()
-            return
+        blur_effect = QGraphicsBlurEffect(self)
+        blur_effect.setBlurRadius(10)
+        self.setGraphicsEffect(blur_effect)
+        
         form = formUsuario()
         form.exec()
         self._cargar_tabla()
+        self.setGraphicsEffect(None)

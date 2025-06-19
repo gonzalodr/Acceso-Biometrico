@@ -9,7 +9,6 @@ from services.huellaService import HuellaService
 from services.ZKService        import ZKServices 
 from models.persona import Persona
 from datetime import datetime
-from models.permiso_perfil import Permiso_Perfil
 
 class AdminEmpleado(QWidget):
     signalCerrar = Signal()
@@ -23,7 +22,7 @@ class AdminEmpleado(QWidget):
     def __init__(self, parent= None, permiso= None) -> None:
         super().__init__(parent)
         self.setObjectName("admin")
-        self.permisoUsuario:Permiso_Perfil = permiso
+        self.permisoUsuario = permiso
         cargar_estilos('claro','admin.css',self)
 
         layout = QVBoxLayout()
@@ -251,9 +250,11 @@ class AdminEmpleado(QWidget):
             self.cargarTabla()
 
     def verMasInformacion(self, id_empleado:int):
+        print(f'\n\neliminar id {id_empleado}\n\n')
         inf = informacionEmpleado(id_empleado)
         inf.exec()
 
+<<<<<<< HEAD
 
     def obtenerHuella(self, id_empleado: int):
         result = self.HueServices.buscar_huellas_por_empleado(id_empleado)
@@ -270,6 +271,10 @@ class AdminEmpleado(QWidget):
 
     def eliminarEmpleado(self, id_empleado: int, nombre_completo: str):
         texto = f"Se eliminarán todos los datos asociados a este empleado."
+=======
+    def eliminarEmpleado(self, id_empleado:int):
+        texto = "Se eliminaran todos los datos asociados a este empleado."
+>>>>>>> parent of 373e4d9 (17-5-2025 (Todos))
         texto += "\n¿Quieres eliminar este empleado?"
         dial = DialogoEmergente("¡Advertencia!", texto, "Warning", True, True)
 
@@ -301,20 +306,13 @@ class AdminEmpleado(QWidget):
 
     
     def editarEmpleado(self,id_empleado:int):
-        if not self.permisoUsuario.editar:
-            dial = DialogoEmergente("","No tienes permiso para realizar esta accion.","Error",True,False)
-            dial.exec()
-            return
+        print(f'\n\nEditar id {id_empleado}\n\n')
         form = formEmpleado(titulo='Editar empleado',id_empleado = id_empleado)
         form.finished.connect(form.deleteLater)
         form.exec()
         self.cargarTabla()
 
     def crearEmpleado(self):
-        if not self.permisoUsuario.crear:
-            dial = DialogoEmergente("","No tienes permiso para realizar esta accion.","Error",True,False)
-            dial.exec()
-            return
         form = formEmpleado()
         form.finished.connect(form.deleteLater)
         form.exec()
