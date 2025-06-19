@@ -268,12 +268,17 @@ class AdminEmpleado(QWidget):
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     def eliminarEmpleado(self, id_empleado: int, nombre_completo: str):
         texto = f"Se eliminarán todos los datos asociados a este empleado."
 =======
     def eliminarEmpleado(self, id_empleado:int):
         texto = "Se eliminaran todos los datos asociados a este empleado."
 >>>>>>> parent of 373e4d9 (17-5-2025 (Todos))
+=======
+    def eliminarEmpleado(self, id_empleado: int):
+        texto = "Se eliminarán todos los datos asociados a este empleado."
+>>>>>>> parent of bc060e5 (Correcciones)
 =======
     def eliminarEmpleado(self, id_empleado: int):
         texto = "Se eliminarán todos los datos asociados a este empleado."
@@ -290,12 +295,15 @@ class AdminEmpleado(QWidget):
             id_huella = self.obtenerHuella(id_empleado)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                         # Si el empleado fue eliminado, eliminar su huella si existe prueba
             if id_huella is not None:
                 result_huella = self.HueServices.eliminarHuella(id_huella)
                 if not result_huella['success']:
                     dial = DialogoEmergente("", "Empleado eliminado, pero no se pudo eliminar la huella.", "Error", True)
                     dial.exec()
+=======
+>>>>>>> parent of bc060e5 (Correcciones)
 =======
 >>>>>>> parent of bc060e5 (Correcciones)
 =======
