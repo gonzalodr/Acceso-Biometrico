@@ -429,7 +429,7 @@ class ReporteData:
                         datosEmpleadoReporte["id_empleado"] = reporte["EmpleadoId"]
                         datosEmpleadoReporte["nombre"] = reporte["NombrePersona"]
                         datosEmpleadoReporte["apellidos"] = reporte["ApellidosPersona"]
-                        datosEmpleadoReporte["cedula"] = reporte["CedulaPersona"]
+                        datosEmpleadoReporte["cedula"] = reporte["ApellidosPersona"]
 
                         if (any(reporte in ["justificacion", "todo"]for reporte in tipoReporte)) and reporte["JustificacionId"]:
                             justificacion = Justificacion(

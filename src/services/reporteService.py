@@ -114,9 +114,9 @@ class ReporteServices:
         # Ahora que tenemos agrupados los datos por empleado, generamos el PDF
         pdf.add_page()
         for cedula, info in empleados_data.items():
-            nombre_completo = f"Nombre: {info['nombre']} {info['apellidos']} - Cedula: {info['cedula']} "
+            nombre_completo = f"Nombre: {info['nombre']} {info['apellidos']} - Cedula: {info['apellidos']} "
             pdf.set_font("Arial", style='B', size=10)
-            pdf.cell(190, 6, txt= nombre_completo, ln=True)
+            pdf.cell(190, 6, txt=f"{nombre_completo} - {cedula}", ln=True)
             
             reporte:Reporte = Reporte(id_empleado=info['id_empleado'],fecha_generacion=datetime.datetime.now(),tipo_reporte=','.join(tipoReporte),contenido=','.join(tipoReporte))
             resultHistoria = self.insertarReporte(reporte)
