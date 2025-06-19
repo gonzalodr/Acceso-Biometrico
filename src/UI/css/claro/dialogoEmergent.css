@@ -1,0 +1,41 @@
+#DialEmergente{
+    border: 2px solid #ffffff;
+}
+
+#frameEmerg{
+    background-color: #ffffff;
+    border: 1px solid #007286;
+    border-radius: 0px;
+}
+
+QLabel {
+    border-radius: 10px;
+    background-color: transparent;
+    color: #000000; /* Asegura que el texto del encabezado esté en negro */
+}
+
+#frameEmerg #mensaje{
+    background-color:transparent;
+    font: 1 12pt "Cooper Black";
+    color: #000000;
+}
+
+#frameEmerg #titulo{
+    background-color:transparent;
+    font: 1 18pt "Cooper Black";
+    color:#000000;
+}
+
+#frameEmerg #acept{
+    background-color: #17c900;
+    border-radius: 5px;
+    font: 1 12pt "Cooper Black";
+    color: #ffffff;
+}
+
+#frameEmerg #cancel{
+    background-color: #a70000;
+    border-radius: 5px;
+    font: 1 12pt "Cooper Black";
+    color: #ffffff;
+}
