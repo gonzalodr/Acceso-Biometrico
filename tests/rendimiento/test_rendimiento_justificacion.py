@@ -51,7 +51,7 @@ class UserBehavior(SequentialTaskSet):
             motivo=motivo,
             descripcion=descripcion,
             tipo=tipo,
-            id_justificacion=None  # ID será generado por la base de datos prueba
+            id_justificacion=None  # ID será generado por la base de datos
         )
 
         start_time = time.perf_counter()
