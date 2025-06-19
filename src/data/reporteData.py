@@ -18,11 +18,6 @@ import traceback
 import sys
 
 
-<<<<<<< HEAD
-class ReporteData:
-=======
-
->>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
 
 class ReporteData:
     
@@ -504,7 +499,6 @@ class ReporteData:
                 "message": "Ocurrió un error al obtener los datos para el reporte.",
             }
         finally:
-<<<<<<< HEAD
             if conexion:
                 conexion.close()
 
@@ -550,7 +544,3 @@ class ReporteData:
             if conexion:
                 conexion.close()
         return resultado
-=======
-            if conexion: conexion.close()
-        
->>>>>>> parent of 543debc (Merge branch 'main' into Gonzalo)
