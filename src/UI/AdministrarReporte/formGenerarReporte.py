@@ -332,13 +332,13 @@ class GenerarReporte(QDialog):
         tipoReporte = []
 
         if asistencias:
-            tipoReporte.append("justificacion")
-
-        if justificacion:
             tipoReporte.append("asistencias")
 
+        if justificacion:
+            tipoReporte.append("justificacion")
+
         if permiso:
-            tipoReporte.append("permisos")
+            tipoReporte.append("permiso")
 
         return {
             "nombre_reporte": nombre,
@@ -423,6 +423,11 @@ class GenerarReporte(QDialog):
             return
 
         if not resultado["success"]:
-            dial = DialogoEmergente("", resultado["message"], "Error", True, False)
+            mensaje = (f"No se encontraron para:\n"
+              f"Empleado: {datos['id_empleado']}\n"
+              f"Departamento: {datos['id_departamento']}\n"
+              f"Rol: {datos['id_rol']}\n"
+              f"Fecha: {datos['rangoFechas'][0]} a {datos['rangoFechas'][1]}")
+    
+            dial = DialogoEmergente("", mensaje, "Error", True, False)
             dial.exec()
-            return
